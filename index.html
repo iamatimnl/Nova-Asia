@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SushiNova Bestellen</title>
+  <title>Nova Asia Bestellen</title>
   <style>
     body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; background: #f9f9f9; }
     h1, h2 { text-align: center; margin-bottom: 20px; }
@@ -19,7 +19,7 @@
   </style>
 </head>
 <body>
-  <h1>SushiNova Online Bestellen</h1>
+  <h1>Nova Asia Online Bestellen</h1>
 
   <div class="checkbox-group">
     <h2>Draag bij aan duurzaamheid en voorkom verspilling 🌱</h2>
@@ -135,28 +135,29 @@
       orderSummary += `\nGember: ${gemberCount}`;
 
       let totalPrice = document.getElementById('total').textContent;
-      const message = `📦 Nieuwe bestelling:\n\n${orderSummary}\nTotaal: €${totalPrice}`;
+      const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\nTotaal: €${totalPrice}`;
 
       fetch('https://www.novaasia.nl/api/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message })
       })
-        .then(res => res.json())
-        .then(data => {
-          if (data.status === 'ok') {
-            alert("Bestelling verzonden!\n\n" + orderSummary + "\nTotaal: €" + totalPrice);
-            window.open('https://tikkie.me/pay/sushinova', '_blank');
-          } else {
-            alert("Telegram-fout: " + data.error);
-          }
-        })
-        .catch(err => {
-          alert("Netwerkfout bij verzenden bestelling");
-          console.error(err);
-        });
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'ok') {
+          alert("Bestelling verzonden!\n\n" + orderSummary + "\nTotaal: €" + totalPrice);
+          window.open('https://tikkie.me/pay/novaasia', '_blank'); // 👈 建议你生成自己的 Tikkie 链接
+        } else {
+          alert("Telegram-fout: " + data.error);
+        }
+      })
+      .catch(err => {
+        alert("Netwerkfout bij verzenden bestelling");
+        console.error(err);
+      });
     }
   </script>
 </body>
 </html>
+
 
