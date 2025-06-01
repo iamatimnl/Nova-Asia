@@ -120,26 +120,43 @@
     }
 
     function checkout() {
-      if (cart.length === 0) {
-        alert('Je winkelwagen is leeg.');
-        return;
-      }
+  if (cart.length === 0) {
+    alert('Je winkelwagen is leeg.');
+    return;
+  }
 
-      const chopstickCount = document.getElementById('chopstickCount').value;
-      const soyCount = document.getElementById('soyCount').value;
-      const wasabiCount = document.getElementById('wasabiCount').value;
-      const gemberCount = document.getElementById('gemberCount').value;
+  const chopstickCount = document.getElementById('chopstickCount').value;
+  const soyCount = document.getElementById('soyCount').value;
+  const wasabiCount = document.getElementById('wasabiCount').value;
+  const gemberCount = document.getElementById('gemberCount').value;
 
-      let orderSummary = cart.map(item => `${item.name} x ${item.qty}`).join('%0A');
-      orderSummary += `%0AStokjes nodig: ${chopstickCount}`;
-      orderSummary += `%0ASojasaus: ${soyCount}`;
-      orderSummary += `%0AWasabi: ${wasabiCount}`;
-      orderSummary += `%0AGember: ${gemberCount}`;
+  let orderSummary = cart.map(item => `${item.name} x ${item.qty}`).join('%0A');
+  orderSummary += `%0AStokjes nodig: ${chopstickCount}`;
+  orderSummary += `%0ASojasaus: ${soyCount}`;
+  orderSummary += `%0AWasabi: ${wasabiCount}`;
+  orderSummary += `%0AGember: ${gemberCount}`;
 
-      let totalPrice = document.getElementById('total').textContent;
-      alert("Bedankt voor je bestelling!\n\nSamenvatting:\n" + decodeURIComponent(orderSummary) + "\nTotaal: €" + totalPrice);
-      window.open('https://tikkie.me/pay/sushinova', '_blank');
-    }
+  let totalPrice = document.getElementById('total').textContent;
+
+  // ✅ 通知 Telegram
+  const botToken = '7509433067:AAGoLc1NVWqmgKGcrRVb3DwMh1o5_v5Fyio';
+  const chatId = '8047420957';
+  const message = `📦 Nieuwe bestelling:\n\n${decodeURIComponent(orderSummary)}\nTotaal: €${totalPrice}`;
+  const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+
+  fetch(url)
+    .then(response => {
+      if (!response.ok) throw new Error("Telegram melding mislukt");
+    })
+    .catch(error => {
+      console.error("Telegram fout:", error);
+    });
+
+  // ✅ 顾客提示 + 跳转付款
+  alert("Bedankt voor je bestelling!\n\nSamenvatting:\n" + decodeURIComponent(orderSummary) + "\nTotaal: €" + totalPrice);
+  window.open('https://tikkie.me/pay/sushinova', '_blank');
+}
+
   </script>
 </body>
 </html>
