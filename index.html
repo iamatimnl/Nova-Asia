@@ -22,32 +22,19 @@
   <h1>SushiNova Online Bestellen</h1>
 
   <div class="checkbox-group">
-    <h2>Draag bij aan duurzaamheid 🌱</h2>
-    <label for="chopstickCount">Om verspilling te voorkomen: aantal stokjes die ik nodig heb 🥢</label>
-    <select id="chopstickCount">
-      <option value="0">0</option>
-      <option value="1">1</option>
-      <option value="2">2</option>
-      <option value="3">3</option>
-      <option value="4">4</option>
-      <option value="5">5</option>
-      <option value="6">6</option>
-      <option value="7">7</option>
-      <option value="8">8</option>
-      <option value="9">9</option>
-      <option value="10">10</option>
-      <option value="11">11</option>
-      <option value="12">12</option>
-      <option value="13">13</option>
-      <option value="14">14</option>
-      <option value="15">15</option>
-      <option value="16">16</option>
-      <option value="17">17</option>
-      <option value="18">18</option>
-      <option value="19">19</option>
-      <option value="20">20</option>
-    </select>
-    <label><input type="checkbox" id="soy"> Ik heb GEEN sojasaus/wasabi nodig 🧂</label>
+    <h2>Draag bij aan duurzaamheid en voorkom verspilling 🌱</h2>
+
+    <label for="chopstickCount">Aantal stokjes die ik nodig heb 🥢</label>
+    <select id="chopstickCount"></select>
+
+    <label for="soyCount">Aantal sojasaus zakjes 🧂</label>
+    <select id="soyCount"></select>
+
+    <label for="wasabiCount">Aantal wasabi 🟢</label>
+    <select id="wasabiCount"></select>
+
+    <label for="gemberCount">Aantal gember 🍠</label>
+    <select id="gemberCount"></select>
   </div>
 
   <div id="menu"></div>
@@ -101,6 +88,21 @@
       menuDiv.appendChild(div);
     });
 
+    function populateSelect(id, max) {
+      const sel = document.getElementById(id);
+      for (let i = 0; i <= max; i++) {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = i;
+        sel.appendChild(opt);
+      }
+    }
+
+    populateSelect('chopstickCount', 20);
+    populateSelect('soyCount', 5);
+    populateSelect('wasabiCount', 5);
+    populateSelect('gemberCount', 5);
+
     function updateCart() {
       const cartList = document.getElementById('cart');
       cartList.innerHTML = '';
@@ -124,11 +126,15 @@
       }
 
       const chopstickCount = document.getElementById('chopstickCount').value;
-      const noSoy = document.getElementById('soy').checked;
+      const soyCount = document.getElementById('soyCount').value;
+      const wasabiCount = document.getElementById('wasabiCount').value;
+      const gemberCount = document.getElementById('gemberCount').value;
 
       let orderSummary = cart.map(item => `${item.name} x ${item.qty}`).join('%0A');
       orderSummary += `%0AStokjes nodig: ${chopstickCount}`;
-      if (noSoy) orderSummary += '%0A[✔] Geen sojasaus nodig';
+      orderSummary += `%0ASojasaus: ${soyCount}`;
+      orderSummary += `%0AWasabi: ${wasabiCount}`;
+      orderSummary += `%0AGember: ${gemberCount}`;
 
       let totalPrice = document.getElementById('total').textContent;
       alert("Bedankt voor je bestelling!\n\nSamenvatting:\n" + decodeURIComponent(orderSummary) + "\nTotaal: €" + totalPrice);
