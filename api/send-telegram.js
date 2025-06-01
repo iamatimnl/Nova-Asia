@@ -1,9 +1,9 @@
-import fetch from 'node-fetch';
+const fetch = require('node-fetch');
 
 const TOKEN = '你的TOKEN';
 const CHAT_ID = '你的CHAT_ID';
 
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     res.status(405).send('Method Not Allowed');
     return;
@@ -26,6 +26,4 @@ export default async function handler(req, res) {
     const result = await response.json();
     res.status(200).json({ status: 'ok', result });
   } catch (err) {
-    res.status(500).json({ status: 'error', error: err.message });
-  }
-}
+    res.status(500).j
