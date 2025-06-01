@@ -6,18 +6,26 @@
   <title>SushiNova Bestellen</title>
   <style>
     body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; background: #f9f9f9; }
-    h1 { text-align: center; margin-bottom: 30px; }
-    .menu-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: white; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    h1, h2 { text-align: center; margin-bottom: 20px; }
+    .menu-item { display: grid; grid-template-columns: 1fr auto auto; align-items: center; padding: 12px 0; border-bottom: 1px solid #ddd; }
     .menu-item span { font-size: 1rem; }
-    select { padding: 5px; font-size: 1rem; margin-left: 10px; }
+    select { padding: 6px; font-size: 1rem; margin: 0 10px; }
     .cart-section { margin-top: 30px; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
     .total { font-weight: bold; font-size: 1.2rem; margin-top: 20px; }
-    button { background: #e91e63; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; margin-top: 20px; }
+    button { background: #e91e63; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; }
     button:hover { background: #c2185b; }
+    .checkbox-group { background: #fff; padding: 20px; margin-bottom: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .checkbox-group label { display: block; margin-bottom: 10px; font-size: 1rem; }
   </style>
 </head>
 <body>
   <h1>SushiNova Online Bestellen</h1>
+
+  <div class="checkbox-group">
+    <h2>Draag bij aan duurzaamheid 🌱</h2>
+    <label><input type="checkbox" id="chopsticks"> Ik heb GEEN wegwerpstokjes nodig 🥢</label>
+    <label><input type="checkbox" id="soy"> Ik heb GEEN sojasaus/wasabi nodig 🧂</label>
+  </div>
 
   <div id="menu"></div>
 
@@ -91,7 +99,14 @@
         alert('Je winkelwagen is leeg.');
         return;
       }
+
+      const noChopsticks = document.getElementById('chopsticks').checked;
+      const noSoy = document.getElementById('soy').checked;
+
       let orderSummary = cart.map(item => `${item.name} x ${item.qty}`).join('%0A');
+      if (noChopsticks) orderSummary += '%0A[✔] Geen stokjes nodig';
+      if (noSoy) orderSummary += '%0A[✔] Geen sojasaus nodig';
+
       let totalPrice = document.getElementById('total').textContent;
       alert("Bedankt voor je bestelling!\n\nSamenvatting:\n" + decodeURIComponent(orderSummary) + "\nTotaal: €" + totalPrice);
       window.open('https://tikkie.me/pay/sushinova', '_blank');
@@ -99,5 +114,4 @@
   </script>
 </body>
 </html>
-
 
