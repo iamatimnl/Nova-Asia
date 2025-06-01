@@ -137,11 +137,11 @@
       let totalPrice = document.getElementById('total').textContent;
       const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\nTotaal: €${totalPrice}`;
 
-      fetch('https://novaasia-api.vercel.app/api/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message })
-      })
+      fetch('http://localhost:3000/send-telegram', {
+       method: 'POST',
+       headers: { 'Content-Type': 'application/json' },
+       body: JSON.stringify({ message })
+       })
       .then(res => res.json())
       .then(data => {
         if (data.status === 'ok') {
