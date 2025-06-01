@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 
-const TOKEN = '你的TOKEN';
-const CHAT_ID = '你的CHAT_ID';
+const TOKEN = '7509433067:AAGoLc1NVWqmgKGcrRVb3DwMh1o5_v5Fyio';
+const CHAT_ID = '8047420957';
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
