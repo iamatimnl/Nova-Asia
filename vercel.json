@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "api/send-telegram.js", "use": "@vercel/node" }
+  ],
+  "routes": [
+    { "src": "/send-telegram", "dest": "api/send-telegram.js" }
+  ]
+}
