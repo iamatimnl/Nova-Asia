@@ -3,73 +3,99 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SushiNova Online Bestellen</title>
+  <title>SushiNova Bestellen</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
-    h1 { text-align: center; }
-    label, input, select { display: block; width: 100%; margin-bottom: 12px; font-size: 1rem; }
+    body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; background: #f9f9f9; }
+    h1 { text-align: center; margin-bottom: 30px; }
+    .menu-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: white; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .menu-item span { font-size: 1rem; }
+    select { padding: 5px; font-size: 1rem; margin-left: 10px; }
+    .cart-section { margin-top: 30px; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
     .total { font-weight: bold; font-size: 1.2rem; margin-top: 20px; }
-    button { background: #e91e63; color: white; padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; }
+    button { background: #e91e63; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; margin-top: 20px; }
     button:hover { background: #c2185b; }
   </style>
 </head>
 <body>
-  <h1>Bestel hier je Sushi</h1>
+  <h1>SushiNova Online Bestellen</h1>
 
-  <form id="orderForm">
-    <label for="name">Naam</label>
-    <input type="text" id="name" name="name" required>
+  <div id="menu"></div>
 
-    <label for="phone">Telefoonnummer</label>
-    <input type="tel" id="phone" name="phone" required>
-
-    <label for="item">Kies een gerecht</label>
-    <select id="item" name="item">
-      <option value="8.5">Sake Maki - €8.50</option>
-      <option value="10">California Roll - €10.00</option>
-      <option value="12">Chicken Bento - €12.00</option>
-      <option value="5">Bubble Tea - €5.00</option>
-    </select>
-
-    <label for="qty">Aantal</label>
-    <input type="number" id="qty" name="qty" value="1" min="1">
-
-    <div class="total">Totaal: €<span id="total">8.50</span></div>
-
-    <button type="submit">Bestellen & Betalen</button>
-  </form>
+  <div class="cart-section">
+    <h2>Winkelwagen</h2>
+    <ul id="cart"></ul>
+    <div class="total">Totaal: €<span id="total">0.00</span></div>
+    <button onclick="checkout()">Afrekenen & Betalen</button>
+  </div>
 
   <script>
-    const item = document.getElementById('item');
-    const qty = document.getElementById('qty');
-    const total = document.getElementById('total');
+    const menuItems = [
+      { name: 'Sake Maki', price: 8.5 },
+      { name: 'California Roll', price: 10 },
+      { name: 'Chicken Bento', price: 12 },
+      { name: 'Bubble Tea', price: 5 }
+    ];
 
-    function updateTotal() {
-      const price = parseFloat(item.value);
-      const amount = parseInt(qty.value);
-      const totalPrice = (price * amount).toFixed(2);
-      total.innerText = totalPrice;
+    const cart = [];
+
+    const menuDiv = document.getElementById('menu');
+
+    menuItems.forEach((item, index) => {
+      const div = document.createElement('div');
+      div.className = 'menu-item';
+
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = `${item.name} - €${item.price.toFixed(2)}`;
+
+      const select = document.createElement('select');
+      for (let i = 1; i <= 20; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+        select.appendChild(option);
+      }
+
+      const addButton = document.createElement('button');
+      addButton.textContent = 'Toevoegen';
+      addButton.onclick = () => {
+        const qty = parseInt(select.value);
+        cart.push({ name: item.name, price: item.price, qty });
+        updateCart();
+      };
+
+      div.appendChild(nameSpan);
+      div.appendChild(select);
+      div.appendChild(addButton);
+
+      menuDiv.appendChild(div);
+    });
+
+    function updateCart() {
+      const cartList = document.getElementById('cart');
+      cartList.innerHTML = '';
+      let total = 0;
+
+      cart.forEach((item, index) => {
+        const li = document.createElement('li');
+        const itemTotal = item.qty * item.price;
+        li.textContent = `${item.name} x ${item.qty} = €${itemTotal.toFixed(2)}`;
+        cartList.appendChild(li);
+        total += itemTotal;
+      });
+
+      document.getElementById('total').textContent = total.toFixed(2);
     }
 
-    item.addEventListener('change', updateTotal);
-    qty.addEventListener('input', updateTotal);
-
-    document.getElementById('orderForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const name = document.getElementById('name').value;
-      const phone = document.getElementById('phone').value;
-      const selectedItem = item.options[item.selectedIndex].text;
-      const amount = qty.value;
-      const price = total.innerText;
-
-      const orderInfo = `Bestelling van ${name} (%20 ${phone}): %0A${selectedItem} x ${amount} = €${price}`;
-
-      // Stuur naar WhatsApp of Telegram, of via mail (voor demo nu via alert)
-      alert("Bedankt voor je bestelling!\n\n" + decodeURIComponent(orderInfo));
-
-      // Of open een Tikkie link (met bedrag手动输入)
+    function checkout() {
+      if (cart.length === 0) {
+        alert('Je winkelwagen is leeg.');
+        return;
+      }
+      let orderSummary = cart.map(item => `${item.name} x ${item.qty}`).join('%0A');
+      let totalPrice = document.getElementById('total').textContent;
+      alert("Bedankt voor je bestelling!\n\nSamenvatting:\n" + decodeURIComponent(orderSummary) + "\nTotaal: €" + totalPrice);
       window.open('https://tikkie.me/pay/sushinova', '_blank');
-    });
+    }
   </script>
 </body>
 </html>
