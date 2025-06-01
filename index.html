@@ -1,9 +1,8 @@
-
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SushiNova Bestellen</title>
   <style>
     body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; background: #f9f9f9; }
@@ -24,7 +23,6 @@
 
   <div class="checkbox-group">
     <h2>Draag bij aan duurzaamheid en voorkom verspilling 🌱</h2>
-
     <label for="chopstickCount">Aantal stokjes die ik nodig heb 🥢</label>
     <select id="chopstickCount"></select>
 
@@ -56,7 +54,6 @@
     ];
 
     const cart = [];
-
     const menuDiv = document.getElementById('menu');
 
     menuItems.forEach((item) => {
@@ -140,8 +137,7 @@
       let totalPrice = document.getElementById('total').textContent;
       const message = `📦 Nieuwe bestelling:\n\n${orderSummary}\nTotaal: €${totalPrice}`;
 
-      // ✅ 安全发送 Telegram 消息（通过中转 API）
-      fetch('https://sushinova-api.vercel.app/api/send', {
+      fetch('https://www.novaasia.nl/api/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message })
@@ -163,3 +159,4 @@
   </script>
 </body>
 </html>
+
