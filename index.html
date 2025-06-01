@@ -58,7 +58,7 @@
 
     const menuDiv = document.getElementById('menu');
 
-    menuItems.forEach((item, index) => {
+    menuItems.forEach((item) => {
       const div = document.createElement('div');
       div.className = 'menu-item';
 
@@ -108,7 +108,7 @@
       cartList.innerHTML = '';
       let total = 0;
 
-      cart.forEach((item, index) => {
+      cart.forEach((item) => {
         const li = document.createElement('li');
         const itemTotal = item.qty * item.price;
         li.textContent = `${item.name} x ${item.qty} = €${itemTotal.toFixed(2)}`;
@@ -120,45 +120,45 @@
     }
 
     function checkout() {
-  if (cart.length === 0) {
-    alert('Je winkelwagen is leeg.');
-    return;
-  }
+      if (cart.length === 0) {
+        alert('Je winkelwagen is leeg.');
+        return;
+      }
 
-  const chopstickCount = document.getElementById('chopstickCount').value;
-  const soyCount = document.getElementById('soyCount').value;
-  const wasabiCount = document.getElementById('wasabiCount').value;
-  const gemberCount = document.getElementById('gemberCount').value;
+      const chopstickCount = document.getElementById('chopstickCount').value;
+      const soyCount = document.getElementById('soyCount').value;
+      const wasabiCount = document.getElementById('wasabiCount').value;
+      const gemberCount = document.getElementById('gemberCount').value;
 
-  let orderSummary = cart.map(item => `${item.name} x ${item.qty}`).join('%0A');
-  orderSummary += `%0AStokjes nodig: ${chopstickCount}`;
-  orderSummary += `%0ASojasaus: ${soyCount}`;
-  orderSummary += `%0AWasabi: ${wasabiCount}`;
-  orderSummary += `%0AGember: ${gemberCount}`;
+      let orderSummary = cart.map(item => `${item.name} x ${item.qty}`).join('\n');
+      orderSummary += `\nStokjes nodig: ${chopstickCount}`;
+      orderSummary += `\nSojasaus: ${soyCount}`;
+      orderSummary += `\nWasabi: ${wasabiCount}`;
+      orderSummary += `\nGember: ${gemberCount}`;
 
-  let totalPrice = document.getElementById('total').textContent;
+      let totalPrice = document.getElementById('total').textContent;
+      const message = `📦 Nieuwe bestelling:\n\n${orderSummary}\nTotaal: €${totalPrice}`;
 
-  // ✅ 通知 Telegram
-  const botToken = '7509433067:AAGoLc1NVWqmgKGcrRVb3DwMh1o5_v5Fyio';
-  const chatId = '8047420957';
-  const message = `📦 Nieuwe bestelling:\n\n${decodeURIComponent(orderSummary)}\nTotaal: €${totalPrice}`;
-  const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
-
-  fetch(url)
-    .then(response => {
-      if (!response.ok) throw new Error("Telegram melding mislukt");
-    })
-    .catch(error => {
-      console.error("Telegram fout:", error);
-    });
-
-  // ✅ 顾客提示 + 跳转付款
-  alert("Bedankt voor je bestelling!\n\nSamenvatting:\n" + decodeURIComponent(orderSummary) + "\nTotaal: €" + totalPrice);
-  window.open('https://tikkie.me/pay/sushinova', '_blank');
-}
-
+      // ✅ 安全发送 Telegram 消息（通过中转 API）
+      fetch('https://sushinova-api.vercel.app/api/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 'ok') {
+            alert("Bestelling verzonden!\n\n" + orderSummary + "\nTotaal: €" + totalPrice);
+            window.open('https://tikkie.me/pay/sushinova', '_blank');
+          } else {
+            alert("Telegram-fout: " + data.error);
+          }
+        })
+        .catch(err => {
+          alert("Netwerkfout bij verzenden bestelling");
+          console.error(err);
+        });
+    }
   </script>
 </body>
 </html>
-
-
