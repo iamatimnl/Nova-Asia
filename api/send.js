@@ -1,4 +1,15 @@
 export default async function handler(req, res) {
+  // 处理 CORS 预检请求
+  if (req.method === 'OPTIONS') {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    return res.status(200).end();
+  }
+
+  // 设置允许跨域
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
   if (req.method !== 'POST') {
     return res.status(405).json({ status: 'error', error: 'Only POST requests allowed.' });
   }
@@ -30,3 +41,4 @@ export default async function handler(req, res) {
     return res.status(500).json({ status: 'error', error: err.message });
   }
 }
+
