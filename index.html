@@ -108,7 +108,17 @@ menuItems.forEach((item) => {
     option.textContent = i;
     select.appendChild(option);
   }
-
+  const removeButton = document.createElement('button');
+removeButton.textContent = 'Verwijderen';
+removeButton.onclick = () => {
+  for (let i = cart.length - 1; i >= 0; i--) {
+    if (cart[i].name === item.name) {
+      cart.splice(i, 1); // 移除该商品所有记录
+    }
+  }
+  updateCart();
+};
+div.appendChild(removeButton);
   const addButton = document.createElement('button');
   addButton.textContent = 'Toevoegen';
   addButton.onclick = () => {
