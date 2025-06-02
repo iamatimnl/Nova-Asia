@@ -7,7 +7,15 @@
   <style>
     body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; background: #f9f9f9; }
     h1, h2 { text-align: center; margin-bottom: 20px; }
-    .menu-item { display: grid; grid-template-columns: 1fr auto auto; align-items: center; padding: 12px 0; border-bottom: 1px solid #ddd; }
+    .menu-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto; /* 增加一列用于“verwijderen”按钮 */
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #ddd;
+  gap: 8px;
+}
+
     .menu-item span { font-size: 1rem; }
     select, input, textarea { padding: 6px; font-size: 1rem; margin: 0 10px 10px 0; }
     .cart-section { margin-top: 30px; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
@@ -101,6 +109,7 @@ menuItems.forEach((item) => {
 
   const nameSpan = document.createElement('span');
   nameSpan.textContent = `${item.name} - €${item.price.toFixed(2)}`;
+
   const select = document.createElement('select');
   for (let i = 1; i <= 20; i++) {
     const option = document.createElement('option');
@@ -108,17 +117,7 @@ menuItems.forEach((item) => {
     option.textContent = i;
     select.appendChild(option);
   }
-  const removeButton = document.createElement('button');
-removeButton.textContent = 'Verwijderen';
-removeButton.onclick = () => {
-  for (let i = cart.length - 1; i >= 0; i--) {
-    if (cart[i].name === item.name) {
-      cart.splice(i, 1); // 移除该商品所有记录
-    }
-  }
-  updateCart();
-};
-div.appendChild(removeButton);
+
   const addButton = document.createElement('button');
   addButton.textContent = 'Toevoegen';
   addButton.onclick = () => {
@@ -127,9 +126,21 @@ div.appendChild(removeButton);
     updateCart();
   };
 
+  const removeButton = document.createElement('button');
+  removeButton.textContent = 'Verwijderen';
+  removeButton.onclick = () => {
+    for (let i = cart.length - 1; i >= 0; i--) {
+      if (cart[i].name === item.name) {
+        cart.splice(i, 1); // 删除所有此项
+      }
+    }
+    updateCart();
+  };
+
   div.appendChild(nameSpan);
   div.appendChild(select);
   div.appendChild(addButton);
+  div.appendChild(removeButton);
 
   menuDiv.appendChild(div);
 });
