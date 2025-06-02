@@ -142,26 +142,33 @@
   }
 
   .order-toggle {
-  display: inline-flex;
+  display: flex;
+  width: 100%;               /* 确保占满整行 */
+  max-width: 100%;           /* 限制不超过父容器宽度 */
   border: 1px solid #ccc;
   border-radius: 10px;
   overflow: hidden;
   margin: 16px 0;
+  box-sizing: border-box;    /* ✅ 防止 padding 影响总宽度 */
 }
+
 
 .order-toggle input[type="radio"] {
   display: none;
 }
 
 .order-toggle label {
-  padding: 10px 20px;
-  cursor: pointer;
+  flex: 1;                   /* ✅ 每个 label 自动占一半宽度 */
+  text-align: center;
+  padding: 12px 0;
   font-size: 1rem;
+  cursor: pointer;
   background-color: #f0f0f0;
   color: #333;
   transition: all 0.2s ease-in-out;
   user-select: none;
 }
+
 
 .order-toggle input[type="radio"]:checked + label {
   background-color: #007aff;
