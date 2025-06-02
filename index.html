@@ -61,7 +61,7 @@
       div.className = 'menu-item';
 
       const nameSpan = document.createElement('span');
-      nameSpan.textContent = ${item.name} - €${item.price.toFixed(2)};
+      nameSpan.textContent = `${item.name} - €${item.price.toFixed(2)}`;
 
       const select = document.createElement('select');
       for (let i = 1; i <= 20; i++) {
@@ -109,7 +109,7 @@
       cart.forEach((item) => {
         const li = document.createElement('li');
         const itemTotal = item.qty * item.price;
-        li.textContent = ${item.name} x ${item.qty} = €${itemTotal.toFixed(2)};
+        li.textContent = `${item.name} x ${item.qty} = €${itemTotal.toFixed(2)}`;
         cartList.appendChild(li);
         total += itemTotal;
       });
@@ -128,20 +128,20 @@
       const wasabiCount = document.getElementById('wasabiCount').value;
       const gemberCount = document.getElementById('gemberCount').value;
 
-      let orderSummary = cart.map(item => ${item.name} x ${item.qty}).join('\n');
-      orderSummary += \nStokjes nodig: ${chopstickCount};
-      orderSummary += \nSojasaus: ${soyCount};
-      orderSummary += \nWasabi: ${wasabiCount};
-      orderSummary += \nGember: ${gemberCount};
+      let orderSummary = cart.map(item => `${item.name} x ${item.qty}`).join('\n');
+      orderSummary += `\nStokjes nodig: ${chopstickCount}`;
+      orderSummary += `\nSojasaus: ${soyCount}`;
+      orderSummary += `\nWasabi: ${wasabiCount}`;
+      orderSummary += `\nGember: ${gemberCount}`;
 
       let totalPrice = document.getElementById('total').textContent;
-      const message = 📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\nTotaal: €${totalPrice};
+      const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\nTotaal: €${totalPrice}`;
 
-     fetch('/send-telegram', {
-       method: 'POST',
-       headers: { 'Content-Type': 'application/json' },
-       body: JSON.stringify({ message })
-       })
+      fetch('https://www.novaasia.nl/api/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message })
+      })
       .then(res => res.json())
       .then(data => {
         if (data.status === 'ok') {
