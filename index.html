@@ -5,27 +5,106 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Nova Asia Bestellen</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; background: #f9f9f9; }
-    h1, h2 { text-align: center; margin-bottom: 20px; }
-    .menu-item {
-  display: grid;
-  grid-template-columns: 1fr auto auto auto; /* 增加一列用于“verwijderen”按钮 */
-  align-items: center;
-  padding: 12px 0;
-  border-bottom: 1px solid #ddd;
-  gap: 8px;
-}
+  body {
+    font-family: sans-serif;
+    padding: 20px;
+    max-width: 800px;
+    margin: auto;
+    background: #f9f9f9;
+  }
 
-    .menu-item span { font-size: 1rem; }
-    select, input, textarea { padding: 6px; font-size: 1rem; margin: 0 10px 10px 0; }
-    .cart-section { margin-top: 30px; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .total { font-weight: bold; font-size: 1.2rem; margin-top: 20px; }
-    button { background: #e91e63; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; }
-    button:hover { background: #c2185b; }
-    .checkbox-group, .delivery-options { background: #fff; padding: 20px; margin-bottom: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-    .checkbox-group label, .checkbox-group select, .delivery-options label, .delivery-options select, .delivery-options input { display: block; margin-bottom: 10px; font-size: 1rem; }
-    .hidden { display: none; }
-  </style>
+  h1, h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .menu-item {
+    display: grid;
+    grid-template-columns: 1fr 80px 100px 100px; /* 名称，数量选择，添加按钮，删除按钮 */
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #ddd;
+    gap: 10px;
+  }
+
+  .menu-item span {
+    font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .menu-item select {
+    width: 60px;
+    padding: 4px;
+    font-size: 0.9rem;
+  }
+
+  .menu-item button {
+    padding: 6px 8px;
+    font-size: 0.85rem;
+    min-width: 80px;
+    white-space: nowrap;
+  }
+
+  select, input, textarea {
+    padding: 6px;
+    font-size: 1rem;
+    margin: 0 10px 10px 0;
+  }
+
+  .cart-section {
+    margin-top: 30px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .total {
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-top: 20px;
+  }
+
+  button:not(.menu-item button) {
+    background: #e91e63;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+
+  button:hover {
+    background: #c2185b;
+  }
+
+  .checkbox-group,
+  .delivery-options {
+    background: #fff;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+
+  .checkbox-group label,
+  .checkbox-group select,
+  .delivery-options label,
+  .delivery-options select,
+  .delivery-options input {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 1rem;
+  }
+
+  .hidden {
+    display: none;
+  }
+</style>
+
 </head>
 <body>
   <h1>Nova Asia Online Bestellen</h1>
