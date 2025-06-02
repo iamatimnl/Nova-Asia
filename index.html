@@ -141,7 +141,7 @@
     display: none;
   }
 
-  .segmented-control {
+   .segmented-control {
   position: relative;
   display: flex;
   width: 100%;
@@ -165,31 +165,12 @@
   font-size: 1rem;
   font-weight: 500;
   color: #333;
+  z-index: 2;
   cursor: pointer;
   user-select: none;
-  z-index: 2;
   position: relative;
-  transition: color 0.25s ease, background-color 0.25s ease;
-  background-color: #f0f0f0;
-  box-shadow: none; /* 默认无底线 */
+  transition: color 0.25s ease;
 }
-
-.segmented-control label:hover {
-  background-color: #e0e0e0; /* ✅ 悬停高亮 */
-}
-
-/* 被选中项：白字 + 透明底（由 slider 底色呈现） */
-#afhalen:checked ~ label[for="afhalen"],
-#bezorgen:checked ~ label[for="bezorgen"] {
-  color: white;
-  background-color: transparent;
-  z-index: 3;
-  box-shadow: none; /* ✅ 确保无底线 */
-}
-
-
-
-
 
 .segmented-control .slider {
   position: absolute;
@@ -206,6 +187,10 @@
 /* 切换时滑块移动并切换文字颜色 */
 #bezorgen:checked ~ .slider {
   transform: translateX(100%);
+}
+#afhalen:checked ~ label[for="afhalen"],
+#bezorgen:checked ~ label[for="bezorgen"] {
+  color: white;
 }
 
 .delivery-options input[type="text"],
