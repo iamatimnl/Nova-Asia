@@ -169,8 +169,23 @@
   cursor: pointer;
   user-select: none;
   position: relative;
-  transition: color 0.25s ease;
+  transition: color 0.25s ease, background-color 0.25s ease;
+  background-color: #f0f0f0;
+  box-shadow: none; /* ✅ 默认无底线 */
 }
+
+.segmented-control label:hover {
+  background-color: rgba(0, 0, 0, 0.05); /* 悬停反馈 */
+}
+
+#afhalen:checked ~ label[for="afhalen"],
+#bezorgen:checked ~ label[for="bezorgen"] {
+  color: white;
+  background-color: transparent;
+  box-shadow: none; /* ✅ 确保滑块选中时没有底线干扰 */
+  z-index: 3;
+}
+
 
 .segmented-control .slider {
   position: absolute;
@@ -188,14 +203,9 @@
 #bezorgen:checked ~ .slider {
   transform: translateX(100%);
 }
-.segmented-control label:hover {
-  background-color: rgba(0, 0, 0, 0.06); /* 浅灰，提供轻微高亮反馈 */
-}
+
   
-#afhalen:checked ~ label[for="afhalen"],
-#bezorgen:checked ~ label[for="bezorgen"] {
-  color: white;
-}
+
 
 .delivery-options input[type="text"],
 .delivery-options input[type="tel"],
