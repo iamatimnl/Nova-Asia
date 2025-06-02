@@ -141,46 +141,58 @@
     display: none;
   }
 
-  .order-toggle {
+  .segmented-control {
+  position: relative;
   display: flex;
   width: 100%;
   max-width: 100%;
-  border: 1px solid #ccc;
+  background: #f0f0f0;
   border-radius: 12px;
+  border: 1px solid #ccc;
   overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
   margin: 16px 0;
-  box-sizing: border-box;
-  background-color: #f0f0f0;
-  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.order-toggle input[type="radio"] {
+.segmented-control input[type="radio"] {
   display: none;
 }
 
-.order-toggle label {
+.segmented-control label {
   flex: 1;
   text-align: center;
   padding: 12px 0;
   font-size: 1rem;
-  cursor: pointer;
-  background-color: transparent;
-  color: #555;
-  transition: all 0.25s ease-in-out;
-  user-select: none;
   font-weight: 500;
+  color: #333;
+  z-index: 2;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  transition: color 0.25s ease;
 }
 
-.order-toggle label:hover {
-  background-color: rgba(0, 0, 0, 0.04);
-}
-
-.order-toggle input[type="radio"]:checked + label {
+.segmented-control .slider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 50%;
   background-color: #007aff;
-  color: #fff;
-  font-weight: 600;
-  box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  transition: transform 0.3s ease;
+  z-index: 1;
 }
+
+/* 切换时滑块移动并切换文字颜色 */
+#bezorgen:checked ~ .slider {
+  transform: translateX(100%);
+}
+#afhalen:checked ~ label[for="afhalen"],
+#bezorgen:checked ~ label[for="bezorgen"] {
+  color: white;
+}
+
 
 .delivery-options input[type="text"],
 .delivery-options input[type="tel"],
@@ -232,13 +244,16 @@ input[type="time"] {
   <div class="delivery-options">
   <h2>Kies uw bestelmethode</h2>
 
- <div class="order-toggle">
+ <div class="segmented-control">
   <input type="radio" id="afhalen" name="orderType" value="afhalen" checked onchange="toggleOrderType()">
   <label for="afhalen">Afhalen</label>
 
   <input type="radio" id="bezorgen" name="orderType" value="bezorgen" onchange="toggleOrderType()">
   <label for="bezorgen">Bezorgen</label>
+
+  <div class="slider"></div>
 </div>
+
 
 
 <div id="afhalenFields">
