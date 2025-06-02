@@ -232,6 +232,16 @@ input[type="time"] {
     width: calc(100% - 2px); /* 避免超出容器 */
   }
 }
+.info-text {
+  margin-top: 12px;
+  padding: 14px 16px;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  font-size: 1rem;
+  color: #1c1c1e;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
 
 
 
@@ -253,7 +263,12 @@ input[type="time"] {
   <label for="bezorgen">Bezorgen</label>
 
   <div class="slider"></div>
+   
 </div>
+  <div id="locationInfo" class="info-text">
+  <!-- 初始为空，由 JS 控制内容 -->
+</div>
+  
 
 
 
@@ -494,6 +509,23 @@ function checkout() {
 }
 
 </script>
+<script>
+  function toggleOrderType() {
+    const afhalen = document.getElementById('afhalen');
+    const infoBox = document.getElementById('locationInfo');
+
+    if (afhalen.checked) {
+      infoBox.textContent = 'Adres voor afhalen: Ommevoort 4, 2341 VT Oegstgeest';
+    } else {
+      infoBox.textContent = 'Wij bezorgen in de volgende postcodegebieden: 2341, 2342, 2343, 2333, 2334, 2231, 2232, 2361, 2235';
+    }
+  }
+
+  // 初始加载时显示正确内容
+  window.addEventListener('DOMContentLoaded', toggleOrderType);
+</script>
+
+  
 </body>
 </html>
 
