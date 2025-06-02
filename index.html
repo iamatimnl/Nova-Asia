@@ -118,45 +118,54 @@
     }
 
     function checkout() {
-      if (cart.length === 0) {
-        alert('Je winkelwagen is leeg.');
-        return;
+  if (cart.length === 0) {
+    alert('Je winkelwagen is leeg.');
+    return;
+  }
+
+  const chopstickCount = document.getElementById('chopstickCount').value;
+  const soyCount = document.getElementById('soyCount').value;
+  const wasabiCount = document.getElementById('wasabiCount').value;
+  const gemberCount = document.getElementById('gemberCount').value;
+
+  let orderSummary = cart.map(item => `${item.name} x ${item.qty}`).join('\n');
+  orderSummary += `\nStokjes nodig: ${chopstickCount}`;
+  orderSummary += `\nSojasaus: ${soyCount}`;
+  orderSummary += `\nWasabi: ${wasabiCount}`;
+  orderSummary += `\nGember: ${gemberCount}`;
+
+  let totalPrice = document.getElementById('total').textContent;
+  const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\nTotaal: €${totalPrice}`;
+
+  // 提前打开新窗口（防拦截）
+  const paymentWindow = window.open('', '_blank');
+
+  fetch('https://flask-order-api.onrender.com/api/send', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === 'ok') {
+      alert("Bestelling verzonden!\n\n" + orderSummary + "\nTotaal: €" + totalPrice);
+      try {
+        paymentWindow.location.href = 'https://tikkie.me/pay/novaasia';
+      } catch (e) {
+        // 回退方案
+        window.location.href = 'https://tikkie.me/pay/novaasia';
       }
-
-      const chopstickCount = document.getElementById('chopstickCount').value;
-      const soyCount = document.getElementById('soyCount').value;
-      const wasabiCount = document.getElementById('wasabiCount').value;
-      const gemberCount = document.getElementById('gemberCount').value;
-
-      let orderSummary = cart.map(item => `${item.name} x ${item.qty}`).join('\n');
-      orderSummary += `\nStokjes nodig: ${chopstickCount}`;
-      orderSummary += `\nSojasaus: ${soyCount}`;
-      orderSummary += `\nWasabi: ${wasabiCount}`;
-      orderSummary += `\nGember: ${gemberCount}`;
-
-      let totalPrice = document.getElementById('total').textContent;
-      const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\nTotaal: €${totalPrice}`;
-
-      fetch('https://flask-order-api.onrender.com/api/send', {
-
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.status === 'ok') {
-          alert("Bestelling verzonden!\n\n" + orderSummary + "\nTotaal: €" + totalPrice);
-          window.open('https://tikkie.me/pay/novaasia', '_blank'); // 👈 建议你生成自己的 Tikkie 链接
-        } else {
-          alert("Telegram-fout: " + data.error);
-        }
-      })
-      .catch(err => {
-        alert("Netwerkfout bij verzenden bestelling");
-        console.error(err);
-      });
+    } else {
+      alert("Fout bij verzenden bestelling: " + (data.error || "onbekend"));
+      paymentWindow.close(); // 关闭空窗口
     }
+  })
+  .catch(err => {
+    alert("Netwerkfout bij verzenden bestelling");
+    console.error(err);
+    paymentWindow.close(); // 关闭空窗口
+  });
+}
   </script>
 </body>
 </html>
