@@ -9,17 +9,56 @@
     h1, h2 { text-align: center; margin-bottom: 20px; }
     .menu-item { display: grid; grid-template-columns: 1fr auto auto; align-items: center; padding: 12px 0; border-bottom: 1px solid #ddd; }
     .menu-item span { font-size: 1rem; }
-    select { padding: 6px; font-size: 1rem; margin: 0 10px; }
+    select, input, textarea { padding: 6px; font-size: 1rem; margin: 0 10px 10px 0; }
     .cart-section { margin-top: 30px; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
     .total { font-weight: bold; font-size: 1.2rem; margin-top: 20px; }
     button { background: #e91e63; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; }
     button:hover { background: #c2185b; }
-    .checkbox-group { background: #fff; padding: 20px; margin-bottom: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-    .checkbox-group label, .checkbox-group select { display: block; margin-bottom: 10px; font-size: 1rem; }
+    .checkbox-group, .delivery-options { background: #fff; padding: 20px; margin-bottom: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .checkbox-group label, .checkbox-group select, .delivery-options label, .delivery-options select, .delivery-options input { display: block; margin-bottom: 10px; font-size: 1rem; }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
   <h1>Nova Asia Online Bestellen</h1>
+
+  <div class="delivery-options">
+    <h2>Kies uw bestelmethode</h2>
+    <label><input type="radio" name="orderType" value="afhalen" checked onchange="toggleOrderType()"> Afhalen</label>
+    <label><input type="radio" name="orderType" value="bezorgen" onchange="toggleOrderType()"> Bezorgen</label>
+
+    <div id="afhalenFields">
+      <label>Naam:</label>
+      <input type="text" id="pickupName">
+      <label>Telefoonnummer:</label>
+      <input type="tel" id="pickupPhone">
+      <label>Tijd van afhalen:</label>
+      <input type="time" id="pickupTime">
+      <label>Betaalmethode:</label>
+      <select id="pickupPayment">
+        <option value="winkel">In de winkel</option>
+        <option value="online">Online betaling</option>
+      </select>
+    </div>
+
+    <div id="bezorgenFields" class="hidden">
+      <label>Naam:</label>
+      <input type="text" id="deliveryName">
+      <label>Telefoonnummer:</label>
+      <input type="tel" id="deliveryPhone">
+      <label>Adres:</label>
+      <input type="text" id="deliveryAddress">
+      <label>Postcode:</label>
+      <input type="text" id="deliveryPostcode">
+      <label>Bezorgtijd:</label>
+      <input type="time" id="deliveryTime">
+      <label>Betaalmethode:</label>
+      <select id="deliveryPayment">
+        <option value="contant">Contant</option>
+        <option value="online">Online betaling</option>
+      </select>
+    </div>
+  </div>
 
   <div class="checkbox-group">
     <h2>Draag bij aan duurzaamheid en voorkom verspilling 🌱</h2>
@@ -45,77 +84,84 @@
     <button onclick="checkout()">Afrekenen & Betalen</button>
   </div>
 
- <script>
-    const menuItems = [
-      { name: 'Sake Maki', price: 8.5 },
-      { name: 'California Roll', price: 10 },
-      { name: 'Chicken Bento', price: 12 },
-      { name: 'Bubble Tea', price: 5 }
-    ];
+<script>
+const menuItems = [
+  { name: 'Sake Maki', price: 8.5 },
+  { name: 'California Roll', price: 10 },
+  { name: 'Chicken Bento', price: 12 },
+  { name: 'Bubble Tea', price: 5 }
+];
 
-    const cart = [];
-    const menuDiv = document.getElementById('menu');
+const cart = [];
+const menuDiv = document.getElementById('menu');
 
-    menuItems.forEach((item) => {
-      const div = document.createElement('div');
-      div.className = 'menu-item';
+menuItems.forEach((item) => {
+  const div = document.createElement('div');
+  div.className = 'menu-item';
 
-      const nameSpan = document.createElement('span');
-      nameSpan.textContent = `${item.name} - €${item.price.toFixed(2)}`;
-      const select = document.createElement('select');
-      for (let i = 1; i <= 20; i++) {
-        const option = document.createElement('option');
-        option.value = i;
-        option.textContent = i;
-        select.appendChild(option);
-      }
+  const nameSpan = document.createElement('span');
+  nameSpan.textContent = `${item.name} - €${item.price.toFixed(2)}`;
+  const select = document.createElement('select');
+  for (let i = 1; i <= 20; i++) {
+    const option = document.createElement('option');
+    option.value = i;
+    option.textContent = i;
+    select.appendChild(option);
+  }
 
-      const addButton = document.createElement('button');
-      addButton.textContent = 'Toevoegen';
-      addButton.onclick = () => {
-        const qty = parseInt(select.value);
-        cart.push({ name: item.name, price: item.price, qty });
-        updateCart();
-      };
+  const addButton = document.createElement('button');
+  addButton.textContent = 'Toevoegen';
+  addButton.onclick = () => {
+    const qty = parseInt(select.value);
+    cart.push({ name: item.name, price: item.price, qty });
+    updateCart();
+  };
 
-      div.appendChild(nameSpan);
-      div.appendChild(select);
-      div.appendChild(addButton);
+  div.appendChild(nameSpan);
+  div.appendChild(select);
+  div.appendChild(addButton);
 
-      menuDiv.appendChild(div);
-    });
+  menuDiv.appendChild(div);
+});
 
-    function populateSelect(id, max) {
-      const sel = document.getElementById(id);
-      for (let i = 0; i <= max; i++) {
-        const opt = document.createElement('option');
-        opt.value = i;
-        opt.textContent = i;
-        sel.appendChild(opt);
-      }
-    }
+function populateSelect(id, max) {
+  const sel = document.getElementById(id);
+  for (let i = 0; i <= max; i++) {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = i;
+    sel.appendChild(opt);
+  }
+}
 
-    populateSelect('chopstickCount', 20);
-    populateSelect('soyCount', 5);
-    populateSelect('wasabiCount', 5);
-    populateSelect('gemberCount', 5);
+populateSelect('chopstickCount', 20);
+populateSelect('soyCount', 5);
+populateSelect('wasabiCount', 5);
+populateSelect('gemberCount', 5);
 
-    function updateCart() {
-      const cartList = document.getElementById('cart');
-      cartList.innerHTML = '';
-      let total = 0;
+function updateCart() {
+  const cartList = document.getElementById('cart');
+  cartList.innerHTML = '';
+  let total = 0;
 
-      cart.forEach((item) => {
-        const li = document.createElement('li');
-        const itemTotal = item.qty * item.price;
-        li.textContent = `${item.name} x ${item.qty} = €${itemTotal.toFixed(2)}`;
-        cartList.appendChild(li);
-        total += itemTotal;
-      });
+  cart.forEach((item) => {
+    const li = document.createElement('li');
+    const itemTotal = item.qty * item.price;
+    li.textContent = `${item.name} x ${item.qty} = €${itemTotal.toFixed(2)}`;
+    cartList.appendChild(li);
+    total += itemTotal;
+  });
 
-      document.getElementById('total').textContent = total.toFixed(2);
-    }
-    function checkout() {
+  document.getElementById('total').textContent = total.toFixed(2);
+}
+
+function toggleOrderType() {
+  const type = document.querySelector('input[name="orderType"]:checked').value;
+  document.getElementById('afhalenFields').classList.toggle('hidden', type !== 'afhalen');
+  document.getElementById('bezorgenFields').classList.toggle('hidden', type !== 'bezorgen');
+}
+
+function checkout() {
   if (cart.length === 0) {
     alert('Je winkelwagen is leeg.');
     return;
@@ -132,8 +178,26 @@
   orderSummary += `\nWasabi: ${wasabiCount}`;
   orderSummary += `\nGember: ${gemberCount}`;
 
-  let totalPrice = document.getElementById('total').textContent;
-  const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\nTotaal: €${totalPrice}`;
+  const orderType = document.querySelector('input[name="orderType"]:checked').value;
+  let customerDetails = '';
+  if (orderType === 'afhalen') {
+    const name = document.getElementById('pickupName').value;
+    const phone = document.getElementById('pickupPhone').value;
+    const time = document.getElementById('pickupTime').value;
+    const payment = document.getElementById('pickupPayment').value;
+    customerDetails = `\n[Afhalen]\nNaam: ${name}\nTelefoon: ${phone}\nAfhaaltijd: ${time}\nBetaalwijze: ${payment}`;
+  } else {
+    const name = document.getElementById('deliveryName').value;
+    const phone = document.getElementById('deliveryPhone').value;
+    const address = document.getElementById('deliveryAddress').value;
+    const postcode = document.getElementById('deliveryPostcode').value;
+    const time = document.getElementById('deliveryTime').value;
+    const payment = document.getElementById('deliveryPayment').value;
+    customerDetails = `\n[Bezorgen]\nNaam: ${name}\nTelefoon: ${phone}\nAdres: ${address}\nPostcode: ${postcode}\nBezorgtijd: ${time}\nBetaalwijze: ${payment}`;
+  }
+
+  const totalPrice = document.getElementById('total').textContent;
+  const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}\nTotaal: €${totalPrice}`;
 
   fetch('https://flask-order-api.onrender.com/api/send', {
     method: 'POST',
@@ -144,11 +208,9 @@
   .then(data => {
     if (data.status === 'ok') {
       alert("Bestelling verzonden!\n\n" + orderSummary + "\nTotaal: €" + totalPrice);
-
-      // 使用延迟跳转，避免被浏览器拦截
       setTimeout(() => {
         window.location.href = 'https://tikkie.me/pay/novaasia';
-      }, 300); // 300毫秒后跳转
+      }, 300);
     } else {
       alert("Fout bij verzenden bestelling: " + (data.error || "onbekend"));
     }
@@ -158,8 +220,8 @@
     console.error(err);
   });
 }
-
-  </script>
+</script>
 </body>
 </html>
+
 
