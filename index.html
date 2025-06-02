@@ -147,42 +147,46 @@
   <h1>Nova Asia Online Bestellen</h1>
 
   <div class="delivery-options">
-    <h2>Kies uw bestelmethode</h2>
+  <h2>Kies uw bestelmethode</h2>
+
+  <div class="radio-group">
     <label><input type="radio" name="orderType" value="afhalen" checked onchange="toggleOrderType()"> Afhalen</label>
     <label><input type="radio" name="orderType" value="bezorgen" onchange="toggleOrderType()"> Bezorgen</label>
-
-    <div id="afhalenFields">
-      <label>Naam:</label>
-      <input type="text" id="pickupName">
-      <label>Telefoonnummer:</label>
-      <input type="tel" id="pickupPhone">
-      <label>Tijd van afhalen:</label>
-      <input type="time" id="pickupTime">
-      <label>Betaalmethode:</label>
-      <select id="pickupPayment">
-        <option value="winkel">In de winkel</option>
-        <option value="online">Online betaling</option>
-      </select>
-    </div>
-
-    <div id="bezorgenFields" class="hidden">
-      <label>Naam:</label>
-      <input type="text" id="deliveryName">
-      <label>Telefoonnummer:</label>
-      <input type="tel" id="deliveryPhone">
-      <label>Adres:</label>
-      <input type="text" id="deliveryAddress">
-      <label>Postcode:</label>
-      <input type="text" id="deliveryPostcode">
-      <label>Bezorgtijd:</label>
-      <input type="time" id="deliveryTime">
-      <label>Betaalmethode:</label>
-      <select id="deliveryPayment">
-        <option value="contant">Contant</option>
-        <option value="online">Online betaling</option>
-      </select>
-    </div>
   </div>
+
+  <div id="afhalenFields">
+    <label>Naam:</label>
+    <input type="text" id="pickupName">
+    <label>Telefoonnummer:</label>
+    <input type="tel" id="pickupPhone">
+    <label>Tijd van afhalen:</label>
+    <input type="time" id="pickupTime">
+    <label>Betaalmethode:</label>
+    <select id="pickupPayment">
+      <option value="winkel">In de winkel</option>
+      <option value="online">Online betaling</option>
+    </select>
+  </div>
+
+  <div id="bezorgenFields" class="hidden">
+    <label>Naam:</label>
+    <input type="text" id="deliveryName">
+    <label>Telefoonnummer:</label>
+    <input type="tel" id="deliveryPhone">
+    <label>Adres:</label>
+    <input type="text" id="deliveryAddress">
+    <label>Postcode:</label>
+    <input type="text" id="deliveryPostcode">
+    <label>Bezorgtijd:</label>
+    <input type="time" id="deliveryTime">
+    <label>Betaalmethode:</label>
+    <select id="deliveryPayment">
+      <option value="contant">Contant</option>
+      <option value="online">Online betaling</option>
+    </select>
+  </div>
+</div>
+
 
   <div class="checkbox-group">
     <h2>Draag bij aan duurzaamheid en voorkom verspilling 🌱</h2>
