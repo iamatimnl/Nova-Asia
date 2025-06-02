@@ -270,6 +270,41 @@ input[type="time"] {
 .info-text a:hover {
   color: #005fcc;
 }
+.supply-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.supply-img {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.supply-content {
+  flex: 1;
+}
+
+.supply-content label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 1rem;
+  color: #1c1c1e;
+}
+
+.supply-content select {
+  width: 100%;
+  max-width: 100%;
+  height: 36px;
+  font-size: 1rem;
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  background: #fff;
+}
 
 
 
@@ -338,22 +373,43 @@ input[type="time"] {
 
 
   <div class="checkbox-group">
-    <h2>Draag bij aan duurzaamheid en voorkom verspilling 🌱</h2>
-    <p style="margin-top: -12px; font-size: 0.95rem; color: #555; text-align: center;">
+  <h2>Draag bij aan duurzaamheid en voorkom verspilling 🌱</h2>
+  <p style="margin-top: -12px; font-size: 0.95rem; color: #555; text-align: center;">
     Geef aan hoeveel u nodig heeft:
   </p>
-    <label for="chopstickCount">Aantal stokjes🥢</label>
-    <select id="chopstickCount"></select>
 
-    <label for="soyCount">Aantal sojasaus flesjes </label>
-    <select id="soyCount"></select>
+  <!-- Aantal stokjes（保留文字版） -->
+  <label for="chopstickCount">Aantal stokjes 🥢</label>
+  <select id="chopstickCount"></select>
 
-    <label for="wasabiCount">Aantal wasabi </label>
-    <select id="wasabiCount"></select>
-
-    <label for="gemberCount">Aantal gember 🍠</label>
-    <select id="gemberCount"></select>
+  <!-- Sojasaus -->
+  <div class="supply-row">
+    <img src="images/soja saus.jpg" alt="Sojasaus" class="supply-img" />
+    <div class="supply-content">
+      <label for="soyCount">Aantal sojasaus flesjes</label>
+      <select id="soyCount"></select>
+    </div>
   </div>
+
+  <!-- Wasabi -->
+  <div class="supply-row">
+    <img src="images/wasabi.jpg" alt="Wasabi" class="supply-img" />
+    <div class="supply-content">
+      <label for="wasabiCount">Aantal wasabi</label>
+      <select id="wasabiCount"></select>
+    </div>
+  </div>
+
+  <!-- Gember -->
+  <div class="supply-row">
+    <img src="images/gember.jpg" alt="Gember" class="supply-img" />
+    <div class="supply-content">
+      <label for="gemberCount">Aantal gember</label>
+      <select id="gemberCount"></select>
+    </div>
+  </div>
+</div>
+
 
  <div id="menu"></div>
 
