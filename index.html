@@ -233,15 +233,27 @@ input[type="time"] {
   }
 }
 .info-text {
-  margin-top: 12px;
-  padding: 14px 16px;
-  background: #fff;
-  border-radius: 12px;
+  margin-top: 10px;
+  padding: 12px 16px;
+  background: #ffffff;
   border: 1px solid #e0e0e0;
+  border-radius: 12px;
   font-size: 1rem;
+  line-height: 1.5;
   color: #1c1c1e;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
+
+.info-text a {
+  color: #007aff;
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.info-text a:hover {
+  color: #005fcc;
+}
+
 
 
 
@@ -264,10 +276,8 @@ input[type="time"] {
 
   <div class="slider"></div>
    
-</div>
-  <div id="locationInfo" class="info-text">
-  <!-- 初始为空，由 JS 控制内容 -->
-</div>
+<div id="locationInfo" class="info-text" style="white-space: pre-line; font-size: 0.95rem; margin-top: 8px;"></div>
+
   
 
 
@@ -515,15 +525,16 @@ function checkout() {
     const infoBox = document.getElementById('locationInfo');
 
     if (afhalen.checked) {
-      infoBox.textContent = 'Adres voor afhalen: Ommevoort 4, 2341 VT Oegstgeest';
+      infoBox.innerHTML = `Adres voor afhalen: <a href="https://www.google.com/maps?q=Ommevoort+4,+2341+VT+Oegstgeest" target="_blank" style="color: #007aff; text-decoration: underline;">Ommevoort 4, 2341 VT Oegstgeest</a>`;
     } else {
-      infoBox.textContent = 'Wij bezorgen in de volgende postcodegebieden: 2341, 2342, 2343, 2333, 2334, 2231, 2232, 2361, 2235';
+      infoBox.textContent = 'Wij bezorgen in de volgende postcodegebieden:\n2341, 2342, 2343, 2333, 2334, 2231, 2232, 2361, 2235';
     }
   }
 
-  // 初始加载时显示正确内容
-  window.addEventListener('DOMContentLoaded', toggleOrderType);
+  // 页面加载时自动运行一次
+  toggleOrderType();
 </script>
+
 
   
 </body>
