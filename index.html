@@ -41,14 +41,26 @@
     text-overflow: ellipsis;
   }
 
- .menu-item select,
-.menu-item button {
-  height: 36px;
-  line-height: 1;
-  padding: 0 10px;
-  font-size: 0.85rem;
-  box-sizing: border-box;
-}
+.menu-item select {
+    width: 60px;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  .menu-item button {
+    background: #007aff;
+    color: white;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    min-width: 70px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
 
   .menu-item button:hover {
     background: #005fcc;
