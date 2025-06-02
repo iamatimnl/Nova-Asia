@@ -169,7 +169,17 @@
 }
 .delivery-options input[type="text"],
 .delivery-options input[type="tel"],
-.delivery-options input[type="time"],
+.delivery-options input[type="time"] {
+  height: 44px;
+  font-size: 1rem;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  background: #fff;
+}
+
 .delivery-options select {
   width: 100%;
   max-width: 100%;
@@ -181,10 +191,13 @@
   border-radius: 10px;
   margin-bottom: 14px;
 }
+
+/* 桌面/安卓 有用，iOS 无效但无害 */
 input[type="time"] {
-  text-align: left;       /* 强制文字左对齐 */
-  direction: ltr;         /* 防止从右往左排列 */
+  text-align: left;
+  direction: ltr;
 }
+
 
 
 
