@@ -161,16 +161,19 @@
 .segmented-control label {
   flex: 1;
   text-align: center;
+  box-shadow: inset 0 -1px 0 rgba(0,0,0,0.05);  /* ✅ 修复语法错误 */
   padding: 12px 0;
   font-size: 1rem;
   font-weight: 500;
   color: #333;
-  z-index: 2;
   cursor: pointer;
   user-select: none;
+  z-index: 2;
   position: relative;
-  transition: color 0.25s ease;
+  transition: color 0.25s ease, background-color 0.25s ease;
+  background-color: #f0f0f0;
 }
+
 
 .segmented-control .slider {
   position: absolute;
@@ -188,9 +191,15 @@
 #bezorgen:checked ~ .slider {
   transform: translateX(100%);
 }
+.segmented-control label:hover {
+  background-color: #e0e0e0;         /* ✅ 悬停有反馈 */
+}
+
 #afhalen:checked ~ label[for="afhalen"],
 #bezorgen:checked ~ label[for="bezorgen"] {
   color: white;
+  background-color: transparent;     /* ✅ 保留 slider 作为底色 */
+  z-index: 3;
 }
 
 
