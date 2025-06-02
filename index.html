@@ -86,37 +86,6 @@
       menuDiv.appendChild(div);
     });
 
-    function populateSelect(id, max) {
-      const sel = document.getElementById(id);
-      for (let i = 0; i <= max; i++) {
-        const opt = document.createElement('option');
-        opt.value = i;
-        opt.textContent = i;
-        sel.appendChild(opt);
-      }
-    }
-
-    populateSelect('chopstickCount', 20);
-    populateSelect('soyCount', 5);
-    populateSelect('wasabiCount', 5);
-    populateSelect('gemberCount', 5);
-
-    function updateCart() {
-      const cartList = document.getElementById('cart');
-      cartList.innerHTML = '';
-      let total = 0;
-
-      cart.forEach((item) => {
-        const li = document.createElement('li');
-        const itemTotal = item.qty * item.price;
-        li.textContent = `${item.name} x ${item.qty} = €${itemTotal.toFixed(2)}`;
-        cartList.appendChild(li);
-        total += itemTotal;
-      });
-
-      document.getElementById('total').textContent = total.toFixed(2);
-    }
-
     function checkout() {
   if (cart.length === 0) {
     alert('Je winkelwagen is leeg.');
@@ -137,9 +106,6 @@
   let totalPrice = document.getElementById('total').textContent;
   const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\nTotaal: €${totalPrice}`;
 
-  // 提前打开新窗口（防拦截）
-  const paymentWindow = window.open('', '_blank');
-
   fetch('https://flask-order-api.onrender.com/api/send', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -149,23 +115,21 @@
   .then(data => {
     if (data.status === 'ok') {
       alert("Bestelling verzonden!\n\n" + orderSummary + "\nTotaal: €" + totalPrice);
-      try {
-        paymentWindow.location.href = 'https://tikkie.me/pay/novaasia';
-      } catch (e) {
-        // 回退方案
+
+      // 使用延迟跳转，避免被浏览器拦截
+      setTimeout(() => {
         window.location.href = 'https://tikkie.me/pay/novaasia';
-      }
+      }, 300); // 300毫秒后跳转
     } else {
       alert("Fout bij verzenden bestelling: " + (data.error || "onbekend"));
-      paymentWindow.close(); // 关闭空窗口
     }
   })
   .catch(err => {
     alert("Netwerkfout bij verzenden bestelling");
     console.error(err);
-    paymentWindow.close(); // 关闭空窗口
   });
 }
+
   </script>
 </body>
 </html>
