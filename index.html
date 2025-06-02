@@ -45,7 +45,7 @@
     <button onclick="checkout()">Afrekenen & Betalen</button>
   </div>
 
-  <script>
+ <script>
     const menuItems = [
       { name: 'Sake Maki', price: 8.5 },
       { name: 'California Roll', price: 10 },
@@ -62,7 +62,6 @@
 
       const nameSpan = document.createElement('span');
       nameSpan.textContent = `${item.name} - €${item.price.toFixed(2)}`;
-
       const select = document.createElement('select');
       for (let i = 1; i <= 20; i++) {
         const option = document.createElement('option');
@@ -86,6 +85,36 @@
       menuDiv.appendChild(div);
     });
 
+    function populateSelect(id, max) {
+      const sel = document.getElementById(id);
+      for (let i = 0; i <= max; i++) {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = i;
+        sel.appendChild(opt);
+      }
+    }
+
+    populateSelect('chopstickCount', 20);
+    populateSelect('soyCount', 5);
+    populateSelect('wasabiCount', 5);
+    populateSelect('gemberCount', 5);
+
+    function updateCart() {
+      const cartList = document.getElementById('cart');
+      cartList.innerHTML = '';
+      let total = 0;
+
+      cart.forEach((item) => {
+        const li = document.createElement('li');
+        const itemTotal = item.qty * item.price;
+        li.textContent = `${item.name} x ${item.qty} = €${itemTotal.toFixed(2)}`;
+        cartList.appendChild(li);
+        total += itemTotal;
+      });
+
+      document.getElementById('total').textContent = total.toFixed(2);
+    }
     function checkout() {
   if (cart.length === 0) {
     alert('Je winkelwagen is leeg.');
