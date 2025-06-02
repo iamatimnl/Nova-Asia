@@ -126,8 +126,25 @@
     border: 1px solid #e0e0e0;
   }
 
-  .checkbox-group label,
-  .checkbox-group select,
+  .checkbox-group label {
+  display: inline-block;
+  width: 220px; /* 保持标签对齐，也可根据需要调整 */
+  font-size: 1rem;
+  margin-bottom: 8px;
+  vertical-align: middle;
+}
+
+.checkbox-group select {
+  display: inline-block;
+  width: 80px;
+  padding: 6px 10px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #fff;
+  vertical-align: middle;
+}
+
   .delivery-options label,
   .delivery-options select,
   .delivery-options input {
