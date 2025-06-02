@@ -224,12 +224,12 @@ menuItems.forEach((item) => {
   nameSpan.textContent = `${item.name} - €${item.price.toFixed(2)}`;
 
   const select = document.createElement('select');
-  for (let i = 1; i <= 20; i++) {
-    const option = document.createElement('option');
-    option.value = i;
-    option.textContent = i;
-    select.appendChild(option);
-  }
+  for (let i = 0; i <= 20; i++) {
+  const option = document.createElement('option');
+  option.value = i;
+  option.textContent = i;
+  select.appendChild(option);
+}
 
   const addButton = document.createElement('button');
   addButton.textContent = 'Toevoegen';
@@ -242,13 +242,14 @@ menuItems.forEach((item) => {
   const removeButton = document.createElement('button');
   removeButton.textContent = 'Verwijderen';
   removeButton.onclick = () => {
-    for (let i = cart.length - 1; i >= 0; i--) {
-      if (cart[i].name === item.name) {
-        cart.splice(i, 1); // 删除所有此项
-      }
+  for (let i = cart.length - 1; i >= 0; i--) {
+    if (cart[i].name === item.name) {
+      cart.splice(i, 1);
     }
-    updateCart();
-  };
+  }
+  select.value = 0; // 这句是关键：重置数量为 0
+  updateCart();
+};
 
   div.appendChild(nameSpan);
   div.appendChild(select);
