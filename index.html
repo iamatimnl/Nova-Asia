@@ -207,11 +207,19 @@ function checkout() {
   .then(res => res.json())
   .then(data => {
     if (data.status === 'ok') {
-      alert("Bestelling verzonden!\n\n" + orderSummary + "\nTotaal: €" + totalPrice);
-      setTimeout(() => {
-        window.location.href = 'https://tikkie.me/pay/novaasia';
-      }, 300);
-    } else {
+  alert("Bestelling verzonden!\n\n" + orderSummary + "\nTotaal: €" + totalPrice);
+
+  const paymentMethod = orderType === 'afhalen'
+    ? document.getElementById('pickupPayment').value
+    : document.getElementById('deliveryPayment').value;
+
+  if (paymentMethod === 'online') {
+    setTimeout(() => {
+      window.location.href = 'https://tikkie.me/pay/novaasia';
+    }, 300);
+  }
+}
+ else {
       alert("Fout bij verzenden bestelling: " + (data.error || "onbekend"));
     }
   })
