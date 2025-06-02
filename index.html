@@ -171,12 +171,23 @@
   position: relative;
   transition: color 0.25s ease, background-color 0.25s ease;
   background-color: #f0f0f0;
+  box-shadow: none; /* 默认无底线 */
 }
 
-/* ✅ 只给非选中状态添加这条内阴影线 */
-.segmented-control input[type="radio"]:not(:checked) + label {
-  box-shadow: inset 0 -1px 0 rgba(0,0,0,0.05);
+.segmented-control label:hover {
+  background-color: #e0e0e0; /* ✅ 悬停高亮 */
 }
+
+/* 被选中项：白字 + 透明底（由 slider 底色呈现） */
+#afhalen:checked ~ label[for="afhalen"],
+#bezorgen:checked ~ label[for="bezorgen"] {
+  color: white;
+  background-color: transparent;
+  z-index: 3;
+  box-shadow: none; /* ✅ 确保无底线 */
+}
+
+
 
 
 
@@ -196,17 +207,6 @@
 #bezorgen:checked ~ .slider {
   transform: translateX(100%);
 }
-.segmented-control label:hover {
-  background-color: #e0e0e0;         /* ✅ 悬停有反馈 */
-}
-
-#afhalen:checked ~ label[for="afhalen"],
-#bezorgen:checked ~ label[for="bezorgen"] {
-  color: white;
-  background-color: transparent;     /* ✅ 保留 slider 作为底色 */
-  z-index: 3;
-}
-
 
 .delivery-options input[type="text"],
 .delivery-options input[type="tel"],
