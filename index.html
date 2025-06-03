@@ -378,26 +378,28 @@ input[type="time"] {
 .remove-button:hover {
   background: #c1271d !important;  /* 深红，覆盖任何蓝色 */
 }
-/* 添加这两个类名动画 */
-.pulse {
-  animation: pulse 0.4s;
-}
-.shake {
-  animation: shake 0.3s;
+@keyframes flyawaySymbol {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: translateY(-20px) scale(1.3);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.5);
+  }
 }
 
-/* 动画关键帧（保持原有即可） */
-@keyframes pulse {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(1.15); }
-  100% { transform: scale(1); }
-}
-@keyframes shake {
-  0%   { transform: translateX(0); }
-  25%  { transform: translateX(-2px); }
-  50%  { transform: translateX(2px); }
-  75%  { transform: translateX(-2px); }
-  100% { transform: translateX(0); }
+.floating-plus {
+  position: absolute;
+  font-size: 1.2rem;
+  color: #007aff;
+  z-index: 1000;
+  animation: flyawaySymbol 0.6s ease-out forwards;
+  pointer-events: none;
 }
  .add-button,
 .remove-button {
@@ -584,17 +586,32 @@ removeButton.textContent = '-';
 removeButton.className = 'remove-button';
 
 // 添加按钮逻辑
-addButton.onclick = () => {
+addButton.onclick = (event) => {
   const qty = parseInt(select.value);
   if (qty === 0) {
     alert("Selecteer eerst een hoeveelheid voor je toevoegt.");
-    triggerAnimation(addButton, 'shake');
     return;
   }
 
   cart.push({ name: item.name, price: item.price, qty });
   updateCart();
-  triggerAnimation(addButton, 'pulse');
+
+  // 🔥 创建飞起的“+”元素
+  const plusSymbol = document.createElement('div');
+  plusSymbol.textContent = '+';
+  plusSymbol.className = 'floating-plus';
+
+  // 获取按钮位置
+  const rect = addButton.getBoundingClientRect();
+  plusSymbol.style.left = `${rect.left + rect.width / 2}px`;
+  plusSymbol.style.top = `${rect.top}px`;
+
+  document.body.appendChild(plusSymbol);
+
+  // 移除动画元素
+  setTimeout(() => {
+    plusSymbol.remove();
+  }, 600);
 };
 
 // 移除按钮逻辑
