@@ -459,20 +459,9 @@ input[type="time"] {
     top: 100px;
     right: 40px;
     width: 300px;
-    padding: 20px;
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    border: 1px solid #e0e0e0;
     z-index: 999;
   }
 }
-@media (max-width: 767px) {
-  .cart-section {
-    display: none;
-  }
-}
-
 
 
 </style>
@@ -598,13 +587,6 @@ input[type="time"] {
   <div class="total">Totaal: €<span id="mobileCartTotal">0.00</span></div>
   <button id="mobileCheckoutBtn">Afrekenen</button>
 </div>
-<!-- 桌面端购物车 -->
-<div class="cart-section">
-  <h2>Winkelwagen</h2>
-  <ul id="desktopCartItems"></ul>
-  <div class="total">Totaal: €<span id="total">0.00</span></div>
-  <button onclick="checkout()">Afrekenen</button>
-</div>
 
 
 <script>
@@ -636,7 +618,7 @@ Object.entries(menuData).forEach(([category, items]) => {
 
     // 设置背景图
     if (item.image) {
-      div.style.backgroundImage = `url('${item.image}')`;
+      div.style.backgroundImage = url('${item.image}');
       div.style.backgroundSize = 'cover';
       div.style.backgroundPosition = 'center';
       div.style.position = 'relative';
@@ -645,7 +627,7 @@ Object.entries(menuData).forEach(([category, items]) => {
 
     // 菜品名 + 价格
     const nameSpan = document.createElement('span');
-    nameSpan.textContent = `${item.name} - €${item.price.toFixed(2)}`;
+    nameSpan.textContent = ${item.name} - €${item.price.toFixed(2)};
 
     // 数量选择器
     const select = document.createElement('select');
@@ -683,8 +665,8 @@ addButton.onclick = (event) => {
 
   // 获取按钮位置
   const rect = addButton.getBoundingClientRect();
-  plusSymbol.style.left = `${rect.left + rect.width / 2}px`;
-  plusSymbol.style.top = `${rect.top}px`;
+  plusSymbol.style.left = ${rect.left + rect.width / 2}px;
+  plusSymbol.style.top = ${rect.top}px;
 
   document.body.appendChild(plusSymbol);
 
@@ -755,11 +737,11 @@ function checkout() {
   const wasabiCount = document.getElementById('wasabiCount').value;
   const gemberCount = document.getElementById('gemberCount').value;
 
-  let orderSummary = cart.map(item => `${item.name} x ${item.qty}`).join('\n');
-  orderSummary += `\nStokjes nodig: ${chopstickCount}`;
-  orderSummary += `\nSojasaus: ${soyCount}`;
-  orderSummary += `\nWasabi: ${wasabiCount}`;
-  orderSummary += `\nGember: ${gemberCount}`;
+  let orderSummary = cart.map(item => ${item.name} x ${item.qty}).join('\n');
+  orderSummary += \nStokjes nodig: ${chopstickCount};
+  orderSummary += \nSojasaus: ${soyCount};
+  orderSummary += \nWasabi: ${wasabiCount};
+  orderSummary += \nGember: ${gemberCount};
 
   const orderType = document.querySelector('input[name="orderType"]:checked').value;
   let customerDetails = '';
@@ -776,7 +758,7 @@ function checkout() {
       return;
     }
 
-    customerDetails = `\n[Afhalen]\nNaam: ${name}\nTelefoon: ${phone}\nAfhaaltijd: ${time}\nBetaalwijze: ${paymentMethod}`;
+    customerDetails = \n[Afhalen]\nNaam: ${name}\nTelefoon: ${phone}\nAfhaaltijd: ${time}\nBetaalwijze: ${paymentMethod};
   } else {
     const name = document.getElementById('deliveryName').value.trim();
     const phone = document.getElementById('deliveryPhone').value.trim();
@@ -790,11 +772,11 @@ function checkout() {
       return;
     }
 
-    customerDetails = `\n[Bezorgen]\nNaam: ${name}\nTelefoon: ${phone}\nAdres: ${address}\nPostcode: ${postcode}\nBezorgtijd: ${time}\nBetaalwijze: ${paymentMethod}`;
+    customerDetails = \n[Bezorgen]\nNaam: ${name}\nTelefoon: ${phone}\nAdres: ${address}\nPostcode: ${postcode}\nBezorgtijd: ${time}\nBetaalwijze: ${paymentMethod};
   }
 
   const totalPrice = document.getElementById('total').textContent;
-  const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}\nTotaal: €${totalPrice}`;
+  const message = 📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}\nTotaal: €${totalPrice};
 
   fetch('https://flask-order-api.onrender.com/api/send', {
     method: 'POST',
@@ -828,7 +810,7 @@ function checkout() {
     const infoBox = document.getElementById('locationInfo');
 
     if (afhalen.checked) {
-      infoBox.innerHTML = `Adres voor afhalen: <a href="https://www.google.com/maps?q=Ommevoort+4,+2341+VT+Oegstgeest" target="_blank" style="color: #007aff; text-decoration: underline;">Ommevoort 4, 2341 VT Oegstgeest</a>`;
+      infoBox.innerHTML = Adres voor afhalen: <a href="https://www.google.com/maps?q=Ommevoort+4,+2341+VT+Oegstgeest" target="_blank" style="color: #007aff; text-decoration: underline;">Ommevoort 4, 2341 VT Oegstgeest</a>;
     } else {
       infoBox.textContent = 'Wij bezorgen in de volgende postcodegebieden:\n2341, 2342, 2343, 2333, 2334, 2231, 2232, 2361, 2235';
     }
@@ -841,44 +823,28 @@ function checkout() {
   panel.classList.toggle("show");
 }
 
+// 更新浮动购物车数字 + 内容
 function updateCart() {
   const countEl = document.getElementById("cartCount");
-  const mobileItemsEl = document.getElementById("mobileCartItems");
-  const mobileTotalEl = document.getElementById("mobileCartTotal");
-
-  const desktopItemsEl = document.getElementById("desktopCartItems");
-  const desktopTotalEl = document.getElementById("total");
+  const itemsEl = document.getElementById("mobileCartItems");
+  const totalEl = document.getElementById("mobileCartTotal");
 
   let total = 0;
   let count = 0;
-
-  // 清空移动端和桌面端内容
-  mobileItemsEl.innerHTML = '';
-  if (desktopItemsEl) desktopItemsEl.innerHTML = '';
+  itemsEl.innerHTML = '';
 
   cart.forEach(item => {
     total += item.price * item.qty;
     count += item.qty;
 
-    // 移动端
-    const liMobile = document.createElement("li");
-    liMobile.textContent = `${item.qty}× ${item.name} - €${(item.qty * item.price).toFixed(2)}`;
-    mobileItemsEl.appendChild(liMobile);
-
-    // 桌面端
-    if (desktopItemsEl) {
-      const liDesktop = document.createElement("li");
-      liDesktop.textContent = `${item.qty}× ${item.name} - €${(item.qty * item.price).toFixed(2)}`;
-      desktopItemsEl.appendChild(liDesktop);
-    }
+    const li = document.createElement("li");
+    li.textContent = ${item.qty}× ${item.name} - €${(item.qty * item.price).toFixed(2)};
+    itemsEl.appendChild(li);
   });
 
-  // 更新总计
   countEl.textContent = count;
-  mobileTotalEl.textContent = total.toFixed(2);
-  if (desktopTotalEl) desktopTotalEl.textContent = total.toFixed(2);
+  totalEl.textContent = total.toFixed(2);
 }
-
 
   
 </script>
@@ -887,5 +853,3 @@ function updateCart() {
   
 </body>
 </html>
-
-
