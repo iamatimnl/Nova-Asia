@@ -378,22 +378,27 @@ input[type="time"] {
 .remove-button:hover {
   background: #c1271d;
 }
-/* 小小放大动画 */
+/* 添加这两个类名动画 */
+.pulse {
+  animation: pulse 0.4s;
+}
+.shake {
+  animation: shake 0.3s;
+}
+
+/* 动画关键帧（保持原有即可） */
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.15); }
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.15); }
   100% { transform: scale(1); }
 }
-
-/* 轻微震动动画（用于错误时） */
 @keyframes shake {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-2px); }
-  50% { transform: translateX(2px); }
-  75% { transform: translateX(-2px); }
+  0%   { transform: translateX(0); }
+  25%  { transform: translateX(-2px); }
+  50%  { transform: translateX(2px); }
+  75%  { transform: translateX(-2px); }
   100% { transform: translateX(0); }
 }
-
 
 </style>
 
@@ -572,20 +577,13 @@ addButton.onclick = () => {
   const qty = parseInt(select.value);
   if (qty === 0) {
     alert("Selecteer eerst een hoeveelheid voor je toevoegt.");
-    addButton.style.animation = 'shake 0.3s';
-    addButton.addEventListener('animationend', () => {
-      addButton.style.animation = '';
-    }, { once: true });
+    triggerAnimation(addButton, 'shake');
     return;
   }
 
   cart.push({ name: item.name, price: item.price, qty });
   updateCart();
-
-  addButton.style.animation = 'pulse 0.4s';
-  addButton.addEventListener('animationend', () => {
-    addButton.style.animation = '';
-  }, { once: true });
+  triggerAnimation(addButton, 'pulse');
 };
 
 // 移除按钮逻辑
@@ -593,10 +591,7 @@ removeButton.onclick = () => {
   const qty = parseInt(select.value);
   if (qty === 0) {
     alert("Aantal is al 0. Er is niets om te verwijderen.");
-    removeButton.style.animation = 'shake 0.3s';
-    removeButton.addEventListener('animationend', () => {
-      removeButton.style.animation = '';
-    }, { once: true });
+    triggerAnimation(removeButton, 'shake');
     return;
   }
 
@@ -608,11 +603,7 @@ removeButton.onclick = () => {
 
   select.value = 0;
   updateCart();
-
-  removeButton.style.animation = 'pulse 0.4s';
-  removeButton.addEventListener('animationend', () => {
-    removeButton.style.animation = '';
-  }, { once: true });
+  triggerAnimation(removeButton, 'pulse');
 };
 
 // 挂载组件到菜单项中
@@ -621,7 +612,6 @@ div.appendChild(select);
 div.appendChild(addButton);
 div.appendChild(removeButton);
 menuContainer.appendChild(div);
-    
 
 
 function populateSelect(id, max) {
@@ -753,6 +743,12 @@ function checkout() {
 
   // 页面加载时自动运行一次
   toggleOrderType();
+  function triggerAnimation(element, className) {
+  element.classList.remove(className);       // 移除旧动画类
+  void element.offsetWidth;                  // 强制回流，重置动画状态
+  element.classList.add(className);          // 添加新动画类
+}
+  
 </script>
 
 
