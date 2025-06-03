@@ -453,15 +453,6 @@ input[type="time"] {
     display: block;
   }
 }
-@media (min-width: 768px) {
-  .cart-section {
-    position: fixed;
-    top: 100px;
-    right: 40px;
-    width: 300px;
-    z-index: 999;
-  }
-}
 
 
 </style>
@@ -719,6 +710,21 @@ populateSelect('soyCount', 5);
 populateSelect('wasabiCount', 5);
 populateSelect('gemberCount', 5);
 
+function updateCart() {
+  const cartList = document.getElementById('cart');
+  cartList.innerHTML = '';
+  let total = 0;
+
+  cart.forEach((item) => {
+    const li = document.createElement('li');
+    const itemTotal = item.qty * item.price;
+    li.textContent = ${item.name} x ${item.qty} = €${itemTotal.toFixed(2)};
+    cartList.appendChild(li);
+    total += itemTotal;
+  });
+
+  document.getElementById('total').textContent = total.toFixed(2);
+}
 
 function toggleOrderType() {
   const type = document.querySelector('input[name="orderType"]:checked').value;
