@@ -72,9 +72,16 @@
     background: #fff;
 }
 
-
- .menu-item button {
+ .menu-item button.add-button {
   background: #007aff;
+  ...
+}
+
+.menu-item button.add-button:hover {
+  background: #005fcc;
+}
+ .menu-item button {
+  
   color: white;
   padding: 4px 8px;            /* ✅ 缩小按钮体积 */
   font-size: 0.8rem;           /* ✅ 更精致（原来是 0.85rem） */
