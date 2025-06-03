@@ -558,13 +558,20 @@ Object.entries(menuData).forEach(([category, items]) => {
       option.textContent = i;
       select.appendChild(option);
     }
- // 添加按钮逻辑
+ // 每个菜单项都应有自己的按钮
+const addButton = document.createElement('button');
+addButton.textContent = '+';
+addButton.className = 'add-button';
+
+const removeButton = document.createElement('button');
+removeButton.textContent = '-';
+removeButton.className = 'remove-button';
+
+// 添加按钮逻辑
 addButton.onclick = () => {
   const qty = parseInt(select.value);
-
   if (qty === 0) {
     alert("Selecteer eerst een hoeveelheid voor je toevoegt.");
-    // 错误反馈：shake 动效
     addButton.style.animation = 'shake 0.3s';
     addButton.addEventListener('animationend', () => {
       addButton.style.animation = '';
@@ -572,11 +579,9 @@ addButton.onclick = () => {
     return;
   }
 
-  // 添加到购物车
   cart.push({ name: item.name, price: item.price, qty });
   updateCart();
 
-  // 动画反馈：pulse 动效
   addButton.style.animation = 'pulse 0.4s';
   addButton.addEventListener('animationend', () => {
     addButton.style.animation = '';
@@ -586,10 +591,8 @@ addButton.onclick = () => {
 // 移除按钮逻辑
 removeButton.onclick = () => {
   const qty = parseInt(select.value);
-
   if (qty === 0) {
     alert("Aantal is al 0. Er is niets om te verwijderen.");
-    // 错误反馈：shake 动效
     removeButton.style.animation = 'shake 0.3s';
     removeButton.addEventListener('animationend', () => {
       removeButton.style.animation = '';
@@ -597,23 +600,26 @@ removeButton.onclick = () => {
     return;
   }
 
-  // 从购物车中移除
   for (let i = cart.length - 1; i >= 0; i--) {
     if (cart[i].name === item.name) {
       cart.splice(i, 1);
     }
   }
 
-  // 重置数量为 0
   select.value = 0;
   updateCart();
 
-  // 动画反馈：pulse 动效
   removeButton.style.animation = 'pulse 0.4s';
   removeButton.addEventListener('animationend', () => {
     removeButton.style.animation = '';
   }, { once: true });
 };
+
+// 挂载组件到菜单项中
+div.appendChild(nameSpan);
+div.appendChild(select);
+div.appendChild(addButton);
+div.appendChild(removeButton);
     
 
 
