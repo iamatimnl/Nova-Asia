@@ -22,24 +22,37 @@
   }
 
   .menu-item {
-    display: grid;
-    grid-template-columns: 1fr 70px 90px 90px;
-    align-items: center;
-    padding: 14px 16px;
-    margin-bottom: 12px;
-    border-radius: 12px;
-    background: #ffffff;
-    border: 1px solid #e0e0e0;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-    gap: 10px;
-  }
-
-  .menu-item span {
-    font-size: 1rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+  display: grid;
+  grid-template-columns: 2fr 60px 80px 80px;  /* ← 文字区域更宽 */
+  align-items: center;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  background: #ffffff; /* 默认无图时背景 */
+  background-size: cover;
+  background-position: center;
+  color: white;  /* 在图片上显示白字 */
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  gap: 10px;
+}
+  .menu-item::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.6));
+  z-index: 0;
+}
+ .menu-item span {
+  font-size: 1rem;
+  white-space: normal;
+  word-break: break-word;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  position: relative;
+  z-index: 1;
+}
 
 .menu-item select {
     width: 60px;
@@ -310,23 +323,7 @@ input[type="time"] {
   border: 1px solid #ccc;
   background: #fff;
 }
- .menu-item {
-  display: grid;
-  grid-template-columns: 2fr 60px 80px 80px; /* ← 文字区更宽 */
-  align-items: center;
-  padding: 14px 16px;
-  margin-bottom: 12px;
-  border-radius: 12px;
-  background: #ffffff;
-  border: 1px solid #e0e0e0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  gap: 10px;
-}
- .menu-item span {
-  font-size: 1rem;
-  white-space: normal;         /* ✅ 允许换行 */
-  word-break: break-word;      /* ✅ 超长单词也能断 */
-}
+
 
 @media (max-width: 600px) {
   .menu-item {
@@ -341,10 +338,10 @@ input[type="time"] {
   }
 
   .menu-item select,
-  .menu-item button {
-    width: 100%;
-    margin-top: 4px;
-  }
+.menu-item button {
+  position: relative;
+  z-index: 1;
+}
 
   .menu-item button {
     min-width: auto; /* 允许按钮宽度自适应 */
