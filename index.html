@@ -354,7 +354,23 @@ input[type="time"] {
     max-width: 15%;
     margin-top: 4px;
   }}
+.add-button {
+  background: #007aff; /* 苹果蓝 */
+  color: white;
+}
 
+.add-button:hover {
+  background: #005fcc;
+}
+
+.remove-button {
+  background: #ff3b30; /* 苹果红 */
+  color: white;
+}
+
+.remove-button:hover {
+  background: #c1271d;
+}
 
 
 
@@ -522,29 +538,32 @@ Object.entries(menuData).forEach(([category, items]) => {
       select.appendChild(option);
     }
 
+    
     // 添加按钮
-    const addButton = document.createElement('button');
-    addButton.textContent = '+';
-    addButton.onclick = () => {
-      const qty = parseInt(select.value);
-      if (qty > 0) {
-        cart.push({ name: item.name, price: item.price, qty });
-        updateCart();
-      }
-    };
+const addButton = document.createElement('button');
+addButton.textContent = '+';
+addButton.className = 'add-button';  // ✅ 添加类名
+addButton.onclick = () => {
+  const qty = parseInt(select.value);
+  if (qty > 0) {
+    cart.push({ name: item.name, price: item.price, qty });
+    updateCart();
+  }
+};
 
-    // 移除按钮
-    const removeButton = document.createElement('button');
-    removeButton.textContent = '-';
-    removeButton.onclick = () => {
-      for (let i = cart.length - 1; i >= 0; i--) {
-        if (cart[i].name === item.name) {
-          cart.splice(i, 1);
-        }
-      }
-      select.value = 0;
-      updateCart();
-    };
+// 移除按钮
+const removeButton = document.createElement('button');
+removeButton.textContent = '-';
+removeButton.className = 'remove-button';  // ✅ 添加类名
+removeButton.onclick = () => {
+  for (let i = cart.length - 1; i >= 0; i--) {
+    if (cart[i].name === item.name) {
+      cart.splice(i, 1);
+    }
+  }
+  select.value = 0;
+  updateCart();
+};
 
     // 挂载到菜单项
     div.appendChild(nameSpan);
