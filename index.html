@@ -399,6 +399,17 @@ input[type="time"] {
   75%  { transform: translateX(-2px); }
   100% { transform: translateX(0); }
 }
+ .add-button,
+.remove-button {
+  animation-duration: 0.4s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+.add-button.pulsing,
+.remove-button.pulsing {
+  animation-name: pulse;
+}
 
 </style>
 
