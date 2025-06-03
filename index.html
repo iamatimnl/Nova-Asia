@@ -94,9 +94,9 @@
   text-align: center;
 }
 
-  .menu-item button:hover {
-    background: #005fcc;
-  }
+  .menu-item button.add-button:hover {
+  background: #005fcc;
+}
 
   select, input, textarea {
     padding: 10px;
@@ -376,23 +376,103 @@ input[type="time"] {
 }
 
 .remove-button:hover {
-  background: #c1271d;
+  background: #c1271d !important;  /* 深红，覆盖任何蓝色 */
 }
-/* 小小放大动画 */
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.15); }
-  100% { transform: scale(1); }
+#floatingCart {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #007aff;
+  color: white;
+  border-radius: 50px;
+  padding: 12px 16px;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  z-index: 1000;
+  cursor: pointer;
+  display: none;
 }
 
-/* 轻微震动动画（用于错误时） */
-@keyframes shake {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-2px); }
-  50% { transform: translateX(2px); }
-  75% { transform: translateX(-2px); }
-  100% { transform: translateX(0); }
+#floatingCart span {
+  margin-left: 6px;
+  font-weight: bold;
 }
+
+#mobileCartPanel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+  z-index: 999;
+  padding: 16px;
+  display: none;
+  flex-direction: column;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+#mobileCartPanel.show {
+  display: flex;
+}
+
+#mobileCartPanel .cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+#mobileCartItems {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px;
+}
+
+#mobileCartItems li {
+  margin-bottom: 6px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 4px;
+}
+
+#mobileCheckoutBtn {
+  background: #007aff;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  #floatingCart {
+    display: block;
+  }
+}
+@media (min-width: 768px) {
+  .cart-section {
+    position: fixed;
+    top: 100px;
+    right: 40px;
+    width: 300px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: 1px solid #e0e0e0;
+    z-index: 999;
+  }
+}
+@media (max-width: 767px) {
+  .cart-section {
+    display: none;
+  }
+}
+
 
 
 </style>
@@ -503,12 +583,29 @@ input[type="time"] {
  <div id="menuContainer"></div>
 
 
-  <div class="cart-section">
-    <h2>Winkelwagen</h2>
-    <ul id="cart"></ul>
-    <div class="total">Totaal: €<span id="total">0.00</span></div>
-    <button onclick="checkout()">Afrekenen & Betalen</button>
+  <!-- 🛒 悬浮小车按钮（移动端） -->
+<div id="floatingCart" onclick="toggleCartPanel()">
+  🛒 <span id="cartCount">0</span>
+</div>
+
+<!-- 📋 折叠购物车详情 -->
+<div id="mobileCartPanel" class="hidden">
+  <div class="cart-header">
+    <span>Winkelwagen</span>
+    <button onclick="toggleCartPanel()">✕</button>
   </div>
+  <ul id="mobileCartItems"></ul>
+  <div class="total">Totaal: €<span id="mobileCartTotal">0.00</span></div>
+  <button id="mobileCheckoutBtn">Afrekenen</button>
+</div>
+<!-- 桌面端购物车 -->
+<div class="cart-section">
+  <h2>Winkelwagen</h2>
+  <ul id="desktopCartItems"></ul>
+  <div class="total">Totaal: €<span id="total">0.00</span></div>
+  <button onclick="checkout()">Afrekenen</button>
+</div>
+
 
 <script>
 const menuData = {
@@ -558,63 +655,71 @@ Object.entries(menuData).forEach(([category, items]) => {
       option.textContent = i;
       select.appendChild(option);
     }
- // 添加按钮逻辑
-addButton.onclick = () => {
-  const qty = parseInt(select.value);
+ // 每个菜单项都应有自己的按钮
+const addButton = document.createElement('button');
+addButton.textContent = '+';
+addButton.className = 'add-button';
 
+const removeButton = document.createElement('button');
+removeButton.textContent = '-';
+removeButton.className = 'remove-button';
+
+addButton.onclick = (event) => {
+  const qty = parseInt(select.value);
   if (qty === 0) {
     alert("Selecteer eerst een hoeveelheid voor je toevoegt.");
-    // 错误反馈：shake 动效
-    addButton.style.animation = 'shake 0.3s';
-    addButton.addEventListener('animationend', () => {
-      addButton.style.animation = '';
-    }, { once: true });
     return;
   }
 
-  // 添加到购物车
   cart.push({ name: item.name, price: item.price, qty });
   updateCart();
 
-  // 动画反馈：pulse 动效
-  addButton.style.animation = 'pulse 0.4s';
-  addButton.addEventListener('animationend', () => {
-    addButton.style.animation = '';
-  }, { once: true });
+  // ✨ 飞出 + 号动画
+  flyPlusSymbolFrom(event.target);
+
+  // ✨ 按钮 pulsating 动画
+  triggerAnimation(addButton, 'pulsing');
+};
+
+  // 获取按钮位置
+  const rect = addButton.getBoundingClientRect();
+  plusSymbol.style.left = ${rect.left + rect.width / 2}px;
+  plusSymbol.style.top = ${rect.top}px;
+
+  document.body.appendChild(plusSymbol);
+
+  // 移除动画元素
+  setTimeout(() => {
+    plusSymbol.remove();
+  }, 600);
 };
 
 // 移除按钮逻辑
 removeButton.onclick = () => {
   const qty = parseInt(select.value);
-
   if (qty === 0) {
     alert("Aantal is al 0. Er is niets om te verwijderen.");
-    // 错误反馈：shake 动效
-    removeButton.style.animation = 'shake 0.3s';
-    removeButton.addEventListener('animationend', () => {
-      removeButton.style.animation = '';
-    }, { once: true });
+    triggerAnimation(removeButton, 'shake');
     return;
   }
 
-  // 从购物车中移除
   for (let i = cart.length - 1; i >= 0; i--) {
     if (cart[i].name === item.name) {
       cart.splice(i, 1);
     }
   }
 
-  // 重置数量为 0
   select.value = 0;
   updateCart();
-
-  // 动画反馈：pulse 动效
-  removeButton.style.animation = 'pulse 0.4s';
-  removeButton.addEventListener('animationend', () => {
-    removeButton.style.animation = '';
-  }, { once: true });
+  triggerAnimation(removeButton, 'pulse');
 };
-    
+
+// 挂载组件到菜单项中
+div.appendChild(nameSpan);
+div.appendChild(select);
+div.appendChild(addButton);
+div.appendChild(removeButton);
+menuContainer.appendChild(div);
 
 
 function populateSelect(id, max) {
@@ -632,21 +737,6 @@ populateSelect('soyCount', 5);
 populateSelect('wasabiCount', 5);
 populateSelect('gemberCount', 5);
 
-function updateCart() {
-  const cartList = document.getElementById('cart');
-  cartList.innerHTML = '';
-  let total = 0;
-
-  cart.forEach((item) => {
-    const li = document.createElement('li');
-    const itemTotal = item.qty * item.price;
-    li.textContent = ${item.name} x ${item.qty} = €${itemTotal.toFixed(2)};
-    cartList.appendChild(li);
-    total += itemTotal;
-  });
-
-  document.getElementById('total').textContent = total.toFixed(2);
-}
 
 function toggleOrderType() {
   const type = document.querySelector('input[name="orderType"]:checked').value;
@@ -746,6 +836,51 @@ function checkout() {
 
   // 页面加载时自动运行一次
   toggleOrderType();
+ function toggleCartPanel() {
+  const panel = document.getElementById("mobileCartPanel");
+  panel.classList.toggle("show");
+}
+
+function updateCart() {
+  const countEl = document.getElementById("cartCount");
+  const mobileItemsEl = document.getElementById("mobileCartItems");
+  const mobileTotalEl = document.getElementById("mobileCartTotal");
+
+  const desktopItemsEl = document.getElementById("desktopCartItems");
+  const desktopTotalEl = document.getElementById("total");
+
+  let total = 0;
+  let count = 0;
+
+  // 清空移动端和桌面端内容
+  mobileItemsEl.innerHTML = '';
+  if (desktopItemsEl) desktopItemsEl.innerHTML = '';
+
+  cart.forEach(item => {
+    total += item.price * item.qty;
+    count += item.qty;
+
+    // 移动端
+    const liMobile = document.createElement("li");
+    liMobile.textContent = ${item.qty}× ${item.name} - €${(item.qty * item.price).toFixed(2)};
+    mobileItemsEl.appendChild(liMobile);
+
+    // 桌面端
+    if (desktopItemsEl) {
+      const liDesktop = document.createElement("li");
+      liDesktop.textContent = ${item.qty}× ${item.name} - €${(item.qty * item.price).toFixed(2)};
+      desktopItemsEl.appendChild(liDesktop);
+    }
+  });
+
+  // 更新总计
+  countEl.textContent = count;
+  mobileTotalEl.textContent = total.toFixed(2);
+  if (desktopTotalEl) desktopTotalEl.textContent = total.toFixed(2);
+}
+
+
+  
 </script>
 
 
