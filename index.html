@@ -420,7 +420,7 @@ input[type="time"] {
 </div>
 
 
- <div id="menu"></div>
+ <div id="menuContainer"></div>
 
 
   <div class="cart-section">
@@ -431,64 +431,87 @@ input[type="time"] {
   </div>
 
 <script>
-const menuItems = [
-  { name: 'Sake Maki', price: 8.5,image: 'images/sake-maki.jpg'  },
-  { name: 'California Roll', price: 10 },
-  { name: 'Chicken Bento', price: 12 },
-  { name: 'Bubble Tea', price: 5 }
-];
-
-const cart = [];
-const menuDiv = document.getElementById('menu');
-
-menuItems.forEach((item) => {
-  const div = document.createElement('div');
-  div.className = 'menu-item';
-  if (item.image) {
-  div.style.backgroundImage = `url('${item.image}')`;
-  div.style.backgroundSize = 'cover';
-  div.style.backgroundPosition = 'center';
-  div.style.position = 'relative';
-  div.style.color = '#111'; // 根据背景图决定用深或浅色
-}
-
-  const nameSpan = document.createElement('span');
-  nameSpan.textContent = `${item.name} - €${item.price.toFixed(2)}`;
-
-  const select = document.createElement('select');
-  for (let i = 0; i <= 20; i++) {
-  const option = document.createElement('option');
-  option.value = i;
-  option.textContent = i;
-  select.appendChild(option);
-}
-
-  const addButton = document.createElement('button');
-  addButton.textContent = 'Toevoegen';
-  addButton.onclick = () => {
-    const qty = parseInt(select.value);
-    cart.push({ name: item.name, price: item.price, qty });
-    updateCart();
-  };
-
-  const removeButton = document.createElement('button');
-  removeButton.textContent = 'Verwijderen';
-  removeButton.onclick = () => {
-  for (let i = cart.length - 1; i >= 0; i--) {
-    if (cart[i].name === item.name) {
-      cart.splice(i, 1);
-    }
-  }
-  select.value = 0; // 这句是关键：重置数量为 0
-  updateCart();
+const menuData = {
+  "Bento Box": [
+    { name: "Chicken Bento", price: 12, image: "images/chicken-bento.jpg" }
+  ],
+  "Sushi Rolls": [
+    { name: "Sake Maki", price: 8.5, image: "images/sake-maki.jpg" },
+    { name: "California Roll", price: 10 }
+  ],
+  "Bubble Tea": [
+    { name: "Bubble Tea", price: 5 }
+  ]
 };
 
-  div.appendChild(nameSpan);
-  div.appendChild(select);
-  div.appendChild(addButton);
-  div.appendChild(removeButton);
+const cart = [];
+const menuContainer = document.getElementById("menuContainer");  // ✅ 请确保 HTML 中 ID 是 menuContainer
 
-  menuDiv.appendChild(div);
+Object.entries(menuData).forEach(([category, items]) => {
+  // 分类标题
+  const categoryTitle = document.createElement("h2");
+  categoryTitle.textContent = category;
+  menuContainer.appendChild(categoryTitle);
+
+  items.forEach((item) => {
+    const div = document.createElement('div');
+    div.className = 'menu-item';
+
+    // 设置背景图
+    if (item.image) {
+      div.style.backgroundImage = `url('${item.image}')`;
+      div.style.backgroundSize = 'cover';
+      div.style.backgroundPosition = 'center';
+      div.style.position = 'relative';
+      div.style.color = '#111';
+    }
+
+    // 菜品名 + 价格
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = `${item.name} - €${item.price.toFixed(2)}`;
+
+    // 数量选择器
+    const select = document.createElement('select');
+    for (let i = 0; i <= 20; i++) {
+      const option = document.createElement('option');
+      option.value = i;
+      option.textContent = i;
+      select.appendChild(option);
+    }
+
+    // 添加按钮
+    const addButton = document.createElement('button');
+    addButton.textContent = 'Toevoegen';
+    addButton.onclick = () => {
+      const qty = parseInt(select.value);
+      if (qty > 0) {
+        cart.push({ name: item.name, price: item.price, qty });
+        updateCart();
+      }
+    };
+
+    // 移除按钮
+    const removeButton = document.createElement('button');
+    removeButton.textContent = 'Verwijderen';
+    removeButton.onclick = () => {
+      for (let i = cart.length - 1; i >= 0; i--) {
+        if (cart[i].name === item.name) {
+          cart.splice(i, 1);
+        }
+      }
+      select.value = 0;
+      updateCart();
+    };
+
+    // 挂载到菜单项
+    div.appendChild(nameSpan);
+    div.appendChild(select);
+    div.appendChild(addButton);
+    div.appendChild(removeButton);
+
+    // 添加到页面中
+    menuContainer.appendChild(div);
+  });
 });
 
 function populateSelect(id, max) {
