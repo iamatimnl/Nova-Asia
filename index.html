@@ -523,7 +523,7 @@ Object.entries(menuData).forEach(([category, items]) => {
 
     // 添加按钮
     const addButton = document.createElement('button');
-    addButton.textContent = 'Toevoegen';
+    addButton.textContent = '+';
     addButton.onclick = () => {
       const qty = parseInt(select.value);
       if (qty > 0) {
@@ -534,7 +534,7 @@ Object.entries(menuData).forEach(([category, items]) => {
 
     // 移除按钮
     const removeButton = document.createElement('button');
-    removeButton.textContent = 'Verwijderen';
+    removeButton.textContent = '-';
     removeButton.onclick = () => {
       for (let i = cart.length - 1; i >= 0; i--) {
         if (cart[i].name === item.name) {
