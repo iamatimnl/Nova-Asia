@@ -310,7 +310,46 @@ input[type="time"] {
   border: 1px solid #ccc;
   background: #fff;
 }
+ .menu-item {
+  display: grid;
+  grid-template-columns: 2fr 60px 80px 80px; /* ← 文字区更宽 */
+  align-items: center;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  gap: 10px;
+}
+ .menu-item span {
+  font-size: 1rem;
+  white-space: normal;         /* ✅ 允许换行 */
+  word-break: break-word;      /* ✅ 超长单词也能断 */
+}
 
+@media (max-width: 600px) {
+  .menu-item {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .menu-item span {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+
+  .menu-item select,
+  .menu-item button {
+    width: 100%;
+    margin-top: 4px;
+  }
+
+  .menu-item button {
+    min-width: auto; /* 允许按钮宽度自适应 */
+  }
+}
 
 
 
