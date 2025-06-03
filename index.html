@@ -459,9 +459,20 @@ input[type="time"] {
     top: 100px;
     right: 40px;
     width: 300px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: 1px solid #e0e0e0;
     z-index: 999;
   }
 }
+@media (max-width: 767px) {
+  .cart-section {
+    display: none;
+  }
+}
+
 
 
 </style>
@@ -586,6 +597,13 @@ input[type="time"] {
   <ul id="mobileCartItems"></ul>
   <div class="total">Totaal: €<span id="mobileCartTotal">0.00</span></div>
   <button id="mobileCheckoutBtn">Afrekenen</button>
+</div>
+<!-- 桌面端购物车 -->
+<div class="cart-section">
+  <h2>Winkelwagen</h2>
+  <ul id="desktopCartItems"></ul>
+  <div class="total">Totaal: €<span id="total">0.00</span></div>
+  <button onclick="checkout()">Afrekenen</button>
 </div>
 
 
@@ -823,28 +841,44 @@ function checkout() {
   panel.classList.toggle("show");
 }
 
-// 更新浮动购物车数字 + 内容
 function updateCart() {
   const countEl = document.getElementById("cartCount");
-  const itemsEl = document.getElementById("mobileCartItems");
-  const totalEl = document.getElementById("mobileCartTotal");
+  const mobileItemsEl = document.getElementById("mobileCartItems");
+  const mobileTotalEl = document.getElementById("mobileCartTotal");
+
+  const desktopItemsEl = document.getElementById("desktopCartItems");
+  const desktopTotalEl = document.getElementById("total");
 
   let total = 0;
   let count = 0;
-  itemsEl.innerHTML = '';
+
+  // 清空移动端和桌面端内容
+  mobileItemsEl.innerHTML = '';
+  if (desktopItemsEl) desktopItemsEl.innerHTML = '';
 
   cart.forEach(item => {
     total += item.price * item.qty;
     count += item.qty;
 
-    const li = document.createElement("li");
-    li.textContent = `${item.qty}× ${item.name} - €${(item.qty * item.price).toFixed(2)}`;
-    itemsEl.appendChild(li);
+    // 移动端
+    const liMobile = document.createElement("li");
+    liMobile.textContent = `${item.qty}× ${item.name} - €${(item.qty * item.price).toFixed(2)}`;
+    mobileItemsEl.appendChild(liMobile);
+
+    // 桌面端
+    if (desktopItemsEl) {
+      const liDesktop = document.createElement("li");
+      liDesktop.textContent = `${item.qty}× ${item.name} - €${(item.qty * item.price).toFixed(2)}`;
+      desktopItemsEl.appendChild(liDesktop);
+    }
   });
 
+  // 更新总计
   countEl.textContent = count;
-  totalEl.textContent = total.toFixed(2);
+  mobileTotalEl.textContent = total.toFixed(2);
+  if (desktopTotalEl) desktopTotalEl.textContent = total.toFixed(2);
 }
+
 
   
 </script>
