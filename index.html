@@ -72,17 +72,19 @@
 }
 
 
-  .menu-item button {
-    background: #007aff;
-    color: white;
-    padding: 6px 10px;
-    font-size: 0.85rem;
-    min-width: 70px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.2s ease;
-  }
+ .menu-item button {
+  background: #007aff;
+  color: white;
+  padding: 4px 8px;            /* ✅ 缩小按钮体积 */
+  font-size: 0.8rem;           /* ✅ 更精致（原来是 0.85rem） */
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  min-width: auto;             /* ✅ 允许内容控制宽度 */
+  max-width: 70px;             /* ✅ 可选，防止太长 */
+  text-align: center;
+}
 
   .menu-item button:hover {
     background: #005fcc;
@@ -344,15 +346,13 @@ input[type="time"] {
   }
 
   .menu-item select,
-.menu-item button {
-  position: relative;
-  z-index: 1;
-}
-
   .menu-item button {
-    min-width: auto; /* 允许按钮宽度自适应 */
-  }
-}
+    font-size: 0.75rem;           /* ✅ 更小号 */
+    padding: 3px 6px;
+    width: 100%;                  /* ✅ 自动铺满当前行 */
+    max-width: 100%;
+    margin-top: 4px;
+  }}
 
 
 
