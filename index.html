@@ -692,123 +692,12 @@ input#bezorgen:checked ~ .slider {
   </div>
 </section>
 
-
 <script>
-
-
-
 const cart = [];
-const menuContainer = document.getElementById("menuContainer");
 
-Object.entries(menuData).forEach(([category, items]) => {
-  const categoryTitle = document.createElement("h2");
-  categoryTitle.textContent = category;
-  menuContainer.appendChild(categoryTitle);
-
-  items.forEach((item) => {
-    const div = document.createElement('div');
-    div.className = 'menu-item';
-
-    if (item.image) {
-      div.style.backgroundImage = `url('${item.image}')`;
-      div.style.backgroundSize = 'cover';
-      div.style.backgroundPosition = 'center';
-      div.style.position = 'relative';
-      div.style.color = '#111';
-    }
-
-    const nameSpan = document.createElement('span');
-    nameSpan.textContent = `${item.name} - €${item.price.toFixed(2)}`;
-
-const select = document.createElement('select');
-for (let i = 0; i <= 20; i++) {
-  const option = document.createElement('option');
-  option.value = i;
-  option.textContent = i;
-  select.appendChild(option);
-}
-
-const sections = document.querySelectorAll('.menu-section');
-const indicator = document.getElementById('section-indicator');
-
-
-
-
-
-select.addEventListener('change', () => {
-  const qty = parseInt(select.value);
-  const existing = cart.find(cartItem => cartItem.name === item.name);
-
-  if (qty === 0) {
-    if (existing) {
-      const index = cart.find(cartItem => cartItem.name === item.name);
-      if (index !== -1) cart.splice(index, 1);
-    }
-  } else {
-    if (existing) {
-      existing.qty = qty;
-    } else {
-      cart.push({ name: item.name, price: item.price, qty });
-    }
-  }
-
-  updateCart();
-});
-
-
-    const addButton = document.createElement('button');
-    addButton.textContent = '+';
-    addButton.className = 'add-button';
-    addButton.onclick = () => {
-      let currentQty = parseInt(select.value);
-      if (currentQty < 20) {
-        currentQty++;
-        select.value = currentQty;
-
-        const existing = cart.find(cartItem => cartItem.name === item.name);
-        if (existing) {
-          existing.qty = currentQty;
-        } else {
-          cart.push({ name: item.name, price: item.price, qty: currentQty });
-        }
-        updateCart();
-      }
-    };
-
-const removeButton = document.createElement('button');
-removeButton.textContent = '-';
-removeButton.className = 'remove-button';
-removeButton.onclick = () => {
-  let currentQty = parseInt(select.value);
-  if (currentQty > 0) {
-    currentQty--;
-    select.value = currentQty;
-
-    const existing = cart.find(cartItem => cartItem.name === item.name);
-    if (existing) {
-      if (currentQty === 0) {
-        const index = cart.find(cartItem => cartItem.name === item.name);
-        if (index !== -1) cart.splice(index, 1);
-      } else {
-        existing.qty = currentQty;
-      }
-      updateCart();
-    }
-  }
-};
-
-
-    div.appendChild(nameSpan);
-    div.appendChild(select);
-    div.appendChild(addButton);
-    div.appendChild(removeButton);
-
-    menuContainer.appendChild(div);
-  });
-});
-
-function populateSelect(id, max) {
+function populateSelect(id, max = 20) {
   const sel = document.getElementById(id);
+  if (!sel) return;
   for (let i = 0; i <= max; i++) {
     const opt = document.createElement('option');
     opt.value = i;
@@ -817,10 +706,22 @@ function populateSelect(id, max) {
   }
 }
 
-populateSelect('chopstickCount', 20);
-populateSelect('soyCount', 20);
-populateSelect('wasabiCount', 20);
-populateSelect('gemberCount', 20);
+function addToCart(name, price, selectId) {
+  const qty = parseInt(document.getElementById(selectId).value);
+  if (!qty || qty <= 0) return;
+  const existing = cart.find(item => item.name === name);
+  if (existing) {
+    existing.qty += qty;
+  } else {
+    cart.push({ name, price, qty });
+  }
+  updateCart();
+}
+
+['chickenBentoCount', 'sakeCount', 'californiaCount', 'bubbleTeaCount',
+ 'dessertCount', 'snackCount', 'veganCount',
+ 'chopstickCount', 'soyCount', 'wasabiCount', 'gemberCount']
+  .forEach(id => populateSelect(id, 20));
 
 function updateCart() {
   const cartList = document.getElementById('cart');
@@ -829,7 +730,6 @@ function updateCart() {
 
   cart.forEach((item, index) => {
     const li = document.createElement('li');
-
     const select = document.createElement('select');
     for (let i = 0; i <= 20; i++) {
       const option = document.createElement('option');
@@ -838,35 +738,19 @@ function updateCart() {
       if (i === item.qty) option.selected = true;
       select.appendChild(option);
     }
-
     select.addEventListener('change', () => {
       const newQty = parseInt(select.value);
-
       if (newQty === 0) {
         cart.splice(index, 1);
       } else {
         item.qty = newQty;
       }
-
-      const allMenuItems = document.querySelectorAll('.menu-item');
-      allMenuItems.forEach(menuDiv => {
-        const nameText = menuDiv.querySelector('span')?.textContent || '';
-        if (nameText.startsWith(item.name)) {
-          const menuSelect = menuDiv.querySelector('select');
-          if (menuSelect) {
-            menuSelect.value = newQty;
-          }
-        }
-      });
-
       updateCart();
     });
-
     const itemTotal = item.qty * item.price;
     li.textContent = `${item.name} = €${itemTotal.toFixed(2)} `;
     li.appendChild(select);
     cartList.appendChild(li);
-
     total += itemTotal;
   });
 
@@ -888,7 +772,6 @@ function updateCart() {
   extras.forEach(extra => {
     const li = document.createElement('li');
     li.textContent = `${extra.label}: `;
-
     const select = document.createElement('select');
     for (let i = 0; i <= 20; i++) {
       const option = document.createElement('option');
@@ -899,47 +782,20 @@ function updateCart() {
       }
       select.appendChild(option);
     }
-
     select.addEventListener('change', () => {
       document.getElementById(extra.id).value = select.value;
       updateCart();
     });
-
     li.appendChild(select);
     cartList.appendChild(li);
   });
 
   document.getElementById('total').textContent = total.toFixed(2);
-
   const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
   const badge = document.getElementById('cart-count');
   badge.textContent = totalQty;
   badge.style.display = totalQty > 0 ? 'inline-block' : 'none';
 }
-
-select.addEventListener('change', () => {
-  const qty = parseInt(select.value);
-
-  const existing = cart.find(cartItem => cartItem.name === item.name);
-
-  if (qty === 0) {
-    if (existing) {
-      const index = cart.find(cartItem => cartItem.name === item.name);
-      if (index !== -1) cart.splice(index, 1);
-    }
-  } else {
-    if (existing) {
-      existing.qty = qty;
-    } else {
-      cart.push({ name: item.name, price: item.price, qty });
-    }
-  }
-
-  updateCart();
-});
-
-
-
 
 function checkout() {
   const paidItems = cart.filter(item => item.price > 0 && item.qty > 0);
@@ -1035,6 +891,7 @@ function checkout() {
 
 
 </script>
+
 <script>
   function toggleOrderType() {
     const afhalen = document.getElementById('afhalen');
