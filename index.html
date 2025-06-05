@@ -35,7 +35,6 @@
     -webkit-overflow-scrolling: touch;
     border-bottom: 1px solid #ccc;
     z-index: 999;
-    scroll-behavior: smooth;
   }
 
   .navbar {
@@ -43,28 +42,23 @@
     flex-direction: row;
     white-space: nowrap;
     position: relative;
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
   }
 
   .navbar a {
     flex: 0 0 auto;
-    padding: 0.6rem 1rem;
-    margin: 0.25rem;
-    color: #1c1c1e;
+    padding: 14px 20px;
+    color: var(--apple-blue);
     text-decoration: none;
-    font-weight: 500;
-    border-radius: 999px;
-    background: #f2f2f7;
-    transition: background 0.2s ease;
+    font-weight: bold;
+    border-radius: 24px;
+    transition: all 0.3s ease;
     position: relative;
     z-index: 2;
   }
 
   .navbar a.active {
-    font-weight: 600;
-    text-decoration: underline;
-    color: var(--apple-blue);
-    background: #fff;
+    color: white;
   }
 
   .indicator {
@@ -137,43 +131,26 @@
     z-index: 1;
   }
 
-  .menu-item label,
   .menu-item select,
   .menu-item button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    margin-top: 8px;
+    padding: 6px 8px;
+    font-size: 0.85rem;
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
   }
 
-  .menu-item select,
   .menu-item button {
-    margin-top: 0.2rem;
-    margin-left: 0.2rem;
-    width: 2.2rem;
-    height: 2.2rem;
-    padding: 0;
-    font-size: 0.9rem;
-    border-radius: 0.6rem;
-    background: #f2f2f7;
-    border: 1px solid #ccc;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    background: #007aff;
+    color: white;
+    border: none;
+    cursor: pointer;
     transition: background 0.2s ease;
   }
 
-  .menu-item button.add-button {
-    background: #007aff;
-    color: #fff;
-    border: none;
-  }
-
-  .menu-item button.remove-button {
-    background: #ff3b30;
-    color: #fff;
-    border: none;
-  }
-
   .menu-item button:hover {
-    filter: brightness(0.95);
+    background: #005fcc;
   }
 
   @media (max-width: 600px) {
