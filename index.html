@@ -34,24 +34,27 @@
     scrollbar-width: none;
   }
   .navbar-container {
-    position: sticky;
-    width: 100vw;
-    margin: 0;
-    padding: 0;
-    top: 0;
-    background-color: var(--off-white);
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    border-bottom: 1px solid #ccc;
-    z-index: 999;
-  }
+  position: fixed; /* 或 sticky 也可以 */
+  top: 0;
+  left: 0; /* 👈 保证贴左边 */
+  width: 100vw;
+  padding: 0;
+  margin: 0;
+  background-color: var(--off-white);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-bottom: 1px solid #ccc;
+  z-index: 999;
+}
 
   .navbar {
     display: flex;
     flex-direction: row;
     white-space: nowrap;
     position: relative;
-    width: 100%;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
     scroll-behavior: auto;
   }
