@@ -142,30 +142,20 @@
   }
 
   .menu-item button {
-    background: #007aff;
-    color: white;
-    border: none;
-    cursor: pointer;
-    transition: background 0.2s ease;
-  }
+  width: 2.2rem;
+  height: 2.2rem;
+  font-size: 1rem;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: none;
+  transition: background 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
 
-  .menu-item button:hover {
-    background: #005fcc;
-  }
-
-  @media (max-width: 600px) {
-    .menu-item {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-
-    .menu-item select,
-    .menu-item button {
-      width: 2.2rem;
-      height: 1.8rem;
-      font-size: 0.8rem;
-    }
-  }
+/* 保留颜色差异 */
 .add-button {
   background: #007aff;
   color: white;
@@ -183,6 +173,23 @@
 .remove-button:hover {
   background: #c1271d;
 }
+
+/* 手机端同样保持一致大小 */
+@media (max-width: 600px) {
+  .menu-item button {
+    width: 1.8rem;
+    height: 1.8rem;
+    font-size: 0.9rem;
+  }
+}
+
+  @media (max-width: 600px) {
+    .menu-item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+}
+
 
 
 .cart-section.mobile-visible {
