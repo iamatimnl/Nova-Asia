@@ -566,14 +566,15 @@ input#bezorgen:checked ~ .slider {
       Kies uw favoriete Bento en hoeveelheid:
     </p>
 
-    <div class="bento-row">
+    <div class="bento-row menu-item" data-name="Chicken Bento" data-price="12">
       <img class="bento-img" src="images/chicken-bento.jpg" alt="Chicken Bento" loading="lazy"/>
       <div class="bento-content">
         <h3>Chicken Bento</h3>
         <p>€ 12.00</p>
         <label for="chickenBentoCount">Aantal</label>
         <select id="chickenBentoCount" name="chickenBentoCount"></select>
-        <button onclick="addToCart('Chicken Bento', 12, 'chickenBentoCount')">Toevoegen</button>
+        <button type="button" class="qty-plus add-button" data-target="chickenBentoCount">+</button>
+        <button type="button" class="qty-minus remove-button" data-target="chickenBentoCount">-</button>
       </div>
     </div>
 
@@ -588,18 +589,19 @@ input#bezorgen:checked ~ .slider {
       Kies uw sushi en hoeveelheid:
     </p>
 
-    <div class="menu-row">
+    <div class="menu-row menu-item" data-name="Sake Maki" data-price="8.5">
       <img class="menu-img" src="images/sake-maki.jpg" alt="Sake Maki" loading="lazy" />
       <div class="menu-content">
         <h3>Sake Maki</h3>
         <p>€ 8.50</p>
         <label for="sakeCount">Aantal</label>
         <select id="sakeCount" name="sakeCount"></select>
-        <button onclick="addToCart('Sake Maki', 8.5, 'sakeCount')">Toevoegen</button>
+        <button type="button" class="qty-plus add-button" data-target="sakeCount">+</button>
+        <button type="button" class="qty-minus remove-button" data-target="sakeCount">-</button>
       </div>
     </div>
 
-    <div class="menu-row">
+    <div class="menu-row menu-item" data-name="California Roll" data-price="10">
       <div class="menu-img" style="width: 100px; height: 100px; background: #eee; display: flex; align-items: center; justify-content: center;">
         <span style="color: #999;">Geen foto</span>
       </div>
@@ -608,7 +610,8 @@ input#bezorgen:checked ~ .slider {
         <p>€ 10.00</p>
         <label for="californiaCount">Aantal</label>
         <select id="californiaCount" name="californiaCount"></select>
-        <button onclick="addToCart('California Roll', 10, 'californiaCount')">Toevoegen</button>
+        <button type="button" class="qty-plus add-button" data-target="californiaCount">+</button>
+        <button type="button" class="qty-minus remove-button" data-target="californiaCount">-</button>
       </div>
     </div>
   </div>
@@ -620,7 +623,7 @@ input#bezorgen:checked ~ .slider {
       Kies uw smaak en hoeveelheid:
     </p>
 
-    <div class="menu-row">
+    <div class="menu-row menu-item" data-name="Bubble Tea" data-price="5">
       <div class="menu-img">
         <img src="images/bubble-tea.jpg" alt="Bubble Tea" class="menu-img" loading="lazy" />
       </div>
@@ -629,7 +632,8 @@ input#bezorgen:checked ~ .slider {
         <p>€ 5.00</p>
         <label for="bubbleTeaCount">Aantal</label>
         <select id="bubbleTeaCount" name="bubbleTeaCount"></select>
-        <button onclick="addToCart('Bubble Tea', 5, 'bubbleTeaCount')">Toevoegen</button>
+        <button type="button" class="qty-plus add-button" data-target="bubbleTeaCount">+</button>
+        <button type="button" class="qty-minus remove-button" data-target="bubbleTeaCount">-</button>
       </div>
     </div>
   </div>
@@ -641,14 +645,15 @@ input#bezorgen:checked ~ .slider {
       Kies uw dessert en hoeveelheid:
     </p>
 
-    <div class="menu-row">
+    <div class="menu-row menu-item" data-name="Mochi" data-price="4">
       <img src="images/mochi.jpg" alt="Mochi" class="menu-img" loading="lazy" />
       <div class="menu-content">
         <h3>Mochi (rijstcake)</h3>
         <p>€ 4.00</p>
         <label for="dessertCount">Aantal</label>
         <select id="dessertCount" name="dessertCount"></select>
-        <button onclick="addToCart('Mochi', 4, 'dessertCount')">Toevoegen</button>
+        <button type="button" class="qty-plus add-button" data-target="dessertCount">+</button>
+        <button type="button" class="qty-minus remove-button" data-target="dessertCount">-</button>
       </div>
     </div>
   </div>
@@ -660,14 +665,15 @@ input#bezorgen:checked ~ .slider {
       Kies uw snack en hoeveelheid:
     </p>
 
-    <div class="menu-row">
+    <div class="menu-row menu-item" data-name="Karaage" data-price="6.5">
       <img src="images/karaage.jpg" alt="Karaage" class="menu-img" loading="lazy" />
       <div class="menu-content">
         <h3>Karaage (Japanse gefrituurde kip)</h3>
         <p>€ 6.50</p>
         <label for="snackCount">Aantal</label>
         <select id="snackCount" name="snackCount"></select>
-        <button onclick="addToCart('Karaage', 6.5, 'snackCount')">Toevoegen</button>
+        <button type="button" class="qty-plus add-button" data-target="snackCount">+</button>
+        <button type="button" class="qty-minus remove-button" data-target="snackCount">-</button>
       </div>
     </div>
   </div>
@@ -679,268 +685,149 @@ input#bezorgen:checked ~ .slider {
       Kies uw vegan optie en hoeveelheid:
     </p>
 
-    <div class="menu-row">
+    <div class="menu-row menu-item" data-name="Avocado Roll" data-price="7">
       <img src="images/avocado-roll.jpg" alt="Avocado Roll" class="menu-img" loading="lazy" />
       <div class="menu-content">
         <h3>Avocado Roll</h3>
         <p>€ 7.00</p>
         <label for="veganCount">Aantal</label>
         <select id="veganCount" name="veganCount"></select>
-        <button onclick="addToCart('Avocado Roll', 7, 'veganCount')">Toevoegen</button>
+        <button type="button" class="qty-plus add-button" data-target="veganCount">+</button>
+        <button type="button" class="qty-minus remove-button" data-target="veganCount">-</button>
       </div>
     </div>
   </div>
 </section>
 
-
 <script>
-
-
-
-const cart = [];
-const menuContainer = document.getElementById("menuContainer");
-
-Object.entries(menuData).forEach(([category, items]) => {
-  const categoryTitle = document.createElement("h2");
-  categoryTitle.textContent = category;
-  menuContainer.appendChild(categoryTitle);
-
-  items.forEach((item) => {
-    const div = document.createElement('div');
-    div.className = 'menu-item';
-
-    if (item.image) {
-      div.style.backgroundImage = `url('${item.image}')`;
-      div.style.backgroundSize = 'cover';
-      div.style.backgroundPosition = 'center';
-      div.style.position = 'relative';
-      div.style.color = '#111';
-    }
-
-    const nameSpan = document.createElement('span');
-    nameSpan.textContent = `${item.name} - €${item.price.toFixed(2)}`;
-
-const select = document.createElement('select');
-for (let i = 0; i <= 20; i++) {
-  const option = document.createElement('option');
-  option.value = i;
-  option.textContent = i;
-  select.appendChild(option);
-}
-
-const sections = document.querySelectorAll('.menu-section');
-const indicator = document.getElementById('section-indicator');
-
-
-
-
-
-select.addEventListener('change', () => {
-  const qty = parseInt(select.value);
-  const existing = cart.find(cartItem => cartItem.name === item.name);
-
-  if (qty === 0) {
-    if (existing) {
-      const index = cart.find(cartItem => cartItem.name === item.name);
-      if (index !== -1) cart.splice(index, 1);
-    }
-  } else {
-    if (existing) {
-      existing.qty = qty;
-    } else {
-      cart.push({ name: item.name, price: item.price, qty });
-    }
-  }
-
-  updateCart();
-});
-
-
-    const addButton = document.createElement('button');
-    addButton.textContent = '+';
-    addButton.className = 'add-button';
-    addButton.onclick = () => {
-      let currentQty = parseInt(select.value);
-      if (currentQty < 20) {
-        currentQty++;
-        select.value = currentQty;
-
-        const existing = cart.find(cartItem => cartItem.name === item.name);
-        if (existing) {
-          existing.qty = currentQty;
-        } else {
-          cart.push({ name: item.name, price: item.price, qty: currentQty });
-        }
-        updateCart();
-      }
-    };
-
-const removeButton = document.createElement('button');
-removeButton.textContent = '-';
-removeButton.className = 'remove-button';
-removeButton.onclick = () => {
-  let currentQty = parseInt(select.value);
-  if (currentQty > 0) {
-    currentQty--;
-    select.value = currentQty;
-
-    const existing = cart.find(cartItem => cartItem.name === item.name);
-    if (existing) {
-      if (currentQty === 0) {
-        const index = cart.find(cartItem => cartItem.name === item.name);
-        if (index !== -1) cart.splice(index, 1);
-      } else {
-        existing.qty = currentQty;
-      }
-      updateCart();
-    }
-  }
+const cart = {};
+const extras = {
+  chopstickCount: { label: 'Stokjes', price: 0 },
+  soyCount: { label: 'Sojasaus', price: 0 },
+  wasabiCount: { label: 'Wasabi', price: 0 },
+  gemberCount: { label: 'Gember', price: 0 }
 };
 
-
-    div.appendChild(nameSpan);
-    div.appendChild(select);
-    div.appendChild(addButton);
-    div.appendChild(removeButton);
-
-    menuContainer.appendChild(div);
-  });
-});
-
-function populateSelect(id, max) {
-  const sel = document.getElementById(id);
-  for (let i = 0; i <= max; i++) {
+function populateSelect(select) {
+  for (let i = 0; i <= 20; i++) {
     const opt = document.createElement('option');
     opt.value = i;
     opt.textContent = i;
-    sel.appendChild(opt);
+    select.appendChild(opt);
   }
 }
 
-populateSelect('chopstickCount', 20);
-populateSelect('soyCount', 20);
-populateSelect('wasabiCount', 20);
-populateSelect('gemberCount', 20);
+function createSelect(current, onChange) {
+  const select = document.createElement('select');
+  for (let i = 0; i <= 20; i++) {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = i;
+    if (i === current) opt.selected = true;
+    select.appendChild(opt);
+  }
+  select.addEventListener('change', () => onChange(parseInt(select.value)));
+  return select;
+}
+
+function setQty(name, price, qty) {
+  if (qty === 0) {
+    delete cart[name];
+  } else {
+    cart[name] = { price, qty };
+  }
+  updateCart();
+}
 
 function updateCart() {
-  const cartList = document.getElementById('cart');
-  cartList.innerHTML = '';
+  const list = document.getElementById('cart');
+  list.innerHTML = '';
   let total = 0;
 
-  cart.forEach((item, index) => {
+  Object.entries(cart).forEach(([name, item]) => {
     const li = document.createElement('li');
-
-    const select = document.createElement('select');
-    for (let i = 0; i <= 20; i++) {
-      const option = document.createElement('option');
-      option.value = i;
-      option.textContent = i;
-      if (i === item.qty) option.selected = true;
-      select.appendChild(option);
-    }
-
-    select.addEventListener('change', () => {
-      const newQty = parseInt(select.value);
-
-      if (newQty === 0) {
-        cart.splice(index, 1);
-      } else {
-        item.qty = newQty;
-      }
-
-      const allMenuItems = document.querySelectorAll('.menu-item');
-      allMenuItems.forEach(menuDiv => {
-        const nameText = menuDiv.querySelector('span')?.textContent || '';
-        if (nameText.startsWith(item.name)) {
-          const menuSelect = menuDiv.querySelector('select');
-          if (menuSelect) {
-            menuSelect.value = newQty;
-          }
-        }
-      });
-
-      updateCart();
+    const sel = createSelect(item.qty, val => {
+      document.querySelector(`[data-name="${name}"] select`).value = val;
+      setQty(name, item.price, val);
     });
-
-    const itemTotal = item.qty * item.price;
-    li.textContent = `${item.name} = €${itemTotal.toFixed(2)} `;
-    li.appendChild(select);
-    cartList.appendChild(li);
-
-    total += itemTotal;
+    const subtotal = item.qty * item.price;
+    li.textContent = `${name} = €${subtotal.toFixed(2)} `;
+    li.appendChild(sel);
+    list.appendChild(li);
+    if (item.qty > 0) total += subtotal;
   });
 
-  if (cart.length > 0) {
-    const extrasTitle = document.createElement('li');
-    extrasTitle.textContent = '\u2014 Extra\u2019s \u2014';
-    extrasTitle.style.marginTop = '10px';
-    extrasTitle.style.fontWeight = 'bold';
-    cartList.appendChild(extrasTitle);
-  }
+  const title = document.createElement('li');
+  title.textContent = '— Extra’s —';
+  title.style.marginTop = '10px';
+  title.style.fontWeight = 'bold';
+  list.appendChild(title);
 
-  const extras = [
-    { label: "Stokjes", id: "chopstickCount" },
-    { label: "Sojasaus", id: "soyCount" },
-    { label: "Wasabi", id: "wasabiCount" },
-    { label: "Gember", id: "gemberCount" }
-  ];
-
-  extras.forEach(extra => {
+  Object.keys(extras).forEach(id => {
     const li = document.createElement('li');
-    li.textContent = `${extra.label}: `;
-
-    const select = document.createElement('select');
-    for (let i = 0; i <= 20; i++) {
-      const option = document.createElement('option');
-      option.value = i;
-      option.textContent = i;
-      if (i === parseInt(document.getElementById(extra.id).value)) {
-        option.selected = true;
-      }
-      select.appendChild(option);
-    }
-
-    select.addEventListener('change', () => {
-      document.getElementById(extra.id).value = select.value;
+    li.textContent = `${extras[id].label}: `;
+    const sel = createSelect(parseInt(document.getElementById(id).value || 0), val => {
+      document.getElementById(id).value = val;
       updateCart();
     });
-
-    li.appendChild(select);
-    cartList.appendChild(li);
+    li.appendChild(sel);
+    list.appendChild(li);
   });
 
   document.getElementById('total').textContent = total.toFixed(2);
 
-  const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+  const totalQty = Object.values(cart).reduce((s, it) => s + it.qty, 0) +
+    Object.keys(extras).reduce((s, id) => s + parseInt(document.getElementById(id).value || 0), 0);
+
   const badge = document.getElementById('cart-count');
   badge.textContent = totalQty;
   badge.style.display = totalQty > 0 ? 'inline-block' : 'none';
 }
 
-select.addEventListener('change', () => {
-  const qty = parseInt(select.value);
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.menu-item select').forEach(sel => {
+    populateSelect(sel);
+    const parent = sel.closest('.menu-item');
+    const name = parent.dataset.name;
+    const price = parseFloat(parent.dataset.price);
+    sel.addEventListener('change', () => {
+      setQty(name, price, parseInt(sel.value));
+    });
+  });
 
-  const existing = cart.find(cartItem => cartItem.name === item.name);
+  document.querySelectorAll('.qty-plus').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const sel = document.getElementById(btn.dataset.target);
+      let val = parseInt(sel.value);
+      if (val < 20) val++;
+      sel.value = val;
+      const parent = sel.closest('.menu-item');
+      setQty(parent.dataset.name, parseFloat(parent.dataset.price), val);
+    });
+  });
 
-  if (qty === 0) {
-    if (existing) {
-      const index = cart.find(cartItem => cartItem.name === item.name);
-      if (index !== -1) cart.splice(index, 1);
-    }
-  } else {
-    if (existing) {
-      existing.qty = qty;
-    } else {
-      cart.push({ name: item.name, price: item.price, qty });
-    }
-  }
+  document.querySelectorAll('.qty-minus').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const sel = document.getElementById(btn.dataset.target);
+      let val = parseInt(sel.value);
+      if (val > 0) val--;
+      sel.value = val;
+      const parent = sel.closest('.menu-item');
+      setQty(parent.dataset.name, parseFloat(parent.dataset.price), val);
+    });
+  });
+
+  Object.keys(extras).forEach(id => {
+    const sel = document.getElementById(id);
+    populateSelect(sel);
+    sel.addEventListener('change', updateCart);
+  });
 
   updateCart();
 });
+</script>
 
-
-
-
+<script>
 function checkout() {
   const paidItems = cart.filter(item => item.price > 0 && item.qty > 0);
   if (paidItems.length === 0) {
