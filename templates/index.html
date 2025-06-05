@@ -577,7 +577,7 @@ input#bezorgen:checked ~ .slider {
 </div>
 <!-- Sojasaus -->
 <div class="supply-row">
-<img alt="Sojasaus" class="supply-img photo" src="images/soja saus.jpg"/>
+<img alt="Sojasaus" class="supply-img photo" src="{{ url_for('static', filename='images/soja saus.jpg') }}"/>
 <div class="supply-content">
 <label for="soyCount">Aantal sojasaus flesjes</label>
 <select id="soyCount"></select>
@@ -585,7 +585,7 @@ input#bezorgen:checked ~ .slider {
 </div>
 <!-- Wasabi -->
 <div class="supply-row">
-<img alt="Wasabi" class="supply-img photo" src="images/wasabi.jpg"/>
+<img alt="Wasabi" class="supply-img photo" src="{{ url_for('static', filename='images/wasabi.jpg') }}"/>
 <div class="supply-content">
 <label for="wasabiCount">Aantal wasabi</label>
 <select id="wasabiCount"></select>
@@ -593,7 +593,7 @@ input#bezorgen:checked ~ .slider {
 </div>
 <!-- Gember -->
 <div class="supply-row">
-<img alt="Gember" class="supply-img photo" src="images/gember.jpg"/>
+<img alt="Gember" class="supply-img photo" src="{{ url_for('static', filename='images/gember.jpg') }}"/>
 <div class="supply-content">
 <label for="gemberCount">Aantal gember</label>
 <select id="gemberCount"></select>
@@ -635,7 +635,7 @@ input#bezorgen:checked ~ .slider {
     </p>
 
     <div class="bento-row menu-item" data-name="Chicken Bento" data-price="12">
-      <img class="bento-img" src="images/chicken-bento.jpg" alt="Chicken Bento" loading="lazy"/>
+      <img class="bento-img" src="{{ url_for('static', filename='images/chicken-bento.jpg') }}" alt="Chicken Bento" loading="lazy"/>
       <div class="bento-content">
         <h3>Chicken Bento</h3>
         <p>€ 12.00</p>
@@ -658,7 +658,7 @@ input#bezorgen:checked ~ .slider {
     </p>
 
     <div class="menu-row menu-item" data-name="Sake Maki" data-price="8.5">
-      <img class="menu-img" src="images/sake-maki.jpg" alt="Sake Maki" loading="lazy" />
+      <img class="menu-img" src="{{ url_for('static', filename='images/sake-maki.jpg') }}" alt="Sake Maki" loading="lazy" />
       <div class="menu-content">
         <h3>Sake Maki</h3>
         <p>€ 8.50</p>
@@ -693,7 +693,7 @@ input#bezorgen:checked ~ .slider {
 
     <div class="menu-row menu-item" data-name="Bubble Tea" data-price="5">
       <div class="menu-img">
-        <img src="images/bubble-tea.jpg" alt="Bubble Tea" class="menu-img" loading="lazy" />
+        <img src="{{ url_for('static', filename='images/bubble-tea.jpg') }}" alt="Bubble Tea" class="menu-img" loading="lazy" />
       </div>
       <div class="menu-content">
         <h3>Bubble Tea</h3>
@@ -714,7 +714,7 @@ input#bezorgen:checked ~ .slider {
     </p>
 
     <div class="menu-row menu-item" data-name="Mochi" data-price="4">
-      <img src="images/mochi.jpg" alt="Mochi" class="menu-img" loading="lazy" />
+      <img src="{{ url_for('static', filename='images/mochi.jpg') }}" alt="Mochi" class="menu-img" loading="lazy" />
       <div class="menu-content">
         <h3>Mochi (rijstcake)</h3>
         <p>€ 4.00</p>
@@ -734,7 +734,7 @@ input#bezorgen:checked ~ .slider {
     </p>
 
     <div class="menu-row menu-item" data-name="Karaage" data-price="6.5">
-      <img src="images/karaage.jpg" alt="Karaage" class="menu-img" loading="lazy" />
+      <img src="{{ url_for('static', filename='images/karaage.jpg') }}" alt="Karaage" class="menu-img" loading="lazy" />
       <div class="menu-content">
         <h3>Karaage (Japanse gefrituurde kip)</h3>
         <p>€ 6.50</p>
@@ -754,7 +754,7 @@ input#bezorgen:checked ~ .slider {
     </p>
 
     <div class="menu-row menu-item" data-name="Avocado Roll" data-price="7">
-      <img src="images/avocado-roll.jpg" alt="Avocado Roll" class="menu-img" loading="lazy" />
+      <img src="{{ url_for('static', filename='images/avocado-roll.jpg') }}" alt="Avocado Roll" class="menu-img" loading="lazy" />
       <div class="menu-content">
         <h3>Avocado Roll</h3>
         <p>€ 7.00</p>

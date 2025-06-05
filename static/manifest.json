@@ -1,0 +1,21 @@
+{
+  "name": "Sushi Nova",
+  "short_name": "SushiNova",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f5ecdd",
+  "theme_color": ""#f5ecdd",
+  "icons": [
+    {
+      "src": "/static/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/static/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
+
