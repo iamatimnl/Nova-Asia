@@ -59,6 +59,17 @@
     scroll-behavior: auto;
   }
 
+  .nav-categories {
+    display: flex;
+    white-space: nowrap;
+  }
+
+  @media (min-width: 768px) {
+    .nav-categories {
+      margin: 0 auto;
+    }
+  }
+
   .navbar a {
     flex: 0 0 auto;
     padding: 14px 20px;
@@ -500,14 +511,16 @@ input#bezorgen:checked ~ .slider {
 <body>
 <div class="navbar-container" id="navbar-container">
     <nav class="navbar" id="navbar">
-      <a href="#delivery-options">delivery-options</a>
-      <a href="#checkbox-group">checkbox-group</a>
-      <a href="#bento">Bento Box</a>
-      <a href="#sushi">Sushi Rolls</a>
-      <a href="#bubble">Bubble Tea</a>
-      <a href="#dessert">Dessert</a>
-      <a href="#snack">Snack</a>
-      <a href="#vegan">Vegan</a>
+      <div class="nav-categories">
+        <a href="#delivery-options">delivery-options</a>
+        <a href="#checkbox-group">checkbox-group</a>
+        <a href="#bento">Bento Box</a>
+        <a href="#sushi">Sushi Rolls</a>
+        <a href="#bubble">Bubble Tea</a>
+        <a href="#dessert">Dessert</a>
+        <a href="#snack">Snack</a>
+        <a href="#vegan">Vegan</a>
+      </div>
       <div class="indicator" id="indicator"></div>
     </nav>
   </div>
