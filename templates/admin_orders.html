@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        @media (max-width: 600px) {
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+            thead tr {
+                display: none;
+            }
+            tr {
+                margin-bottom: 15px;
+                border: 1px solid #ddd;
+                padding: 10px;
+            }
+            td {
+                border: none;
+                position: relative;
+                padding-left: 50%;
+            }
+            td:before {
+                position: absolute;
+                left: 10px;
+                top: 0;
+                width: 45%;
+                white-space: nowrap;
+                font-weight: bold;
+            }
+            td:nth-of-type(1):before { content: "ID"; }
+            td:nth-of-type(2):before { content: "Type"; }
+            td:nth-of-type(3):before { content: "Customer"; }
+            td:nth-of-type(4):before { content: "Phone"; }
+            td:nth-of-type(5):before { content: "Address"; }
+            td:nth-of-type(6):before { content: "Payment"; }
+            td:nth-of-type(7):before { content: "Created"; }
+            td:nth-of-type(8):before { content: "Total"; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Alle Bestellingen</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Type</th>
+                <th>Klant</th>
+                <th>Telefoon</th>
+                <th>Adres</th>
+                <th>Betaalmethode</th>
+                <th>Aangemaakt</th>
+                <th>Totaal (€)</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for info in order_data %}
+            <tr>
+                <td>{{ info.order.id }}</td>
+                <td>{{ 'Delivery' if info.order.order_type == 'delivery' else 'Pickup' }}</td>
+                <td>{{ info.order.customer_name }}</td>
+                <td>{{ info.order.phone }}</td>
+                <td>
+                    {% if info.order.order_type == 'delivery' %}
+                        {{ info.order.street }} {{ info.order.house_number }} {{ info.order.postcode }} {{ info.order.city }}
+                    {% else %}-{% endif %}
+                </td>
+                <td>{{ info.order.payment_method }}</td>
+                <td>{{ info.order.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>{{ '%.2f' % info.total }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

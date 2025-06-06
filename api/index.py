@@ -78,6 +78,24 @@ def pos():
 def admin():
     return render_template('admin.html')
 
+@app.route('/admin/orders')
+@login_required
+def admin_orders():
+    orders = Order.query.order_by(Order.created_at.desc()).all()
+    order_data = []
+    for o in orders:
+        try:
+            items = json.loads(o.items or "{}")
+        except Exception:
+            items = {}
+        total = 0
+        for item in items.values():
+            price = float(item.get("price", 0))
+            qty = int(item.get("qty", 0))
+            total += price * qty
+        order_data.append({"order": o, "total": total})
+    return render_template("admin_orders.html", order_data=order_data)
+
 @app.route('/login', methods=["GET", "POST"])
 def login():
     if request.method == "POST":
