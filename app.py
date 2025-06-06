@@ -130,6 +130,4 @@ def logout():
     logout_user()
     return redirect(url_for("login"))
 
-# ✅ Vercel 的入口点
-def handler(environ, start_response):
-    return app.wsgi_app(environ, start_response)
+
