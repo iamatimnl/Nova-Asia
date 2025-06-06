@@ -8,13 +8,31 @@ from flask_login import (
     login_required,
 )
 from datetime import datetime
+import os
+import tempfile
 import json
+from pathlib import Path
 
-# 初始化 Flask
-app = Flask(__name__, template_folder="../templates", static_folder="../static")
+# -------------------------------------------------------
+# Flask setup
+# -------------------------------------------------------
+BASE_DIR = Path(__file__).resolve().parent.parent
+app = Flask(
+    __name__,
+    template_folder=str(BASE_DIR / "templates"),
+    static_folder=str(BASE_DIR / "static"),
+)
 app.config["SECRET_KEY"] = "replace-this"
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
+
+db_file = BASE_DIR / "api" / "db.sqlite3"
+if os.environ.get("VERCEL"):
+    db_file = Path(tempfile.gettempdir()) / "db.sqlite3"
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_file}"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
 db = SQLAlchemy(app)
+with app.app_context():
+    db.create_all()
 
 # 设置登录管理
 login_manager = LoginManager(app)
