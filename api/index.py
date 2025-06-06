@@ -10,15 +10,17 @@ from flask_login import (
 from datetime import datetime
 import json
 
+# 初始化 Flask
 app = Flask(__name__, template_folder="../templates", static_folder="../static")
 app.config["SECRET_KEY"] = "replace-this"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
 db = SQLAlchemy(app)
 
+# 设置登录管理
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
 
-
+# 数据模型
 class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     order_type = db.Column(db.String(20))
@@ -34,11 +36,9 @@ class Order(db.Model):
     items = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-
 class User(UserMixin):
     def __init__(self, user_id: str):
         self.id = user_id
-
 
 @login_manager.user_loader
 def load_user(user_id: str):
@@ -46,10 +46,12 @@ def load_user(user_id: str):
         return User("admin")
     return None
 
+# 首页路由
 @app.route('/')
 def home():
     return render_template('index.html')
 
+# POS 路由
 @app.route('/pos', methods=["GET", "POST"])
 @login_required
 def pos():
@@ -73,11 +75,13 @@ def pos():
         return jsonify({"success": True})
     return render_template("pos.html")
 
+# 管理员首页（占位）
 @app.route('/admin')
 @login_required
 def admin():
     return render_template('admin.html')
 
+# 管理员订单查看页
 @app.route('/admin/orders')
 @login_required
 def admin_orders():
@@ -96,6 +100,7 @@ def admin_orders():
         order_data.append({"order": o, "total": total})
     return render_template("admin_orders.html", order_data=order_data)
 
+# 登录
 @app.route('/login', methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -107,12 +112,13 @@ def login():
         return render_template("login.html", error=True)
     return render_template("login.html")
 
-
+# 登出
 @app.route("/logout")
 @login_required
 def logout():
     logout_user()
     return redirect(url_for("login"))
-# 🔑 Vercel serverless entry point:
+
+# ✅ Vercel 的入口点
 def handler(environ, start_response):
     return app.wsgi_app(environ, start_response)
