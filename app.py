@@ -9,22 +9,19 @@ from flask_login import (
 )
 from datetime import datetime
 import os
-import tempfile
 import json
 
 # 初始化 Flask
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app = Flask(
     __name__,
-    template_folder=os.path.join(BASE_DIR, "../templates"),
-    static_folder=os.path.join(BASE_DIR, "../static"),
+    template_folder="templates",
+    static_folder="static",
 )
 app.config["SECRET_KEY"] = "replace-this"
 
-db_file = os.path.join(BASE_DIR, "db.sqlite3")
-if os.environ.get("VERCEL"):
-    db_file = os.path.join(tempfile.gettempdir(), "db.sqlite3")
-app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_file}"
+DATABASE = os.path.join(BASE_DIR, "db.sqlite3")
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{DATABASE}"
 
 db = SQLAlchemy(app)
 with app.app_context():
