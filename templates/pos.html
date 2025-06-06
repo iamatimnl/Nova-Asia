@@ -181,14 +181,38 @@
         <label for="custPhone">Telefoonnummer*</label>
         <input id="custPhone" type="tel" required />
         <div style="margin-top:10px;">
-          <input type="radio" id="typePickup" name="orderType" value="pickup" checked required />
+          <input type="radio" id="typePickup" name="orderType" value="pickup" checked />
           <label for="typePickup">Pickup</label>
           <input type="radio" id="typeDelivery" name="orderType" value="delivery" style="margin-left:20px;" />
           <label for="typeDelivery">Delivery</label>
         </div>
-        <div id="addressField" class="hidden" style="margin-top:10px;">
-          <label for="custAddress">Adres*</label>
-          <input id="custAddress" type="text" />
+        <div id="pickupFields" style="margin-top:10px;">
+          <label for="pickupTime">Pickup Tijd*</label>
+          <input id="pickupTime" type="time" />
+          <label for="pickupPayment">Betaalmethode*</label>
+          <select id="pickupPayment">
+            <option value="cash">Cash</option>
+            <option value="card">Card</option>
+            <option value="paid">Already Paid</option>
+          </select>
+        </div>
+        <div id="deliveryFields" class="hidden" style="margin-top:10px;">
+          <label for="postcode">Postcode*</label>
+          <input id="postcode" type="text" />
+          <label for="houseNumber">Huisnummer*</label>
+          <input id="houseNumber" type="text" />
+          <label for="street">Straat*</label>
+          <input id="street" type="text" readonly />
+          <label for="city">Plaats*</label>
+          <input id="city" type="text" readonly />
+          <label for="deliveryTime">Bezorgtijd (optioneel)</label>
+          <input id="deliveryTime" type="time" />
+          <label for="deliveryPayment">Betaalmethode*</label>
+          <select id="deliveryPayment">
+            <option value="cash">Cash</option>
+            <option value="card">Card</option>
+            <option value="paid">Already Paid</option>
+          </select>
         </div>
       </div>
     </section>
@@ -347,29 +371,63 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
   document.getElementById('typePickup').addEventListener('change',toggleAddress);
   document.getElementById('typeDelivery').addEventListener('change',toggleAddress);
+  document.getElementById('postcode').addEventListener('blur',fetchAddress);
+  document.getElementById('houseNumber').addEventListener('blur',fetchAddress);
   document.getElementById('submitOrder').addEventListener('click',submitOrder);
   updateCart();
   toggleAddress();
 });
 function toggleAddress(){
   const delivery=document.getElementById('typeDelivery').checked;
-  const field=document.getElementById('addressField');
-  const input=document.getElementById('custAddress');
-  if(delivery){ field.classList.remove('hidden'); input.required=true; }
-  else{ field.classList.add('hidden'); input.required=false; input.value=''; }
+  document.getElementById('pickupFields').classList.toggle('hidden',delivery);
+  document.getElementById('deliveryFields').classList.toggle('hidden',!delivery);
+  document.getElementById('pickupTime').required=!delivery?true:false;
+  document.getElementById('pickupPayment').required=!delivery?true:false;
+  document.getElementById('postcode').required=delivery;
+  document.getElementById('houseNumber').required=delivery;
+  document.getElementById('deliveryPayment').required=delivery;
+}
+function fetchAddress(){
+  const pc=document.getElementById('postcode').value.replace(/\s+/g,'');
+  const num=document.getElementById('houseNumber').value.trim();
+  if(pc.length===6 && num){
+    fetch(`https://free.bedrijfsdata.nl/v1.1/bag?postcode=${pc}&number=${num}`)
+      .then(r=>r.json()).then(d=>{
+        if(d && d.street){
+          document.getElementById('street').value=d.street;
+          document.getElementById('city').value=d.city;
+        }
+      }).catch(()=>{});
+  }
 }
 function submitOrder(){
   const name=document.getElementById('custName').value.trim();
   const phone=document.getElementById('custPhone').value.trim();
   if(!name||!phone){ alert('Vul naam en telefoon in.'); return; }
   const delivery=document.getElementById('typeDelivery').checked;
-  const address=document.getElementById('custAddress').value.trim();
-  if(delivery && !address){ alert('Adres is verplicht bij bezorgen.'); return; }
+  if(!delivery){
+    if(!document.getElementById('pickupTime').value){ alert('Pickup tijd is verplicht.'); return; }
+  }else{
+    if(!document.getElementById('postcode').value||!document.getElementById('houseNumber').value||!document.getElementById('street').value||!document.getElementById('city').value){
+      alert('Adresgegevens zijn verplicht.'); return; }
+  }
   if(Object.keys(cart).length===0){ alert('Geen producten geselecteerd.'); return; }
-  let summary=Object.entries(cart).map(([n,i])=>`${n} x ${i.qty}`).join('\n');
-  summary+=`\nNaam: ${name}\nTelefoon: ${phone}`;
-  if(delivery) summary+=`\nAdres: ${address}`; else summary+='\nPickup';
-  alert('Bestelling verzonden!\n\n'+summary);
+  const data={
+    customer_name:name,
+    phone:phone,
+    order_type:delivery?'delivery':'pickup',
+    items:cart,
+    payment_method: delivery?document.getElementById('deliveryPayment').value:document.getElementById('pickupPayment').value,
+    pickup_time: !delivery?document.getElementById('pickupTime').value:null,
+    delivery_time: delivery?document.getElementById('deliveryTime').value:null,
+    postcode: delivery?document.getElementById('postcode').value:null,
+    house_number: delivery?document.getElementById('houseNumber').value:null,
+    street: delivery?document.getElementById('street').value:null,
+    city: delivery?document.getElementById('city').value:null
+  };
+  fetch('/pos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
+    .then(r=>r.json()).then(res=>{ if(res.success){ alert('Bestelling opgeslagen'); location.reload(); } else { alert('Fout bij opslaan'); } })
+    .catch(()=>alert('Fout bij verzenden'));
 }
 </script>
 </body>
