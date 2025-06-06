@@ -95,3 +95,6 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for("login"))
+# 🔑 Vercel serverless entry point:
+def handler(environ, start_response):
+    return app.wsgi_app(environ, start_response)
