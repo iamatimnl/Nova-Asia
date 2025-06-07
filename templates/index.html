@@ -910,7 +910,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <script>
 function checkout() {
-  const paidItems = cart.filter(item => item.price > 0 && item.qty > 0);
+  const paidItems = Object.values(cart).filter(item => item.price > 0 && item.qty > 0);
   if (paidItems.length === 0) {
     alert('U moet ten minste één gerecht selecteren om te bestellen.');
     return;
@@ -921,7 +921,9 @@ function checkout() {
   const wasabiCount = document.getElementById('wasabiCount').value;
   const gemberCount = document.getElementById('gemberCount').value;
 
-  let orderSummary = cart.map(item => `${item.name} x ${item.qty}`).join('\n');
+  let orderSummary = Object.entries(cart)
+    .map(([name, item]) => `${name} x ${item.qty}`)
+    .join('\n');
   orderSummary += `\nStokjes nodig: ${chopstickCount}`;
   orderSummary += `\nSojasaus: ${soyCount}`;
   orderSummary += `\nWasabi: ${wasabiCount}`;
