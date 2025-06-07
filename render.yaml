@@ -2,8 +2,8 @@ services:
   - type: web
     name: nova-asia-test
     runtime: python
-    buildCommand: pip install -r requirements.txt  # 强制使用 pip
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+      pip install gunicorn
     startCommand: gunicorn wsgi:app
-    envVars:
-      - key: PIP_NO_CACHE_DIR
-        value: "false"
