@@ -1,7 +1,0 @@
-services:
-  - type: web
-    name: nova-asia
-    buildCommand: |
-      pip install --upgrade pip
-      pip install -r requirements.txt
-    startCommand: gunicorn wsgi:app
