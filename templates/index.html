@@ -978,7 +978,8 @@ function checkout() {
   const totalPrice = document.getElementById('total').textContent;
   const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}\nTotaal: €${totalPrice}`;
 
-  fetch('/api/send', {
+  fetch('https://nova-asia-api.onrender.com/api/send', {
+
 
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
