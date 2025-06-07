@@ -623,7 +623,7 @@ input#bezorgen:checked ~ .slider {
 </div>
 </div></section>
 
-<select id="bubbleTeaQty" class="qty-select"></select>
+
 <div class="cart-section" id="mobileCart">
   <button id="closeCartBtn" onclick="toggleMobileCart()">×</button>
   <h2 style="padding-top: 60px;">Winkelwagen</h2>
@@ -653,7 +653,7 @@ input#bezorgen:checked ~ .slider {
       Kies uw smaakcombinatie:
     </p>
 
-    <div class="menu-row menu-item" data-price="5">
+    <div class="menu-row menu-item" data-name="Bubble Tea" data-price="5">
       <div class="menu-img">
         <img src="{{ url_for('static', filename='images/bubble-tea.jpg') }}" alt="Bubble Tea" class="menu-img" loading="lazy" />
       </div>
@@ -686,14 +686,15 @@ input#bezorgen:checked ~ .slider {
           <option value="Tapioca">Tapioca</option>
         </select>
 
-        <label>Aantal</label>
-        <select id="bubbleTeaQty" name="Bubble Tea" class="qty-select"></select>
-        <button type="button" class="qty-plus" onclick="changeBubbleQty(1)">+</button>
-        <button type="button" class="qty-minus" onclick="changeBubbleQty(-1)">-</button>
+        <label for="bubbleTeaQty">Aantal</label>
+        <select id="bubbleTeaQty" class="qty-select"></select>
+        <button type="button" class="add-button qty-plus" onclick="changeBubbleQty(1)">+</button>
+        <button type="button" class="remove-button qty-minus" onclick="changeBubbleQty(-1)">−</button>
       </div>
     </div>
   </div>
 </section>
+
 
 
 
