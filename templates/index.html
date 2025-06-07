@@ -876,8 +876,9 @@ input#bezorgen:checked ~ .slider {
       Kies uw optie en hoeveelheid:
     </p>
 
+    <!-- Zalm -->
     <div class="menu-row menu-item" data-name="Zalm crispy rice sandwich" data-price="7">
-      <img src="{{ url_for('static', filename='images/avocado-roll.jpg') }}" alt="Avocado Roll" class="menu-img" loading="lazy" />
+      <img src="{{ url_for('static', filename='images/zalm-crispy.jpg') }}" alt="Zalm Crispy Rice Sandwich" class="menu-img" loading="lazy" />
       <div class="menu-content">
         <h3>Zalm crispy rice sandwich</h3>
         <p>€ 7.00</p>
@@ -887,8 +888,48 @@ input#bezorgen:checked ~ .slider {
         <button type="button" class="qty-minus remove-button" data-target="zalm-crispy-rice-sandwich">-</button>
       </div>
     </div>
+
+    <!-- Ebi -->
+    <div class="menu-row menu-item" data-name="Ebi crispy rice sandwich" data-price="7">
+      <img src="{{ url_for('static', filename='images/ebi-crispy.jpg') }}" alt="Ebi Crispy Rice Sandwich" class="menu-img" loading="lazy" />
+      <div class="menu-content">
+        <h3>Ebi crispy rice sandwich</h3>
+        <p>€ 7.00</p>
+        <label for="ebi-crispy-rice-sandwich">Aantal</label>
+        <select id="ebi-crispy-rice-sandwich" name="Ebi crispy rice sandwich"></select>
+        <button type="button" class="qty-plus add-button" data-target="ebi-crispy-rice-sandwich">+</button>
+        <button type="button" class="qty-minus remove-button" data-target="ebi-crispy-rice-sandwich">-</button>
+      </div>
+    </div>
+
+    <!-- Beef -->
+    <div class="menu-row menu-item" data-name="Beef crispy rice sandwich" data-price="7.5">
+      <img src="{{ url_for('static', filename='images/beef-crispy.jpg') }}" alt="Beef Crispy Rice Sandwich" class="menu-img" loading="lazy" />
+      <div class="menu-content">
+        <h3>Beef crispy rice sandwich</h3>
+        <p>€ 7.50</p>
+        <label for="beef-crispy-rice-sandwich">Aantal</label>
+        <select id="beef-crispy-rice-sandwich" name="Beef crispy rice sandwich"></select>
+        <button type="button" class="qty-plus add-button" data-target="beef-crispy-rice-sandwich">+</button>
+        <button type="button" class="qty-minus remove-button" data-target="beef-crispy-rice-sandwich">-</button>
+      </div>
+    </div>
+
+    <!-- Chicken -->
+    <div class="menu-row menu-item" data-name="Chicken crispy rice sandwich" data-price="7">
+      <img src="{{ url_for('static', filename='images/chicken-crispy.jpg') }}" alt="Chicken Crispy Rice Sandwich" class="menu-img" loading="lazy" />
+      <div class="menu-content">
+        <h3>Chicken crispy rice sandwich</h3>
+        <p>€ 7.00</p>
+        <label for="chicken-crispy-rice-sandwich">Aantal</label>
+        <select id="chicken-crispy-rice-sandwich" name="Chicken crispy rice sandwich"></select>
+        <button type="button" class="qty-plus add-button" data-target="chicken-crispy-rice-sandwich">+</button>
+        <button type="button" class="qty-minus remove-button" data-target="chicken-crispy-rice-sandwich">-</button>
+      </div>
+    </div>
   </div>
 </section>
+
 
 
 <script>
