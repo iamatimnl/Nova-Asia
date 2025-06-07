@@ -976,7 +976,8 @@ function checkout() {
   const totalPrice = document.getElementById('total').textContent;
   const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}\nTotaal: €${totalPrice}`;
 
-  fetch('https://flask-order-api.onrender.com/api/send', {
+  fetch('/api/send', {
+
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ message })
