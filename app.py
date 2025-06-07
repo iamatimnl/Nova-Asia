@@ -10,6 +10,7 @@ from flask_login import (
 from datetime import datetime
 import os
 import json
+import requests
 
 # 初始化 Flask
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -85,6 +86,28 @@ def pos():
         db.session.commit()
         return jsonify({"success": True})
     return render_template("pos.html")
+
+# 简易消息发送接口，用于通知 Telegram 或邮件
+@app.route('/api/send', methods=["POST"])
+def api_send():
+    data = request.get_json() or {}
+    message = data.get("message", "")
+
+    token = os.getenv("TELEGRAM_BOT_TOKEN")
+    chat_id = os.getenv("TELEGRAM_CHAT_ID")
+    if token and chat_id and message:
+        try:
+            resp = requests.post(
+                f"https://api.telegram.org/bot{token}/sendMessage",
+                json={"chat_id": chat_id, "text": message},
+                timeout=5,
+            )
+            resp.raise_for_status()
+        except Exception as e:
+            return jsonify({"status": "error", "error": str(e)}), 500
+
+    # 实际环境中这里可能还会发送邮件
+    return jsonify({"status": "ok"})
 
 # 管理员首页（占位）
 @app.route('/admin')
