@@ -687,9 +687,9 @@ input#bezorgen:checked ~ .slider {
         </select>
 
         <label for="bubbleTeaQty">Aantal</label>
-        <select id="bubbleTeaQty" class="qty-select"></select>
-        <button type="button" class="add-button qty-plus" onclick="changeBubbleQty(1)">+</button>
-        <button type="button" class="remove-button qty-minus" onclick="changeBubbleQty(-1)">−</button>
+        <select id="bubbleTeaQty"></select>
+        <button type="button" class="qty-plus add-button" data-target="bubbleTeaQty">+</button>
+        <button type="button" class="qty-minus remove-button" data-target="bubbleTeaQty">-</button>
       </div>
     </div>
   </div>
@@ -1074,9 +1074,15 @@ function updateCart() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  populateSelect(document.getElementById("bubbleTeaQty"));
-  document.getElementById("bubbleTeaQtyDisplay").textContent = "0";
+  const bubbleSel = document.getElementById("bubbleTeaQty");
+  populateSelect(bubbleSel);
+  bubbleSel.addEventListener('change', () => changeBubbleQty(0));
+
+  document.querySelector('.qty-plus[data-target="bubbleTeaQty"]').addEventListener('click', () => changeBubbleQty(1));
+  document.querySelector('.qty-minus[data-target="bubbleTeaQty"]').addEventListener('click', () => changeBubbleQty(-1));
+
   document.querySelectorAll('.menu-item select').forEach(sel => {
+    if (sel.id === 'bubbleTeaQty') return;
     populateSelect(sel);
     const parent = sel.closest('.menu-item');
     const name = parent.dataset.name;
@@ -1087,6 +1093,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.querySelectorAll('.qty-plus').forEach(btn => {
+    if (btn.dataset.target === 'bubbleTeaQty') return;
     btn.addEventListener('click', () => {
       const sel = document.getElementById(btn.dataset.target);
       let val = parseInt(sel.value);
@@ -1098,6 +1105,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.querySelectorAll('.qty-minus').forEach(btn => {
+    if (btn.dataset.target === 'bubbleTeaQty') return;
     btn.addEventListener('click', () => {
       const sel = document.getElementById(btn.dataset.target);
       let val = parseInt(sel.value);
