@@ -650,28 +650,28 @@ input#bezorgen:checked ~ .slider {
   <div class="menu-group">
     <h2>Bubble Tea 🧋</h2>
     <p style="margin-top: -12px; font-size: 0.95rem; color: #555; text-align: center;">
-      Kies uw type, smaak en topping:
+      Kies uw smaakcombinatie:
     </p>
 
-    <div class="menu-row">
+    <div class="menu-row menu-item" data-price="5">
       <div class="menu-img">
         <img src="{{ url_for('static', filename='images/bubble-tea.jpg') }}" alt="Bubble Tea" class="menu-img" loading="lazy" />
       </div>
       <div class="menu-content">
-        <h3>Bubble Tea (Keuze)</h3>
+        <h3>Bubble Tea</h3>
         <p>€ 5.00</p>
 
         <label for="bubbleType">Type</label>
         <select id="bubbleType">
-          <option value="">-- Kies type --</option>
-          <option value="Milk Tea">Milk Tea</option>
+          <option value="">Kies type</option>
           <option value="Green Tea">Green Tea</option>
+          <option value="Milk Tea">Milk Tea</option>
           <option value="Milkshake">Milkshake</option>
         </select>
 
         <label for="bubbleFlavor">Smaak</label>
         <select id="bubbleFlavor">
-          <option value="">-- Kies smaak --</option>
+          <option value="">Kies smaak</option>
           <option value="Mango">Mango</option>
           <option value="Appel">Appel</option>
           <option value="Matcha">Matcha</option>
@@ -680,25 +680,21 @@ input#bezorgen:checked ~ .slider {
 
         <label for="bubbleTopping">Topping</label>
         <select id="bubbleTopping">
-          <option value="">-- Kies topping --</option>
+          <option value="">Kies topping</option>
+          <option value="Appel Popping">Appel Popping</option>
+          <option value="Perzik Popping">Perzik Popping</option>
           <option value="Tapioca">Tapioca</option>
-          <option value="Popping Appel">Popping Appel</option>
-          <option value="Popping Perzik">Popping Perzik</option>
         </select>
 
-        <label for="bubbleTeaQty">Aantal</label>
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <button type="button" class="qty-minus" onclick="changeBubbleQty(-1)">-</button>
-          <select id="bubbleTeaQty" class="qty-select" style="display: none;"></select>
-          <span id="bubbleTeaQtyDisplay">0</span>
-          <button type="button" class="qty-plus" onclick="changeBubbleQty(1)">+</button>
-        </div>
-
-        <button type="button" onclick="addBubbleTeaToCart()">Toevoegen aan winkelwagen</button>
+        <label>Aantal</label>
+        <select id="bubbleTeaQty" name="Bubble Tea" class="qty-select"></select>
+        <button type="button" class="qty-plus" onclick="changeBubbleQty(1)">+</button>
+        <button type="button" class="qty-minus" onclick="changeBubbleQty(-1)">-</button>
       </div>
     </div>
   </div>
 </section>
+
 
 
 
@@ -978,30 +974,22 @@ const extras = {
 };
 
 
-
 function changeBubbleQty(delta) {
-  const sel = document.getElementById("bubbleTeaQty");
-  let val = parseInt(sel.value || 0);
+  const qtySel = document.getElementById('bubbleTeaQty');
+  let val = parseInt(qtySel.value || 0);
   val = Math.max(0, Math.min(20, val + delta));
-  sel.value = val;
-  document.getElementById("bubbleTeaQtyDisplay").textContent = val;
-}
+  qtySel.value = val;
 
-function addBubbleTeaToCart() {
   const type = document.getElementById("bubbleType").value;
   const flavor = document.getElementById("bubbleFlavor").value;
   const topping = document.getElementById("bubbleTopping").value;
-  const count = parseInt(document.getElementById("bubbleTeaQty").value || 0);
 
-  if (!type || !flavor || !topping) {
-    alert("Kies alstublieft een type, smaak en topping.");
-    return;
-  }
+  if (!type || !flavor || !topping) return;
 
   const fullName = `Bubble Tea (${type}, ${flavor}, ${topping})`;
-  const price = 5;
-  setQty(fullName, price, count);
+  setQty(fullName, 5, val);
 }
+
 
 
   
