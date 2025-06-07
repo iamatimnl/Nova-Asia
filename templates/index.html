@@ -1036,7 +1036,22 @@ function updateCart() {
   Object.entries(cart).forEach(([name, item]) => {
     const li = document.createElement('li');
     const sel = createSelect(item.qty, val => {
-      document.querySelector(`[data-name="${name}"] select`).value = val;
+      const menuItem = document.querySelector(`[data-name="${name}"]`);
+      if (menuItem) {
+        const qtyInput = menuItem.querySelector('select');
+        if (qtyInput) qtyInput.value = val;
+      } else if (name.startsWith('Bubble Tea')) {
+        const match = name.match(/^Bubble Tea \(([^,]+), ([^,]+), ([^)]+)\)$/);
+        if (match) {
+          const [, type, flavor, topping] = match;
+          const curType = document.getElementById('bubbleType').value;
+          const curFlavor = document.getElementById('bubbleFlavor').value;
+          const curTopping = document.getElementById('bubbleTopping').value;
+          if (type === curType && flavor === curFlavor && topping === curTopping) {
+            document.getElementById('bubbleTeaQty').value = val;
+          }
+        }
+      }
       setQty(name, item.price, val);
     });
     const subtotal = item.qty * item.price;
@@ -1082,7 +1097,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('.qty-minus[data-target="bubbleTeaQty"]').addEventListener('click', () => changeBubbleQty(-1));
 
   document.querySelectorAll('.menu-item select').forEach(sel => {
-    if (sel.id === 'bubbleTeaQty') return;
+    if (['bubbleTeaQty', 'bubbleType', 'bubbleFlavor', 'bubbleTopping'].includes(sel.id)) return;
     populateSelect(sel);
     const parent = sel.closest('.menu-item');
     const name = parent.dataset.name;
