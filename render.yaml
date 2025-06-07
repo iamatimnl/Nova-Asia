@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: nova-asia-test
+    runtime: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn wsgi:app"
