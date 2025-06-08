@@ -832,7 +832,7 @@ input#bezorgen:checked ~ .slider {
 <!-- Meatlover Bento -->
 <div class="menu-row menu-item" data-name="Meatlover Bento" data-price="14">
   <div class="menu-img">
-    <img src="{{ url_for('static', filename='images/meatlover-bento.jpg') }}" alt="Meatlover Bento">
+    <img src="{{ url_for('static', filename='images /Meatlove bento.png') }}" alt="Meatlover Bento">
   </div>
 
   <div class="menu-content">
@@ -1026,19 +1026,25 @@ input#bezorgen:checked ~ .slider {
 
 
     <!-- Ebi -->
-    <div class="menu-row menu-item" data-name="Ebi crispy rice sandwich" data-price="7">
-      <img src="{{ url_for('static', filename='images/ebi-crispy.jpg') }}" alt="Ebi Crispy Rice Sandwich" class="menu-img" loading="lazy" />
-      <div class="menu-content">
-        <h3>Ebi crispy rice sandwich</h3>
-        <p>€ 7.00</p>
-        <div class="qty-box">
-          <label for="ebi-crispy-rice-sandwich">Aantal</label>
-          <button type="button" class="qty-minus remove-button" data-target="ebi-crispy-rice-sandwich">-</button>
-          <select id="ebi-crispy-rice-sandwich" name="Ebi crispy rice sandwich"></select>
-          <button type="button" class="qty-plus add-button" data-target="ebi-crispy-rice-sandwich">+</button>
-        </div>
-      </div>
+    <!-- Ebi Crispy Rice Sandwich -->
+<div class="menu-row menu-item" data-name="Ebi crispy rice sandwich" data-price="7">
+  <div class="menu-img">
+    <img src="{{ url_for('static', filename='images/Ebi.png') }}" alt="Ebi Crispy Rice Sandwich">
+  </div>
+
+  <div class="menu-content">
+    <h3>Ebi crispy rice sandwich</h3>
+    <p>€ 7.00</p>
+
+    <div class="qty-box">
+      <label for="ebiCrispyRiceSandwich">Aantal</label>
+      <button type="button" class="qty-minus remove-button" data-target="ebiCrispyRiceSandwich">-</button>
+      <select id="ebiCrispyRiceSandwich" name="ebiCrispyRiceSandwich"></select>
+      <button type="button" class="qty-plus add-button" data-target="ebiCrispyRiceSandwich">+</button>
     </div>
+  </div>
+</div>
+
 
     <!-- Beef -->
     <div class="menu-row menu-item" data-name="Beef crispy rice sandwich" data-price="7.5">
