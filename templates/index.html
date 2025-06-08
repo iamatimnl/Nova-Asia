@@ -829,19 +829,25 @@ input#bezorgen:checked ~ .slider {
  
 
     <!-- Meatlover Bento -->
-    <div class="bento-row menu-item" data-name="Meatlover Bento" data-price="14">
-      <img class="bento-img" src="{{ url_for('static', filename='images/meatlover-bento.jpg') }}" alt="Meatlover Bento" loading="lazy"/>
-      <div class="bento-content">
-        <h3>Meatlover Bento</h3>
-        <p>€ 14.00</p>
-        <div class="qty-box">
-          <label for="meatloverBentoCount">Aantal</label>
-          <button type="button" class="qty-minus remove-button" data-target="meatloverBentoCount">-</button>
-          <select id="meatloverBentoCount" name="meatloverBentoCount"></select>
-          <button type="button" class="qty-plus add-button" data-target="meatloverBentoCount">+</button>
-        </div>
-      </div>
+<!-- Meatlover Bento -->
+<div class="menu-row menu-item" data-name="Meatlover Bento" data-price="14">
+  <div class="menu-img">
+    <img src="{{ url_for('static', filename='images/meatlover-bento.jpg') }}" alt="Meatlover Bento">
+  </div>
+
+  <div class="menu-content">
+    <h3>Meatlover Bento</h3>
+    <p>€ 14.00</p>
+
+    <div class="qty-box">
+      <label for="meatloverBentoCount">Aantal</label>
+      <button type="button" class="qty-minus remove-button" data-target="meatloverBentoCount">-</button>
+      <select id="meatloverBentoCount" name="meatloverBentoCount"></select>
+      <button type="button" class="qty-plus add-button" data-target="meatloverBentoCount">+</button>
     </div>
+  </div>
+</div>
+
 
     <!-- Zalm Lover Bento -->
     <div class="bento-row menu-item" data-name="Zalm Lover Bento" data-price="13">
