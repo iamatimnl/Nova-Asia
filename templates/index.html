@@ -1002,17 +1002,20 @@ input#bezorgen:checked ~ .slider {
 
 <section id="Crispy-rice-sandwich">
   <div class="menu-group">
-   <h2 style="margin-top: -8px; font-size: 1.5rem; color: #333; text-align: center; font-weight: bold;">
-  Crispy rice sandwich
-</h2>
-
+    <h2 style="margin-top: -8px; font-size: 1.5rem; color: #333; text-align: center; font-weight: bold;">
+      Crispy rice sandwich
+    </h2>
 
     <!-- Zalm -->
     <div class="menu-row menu-item" data-name="Zalm crispy rice sandwich" data-price="7">
-      <img src="{{ url_for('static', filename='images/zalm-crispy.jpg') }}" alt="Zalm Crispy Rice Sandwich" class="menu-img" loading="lazy" />
+      <div class="menu-img">
+        <img src="{{ url_for('static', filename='images/zalm.png') }}" alt="Zalm crispy rice sandwich">
+      </div>
+
       <div class="menu-content">
         <h3>Zalm crispy rice sandwich</h3>
         <p>€ 7.00</p>
+
         <div class="qty-box">
           <label for="zalm-crispy-rice-sandwich">Aantal</label>
           <button type="button" class="qty-minus remove-button" data-target="zalm-crispy-rice-sandwich">-</button>
@@ -1021,6 +1024,8 @@ input#bezorgen:checked ~ .slider {
         </div>
       </div>
     </div>
+
+
 
     <!-- Ebi -->
     <div class="menu-row menu-item" data-name="Ebi crispy rice sandwich" data-price="7">
