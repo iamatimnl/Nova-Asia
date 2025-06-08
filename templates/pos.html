@@ -425,7 +425,11 @@ function submitOrder(){
     street: delivery?document.getElementById('street').value:null,
     city: delivery?document.getElementById('city').value:null
   };
-  fetch('/pos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
+  fetch('https://flask-order-api.onrender.com/submit_order', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
     .then(r=>r.json()).then(res=>{ if(res.success){ alert('Bestelling opgeslagen'); location.reload(); } else { alert('Fout bij opslaan'); } })
     .catch(()=>alert('Fout bij verzenden'));
 }
