@@ -432,7 +432,7 @@ function submitOrder(){
 </script>
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script>
-  const socket = io();
+  const socket = io("https://flask-order-api.onrender.com");  // ⬅️ 这是你的 Flask API 在 Render 的地址
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   function beep(){
     const osc = audioCtx.createOscillator();
