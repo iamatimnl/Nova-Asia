@@ -597,17 +597,16 @@ input#bezorgen:checked ~ .slider {
 .checkout-btn:hover {
   background-color: #2f463a;
 }
-.cart-section select,
- {
-  width: 20%;
-  padding: 8px 12px;
-  font-size: 0.95rem;
+.cart-section select {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 1rem;
   border-radius: 12px;
   border: 1px solid #ccc;
   background-color: #fff;
   background-image: url("data:image/svg+xml;utf8,<svg fill='%23666' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
   background-repeat: no-repeat;
-  background-position: right 12px center;
+  background-position: right 10px center;
   background-size: 16px 16px;
   appearance: none;
   -webkit-appearance: none;
@@ -616,8 +615,9 @@ input#bezorgen:checked ~ .slider {
   transition: border-color 0.3s ease;
 }
 
+/* ✅ 统一 focus 样式 */
 .cart-section select:focus,
-.supply-content select:focus {
+.supply-select:focus {
   outline: none;
   border-color: #ff9900;
 }
