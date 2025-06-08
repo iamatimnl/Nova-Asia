@@ -519,62 +519,41 @@ input#bezorgen:checked ~ .slider {
 .supply-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  margin: 10px 0;
   padding: 10px 12px;
-  margin: 12px 0;
   background-color: #f9f5ee;
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  flex-wrap: wrap;
 }
 
-/* 🥢 emoji 样式 */
 .supply-img.emoji {
-  font-size: 26px;
-  width: 36px;
-  height: 36px;
+  font-size: 24px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* 图片图标样式 */
-.supply-img.photo {
-  width: 36px;
-  height: 36px;
-  object-fit: contain;
-  border-radius: 6px;
-  box-shadow: 0 0 2px rgba(0,0,0,0.05);
-}
-
-.supply-content {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap; /* 小屏也不会溢出 */
-}
-
-.supply-content label {
-  margin: 0;
+.supply-label {
+  font-size: 0.95rem;
   white-space: nowrap;
 }
 
-
-/* 下拉框样式 */
 .supply-select {
-  width: 100%;
-  max-width: 180px;
+  min-width: 80px;
   padding: 6px 10px;
   font-size: 0.95rem;
   border-radius: 10px;
   border: 1px solid #ccc;
-  background: #fff;
+  background: white;
   background-image: url("data:image/svg+xml;utf8,<svg fill='%23666' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
   background-repeat: no-repeat;
   background-position: right 10px center;
   background-size: 16px 16px;
   appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
   box-sizing: border-box;
 }
 
@@ -704,13 +683,11 @@ input#bezorgen:checked ~ .slider {
     Geef aan hoeveel u nodig heeft:
   </p>
 <div class="supply-row">
-<span class="supply-img emoji">🥢</span>
-<div class="supply-content">
-<label for="chopstickCount">Aantal stokjes </label>
-<select id="chopstickCount" class="supply-select"></select>
-
-
+  <span class="supply-img emoji">🥢</span>
+  <label for="chopstickCount" class="supply-label">Aantal stokjes</label>
+  <select id="chopstickCount" class="supply-select"></select>
 </div>
+
 </div>
 <!-- Sojasaus -->
 <div class="supply-row">
