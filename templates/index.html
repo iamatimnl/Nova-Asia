@@ -601,6 +601,21 @@ input#bezorgen:checked ~ .slider {
   border-color: #ff9900;
 }
 
+.cart-section textarea {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 1rem;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+.cart-section textarea:focus {
+  outline: none;
+  border-color: #ff9900;
+}
+
 
 </style>
 </head>
@@ -720,6 +735,8 @@ input#bezorgen:checked ~ .slider {
   <button id="closeCartBtn" onclick="toggleMobileCart()">×</button>
   <h2 style="padding-top: 60px;">Winkelwagen</h2>
   <ul id="cart"></ul>
+  <label for="remark" style="display:block;margin-top:10px;">Opmerking:</label>
+  <textarea id="remark" rows="2" placeholder="Bijv. geen wasabi, extra stokjes"></textarea>
   <div class="total">Totaal: €<span id="total">0.00</span></div>
   <button class="checkout-btn" onclick="checkout()">Afrekenen &amp; Betalen</button>
 
@@ -1383,6 +1400,7 @@ function checkout() {
   const soyCount = document.getElementById('soyCount').value;
   const wasabiCount = document.getElementById('wasabiCount').value;
   const gemberCount = document.getElementById('gemberCount').value;
+  const remark = document.getElementById('remark').value.trim();
 
   let orderSummary = Object.entries(cart)
     .map(([name, item]) => `${name} x ${item.qty}`)
@@ -1391,6 +1409,7 @@ function checkout() {
   orderSummary += `\nSojasaus: ${soyCount}`;
   orderSummary += `\nWasabi: ${wasabiCount}`;
   orderSummary += `\nGember: ${gemberCount}`;
+  if (remark) orderSummary += `\nOpmerking: ${remark}`;
 
   const orderType = document.querySelector('input[name="orderType"]:checked').value;
   let customerDetails = '';
