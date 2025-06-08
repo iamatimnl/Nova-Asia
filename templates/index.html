@@ -564,6 +564,24 @@ input#bezorgen:checked ~ .slider {
   -moz-appearance: none;
 }
 
+.checkout-btn {
+  background-color: var(--accent-color);
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: background 0.3s ease;
+  margin-top: 16px;
+  width: 100%;
+}
+
+.checkout-btn:hover {
+  background-color: #2f463a;
+}
 
 
 </style>
@@ -687,7 +705,8 @@ input#bezorgen:checked ~ .slider {
   <h2 style="padding-top: 60px;">Winkelwagen</h2>
   <ul id="cart"></ul>
   <div class="total">Totaal: €<span id="total">0.00</span></div>
-  <button onclick="checkout()">Afrekenen &amp; Betalen</button>
+  <button class="checkout-btn" onclick="checkout()">Afrekenen &amp; Betalen</button>
+
 </div>
 
 <button id="cart-toggle" onclick="toggleMobileCart()">🛒<span id="cart-count" style="
