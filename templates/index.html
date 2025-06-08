@@ -127,17 +127,12 @@
   }
 
   .menu-item {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    align-items: center;
-    padding: 16px;
-    margin-bottom: 12px;
-    border-radius: 16px;
     position: relative;
-    background: var(--off-white);
-    border: 1px solid #e0e0e0;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: 16px;
+    margin: 10px auto;
+    max-width: 280px;
   }
 
   img {
@@ -146,12 +141,11 @@
   }
 
   .menu-item img {
+    position: absolute;
+    inset: 0;
     width: 100%;
-    max-width: 120px;
-    height: auto;
+    height: 100%;
     object-fit: cover;
-    border-radius: 12px;
-    flex-shrink: 0;
   }
 
   img.supply-img {
@@ -170,30 +164,64 @@
     z-index: 1;
   }
 
+  .menu-item .menu-content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px;
+  }
+
+  .menu-item h3,
+  .menu-item p {
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    padding: 4px 8px;
+    margin: 2px 0;
+  }
+
+  .qty-box {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px;
+    width: calc(100% - 16px);
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+  }
+
   .menu-item select,
-  .menu-item button {
-    margin-top: 8px;
-    padding: 6px 8px;
+  .menu-item button,
+  .menu-item label {
+    margin: 2px 0;
+    padding: 4px 6px;
     font-size: 0.85rem;
-    height: 36px;
     border-radius: 10px;
     border: 1px solid #ccc;
+    background: rgba(255, 255, 255, 0.7);
   }
 
 
   .menu-item button {
-  width: 2.2rem;
-  height: 2.2rem;
-  font-size: 1rem;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  border: none;
-  transition: background 0.2s ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
+    width: 2.2rem;
+    height: 2.2rem;
+    font-size: 1rem;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: none;
+    transition: background 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.7);
+  }
 
 /* 保留颜色差异 */
 .add-button {
@@ -221,16 +249,6 @@
     height: 1.8rem;
     font-size: 0.9rem;
   }
-  .menu-item img {
-    max-width: 80px;
-  }
-}
-
-  @media (max-width: 600px) {
-    .menu-item {
-      flex-direction: column;
-      align-items: flex-start;
-    }
 }
 
 
@@ -687,10 +705,12 @@ input#bezorgen:checked ~ .slider {
           <option value="Tapioca">Tapioca</option>
         </select>
 
-        <label for="bubbleTeaQty">Aantal</label>
-        <select id="bubbleTeaQty"></select>
-        <button type="button" class="qty-plus add-button" data-target="bubbleTeaQty">+</button>
-        <button type="button" class="qty-minus remove-button" data-target="bubbleTeaQty">-</button>
+        <div class="qty-box">
+          <label for="bubbleTeaQty">Aantal</label>
+          <button type="button" class="qty-minus remove-button" data-target="bubbleTeaQty">-</button>
+          <select id="bubbleTeaQty"></select>
+          <button type="button" class="qty-plus add-button" data-target="bubbleTeaQty">+</button>
+        </div>
       </div>
     </div>
   </div>
@@ -714,10 +734,12 @@ input#bezorgen:checked ~ .slider {
       <div class="bento-content">
         <h3>Chicken Bento</h3>
         <p>€ 12.00</p>
-        <label for="chickenBentoCount">Aantal</label>
-        <select id="chickenBentoCount" name="chickenBentoCount"></select>
-        <button type="button" class="qty-plus add-button" data-target="chickenBentoCount">+</button>
-        <button type="button" class="qty-minus remove-button" data-target="chickenBentoCount">-</button>
+        <div class="qty-box">
+          <label for="chickenBentoCount">Aantal</label>
+          <button type="button" class="qty-minus remove-button" data-target="chickenBentoCount">-</button>
+          <select id="chickenBentoCount" name="chickenBentoCount"></select>
+          <button type="button" class="qty-plus add-button" data-target="chickenBentoCount">+</button>
+        </div>
       </div>
     </div>
 
@@ -727,10 +749,12 @@ input#bezorgen:checked ~ .slider {
       <div class="bento-content">
         <h3>Meatlover Bento</h3>
         <p>€ 14.00</p>
-        <label for="meatloverBentoCount">Aantal</label>
-        <select id="meatloverBentoCount" name="meatloverBentoCount"></select>
-        <button type="button" class="qty-plus add-button" data-target="meatloverBentoCount">+</button>
-        <button type="button" class="qty-minus remove-button" data-target="meatloverBentoCount">-</button>
+        <div class="qty-box">
+          <label for="meatloverBentoCount">Aantal</label>
+          <button type="button" class="qty-minus remove-button" data-target="meatloverBentoCount">-</button>
+          <select id="meatloverBentoCount" name="meatloverBentoCount"></select>
+          <button type="button" class="qty-plus add-button" data-target="meatloverBentoCount">+</button>
+        </div>
       </div>
     </div>
 
@@ -740,10 +764,12 @@ input#bezorgen:checked ~ .slider {
       <div class="bento-content">
         <h3>Zalm Lover Bento</h3>
         <p>€ 13.00</p>
-        <label for="zalmLoverBentoCount">Aantal</label>
-        <select id="zalmLoverBentoCount" name="zalmLoverBentoCount"></select>
-        <button type="button" class="qty-plus add-button" data-target="zalmLoverBentoCount">+</button>
-        <button type="button" class="qty-minus remove-button" data-target="zalmLoverBentoCount">-</button>
+        <div class="qty-box">
+          <label for="zalmLoverBentoCount">Aantal</label>
+          <button type="button" class="qty-minus remove-button" data-target="zalmLoverBentoCount">-</button>
+          <select id="zalmLoverBentoCount" name="zalmLoverBentoCount"></select>
+          <button type="button" class="qty-plus add-button" data-target="zalmLoverBentoCount">+</button>
+        </div>
       </div>
     </div>
 
@@ -753,10 +779,12 @@ input#bezorgen:checked ~ .slider {
       <div class="bento-content">
         <h3>Ebi Lover Bento</h3>
         <p>€ 13.00</p>
-        <label for="ebiLoverBentoCount">Aantal</label>
-        <select id="ebiLoverBentoCount" name="ebiLoverBentoCount"></select>
-        <button type="button" class="qty-plus add-button" data-target="ebiLoverBentoCount">+</button>
-        <button type="button" class="qty-minus remove-button" data-target="ebiLoverBentoCount">-</button>
+        <div class="qty-box">
+          <label for="ebiLoverBentoCount">Aantal</label>
+          <button type="button" class="qty-minus remove-button" data-target="ebiLoverBentoCount">-</button>
+          <select id="ebiLoverBentoCount" name="ebiLoverBentoCount"></select>
+          <button type="button" class="qty-plus add-button" data-target="ebiLoverBentoCount">+</button>
+        </div>
       </div>
     </div>
 
@@ -766,10 +794,12 @@ input#bezorgen:checked ~ .slider {
       <div class="bento-content">
         <h3>Surf & Turf Bento</h3>
         <p>€ 15.00</p>
-        <label for="surfTurfBentoCount">Aantal</label>
-        <select id="surfTurfBentoCount" name="surfTurfBentoCount"></select>
-        <button type="button" class="qty-plus add-button" data-target="surfTurfBentoCount">+</button>
-        <button type="button" class="qty-minus remove-button" data-target="surfTurfBentoCount">-</button>
+        <div class="qty-box">
+          <label for="surfTurfBentoCount">Aantal</label>
+          <button type="button" class="qty-minus remove-button" data-target="surfTurfBentoCount">-</button>
+          <select id="surfTurfBentoCount" name="surfTurfBentoCount"></select>
+          <button type="button" class="qty-plus add-button" data-target="surfTurfBentoCount">+</button>
+        </div>
       </div>
     </div>
 
@@ -779,10 +809,12 @@ input#bezorgen:checked ~ .slider {
       <div class="bento-content">
         <h3>Dimsum Bento</h3>
         <p>€ 11.00</p>
-        <label for="dimsumBentoCount">Aantal</label>
-        <select id="dimsumBentoCount" name="dimsumBentoCount"></select>
-        <button type="button" class="qty-plus add-button" data-target="dimsumBentoCount">+</button>
-        <button type="button" class="qty-minus remove-button" data-target="dimsumBentoCount">-</button>
+        <div class="qty-box">
+          <label for="dimsumBentoCount">Aantal</label>
+          <button type="button" class="qty-minus remove-button" data-target="dimsumBentoCount">-</button>
+          <select id="dimsumBentoCount" name="dimsumBentoCount"></select>
+          <button type="button" class="qty-plus add-button" data-target="dimsumBentoCount">+</button>
+        </div>
       </div>
     </div>
 
@@ -792,10 +824,12 @@ input#bezorgen:checked ~ .slider {
       <div class="bento-content">
         <h3>Lamskotelet Bento</h3>
         <p>€ 14.00</p>
-        <label for="lamsBentoCount">Aantal</label>
-        <select id="lamsBentoCount" name="lamsBentoCount"></select>
-        <button type="button" class="qty-plus add-button" data-target="lamsBentoCount">+</button>
-        <button type="button" class="qty-minus remove-button" data-target="lamsBentoCount">-</button>
+        <div class="qty-box">
+          <label for="lamsBentoCount">Aantal</label>
+          <button type="button" class="qty-minus remove-button" data-target="lamsBentoCount">-</button>
+          <select id="lamsBentoCount" name="lamsBentoCount"></select>
+          <button type="button" class="qty-plus add-button" data-target="lamsBentoCount">+</button>
+        </div>
       </div>
     </div>
 
@@ -805,10 +839,12 @@ input#bezorgen:checked ~ .slider {
       <div class="bento-content">
         <h3>Veggie Bento</h3>
         <p>€ 10.00</p>
-        <label for="veggieBentoCount">Aantal</label>
-        <select id="veggieBentoCount" name="veggieBentoCount"></select>
-        <button type="button" class="qty-plus add-button" data-target="veggieBentoCount">+</button>
-        <button type="button" class="qty-minus remove-button" data-target="veggieBentoCount">-</button>
+        <div class="qty-box">
+          <label for="veggieBentoCount">Aantal</label>
+          <button type="button" class="qty-minus remove-button" data-target="veggieBentoCount">-</button>
+          <select id="veggieBentoCount" name="veggieBentoCount"></select>
+          <button type="button" class="qty-plus add-button" data-target="veggieBentoCount">+</button>
+        </div>
       </div>
     </div>
 
@@ -818,10 +854,12 @@ input#bezorgen:checked ~ .slider {
       <div class="bento-content">
         <h3>Sushi Bento</h3>
         <p>€ 14.00</p>
-        <label for="sushiBentoCount">Aantal</label>
-        <select id="sushiBentoCount" name="sushiBentoCount"></select>
-        <button type="button" class="qty-plus add-button" data-target="sushiBentoCount">+</button>
-        <button type="button" class="qty-minus remove-button" data-target="sushiBentoCount">-</button>
+        <div class="qty-box">
+          <label for="sushiBentoCount">Aantal</label>
+          <button type="button" class="qty-minus remove-button" data-target="sushiBentoCount">-</button>
+          <select id="sushiBentoCount" name="sushiBentoCount"></select>
+          <button type="button" class="qty-plus add-button" data-target="sushiBentoCount">+</button>
+        </div>
       </div>
     </div>
   </div>
@@ -841,10 +879,12 @@ input#bezorgen:checked ~ .slider {
       <div class="menu-content">
         <h3>Sake Maki</h3>
         <p>€ 8.50</p>
-        <label for="sakeCount">Aantal</label>
-        <select id="sakeCount" name="sakeCount"></select>
-        <button type="button" class="qty-plus add-button" data-target="sakeCount">+</button>
-        <button type="button" class="qty-minus remove-button" data-target="sakeCount">-</button>
+        <div class="qty-box">
+          <label for="sakeCount">Aantal</label>
+          <button type="button" class="qty-minus remove-button" data-target="sakeCount">-</button>
+          <select id="sakeCount" name="sakeCount"></select>
+          <button type="button" class="qty-plus add-button" data-target="sakeCount">+</button>
+        </div>
       </div>
     </div>
 
@@ -855,10 +895,12 @@ input#bezorgen:checked ~ .slider {
       <div class="menu-content">
         <h3>California Roll</h3>
         <p>€ 10.00</p>
-        <label for="californiaCount">Aantal</label>
-        <select id="californiaCount" name="californiaCount"></select>
-        <button type="button" class="qty-plus add-button" data-target="californiaCount">+</button>
-        <button type="button" class="qty-minus remove-button" data-target="californiaCount">-</button>
+        <div class="qty-box">
+          <label for="californiaCount">Aantal</label>
+          <button type="button" class="qty-minus remove-button" data-target="californiaCount">-</button>
+          <select id="californiaCount" name="californiaCount"></select>
+          <button type="button" class="qty-plus add-button" data-target="californiaCount">+</button>
+        </div>
       </div>
     </div>
   </div>
@@ -878,10 +920,12 @@ input#bezorgen:checked ~ .slider {
       <div class="menu-content">
         <h3>Zalm crispy rice sandwich</h3>
         <p>€ 7.00</p>
-        <label for="zalm-crispy-rice-sandwich">Aantal</label>
-        <select id="zalm-crispy-rice-sandwich" name="Zalm crispy rice sandwich"></select>
-        <button type="button" class="qty-plus add-button" data-target="zalm-crispy-rice-sandwich">+</button>
-        <button type="button" class="qty-minus remove-button" data-target="zalm-crispy-rice-sandwich">-</button>
+        <div class="qty-box">
+          <label for="zalm-crispy-rice-sandwich">Aantal</label>
+          <button type="button" class="qty-minus remove-button" data-target="zalm-crispy-rice-sandwich">-</button>
+          <select id="zalm-crispy-rice-sandwich" name="Zalm crispy rice sandwich"></select>
+          <button type="button" class="qty-plus add-button" data-target="zalm-crispy-rice-sandwich">+</button>
+        </div>
       </div>
     </div>
 
@@ -891,10 +935,12 @@ input#bezorgen:checked ~ .slider {
       <div class="menu-content">
         <h3>Ebi crispy rice sandwich</h3>
         <p>€ 7.00</p>
-        <label for="ebi-crispy-rice-sandwich">Aantal</label>
-        <select id="ebi-crispy-rice-sandwich" name="Ebi crispy rice sandwich"></select>
-        <button type="button" class="qty-plus add-button" data-target="ebi-crispy-rice-sandwich">+</button>
-        <button type="button" class="qty-minus remove-button" data-target="ebi-crispy-rice-sandwich">-</button>
+        <div class="qty-box">
+          <label for="ebi-crispy-rice-sandwich">Aantal</label>
+          <button type="button" class="qty-minus remove-button" data-target="ebi-crispy-rice-sandwich">-</button>
+          <select id="ebi-crispy-rice-sandwich" name="Ebi crispy rice sandwich"></select>
+          <button type="button" class="qty-plus add-button" data-target="ebi-crispy-rice-sandwich">+</button>
+        </div>
       </div>
     </div>
 
@@ -904,10 +950,12 @@ input#bezorgen:checked ~ .slider {
       <div class="menu-content">
         <h3>Beef crispy rice sandwich</h3>
         <p>€ 7.50</p>
-        <label for="beef-crispy-rice-sandwich">Aantal</label>
-        <select id="beef-crispy-rice-sandwich" name="Beef crispy rice sandwich"></select>
-        <button type="button" class="qty-plus add-button" data-target="beef-crispy-rice-sandwich">+</button>
-        <button type="button" class="qty-minus remove-button" data-target="beef-crispy-rice-sandwich">-</button>
+        <div class="qty-box">
+          <label for="beef-crispy-rice-sandwich">Aantal</label>
+          <button type="button" class="qty-minus remove-button" data-target="beef-crispy-rice-sandwich">-</button>
+          <select id="beef-crispy-rice-sandwich" name="Beef crispy rice sandwich"></select>
+          <button type="button" class="qty-plus add-button" data-target="beef-crispy-rice-sandwich">+</button>
+        </div>
       </div>
     </div>
 
@@ -917,10 +965,12 @@ input#bezorgen:checked ~ .slider {
       <div class="menu-content">
         <h3>Chicken crispy rice sandwich</h3>
         <p>€ 7.00</p>
-        <label for="chicken-crispy-rice-sandwich">Aantal</label>
-        <select id="chicken-crispy-rice-sandwich" name="Chicken crispy rice sandwich"></select>
-        <button type="button" class="qty-plus add-button" data-target="chicken-crispy-rice-sandwich">+</button>
-        <button type="button" class="qty-minus remove-button" data-target="chicken-crispy-rice-sandwich">-</button>
+        <div class="qty-box">
+          <label for="chicken-crispy-rice-sandwich">Aantal</label>
+          <button type="button" class="qty-minus remove-button" data-target="chicken-crispy-rice-sandwich">-</button>
+          <select id="chicken-crispy-rice-sandwich" name="Chicken crispy rice sandwich"></select>
+          <button type="button" class="qty-plus add-button" data-target="chicken-crispy-rice-sandwich">+</button>
+        </div>
       </div>
     </div>
   </div>
@@ -937,10 +987,12 @@ input#bezorgen:checked ~ .slider {
       <div class="menu-content">
         <h3>Karaage (Japanse gefrituurde kip)</h3>
         <p>€ 6.50</p>
-        <label for="snackCount">Aantal</label>
-        <select id="snackCount" name="snackCount"></select>
-        <button type="button" class="qty-plus add-button" data-target="snackCount">+</button>
-        <button type="button" class="qty-minus remove-button" data-target="snackCount">-</button>
+        <div class="qty-box">
+          <label for="snackCount">Aantal</label>
+          <button type="button" class="qty-minus remove-button" data-target="snackCount">-</button>
+          <select id="snackCount" name="snackCount"></select>
+          <button type="button" class="qty-plus add-button" data-target="snackCount">+</button>
+        </div>
       </div>
     </div>
   </div>
@@ -957,10 +1009,12 @@ input#bezorgen:checked ~ .slider {
       <div class="menu-content">
         <h3>Mochi (rijstcake)</h3>
         <p>€ 4.00</p>
-        <label for="dessertCount">Aantal</label>
-        <select id="dessertCount" name="dessertCount"></select>
-        <button type="button" class="qty-plus add-button" data-target="dessertCount">+</button>
-        <button type="button" class="qty-minus remove-button" data-target="dessertCount">-</button>
+        <div class="qty-box">
+          <label for="dessertCount">Aantal</label>
+          <button type="button" class="qty-minus remove-button" data-target="dessertCount">-</button>
+          <select id="dessertCount" name="dessertCount"></select>
+          <button type="button" class="qty-plus add-button" data-target="dessertCount">+</button>
+        </div>
       </div>
     </div>
   </div>
