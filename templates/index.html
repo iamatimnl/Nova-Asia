@@ -546,13 +546,18 @@ input#bezorgen:checked ~ .slider {
   box-shadow: 0 0 2px rgba(0,0,0,0.05);
 }
 
-/* 内容区自动占满剩余空间 */
 .supply-content {
-  flex: 1;
   display: flex;
-  flex-direction: column;
-  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap; /* 小屏也不会溢出 */
 }
+
+.supply-content label {
+  margin: 0;
+  white-space: nowrap;
+}
+
 
 /* 下拉框样式 */
 .supply-select {
