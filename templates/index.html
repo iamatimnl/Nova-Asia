@@ -746,20 +746,22 @@ input#bezorgen:checked ~ .slider {
 
 
 
-
 <section id="bento">
-  <div class="bento-group">
+  <div class="menu-group">
     <p style="margin-top: -12px; font-size: 0.95rem; color: #555; text-align: center;">
       Kies uw favoriete Bento en hoeveelheid:
     </p>
 
     <!-- Chicken Bento -->
-    <div class="bento-row menu-item" data-name="Chicken Bento" data-price="12">
-      <img src="{{ url_for('static', filename='images/chicken-bento.jpg') }}" alt="Chicken Bento">
+    <div class="menu-row menu-item" data-name="Chicken Bento" data-price="12">
+      <div class="menu-img">
+        <img src="{{ url_for('static', filename='images/chicken-bento.jpg') }}" alt="Chicken Bento">
+      </div>
 
-      <div class="bento-content">
+      <div class="menu-content">
         <h3>Chicken Bento</h3>
         <p>€ 12.00</p>
+
         <div class="qty-box">
           <label for="chickenBentoCount">Aantal</label>
           <button type="button" class="qty-minus remove-button" data-target="chickenBentoCount">-</button>
@@ -768,6 +770,7 @@ input#bezorgen:checked ~ .slider {
         </div>
       </div>
     </div>
+ 
 
     <!-- Meatlover Bento -->
     <div class="bento-row menu-item" data-name="Meatlover Bento" data-price="14">
