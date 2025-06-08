@@ -683,11 +683,11 @@ input#bezorgen:checked ~ .slider {
     Geef aan hoeveel u nodig heeft:
   </p>
 <div class="supply-row">
-  <span class="supply-img emoji">🥢</span>
-  <label for="chopstickCount" class="supply-label">Aantal stokjes</label>
-  <select id="chopstickCount" class="supply-select"></select>
-</div>
-
+  <img alt="Stokjes" class="supply-img photo" src="{{ url_for('static', filename='images/chopsticks.webp') }}"/>
+  <div class="supply-content">
+    <label for="chopstickCount">Aantal stokjes</label>
+    <select id="chopstickCount" class="supply-select"></select>
+  </div>
 </div>
 <!-- Sojasaus -->
 <div class="supply-row">
