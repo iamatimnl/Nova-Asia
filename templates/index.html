@@ -1327,7 +1327,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('.qty-minus[data-target="bubbleTeaQty"]').addEventListener('click', () => changeBubbleQty(-1));
 
   document.querySelectorAll('.menu-item select').forEach(sel => {
-    if (['bubbleTeaQty', 'bubbleType', 'bubbleFlavor', 'bubbleTopping'].includes(sel.id)) return;
+    if (['bubbleTeaQty', 'bubbleType', 'bubbleFlavor', 'bubbleTopping', 'xBentoMain', 'xBentoSide', 'xBentoRice'].includes(sel.id)) return;
     populateSelect(sel);
     const parent = sel.closest('.menu-item');
     const name = parent.dataset.name;
