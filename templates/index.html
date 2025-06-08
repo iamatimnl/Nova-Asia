@@ -546,6 +546,23 @@ input#bezorgen:checked ~ .slider {
 }
 
 
+.supply-select {
+  width: 60px;
+  padding: 4px 6px;
+  font-size: 0.85rem;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  background: rgba(255, 255, 255, 0.7);
+  box-sizing: border-box;
+  background-image: url('data:image/svg+xml;utf8,<svg fill="%23666" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 16px 16px;
+  padding-right: 28px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
 
 
 
@@ -633,7 +650,9 @@ input#bezorgen:checked ~ .slider {
 <span class="supply-img emoji">🥢</span>
 <div class="supply-content">
 <label for="chopstickCount">Aantal stokjes </label>
-<select id="chopstickCount"></select>
+<select id="chopstickCount" class="supply-select"></select>
+
+
 </div>
 </div>
 <!-- Sojasaus -->
@@ -641,7 +660,7 @@ input#bezorgen:checked ~ .slider {
 <img alt="Sojasaus" class="supply-img photo" src="{{ url_for('static', filename='images/soja saus.webp') }}"/>
 <div class="supply-content">
 <label for="soyCount">Aantal sojasaus flesjes</label>
-<select id="soyCount"></select>
+<select id="soyCount" class="supply-select"></select>
 </div>
 </div>
 <!-- Wasabi -->
@@ -649,7 +668,7 @@ input#bezorgen:checked ~ .slider {
 <img alt="Wasabi" class="supply-img photo" src="{{ url_for('static', filename='images/wasabi.webp') }}"/>
 <div class="supply-content">
 <label for="wasabiCount">Aantal wasabi</label>
-<select id="wasabiCount"></select>
+<select id="wasabiCount" class="supply-select"></select>
 </div>
 </div>
 <!-- Gember -->
@@ -657,7 +676,7 @@ input#bezorgen:checked ~ .slider {
 <img alt="Gember" class="supply-img photo" src="{{ url_for('static', filename='images/gember.webp') }}"/>
 <div class="supply-content">
 <label for="gemberCount">Aantal gember</label>
-<select id="gemberCount"></select>
+<select id="gemberCount" class="supply-select"></select>
 </div>
 </div>
 </div></section>
