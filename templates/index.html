@@ -954,6 +954,7 @@ input#bezorgen:checked ~ .slider {
       </div>
     </div>
     <!-- Xbento - Stel je eigen bento samen -->
+<!-- Xbento - Stel je eigen bento samen -->
 <div class="menu-row menu-item" data-name="Xbento" data-price="14">
   <div class="menu-img">
     <img src="{{ url_for('static', filename='images/xbento.png') }}" alt="Xbento">
@@ -995,11 +996,12 @@ input#bezorgen:checked ~ .slider {
     <div class="qty-box">
       <label for="xBentoQty">Aantal</label>
       <button type="button" class="qty-minus remove-button" onclick="changeXbentoQty(-1)">-</button>
-      <select id="xBentoQty" name="xBentoQty"></select>
+      <select id="xBentoQty" class="qty-select" name="xBentoQty"></select>
       <button type="button" class="qty-plus add-button" onclick="changeXbentoQty(1)">+</button>
     </div>
   </div>
 </div>
+
 
   </div>
 </section>
