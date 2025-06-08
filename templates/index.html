@@ -207,6 +207,12 @@
     background: rgba(255, 255, 255, 0.7);
   }
 
+  .bubble-option {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
 
   .menu-item button {
     width: 2.2rem;
@@ -217,16 +223,18 @@
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    border: none;
+    border: 1px solid var(--accent-color);
+    background: #fff;
+    color: var(--accent-color);
     transition: background 0.2s ease;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    background: rgba(255, 255, 255, 0.7);
   }
 
 /* 保留颜色差异 */
 .add-button {
   background: var(--accent-color);
   color: white;
+  border: none;
 }
 
 .add-button:hover {
@@ -236,6 +244,7 @@
 .remove-button {
   background: var(--sakura);
   color: white;
+  border: none;
 }
 
 .remove-button:hover {
@@ -667,7 +676,6 @@ input#bezorgen:checked ~ .slider {
  
 <section id="bubble">
   <div class="menu-group">
-    <h2>Bubble Tea 🧋</h2>
     <p style="margin-top: -12px; font-size: 0.95rem; color: #555; text-align: center;">
       Kies uw smaakcombinatie:
     </p>
@@ -680,30 +688,36 @@ input#bezorgen:checked ~ .slider {
         <h3>Bubble Tea</h3>
         <p>€ 5.00</p>
 
-        <label for="bubbleType">Type</label>
-        <select id="bubbleType">
-          <option value="">Kies type</option>
-          <option value="Green Tea">Green Tea</option>
-          <option value="Milk Tea">Milk Tea</option>
-          <option value="Milkshake">Milkshake</option>
-        </select>
+        <div class="bubble-option">
+          <label for="bubbleType">Kies je type</label>
+          <select id="bubbleType">
+            <option value="">Kies type</option>
+            <option value="Green Tea">Green Tea</option>
+            <option value="Milk Tea">Milk Tea</option>
+            <option value="Milkshake">Milkshake</option>
+          </select>
+        </div>
 
-        <label for="bubbleFlavor">Smaak</label>
-        <select id="bubbleFlavor">
-          <option value="">Kies smaak</option>
-          <option value="Mango">Mango</option>
-          <option value="Appel">Appel</option>
-          <option value="Matcha">Matcha</option>
-          <option value="Brown Sugar">Brown Sugar</option>
-        </select>
+        <div class="bubble-option">
+          <label for="bubbleFlavor">Kies je smaak</label>
+          <select id="bubbleFlavor">
+            <option value="">Kies smaak</option>
+            <option value="Mango">Mango</option>
+            <option value="Appel">Appel</option>
+            <option value="Matcha">Matcha</option>
+            <option value="Brown Sugar">Brown Sugar</option>
+          </select>
+        </div>
 
-        <label for="bubbleTopping">Topping</label>
-        <select id="bubbleTopping">
-          <option value="">Kies topping</option>
-          <option value="Appel Popping">Appel Popping</option>
-          <option value="Perzik Popping">Perzik Popping</option>
-          <option value="Tapioca">Tapioca</option>
-        </select>
+        <div class="bubble-option">
+          <label for="bubbleTopping">Kies je topping</label>
+          <select id="bubbleTopping">
+            <option value="">Kies topping</option>
+            <option value="Appel Popping">Appel Popping</option>
+            <option value="Perzik Popping">Perzik Popping</option>
+            <option value="Tapioca">Tapioca</option>
+          </select>
+        </div>
 
         <div class="qty-box">
           <label for="bubbleTeaQty">Aantal</label>
@@ -723,7 +737,6 @@ input#bezorgen:checked ~ .slider {
 
 <section id="bento">
   <div class="bento-group">
-    <h2>Bento Box 🍱</h2>
     <p style="margin-top: -12px; font-size: 0.95rem; color: #555; text-align: center;">
       Kies uw favoriete Bento en hoeveelheid:
     </p>
@@ -869,7 +882,6 @@ input#bezorgen:checked ~ .slider {
 
 <section id="sushi">
   <div class="menu-group">
-    <h2>Sushi Rolls 🍣</h2>
     <p style="margin-top: -12px; font-size: 0.95rem; color: #555; text-align: center;">
       Kies uw sushi en hoeveelheid:
     </p>
@@ -909,7 +921,6 @@ input#bezorgen:checked ~ .slider {
 
 <section id="Crispy-rice-sandwich">
   <div class="menu-group">
-    <h2>Crispy rice sandwich</h2>
     <p style="margin-top: -12px; font-size: 0.95rem; color: #555; text-align: center;">
       Kies uw optie en hoeveelheid:
     </p>
@@ -977,7 +988,6 @@ input#bezorgen:checked ~ .slider {
 </section>
 <section id="snack">
   <div class="menu-group">
-    <h2>Snack 🍤</h2>
     <p style="margin-top: -12px; font-size: 0.95rem; color: #555; text-align: center;">
       Kies uw snack en hoeveelheid:
     </p>
@@ -999,7 +1009,6 @@ input#bezorgen:checked ~ .slider {
 </section>
 <section id="dessert">
   <div class="menu-group">
-    <h2>Dessert 🍡</h2>
     <p style="margin-top: -12px; font-size: 0.95rem; color: #555; text-align: center;">
       Kies uw dessert en hoeveelheid:
     </p>
