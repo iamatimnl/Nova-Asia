@@ -953,6 +953,54 @@ input#bezorgen:checked ~ .slider {
         </div>
       </div>
     </div>
+    <!-- Xbento - Stel je eigen bento samen -->
+<div class="menu-row menu-item" data-name="Xbento" data-price="14">
+  <div class="menu-img">
+    <img src="{{ url_for('static', filename='images/xbento.png') }}" alt="Xbento">
+  </div>
+
+  <div class="menu-content">
+    <h3>Xbento (stel zelf samen)</h3>
+    <p>Vanaf € 14.00</p>
+
+    <div class="bubble-option">
+      <select id="xBentoMain">
+        <option value="">Hoofdgerecht</option>
+        <option value="Teriyaki beef">Teriyaki beef</option>
+        <option value="Karaage chicken">Karaage chicken</option>
+        <option value="Ebi fry">Ebi fry</option>
+        <option value="Zalm">Zalm</option>
+        <option value="Teriyaki chicken">Teriyaki chicken</option>
+      </select>
+    </div>
+
+    <div class="bubble-option">
+      <select id="xBentoSide">
+        <option value="">Bijgerecht</option>
+        <option value="Gyoza">Gyoza</option>
+        <option value="Edamame">Edamame</option>
+        <option value="Spring Roll">Spring Roll</option>
+      </select>
+    </div>
+
+    <div class="bubble-option">
+      <select id="xBentoRice">
+        <option value="">Rijstsoort</option>
+        <option value="White rice">White rice</option>
+        <option value="Fried rice (+€5)">Fried rice (+€5)</option>
+        <option value="Sushi rice">Sushi rice</option>
+      </select>
+    </div>
+
+    <div class="qty-box">
+      <label for="xBentoQty">Aantal</label>
+      <button type="button" class="qty-minus remove-button" onclick="changeXbentoQty(-1)">-</button>
+      <select id="xBentoQty" name="xBentoQty"></select>
+      <button type="button" class="qty-plus add-button" onclick="changeXbentoQty(1)">+</button>
+    </div>
+  </div>
+</div>
+
   </div>
 </section>
 
@@ -1148,6 +1196,29 @@ function changeBubbleQty(delta) {
   setQty(fullName, 5, val);
 }
 
+function changeXbentoQty(delta) {
+  const qtySel = document.getElementById('xBentoQty');
+  let val = parseInt(qtySel.value || 0);
+  val = Math.max(0, Math.min(20, val + delta));
+  qtySel.value = val;
+
+  const main = document.getElementById("xBentoMain").value;
+  const side = document.getElementById("xBentoSide").value;
+  const rice = document.getElementById("xBentoRice").value;
+
+  if (!main || !side || !rice) return;
+
+  // 基础价格
+  let basePrice = 14;
+
+  // 如果选择了 Fried rice，加 €5
+  if (rice.includes("Fried rice")) {
+    basePrice += 5;
+  }
+
+  const fullName = `Xbento (${main}, ${side}, ${rice})`;
+  setQty(fullName, basePrice, val);
+}
 
 
   
