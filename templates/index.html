@@ -1281,20 +1281,19 @@ function changeBubbleQty(delta) {
 }
 
 function changeXbentoQty(delta) {
+  const main = document.getElementById("xBentoMain").value;
+  const side = document.getElementById("xBentoSide").value;
+  const rice = document.getElementById("xBentoRice").value;
+
+  // ✅ 必须先检查是否完整，否则不要修改 qty
+  if (!main || !side || !rice) return;
+
   const qtySel = document.getElementById('xBentoQty');
   let val = parseInt(qtySel.value || 0);
   val = Math.max(0, Math.min(20, val + delta));
   qtySel.value = val;
 
-  const main = document.getElementById("xBentoMain").value;
-  const side = document.getElementById("xBentoSide").value;
-  const rice = document.getElementById("xBentoRice").value;
-
-  // ✅ 如果没选完配料，不做任何更新
-  if (!main || !side || !rice) return;
-
   let basePrice = 14;
-
   if (rice.includes("Fried rice")) {
     basePrice += 5;
   }
@@ -1302,6 +1301,7 @@ function changeXbentoQty(delta) {
   const fullName = `Xbento (${main}, ${side}, ${rice})`;
   setQty(fullName, basePrice, val);
 }
+
 
 
  document.addEventListener('DOMContentLoaded', () => {
