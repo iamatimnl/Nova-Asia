@@ -629,6 +629,7 @@ input#bezorgen:checked ~ .slider {
         <a href="#checkbox-group">checkbox-group</a>
         <a href="#bubble">Bubble Tea</a>
         <a href="#bento">Bento Box</a>
+         <a href="#Ramnen">Ramen</a>
         <a href="#sushi">Sushi Rolls</a>
         
         
@@ -1233,26 +1234,78 @@ input#bezorgen:checked ~ .slider {
 </section>
 <section id="dessert">
   <div class="menu-group">
-   <h2 style="margin-top: -8px; font-size: 1.5rem; color: #333; text-align: center; font-weight: bold;">
- Dessert
-</h2>
 
-
-    <div class="menu-row menu-item" data-name="Mochi" data-price="4">
-      <img src="{{ url_for('static', filename='images/mochi.jpg') }}" alt="Mochi" class="menu-img" loading="lazy" />
+    <!-- Mango -->
+    <div class="menu-row menu-item" data-name="Mochi Mango" data-price="4">
+      <div class="menu-img">
+        <img src="{{ url_for('static', filename='images/mochi-mango.jpg') }}" alt="Mochi Mango" loading="lazy" />
+      </div>
       <div class="menu-content">
-        <h3>Mochi (rijstcake)</h3>
+        <h3>Mochi – Mango</h3>
         <p>€ 4.00</p>
         <div class="qty-box">
-          <label for="dessertCount">Aantal</label>
-          <button type="button" class="qty-minus remove-button" data-target="dessertCount">-</button>
-          <select id="dessertCount" name="dessertCount"></select>
-          <button type="button" class="qty-plus add-button" data-target="dessertCount">+</button>
+          <label for="mochiMangoCount">Aantal</label>
+          <button type="button" class="qty-minus remove-button" data-target="mochiMangoCount">-</button>
+          <select id="mochiMangoCount" name="mochiMangoCount"></select>
+          <button type="button" class="qty-plus add-button" data-target="mochiMangoCount">+</button>
         </div>
       </div>
     </div>
+
+    <!-- Aardbei -->
+    <div class="menu-row menu-item" data-name="Mochi Aardbei" data-price="4">
+      <div class="menu-img">
+        <img src="{{ url_for('static', filename='images/mochi-aardbei.jpg') }}" alt="Mochi Aardbei" loading="lazy" />
+      </div>
+      <div class="menu-content">
+        <h3>Mochi – Aardbei</h3>
+        <p>€ 4.00</p>
+        <div class="qty-box">
+          <label for="mochiAardbeiCount">Aantal</label>
+          <button type="button" class="qty-minus remove-button" data-target="mochiAardbeiCount">-</button>
+          <select id="mochiAardbeiCount" name="mochiAardbeiCount"></select>
+          <button type="button" class="qty-plus add-button" data-target="mochiAardbeiCount">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Matcha -->
+    <div class="menu-row menu-item" data-name="Mochi Matcha" data-price="4">
+      <div class="menu-img">
+        <img src="{{ url_for('static', filename='images/mochi-matcha.jpg') }}" alt="Mochi Matcha" loading="lazy" />
+      </div>
+      <div class="menu-content">
+        <h3>Mochi – Matcha</h3>
+        <p>€ 4.00</p>
+        <div class="qty-box">
+          <label for="mochiMatchaCount">Aantal</label>
+          <button type="button" class="qty-minus remove-button" data-target="mochiMatchaCount">-</button>
+          <select id="mochiMatchaCount" name="mochiMatchaCount"></select>
+          <button type="button" class="qty-plus add-button" data-target="mochiMatchaCount">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pistachio -->
+    <div class="menu-row menu-item" data-name="Mochi Pistachio" data-price="4">
+      <div class="menu-img">
+        <img src="{{ url_for('static', filename='images/mochi-pistachio.jpg') }}" alt="Mochi Pistachio" loading="lazy" />
+      </div>
+      <div class="menu-content">
+        <h3>Mochi – Pistachio</h3>
+        <p>€ 4.00</p>
+        <div class="qty-box">
+          <label for="mochiPistachioCount">Aantal</label>
+          <button type="button" class="qty-minus remove-button" data-target="mochiPistachioCount">-</button>
+          <select id="mochiPistachioCount" name="mochiPistachioCount"></select>
+          <button type="button" class="qty-plus add-button" data-target="mochiPistachioCount">+</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
+
 
 <script>
 const cart = {};
