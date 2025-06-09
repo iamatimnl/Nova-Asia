@@ -1062,6 +1062,52 @@ input#bezorgen:checked ~ .slider {
   </div>
 </section>
 
+<!-- Ramen Section -->
+<section id="Ramen">
+  <h2>Ramen</h2>
+  <div class="menu-section">
+    <!-- 示例商品，可替换或添加更多 -->
+    <div class="menu-row menu-item" data-name="Tonkotsu Ramen" data-price="13">
+      <div class="menu-img">
+        <img src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}" alt="Tonkotsu Ramen">
+      </div>
+      <div class="menu-content">
+        <h3>Tonkotsu Ramen</h3>
+        <p>€ 13.00</p>
+        <p class="menu-description">Romige varkensbouillon met chashu, ramennoedels, ei en nori.</p>
+        <div class="qty-box">
+          <label for="tonkotsuRamenCount">Aantal</label>
+          <button type="button" class="qty-minus remove-button" data-target="tonkotsuRamenCount">-</button>
+          <select id="tonkotsuRamenCount" name="tonkotsuRamenCount"></select>
+          <button type="button" class="qty-plus add-button" data-target="tonkotsuRamenCount">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Pokebowl Section -->
+<section id="Pokebowl">
+  <h2>Pokebowl</h2>
+  <div class="menu-section">
+    <!-- 示例商品，可替换或添加更多 -->
+    <div class="menu-row menu-item" data-name="Zalm Pokebowl" data-price="12">
+      <div class="menu-img">
+        <img src="{{ url_for('static', filename='images/zalm-pokebowl.png') }}" alt="Zalm Pokebowl">
+      </div>
+      <div class="menu-content">
+        <h3>Zalm Pokebowl</h3>
+        <p>€ 12.00</p>
+        <p class="menu-description">Verse zalm met sushirijst, avocado, komkommer, wakame en sesam.</p>
+        <div class="qty-box">
+          <label for="zalmPokebowlCount">Aantal</label>
+          <button type="button" class="qty-minus remove-button" data-target="zalmPokebowlCount">-</button>
+          <select id="zalmPokebowlCount" name="zalmPokebowlCount"></select>
+          <button type="button" class="qty-plus add-button" data-target="zalmPokebowlCount">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 
 <section id="sushi">
