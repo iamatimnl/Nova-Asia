@@ -1911,6 +1911,44 @@ function toggleMobileCart() {
    
   </script>
 
+  <script>
+  const sections = document.querySelectorAll("section[id]");
+  const navLinks = document.querySelectorAll(".nav-link");
+  const indicator = document.querySelector(".indicator");
+
+  function updateActiveLink() {
+    let currentSectionId = "";
+
+    sections.forEach((section) => {
+      const rect = section.getBoundingClientRect();
+      if (rect.top <= 100 && rect.bottom >= 100) {
+        currentSectionId = section.id;
+      }
+    });
+
+    navLinks.forEach((link) => {
+      link.classList.remove("active");
+      const hrefId = link.getAttribute("href")?.replace("#", "");
+      if (hrefId === currentSectionId) {
+        link.classList.add("active");
+
+        const linkRect = link.getBoundingClientRect();
+        const navRect = link.parentElement.getBoundingClientRect();
+        const offsetLeft = linkRect.left - navRect.left;
+        const offsetWidth = link.offsetWidth;
+
+        // 使用 transform 来移动 .indicator
+        indicator.style.transform = `translateX(${offsetLeft}px)`;
+        indicator.style.width = `${offsetWidth}px`;
+      }
+    });
+  }
+
+  window.addEventListener("scroll", updateActiveLink);
+  window.addEventListener("load", updateActiveLink);
+</script>
+
+
 
 
 </body>
