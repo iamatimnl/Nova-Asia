@@ -578,6 +578,23 @@ input#bezorgen:checked ~ .slider {
 .checkout-btn:hover {
   background-color: #2f463a;
 }
+
+.feedback {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent-color);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  display: none;
+}
+.feedback.error {
+  background: #c55;
+}
 .cart-section select {
   width: 20%;
   padding: 10px 12px;
@@ -622,6 +639,7 @@ input#bezorgen:checked ~ .slider {
 </style>
 </head>
 <body>
+<div id="feedback" class="feedback"></div>
 <div class="navbar-container" id="navbar-container">
     <nav class="navbar" id="navbar">
       <div class="nav-categories">
@@ -1644,6 +1662,15 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <script>
+function showFeedback(msg, isError=false) {
+  const el = document.getElementById('feedback');
+  el.textContent = msg;
+  if (isError) el.classList.add('error');
+  else el.classList.remove('error');
+  el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 3000);
+}
+
 function checkout() {
   const paidItems = Object.values(cart).filter(item => item.price > 0 && item.qty > 0);
   if (paidItems.length === 0) {
@@ -1734,17 +1761,17 @@ function checkout() {
           window.location.href = data.payment_url;
           return;
         }
-        alert('Bestelling succesvol verzonden!');
+        showFeedback('Bestelling succesvol verzonden!');
         for (const k in cart) delete cart[k];
         updateCart();
         setTimeout(() => { window.location.href = '/'; }, 2000);
       } else {
-        alert('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.');
+        showFeedback('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.', true);
       }
     })
     .catch(err => {
       console.error(err);
-      alert('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.');
+      showFeedback('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.', true);
     });
 }
 
