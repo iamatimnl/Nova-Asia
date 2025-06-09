@@ -1066,36 +1066,43 @@ input#bezorgen:checked ~ .slider {
 </h2>
 
 
-    <div class="menu-row menu-item" data-name="Sake Maki" data-price="8.5">
-      <img class="menu-img" src="{{ url_for('static', filename='images/sake-maki.jpg') }}" alt="Sake Maki" loading="lazy" />
-      <div class="menu-content">
-        <h3>Sake Maki</h3>
-        <p>€ 8.50</p>
-        <div class="qty-box">
-          <label for="sakeCount">Aantal</label>
-          <button type="button" class="qty-minus remove-button" data-target="sakeCount">-</button>
-          <select id="sakeCount" name="sakeCount"></select>
-          <button type="button" class="qty-plus add-button" data-target="sakeCount">+</button>
-        </div>
-      </div>
-    </div>
+<div class="menu-row menu-item" data-name="Green Dragon Roll" data-price="13.5">
+  <div class="menu-img">
+    <img src="{{ url_for('static', filename='images/green-dragon-roll.jpg') }}" alt="Green Dragon Roll">
+  </div>
 
-    <div class="menu-row menu-item" data-name="California Roll" data-price="10">
-      <div class="menu-img" style="width: 100px; height: 100px; background: #eee; display: flex; align-items: center; justify-content: center;">
-        <span style="color: #999;">Geen foto</span>
-      </div>
-      <div class="menu-content">
-        <h3>California Roll</h3>
-        <p>€ 10.00</p>
-        <div class="qty-box">
-          <label for="californiaCount">Aantal</label>
-          <button type="button" class="qty-minus remove-button" data-target="californiaCount">-</button>
-          <select id="californiaCount" name="californiaCount"></select>
-          <button type="button" class="qty-plus add-button" data-target="californiaCount">+</button>
-        </div>
-      </div>
+  <div class="menu-content">
+    <h3>Green Dragon Roll</h3>
+    <p>Ebi fry roll met avocado & viskuit topping<br>€ 13.50</p>
+
+    <div class="qty-box">
+      <label for="greenDragonCount">Aantal</label>
+      <button type="button" class="qty-minus remove-button" data-target="greenDragonCount">-</button>
+      <select id="greenDragonCount" name="greenDragonCount"></select>
+      <button type="button" class="qty-plus add-button" data-target="greenDragonCount">+</button>
     </div>
   </div>
+</div>
+
+<div class="menu-row menu-item" data-name="Angry Dragon Roll" data-price="13.5">
+  <div class="menu-img">
+    <img src="{{ url_for('static', filename='images/angry-dragon-roll.jpg') }}" alt="Angry Dragon Roll">
+  </div>
+
+  <div class="menu-content">
+    <h3>Angry Dragon Roll</h3>
+    <p>Ebi fry roll met aburi zalm & unagi saus topping<br>€ 13.50</p>
+
+    <div class="qty-box">
+      <label for="angryDragonCount">Aantal</label>
+      <button type="button" class="qty-minus remove-button" data-target="angryDragonCount">-</button>
+      <select id="angryDragonCount" name="angryDragonCount"></select>
+      <button type="button" class="qty-plus add-button" data-target="angryDragonCount">+</button>
+    </div>
+  </div>
+</div>
+
+
 </section>
 
 
