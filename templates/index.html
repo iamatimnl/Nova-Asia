@@ -1046,9 +1046,10 @@ input#bezorgen:checked ~ .slider {
 
     <div class="qty-box">
       <label for="xBentoQty">Aantal</label>
-      <button type="button" class="qty-minus remove-button" onclick="changeXbentoQty(-1)">-</button>
+      <button type="button" class="qty-minus remove-button" data-target="xBentoQty">-</button>
       <select id="xBentoQty" class="qty-select" name="xBentoQty"></select>
-      <button type="button" class="qty-plus add-button" onclick="changeXbentoQty(1)">+</button>
+      <button type="button" class="qty-plus add-button" data-target="xBentoQty">+</button>
+
     </div>
   </div>
 </div>
@@ -1303,6 +1304,78 @@ function changeXbentoQty(delta) {
   setQty(fullName, basePrice, val);
 }
 
+  document.addEventListener('DOMContentLoaded', () => {
+
+  function isBubbleTeaValid() {
+    const type = document.getElementById("bubbleType").value;
+    const flavor = document.getElementById("bubbleFlavor").value;
+    const topping = document.getElementById("bubbleTopping").value;
+    return type && flavor && topping;
+  }
+
+  function isXbentoValid() {
+    const main = document.getElementById("xBentoMain").value;
+    const side = document.getElementById("xBentoSide").value;
+    const rice = document.getElementById("xBentoRice").value;
+    return main && side && rice;
+  }
+
+  // 奶茶按钮加减
+  document.querySelector('.qty-plus[data-target="bubbleTeaQty"]').addEventListener('click', () => {
+    if (!isBubbleTeaValid()) {
+      alert("🧋 Kies eerst type, smaak en topping voor je bubble tea.");
+      return;
+    }
+    changeBubbleQty(1);
+  });
+
+  document.querySelector('.qty-minus[data-target="bubbleTeaQty"]').addEventListener('click', () => {
+    if (!isBubbleTeaValid()) {
+      alert("🧋 Kies eerst type, smaak en topping voor je bubble tea.");
+      return;
+    }
+    changeBubbleQty(-1);
+  });
+
+  // Xbento按钮加减
+  document.querySelector('.qty-plus[data-target="xBentoQty"]').addEventListener('click', () => {
+    if (!isXbentoValid()) {
+      alert("🍱 Kies eerst hoofdgerecht, bijgerecht en rijstsoort voor je Xbento.");
+      return;
+    }
+    changeXbentoQty(1);
+  });
+
+  document.querySelector('.qty-minus[data-target="xBentoQty"]').addEventListener('click', () => {
+    if (!isXbentoValid()) {
+      alert("🍱 Kies eerst hoofdgerecht, bijgerecht en rijstsoort voor je Xbento.");
+      return;
+    }
+    changeXbentoQty(-1);
+  });
+
+  // 奶茶 select 数量直接选择
+  document.getElementById('bubbleTeaQty').addEventListener('change', () => {
+    if (!isBubbleTeaValid()) {
+      alert("🧋 Kies eerst type, smaak en topping voor je bubble tea.");
+      document.getElementById('bubbleTeaQty').value = 0;
+      return;
+    }
+    changeBubbleQty(0);
+  });
+
+  // Xbento select 数量直接选择
+  document.getElementById('xBentoQty').addEventListener('change', () => {
+    if (!isXbentoValid()) {
+      alert("🍱 Kies eerst hoofdgerecht, bijgerecht en rijstsoort voor je Xbento.");
+      document.getElementById('xBentoQty').value = 0;
+      return;
+    }
+    changeXbentoQty(0);
+  });
+
+});
+
 
   
 
@@ -1404,8 +1477,7 @@ document.addEventListener('DOMContentLoaded', () => {
   populateSelect(bubbleSel);
   bubbleSel.addEventListener('change', () => changeBubbleQty(0));
 
-  document.querySelector('.qty-plus[data-target="bubbleTeaQty"]').addEventListener('click', () => changeBubbleQty(1));
-  document.querySelector('.qty-minus[data-target="bubbleTeaQty"]').addEventListener('click', () => changeBubbleQty(-1));
+
 
   document.querySelectorAll('.menu-item select').forEach(sel => {
     if (['bubbleTeaQty', 'bubbleType', 'bubbleFlavor', 'bubbleTopping', 'xBentoMain', 'xBentoSide', 'xBentoRice'].includes(sel.id)) return;
@@ -1719,6 +1791,9 @@ function toggleMobileCart() {
 
       updateActiveNav();
     });
+
+
+   
   </script>
 
 
