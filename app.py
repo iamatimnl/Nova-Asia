@@ -14,15 +14,9 @@ import requests
 
 # 初始化 Flask
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-app = Flask(
-    __name__,
-    template_folder="templates",
-    static_folder="static",
-)
+app = Flask(__name__, template_folder="templates", static_folder="static")
 app.config["SECRET_KEY"] = "replace-this"
-
-DATABASE = os.path.join(BASE_DIR, "db.sqlite3")
-app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{DATABASE}"
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{os.path.join(BASE_DIR, 'db.sqlite3')}"
 
 db = SQLAlchemy(app)
 with app.app_context():
@@ -55,16 +49,14 @@ class User(UserMixin):
 
 @login_manager.user_loader
 def load_user(user_id: str):
-    if user_id == "admin":
-        return User("admin")
-    return None
+    return User("admin") if user_id == "admin" else None
 
-# 首页路由
+# 首页
 @app.route('/')
 def home():
     return render_template('index.html')
 
-# POS 路由
+# POS
 @app.route('/pos', methods=["GET", "POST"])
 @login_required
 def pos():
@@ -89,12 +81,33 @@ def pos():
         return jsonify({"success": True})
     return render_template("pos.html")
 
-# 简易消息发送接口，用于通知 Telegram 或邮件
+# 接收前端订单提交
+@app.route('/api/orders', methods=["POST"])
+def api_orders():
+    data = request.get_json()
+    order = Order(
+        order_type=data.get("order_type"),
+        customer_name=data.get("customer_name"),
+        phone=data.get("phone"),
+        email=data.get("email"),
+        pickup_time=data.get("pickup_time"),
+        delivery_time=data.get("delivery_time"),
+        payment_method=data.get("payment_method"),
+        postcode=data.get("postcode"),
+        house_number=data.get("house_number"),
+        street=data.get("street"),
+        city=data.get("city"),
+        items=json.dumps(data.get("items", {})),
+    )
+    db.session.add(order)
+    db.session.commit()
+    return jsonify({"success": True})
+
+# Telegram 通知接口
 @app.route('/api/send', methods=["POST"])
 def api_send():
     data = request.get_json() or {}
     message = data.get("message", "")
-
     token = os.getenv("TELEGRAM_BOT_TOKEN")
     chat_id = os.getenv("TELEGRAM_CHAT_ID")
     if token and chat_id and message:
@@ -107,17 +120,14 @@ def api_send():
             resp.raise_for_status()
         except Exception as e:
             return jsonify({"status": "error", "error": str(e)}), 500
-
-    # 实际环境中这里可能还会发送邮件
     return jsonify({"status": "ok"})
 
-# 管理员首页（占位）
+# 管理页面
 @app.route('/admin')
 @login_required
 def admin():
     return render_template('admin.html')
 
-# 管理员订单查看页
 @app.route('/admin/orders')
 @login_required
 def admin_orders():
@@ -128,25 +138,16 @@ def admin_orders():
             items = json.loads(o.items or "{}")
         except Exception:
             items = {}
-        total = 0
-        for item in items.values():
-            price = float(item.get("price", 0))
-            qty = int(item.get("qty", 0))
-            total += price * qty
+        total = sum(float(i.get("price", 0)) * int(i.get("qty", 0)) for i in items.values())
         order_data.append({"order": o, "total": total})
     return render_template("admin_orders.html", order_data=order_data)
 
-# POS-friendly page showing today's orders
 @app.route('/pos/orders_today')
 @login_required
 def pos_orders_today():
     today = datetime.utcnow().date()
     start = datetime.combine(today, datetime.min.time())
-    orders = (
-        Order.query.filter(Order.created_at >= start)
-        .order_by(Order.created_at.desc())
-        .all()
-    )
+    orders = Order.query.filter(Order.created_at >= start).order_by(Order.created_at.desc()).all()
     for o in orders:
         try:
             o.items_dict = json.loads(o.items or "{}")
@@ -172,5 +173,8 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for("login"))
+
+# 启动
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+
