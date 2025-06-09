@@ -38,6 +38,7 @@ class Order(db.Model):
     order_type = db.Column(db.String(20))
     customer_name = db.Column(db.String(100))
     phone = db.Column(db.String(20))
+    email = db.Column(db.String(120))
     pickup_time = db.Column(db.String(20))
     delivery_time = db.Column(db.String(20))
     payment_method = db.Column(db.String(20))
@@ -73,6 +74,7 @@ def pos():
             order_type=data.get("order_type"),
             customer_name=data.get("customer_name"),
             phone=data.get("phone"),
+            email=data.get("email"),
             pickup_time=data.get("pickup_time"),
             delivery_time=data.get("delivery_time"),
             payment_method=data.get("payment_method"),
@@ -133,6 +135,24 @@ def admin_orders():
             total += price * qty
         order_data.append({"order": o, "total": total})
     return render_template("admin_orders.html", order_data=order_data)
+
+# POS-friendly page showing today's orders
+@app.route('/pos/orders_today')
+@login_required
+def pos_orders_today():
+    today = datetime.utcnow().date()
+    start = datetime.combine(today, datetime.min.time())
+    orders = (
+        Order.query.filter(Order.created_at >= start)
+        .order_by(Order.created_at.desc())
+        .all()
+    )
+    for o in orders:
+        try:
+            o.items_dict = json.loads(o.items or "{}")
+        except Exception:
+            o.items_dict = {}
+    return render_template("pos_orders.html", orders=orders)
 
 # 登录
 @app.route('/login', methods=["GET", "POST"])

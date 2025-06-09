@@ -1723,25 +1723,29 @@ function checkout() {
   const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}\nTotaal: €${totalPrice}`;
 
   fetch('https://flask-order-api.onrender.com/submit_order', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ message })
-})
-.then(res => res.json())
-  .then(data => {
-    if (data.status === 'ok') {
-      alert('Thank you! Your order has been received.');
-      setTimeout(() => {
-        window.location.href = '/';
-      }, 3000);
-    } else {
-      alert("Fout bij verzenden bestelling: " + (data.error || "onbekend"));
-    }
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message, email })
   })
-  .catch(err => {
-    alert("Netwerkfout bij verzenden bestelling");
-    console.error(err);
-  });
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === 'ok') {
+        if (paymentMethod === 'online' && data.payment_url) {
+          window.location.href = data.payment_url;
+          return;
+        }
+        alert('Bestelling succesvol verzonden!');
+        for (const k in cart) delete cart[k];
+        updateCart();
+        setTimeout(() => { window.location.href = '/'; }, 2000);
+      } else {
+        alert('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.');
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.');
+    });
 }
 
 

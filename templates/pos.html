@@ -171,6 +171,7 @@
   </nav>
 </div>
 <h1>Bestelling</h1>
+<p><a href="{{ url_for('pos_orders_today') }}">Bekijk bestellingen vandaag</a></p>
 <div class="pos-container">
   <div class="product-list">
     <section id="customer-info">
@@ -430,8 +431,16 @@ function submitOrder(){
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   })
-    .then(r=>r.json()).then(res=>{ if(res.success){ alert('Bestelling opgeslagen'); location.reload(); } else { alert('Fout bij opslaan'); } })
-    .catch(()=>alert('Fout bij verzenden'));
+    .then(r => r.json())
+    .then(res => {
+      if (res.success) {
+        alert('Bestelling succesvol verzonden!');
+        location.reload();
+      } else {
+        alert('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.');
+      }
+    })
+    .catch(() => alert('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.'));
 }
 </script>
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
@@ -449,9 +458,15 @@ function submitOrder(){
     osc.start();
     osc.stop(audioCtx.currentTime + 0.2);
   }
+  function formatOrder(o){
+    const items = Object.entries(o.items || {}).map(([n,i])=>`${n} x ${i.qty}`).join('\n');
+    const name = o.customer_name ? `Klant: ${o.customer_name}\n` : '';
+    const type = o.order_type === 'delivery' ? 'Bezorgen' : 'Afhalen';
+    return `${name}${type}\n${items}`;
+  }
   socket.on('new_order', order => {
     beep();
-    alert('Nieuwe bestelling ontvangen!');
+    alert(`Nieuwe bestelling ontvangen!\n\n${formatOrder(order)}`);
   });
 </script>
 </body>
