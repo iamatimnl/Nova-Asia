@@ -666,6 +666,8 @@ input#bezorgen:checked ~ .slider {
       <input id="pickupName" type="text" />
       <label>Telefoonnummer:</label>
       <input id="pickupPhone" type="tel" />
+      <label>Email (optioneel):</label>
+      <input id="pickupEmail" type="email" />
       <label>Tijd van afhalen:</label>
       <input id="pickupTime" type="time" />
       <label>Betaalmethode:</label>
@@ -681,6 +683,8 @@ input#bezorgen:checked ~ .slider {
       <input id="deliveryName" type="text" />
       <label>Telefoonnummer:</label>
       <input id="deliveryPhone" type="tel" />
+      <label>Email (optioneel):</label>
+      <input id="deliveryEmail" type="email" />
       <label>Adres:</label>
       <input id="deliveryAddress" type="text" />
       <label>Postcode:</label>
@@ -1665,10 +1669,12 @@ function checkout() {
   const orderType = document.querySelector('input[name="orderType"]:checked').value;
   let customerDetails = '';
   let paymentMethod = '';
+  let email = '';
 
   if (orderType === 'afhalen') {
     const name = document.getElementById('pickupName').value.trim();
     const phone = document.getElementById('pickupPhone').value.trim();
+    email = document.getElementById('pickupEmail').value.trim();
     const time = document.getElementById('pickupTime').value;
     paymentMethod = document.getElementById('pickupPayment').value;
 
@@ -1677,10 +1683,13 @@ function checkout() {
       return;
     }
 
-    customerDetails = `\n[Afhalen]\nNaam: ${name}\nTelefoon: ${phone}\nAfhaaltijd: ${time}\nBetaalwijze: ${paymentMethod}`;
+    customerDetails = `\n[Afhalen]\nNaam: ${name}\nTelefoon: ${phone}`;
+    if (email) customerDetails += `\nEmail: ${email}`;
+    customerDetails += `\nAfhaaltijd: ${time}\nBetaalwijze: ${paymentMethod}`;
   } else {
     const name = document.getElementById('deliveryName').value.trim();
     const phone = document.getElementById('deliveryPhone').value.trim();
+    email = document.getElementById('deliveryEmail').value.trim();
     const address = document.getElementById('deliveryAddress').value.trim();
     const postcodeRaw = document.getElementById('deliveryPostcode').value.trim();
     const time = document.getElementById('deliveryTime').value;
@@ -1705,7 +1714,9 @@ function checkout() {
       document.getElementById('deliveryPostcode').style.borderColor = '';
     }
 
-    customerDetails = `\n[Bezorgen]\nNaam: ${name}\nTelefoon: ${phone}\nAdres: ${address}\nPostcode: ${postcodeRaw}\nBezorgtijd: ${time}\nBetaalwijze: ${paymentMethod}`;
+    customerDetails = `\n[Bezorgen]\nNaam: ${name}\nTelefoon: ${phone}`;
+    if (email) customerDetails += `\nEmail: ${email}`;
+    customerDetails += `\nAdres: ${address}\nPostcode: ${postcodeRaw}\nBezorgtijd: ${time}\nBetaalwijze: ${paymentMethod}`;
   }
 
   const totalPrice = document.getElementById('total').textContent;
@@ -1719,13 +1730,10 @@ function checkout() {
 .then(res => res.json())
   .then(data => {
     if (data.status === 'ok') {
-      alert("Bestelling verzonden!\n\n" + orderSummary + "\nTotaal: €" + totalPrice);
-
-      if (paymentMethod === 'online') {
-        setTimeout(() => {
-          window.location.href = 'https://tikkie.me/pay/novaasia';
-        }, 300);
-      }
+      alert('Thank you! Your order has been received.');
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 3000);
     } else {
       alert("Fout bij verzenden bestelling: " + (data.error || "onbekend"));
     }
