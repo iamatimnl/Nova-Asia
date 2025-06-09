@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bestellingen Vandaag</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      padding: 20px;
+      max-width: 1200px;
+      margin: auto;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+    ul { margin: 0; padding-left: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Bestellingen Vandaag</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Tijd</th>
+        <th>Klant</th>
+        <th>Items</th>
+        <th>Betaling</th>
+        <th>Type</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for order in orders %}
+      <tr>
+        <td>{{ order.created_at.strftime('%H:%M') }}</td>
+        <td>{{ order.customer_name or '' }}</td>
+        <td>
+          <ul>
+          {% for name, item in order.items_dict.items() %}
+            <li>{{ name }} x {{ item['qty'] }}</li>
+          {% endfor %}
+          </ul>
+        </td>
+        <td>{{ order.payment_method }}</td>
+        <td>{{ 'Bezorgen' if order.order_type == 'delivery' else 'Afhalen' }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <p><a href="{{ url_for('pos') }}">Terug naar POS</a></p>
+</body>
+</html>
