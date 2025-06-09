@@ -1286,11 +1286,15 @@ function changeXbentoQty(delta) {
   val = Math.max(0, Math.min(20, val + delta));
   qtySel.value = val;
 
-  
-  // 基础价格
+  const main = document.getElementById("xBentoMain").value;
+  const side = document.getElementById("xBentoSide").value;
+  const rice = document.getElementById("xBentoRice").value;
+
+  // ✅ 如果没选完配料，不做任何更新
+  if (!main || !side || !rice) return;
+
   let basePrice = 14;
 
-  // 如果选择了 Fried rice，加 €5
   if (rice.includes("Fried rice")) {
     basePrice += 5;
   }
@@ -1298,6 +1302,7 @@ function changeXbentoQty(delta) {
   const fullName = `Xbento (${main}, ${side}, ${rice})`;
   setQty(fullName, basePrice, val);
 }
+
 
  document.addEventListener('DOMContentLoaded', () => {
   function isBubbleTeaValid() {
