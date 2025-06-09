@@ -1286,12 +1286,7 @@ function changeXbentoQty(delta) {
   val = Math.max(0, Math.min(20, val + delta));
   qtySel.value = val;
 
-  const main = document.getElementById("xBentoMain").value;
-  const side = document.getElementById("xBentoSide").value;
-  const rice = document.getElementById("xBentoRice").value;
-
-  if (!main || !side || !rice) return;
-
+  
   // 基础价格
   let basePrice = 14;
 
@@ -1304,8 +1299,7 @@ function changeXbentoQty(delta) {
   setQty(fullName, basePrice, val);
 }
 
-  document.addEventListener('DOMContentLoaded', () => {
-
+ document.addEventListener('DOMContentLoaded', () => {
   function isBubbleTeaValid() {
     const type = document.getElementById("bubbleType").value;
     const flavor = document.getElementById("bubbleFlavor").value;
@@ -1337,7 +1331,7 @@ function changeXbentoQty(delta) {
     changeBubbleQty(-1);
   });
 
-  // Xbento按钮加减
+  // Xbento按钮加减（修正后）
   document.querySelector('.qty-plus[data-target="xBentoQty"]').addEventListener('click', () => {
     if (!isXbentoValid()) {
       alert("🍱 Kies eerst hoofdgerecht, bijgerecht en rijstsoort voor je Xbento.");
@@ -1354,7 +1348,7 @@ function changeXbentoQty(delta) {
     changeXbentoQty(-1);
   });
 
-  // 奶茶 select 数量直接选择
+  // 奶茶 select 直接选择数量时
   document.getElementById('bubbleTeaQty').addEventListener('change', () => {
     if (!isBubbleTeaValid()) {
       alert("🧋 Kies eerst type, smaak en topping voor je bubble tea.");
@@ -1364,7 +1358,7 @@ function changeXbentoQty(delta) {
     changeBubbleQty(0);
   });
 
-  // Xbento select 数量直接选择
+  // Xbento select 直接选择数量时（修正后）
   document.getElementById('xBentoQty').addEventListener('change', () => {
     if (!isXbentoValid()) {
       alert("🍱 Kies eerst hoofdgerecht, bijgerecht en rijstsoort voor je Xbento.");
@@ -1374,7 +1368,19 @@ function changeXbentoQty(delta) {
     changeXbentoQty(0);
   });
 
+  // 可选：初始化 select 数量
+  ['bubbleTeaQty', 'xBentoQty'].forEach(id => {
+    const sel = document.getElementById(id);
+    for (let i = 0; i <= 20; i++) {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.text = i;
+      sel.appendChild(opt);
+    }
+    sel.value = 0;
+  });
 });
+
 
 
   
