@@ -1281,17 +1281,18 @@ function changeBubbleQty(delta) {
 }
 
 function changeXbentoQty(delta) {
+  const qtySel = document.getElementById('xBentoQty');
+  let val = parseInt(qtySel.value || 0);
+
   const main = document.getElementById("xBentoMain").value;
   const side = document.getElementById("xBentoSide").value;
   const rice = document.getElementById("xBentoRice").value;
 
-  // ✅ 必须先检查是否完整，否则不要修改 qty
+  // 如果没选完配料，不更新数量也不更新购物车
   if (!main || !side || !rice) return;
 
-  const qtySel = document.getElementById('xBentoQty');
-  let val = parseInt(qtySel.value || 0);
   val = Math.max(0, Math.min(20, val + delta));
-  qtySel.value = val;
+  qtySel.value = val;  // ✅ 只有当所有项都选择后再更新数量
 
   let basePrice = 14;
   if (rice.includes("Fried rice")) {
