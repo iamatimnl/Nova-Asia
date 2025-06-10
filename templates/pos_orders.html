@@ -38,7 +38,8 @@
     {% for order in orders %}
       <tr>
         <td>{{ order.created_at.strftime('%H:%M') }}</td>
-        <td>{{ 'Bezorgen' if order.order_type == 'delivery' else 'Afhalen' }}</td>
+        {% set is_delivery = order.order_type in ['delivery', 'bezorgen'] %}
+        <td>{{ 'Bezorgen' if is_delivery else 'Afhalen' }}</td>
         <td>{{ order.customer_name or '' }}</td>
         <td>{{ order.phone or '' }}</td>
         <td>{{ order.email or '-' }}</td>
@@ -51,12 +52,12 @@
         </td>
         <td>{{ '%.2f' % order.total }}</td>
         <td>
-          {% if order.order_type == 'delivery' %}
+          {% if is_delivery %}
             {{ order.street }} {{ order.house_number }} {{ order.postcode }} {{ order.city }}
           {% else %}-{% endif %}
         </td>
         <td>
-          {% if order.order_type == 'delivery' %}
+          {% if is_delivery %}
             {{ order.delivery_time or '-' }}
           {% else %}
             {{ order.pickup_time or '-' }}
