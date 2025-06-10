@@ -430,5 +430,28 @@ function submitOrder(){
     }
   }
 </script>
+<!-- Socket.IO 客户端 -->
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script>
+  const socket = io(window.location.origin, {
+    transports: ['websocket'],
+  });
+
+  socket.on('connect', () => {
+    console.log('✅ Socket 连接成功');
+  });
+
+  socket.on('new_order', (order) => {
+    console.log('🆕 新订单:', order);
+    // 你可以在此调用函数将 order 动态插入页面列表
+    // 例如：addOrderToDOM(order);
+  });
+
+  socket.on('disconnect', () => {
+    console.warn('⚠️ Socket 连接断开');
+  });
+</script>
+
+  
 </body>
 </html>
