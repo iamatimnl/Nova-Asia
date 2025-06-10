@@ -1684,120 +1684,94 @@ function checkout() {
   const gemberCount = document.getElementById('gemberCount').value;
   const remark = document.getElementById('remark').value.trim();
 
-  const extras = {
-    "Stokjes": { price: 0, qty: chopstickCount },
-    "Sojasaus": { price: 0, qty: soyCount },
-    "Wasabi": { price: 0, qty: wasabiCount },
-    "Gember": { price: 0, qty: gemberCount }
-  };
-
-  // 合并 cart 和 extras
-  const fullItems = { ...cart, ...extras };
-
-  const orderType = document.querySelector('input[name="orderType"]:checked').value;
-  let name = "", phone = "", email = "", paymentMethod = "";
-  let pickupTime = "", deliveryTime = "", postcode = "", address = "", houseNumber = "", city = "Oegstgeest";
-
-  let message = Object.entries(fullItems)
+  let orderSummary = Object.entries(cart)
     .map(([name, item]) => `${name} x ${item.qty}`)
     .join('\n');
-  if (remark) message += `\nOpmerking: ${remark}`;
+  orderSummary += `\nStokjes nodig: ${chopstickCount}`;
+  orderSummary += `\nSojasaus: ${soyCount}`;
+  orderSummary += `\nWasabi: ${wasabiCount}`;
+  orderSummary += `\nGember: ${gemberCount}`;
+  if (remark) orderSummary += `\nOpmerking: ${remark}`;
+
+  const orderType = document.querySelector('input[name="orderType"]:checked').value;
+  let customerDetails = '';
+  let paymentMethod = '';
+  let email = '';
 
   if (orderType === 'afhalen') {
-    name = document.getElementById('pickupName').value.trim();
-    phone = document.getElementById('pickupPhone').value.trim();
+    const name = document.getElementById('pickupName').value.trim();
+    const phone = document.getElementById('pickupPhone').value.trim();
     email = document.getElementById('pickupEmail').value.trim();
-    pickupTime = document.getElementById('pickupTime').value;
+    const time = document.getElementById('pickupTime').value;
     paymentMethod = document.getElementById('pickupPayment').value;
 
-    if (!name || !phone || !pickupTime) {
-      alert("Vul alstublieft alle afhaalvelden in.");
+    if (!name || !phone || !time) {
+      alert("Vul alstublieft alle afhaalvelden in: naam, telefoon en tijd.");
       return;
     }
 
-    message += `\n[Afhalen]\nNaam: ${name}\nTelefoon: ${phone}`;
-    if (email) message += `\nEmail: ${email}`;
-    message += `\nAfhaaltijd: ${pickupTime}\nBetaalwijze: ${paymentMethod}`;
+    customerDetails = `\n[Afhalen]\nNaam: ${name}\nTelefoon: ${phone}`;
+    if (email) customerDetails += `\nEmail: ${email}`;
+    customerDetails += `\nAfhaaltijd: ${time}\nBetaalwijze: ${paymentMethod}`;
   } else {
-    name = document.getElementById('deliveryName').value.trim();
-    phone = document.getElementById('deliveryPhone').value.trim();
+    const name = document.getElementById('deliveryName').value.trim();
+    const phone = document.getElementById('deliveryPhone').value.trim();
     email = document.getElementById('deliveryEmail').value.trim();
-    address = document.getElementById('deliveryAddress').value.trim();
+    const address = document.getElementById('deliveryAddress').value.trim();
     const postcodeRaw = document.getElementById('deliveryPostcode').value.trim();
-    deliveryTime = document.getElementById('deliveryTime').value;
+    const time = document.getElementById('deliveryTime').value;
     paymentMethod = document.getElementById('deliveryPayment').value;
 
     const postcodeClean = postcodeRaw.replace(/\s+/g, '');
-    postcode = postcodeClean.slice(0, 4);
-    houseNumber = address.split(' ').pop(); // 简单推断门牌号
-    street = address.replace(houseNumber, '').trim();
-
+    const postcode = postcodeClean.slice(0, 4);
     const allowedPostcodes = ['2341', '2342', '2343', '2333', '2334', '2231', '2232', '2361', '2235'];
-    if (!name || !phone || !address || !postcodeRaw || !deliveryTime) {
-      alert("Vul alstublieft alle bezorgvelden in.");
+
+    if (!name || !phone || !address || !postcodeRaw || !time) {
+      alert("Vul alstublieft alle bezorgvelden in: naam, telefoon, adres, postcode en tijd.");
       return;
     }
+
     if (!allowedPostcodes.includes(postcode)) {
       alert(`🚫 Wij bezorgen helaas niet in dit postcodegebied (${postcode}).`);
-      document.getElementById('deliveryPostcode').style.borderColor = 'red';
+      const postcodeField = document.getElementById('deliveryPostcode');
+      postcodeField.style.borderColor = 'red';
+      postcodeField.focus();
       return;
+    } else {
+      document.getElementById('deliveryPostcode').style.borderColor = '';
     }
 
-    message += `\n[Bezorgen]\nNaam: ${name}\nTelefoon: ${phone}`;
-    if (email) message += `\nEmail: ${email}`;
-    message += `\nAdres: ${address}\nPostcode: ${postcodeRaw}\nBezorgtijd: ${deliveryTime}\nBetaalwijze: ${paymentMethod}`;
+    customerDetails = `\n[Bezorgen]\nNaam: ${name}\nTelefoon: ${phone}`;
+    if (email) customerDetails += `\nEmail: ${email}`;
+    customerDetails += `\nAdres: ${address}\nPostcode: ${postcodeRaw}\nBezorgtijd: ${time}\nBetaalwijze: ${paymentMethod}`;
   }
 
   const totalPrice = document.getElementById('total').textContent;
-  message += `\nTotaal: €${totalPrice}`;
+  const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}\nTotaal: €${totalPrice}`;
 
-  // ✅ 发送到 Flask 数据库
-  const orderData = {
-    orderType,
-    name,
-    phone,
-    customerEmail: email,
-    paymentMethod,
-    pickup_time: pickupTime,
-    delivery_time: deliveryTime,
-    postcode,
-    house_number: houseNumber,
-    street,
-    city,
-    items: fullItems
-  };
-
-  fetch('https://flask-order-api.onrender.com/api/orders', {
+  fetch('https://flask-order-api.onrender.com/submit_order', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(orderData)
+    body: JSON.stringify({ message, email })
   })
     .then(res => res.json())
     .then(data => {
       if (data.status === 'ok') {
-        // ✅ 可选：同时发送 Telegram 消息
-        fetch('https://flask-order-api.onrender.com/submit_order', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message, email })
-        });
-
         if (paymentMethod === 'online' && data.payment_url) {
           window.location.href = data.payment_url;
           return;
         }
-
         showFeedback('Bestelling succesvol verzonden!');
         for (const k in cart) delete cart[k];
         updateCart();
         setTimeout(() => { window.location.href = '/'; }, 2000);
       } else {
-        showFeedback('Er is een fout opgetreden bij het verzenden van uw bestelling.', true);
+        showFeedback('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.', true);
       }
     })
     .catch(err => {
       console.error(err);
-      showFeedback('Er is een fout opgetreden bij het verzenden van uw bestelling.', true);
+      showFeedback('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.', true);
     });
 }
 
