@@ -38,8 +38,11 @@ def send_telegram(message: str):
                 timeout=5,
             )
             resp.raise_for_status()
+            print("Telegram message sent")
         except Exception as e:
             print(f"Telegram send error: {e}")
+    else:
+        print("Telegram configuration missing or empty message")
 
 
 def send_email(to_email: str, subject: str, body: str):
@@ -50,6 +53,7 @@ def send_email(to_email: str, subject: str, body: str):
     from_email = os.getenv("FROM_EMAIL", username)
     port = int(os.getenv("SMTP_PORT", "587"))
     if not (server and username and password and to_email):
+        print("Email configuration missing; skipping send")
         return
     try:
         with smtplib.SMTP(server, port) as smtp:
@@ -57,6 +61,7 @@ def send_email(to_email: str, subject: str, body: str):
             smtp.login(username, password)
             msg = f"Subject: {subject}\n\n{body}"
             smtp.sendmail(from_email, to_email, msg)
+        print("Email sent")
     except Exception as e:
         print(f"Email send error: {e}")
 
@@ -236,6 +241,29 @@ def pos_orders_today():
             except Exception as e:
                 print(f"❌ JSON解析失败: {e}")
                 o.items_dict = {}
+
+        total = sum(float(i.get("price", 0)) * int(i.get("qty", 0)) for i in o.items_dict.values())
+        summary = "\n".join(f"{name} x {item['qty']}" for name, item in o.items_dict.items())
+
+        if o.order_type == "afhalen":
+            details = f"[Afhalen]\nNaam: {o.customer_name}\nTelefoon: {o.phone}"
+            if o.email:
+                details += f"\nEmail: {o.email}"
+            details += f"\nAfhaaltijd: {o.pickup_time}\nBetaalwijze: {o.payment_method}"
+        else:
+            details = f"[Bezorgen]\nNaam: {o.customer_name}\nTelefoon: {o.phone}"
+            if o.email:
+                details += f"\nEmail: {o.email}"
+            details += (
+                f"\nAdres: {o.street} {o.house_number}"\
+                f"\nPostcode: {o.postcode}\nBezorgtijd: {o.delivery_time}"\
+                f"\nBetaalwijze: {o.payment_method}"
+            )
+
+        o.formatted = (
+            f"📦 Nieuwe bestelling bij *Nova Asia*:\n\n{summary}\n{details}\nTotaal: €{total:.2f}"
+        )
+
     return render_template("pos_orders.html", orders=orders)
 # 登录
 @app.route('/login', methods=["GET", "POST"])

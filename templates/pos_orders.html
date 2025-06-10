@@ -29,6 +29,7 @@
         <th>Adres</th>
         <th>Betaling</th>
         <th>Type</th>
+        <th>Bericht</th>
       </tr>
     </thead>
     <tbody>
@@ -51,6 +52,7 @@
         </td>
         <td>{{ order.payment_method }}</td>
         <td>{{ 'Bezorgen' if order.order_type == 'delivery' else 'Afhalen' }}</td>
+        <td><pre style="white-space: pre-wrap;">{{ order.formatted }}</pre></td>
       </tr>
     {% endfor %}
     </tbody>
