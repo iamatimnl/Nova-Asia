@@ -24,7 +24,9 @@
       <tr>
         <th>Tijd</th>
         <th>Klant</th>
+        <th>Telefoon</th>
         <th>Items</th>
+        <th>Adres</th>
         <th>Betaling</th>
         <th>Type</th>
       </tr>
@@ -34,12 +36,18 @@
       <tr>
         <td>{{ order.created_at.strftime('%H:%M') }}</td>
         <td>{{ order.customer_name or '' }}</td>
+        <td>{{ order.phone or '' }}</td>
         <td>
           <ul>
           {% for name, item in order.items_dict.items() %}
             <li>{{ name }} x {{ item['qty'] }}</li>
           {% endfor %}
           </ul>
+        </td>
+        <td>
+          {% if order.order_type == 'delivery' %}
+            {{ order.street }} {{ order.house_number }} {{ order.postcode }} {{ order.city }}
+          {% else %}-{% endif %}
         </td>
         <td>{{ order.payment_method }}</td>
         <td>{{ 'Bezorgen' if order.order_type == 'delivery' else 'Afhalen' }}</td>
