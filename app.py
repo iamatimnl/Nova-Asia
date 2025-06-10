@@ -158,7 +158,22 @@ def pos():
                 resp["payment_url"] = url
 
         return jsonify(resp)
-    return render_template("pos.html")
+    today = datetime.utcnow().date()
+    start = datetime.combine(today, datetime.min.time())
+    orders = Order.query.filter(Order.created_at >= start).order_by(Order.created_at.desc()).all()
+    for o in orders:
+        try:
+            o.items_dict = json.loads(o.items or "{}")
+        except Exception:
+            try:
+                import ast
+                o.items_dict = ast.literal_eval(o.items)
+            except Exception as e:
+                print(f"❌ JSON解析失败: {e}")
+                o.items_dict = {}
+
+        o.total = sum(float(i.get("price", 0)) * int(i.get("qty", 0)) for i in o.items_dict.values())
+    return render_template("pos.html", orders=orders)
 
 
 # 接收前端订单提交

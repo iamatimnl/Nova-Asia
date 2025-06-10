@@ -130,6 +130,12 @@
   }
   @media (max-width: 600px) { .menu-item { flex-direction: column; align-items: flex-start; } }
   .pos-container { display: flex; flex-direction: column; }
+  .left-panel { display:flex; flex-direction: column; flex:2; }
+  .orders-panel { margin-top:20px; }
+  .orders-panel table { width:100%; border-collapse: collapse; }
+  .orders-panel th, .orders-panel td { border:1px solid #ddd; padding:8px; text-align:left; }
+  .orders-panel th { background:#f2f2f2; }
+  .orders-panel ul { margin:0; padding-left:20px; }
   .order-summary {
     background: var(--off-white);
     border: 1px solid #e0e0e0;
@@ -139,8 +145,10 @@
   }
   @media (min-width: 768px) {
     .pos-container { flex-direction: row; align-items: flex-start; }
-    .product-list { flex: 2; margin-right:20px; }
-    .order-summary { width:300px; margin-top:0; }
+    .left-panel { flex-direction: row; flex:2; }
+    .product-list { flex:2; margin-right:20px; }
+    .order-summary { width:300px; margin-right:20px; margin-top:0; }
+    .orders-panel { flex:1; max-width:400px; }
   }
   .order-summary button {
     width:100%;
@@ -171,9 +179,9 @@
   </nav>
 </div>
 <h1>Bestelling</h1>
-<p><a href="{{ url_for('pos_orders_today') }}">Bekijk bestellingen vandaag</a></p>
 <div class="pos-container">
-  <div class="product-list">
+  <div class="left-panel">
+    <div class="product-list">
     <section id="customer-info">
       <div class="delivery-options">
         <h2>Klantgegevens</h2>
@@ -217,115 +225,17 @@
         </div>
       </div>
     </section>
-    <section id="bento">
-      <div class="bento-group">
-        <h2>Bento Box 🍱</h2>
-        <div class="bento-row menu-item" data-name="Chicken Bento" data-price="12">
-          <img class="bento-img" src="{{ url_for('static', filename='images/chicken-bento.jpg') }}" alt="Chicken Bento" loading="lazy"/>
-          <div class="bento-content">
-            <h3>Chicken Bento</h3>
-            <p>€ 12.00</p>
-            <label for="chickenBentoCount">Aantal</label>
-            <select id="chickenBentoCount" name="chickenBentoCount"></select>
-            <button type="button" class="qty-plus add-button" data-target="chickenBentoCount">+</button>
-            <button type="button" class="qty-minus remove-button" data-target="chickenBentoCount">-</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="sushi">
-      <div class="menu-group">
-        <h2>Sushi Rolls 🍣</h2>
-        <div class="menu-row menu-item" data-name="Sake Maki" data-price="8.5">
-          <img class="menu-img" src="{{ url_for('static', filename='images/sake-maki.jpg') }}" alt="Sake Maki" loading="lazy" />
-          <div class="menu-content">
-            <h3>Sake Maki</h3>
-            <p>€ 8.50</p>
-            <label for="sakeCount">Aantal</label>
-            <select id="sakeCount" name="sakeCount"></select>
-            <button type="button" class="qty-plus add-button" data-target="sakeCount">+</button>
-            <button type="button" class="qty-minus remove-button" data-target="sakeCount">-</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="bubble">
-      <div class="menu-group">
-        <h2>Bubble Tea 🧋</h2>
-        <div class="menu-row menu-item" data-name="Bubble Tea" data-price="5">
-          <div class="menu-img">
-            <img src="{{ url_for('static', filename='images/bubble-tea.jpg') }}" alt="Bubble Tea" class="menu-img" loading="lazy" />
-          </div>
-          <div class="menu-content">
-            <h3>Bubble Tea</h3>
-            <p>€ 5.00</p>
-            <label for="bubbleTeaCount">Aantal</label>
-            <select id="bubbleTeaCount" name="bubbleTeaCount"></select>
-            <button type="button" class="qty-plus add-button" data-target="bubbleTeaCount">+</button>
-            <button type="button" class="qty-minus remove-button" data-target="bubbleTeaCount">-</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="dessert">
-      <div class="menu-group">
-        <h2>Dessert 🍡</h2>
-        <div class="menu-row menu-item" data-name="Mochi" data-price="4">
-          <img src="{{ url_for('static', filename='images/mochi.jpg') }}" alt="Mochi" class="menu-img" loading="lazy" />
-          <div class="menu-content">
-            <h3>Mochi (rijstcake)</h3>
-            <p>€ 4.00</p>
-            <label for="dessertCount">Aantal</label>
-            <select id="dessertCount" name="dessertCount"></select>
-            <button type="button" class="qty-plus add-button" data-target="dessertCount">+</button>
-            <button type="button" class="qty-minus remove-button" data-target="dessertCount">-</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="snack">
-      <div class="menu-group">
-        <h2>Snack 🍤</h2>
-        <div class="menu-row menu-item" data-name="Karaage" data-price="6.5">
-          <img src="{{ url_for('static', filename='images/karaage.jpg') }}" alt="Karaage" class="menu-img" loading="lazy" />
-          <div class="menu-content">
-            <h3>Karaage (Japanse gefrituurde kip)</h3>
-            <p>€ 6.50</p>
-            <label for="snackCount">Aantal</label>
-            <select id="snackCount" name="snackCount"></select>
-            <button type="button" class="qty-plus add-button" data-target="snackCount">+</button>
-            <button type="button" class="qty-minus remove-button" data-target="snackCount">-</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="vegan">
-      <div class="menu-group">
-        <h2>Vegan 🥬</h2>
-        <div class="menu-row menu-item" data-name="Avocado Roll" data-price="7">
-          <img src="{{ url_for('static', filename='images/avocado-roll.jpg') }}" alt="Avocado Roll" class="menu-img" loading="lazy" />
-          <div class="menu-content">
-            <h3>Avocado Roll</h3>
-            <p>€ 7.00</p>
-            <label for="veganCount">Aantal</label>
-            <select id="veganCount" name="veganCount"></select>
-            <button type="button" class="qty-plus add-button" data-target="veganCount">+</button>
-            <button type="button" class="qty-minus remove-button" data-target="veganCount">-</button>
-          </div>
-        </div>
-      </div>
-    </section>
+    {% include 'menu.html' %}
   </div>
   <div class="order-summary">
     <h2>Overzicht</h2>
     <ul id="cart"></ul>
     <div class="total">Totaal: €<span id="total">0.00</span></div>
     <button id="submitOrder">Submit Order</button>
+  </div>
+  </div>
+  <div class="orders-panel">
+    {% include 'orders_table.html' %}
   </div>
 </div>
 
@@ -464,9 +374,29 @@ function submitOrder(){
     const type = ['delivery','bezorgen'].includes(o.order_type) ? 'Bezorgen' : 'Afhalen';
     return `${name}${type}\n${items}`;
   }
+  function addRow(order){
+    const tbody = document.querySelector('.orders-panel tbody');
+    if(!tbody) return;
+    const tr = document.createElement('tr');
+    const isDelivery = ['delivery','bezorgen'].includes(order.order_type);
+    const items = Object.entries(order.items || {}).map(([n,i]) => `<li>${n} x ${i.qty}</li>`).join('');
+    const total = Object.values(order.items || {}).reduce((s,i)=>s + (parseFloat(i.price||0)*parseInt(i.qty||0)),0);
+    tr.innerHTML = `
+      <td>${order.created_at || ''}</td>
+      <td>${isDelivery ? 'Bezorgen' : 'Afhalen'}</td>
+      <td>${order.customer_name || ''}</td>
+      <td>${order.phone || ''}</td>
+      <td>${order.email || '-'}</td>
+      <td><ul>${items}</ul></td>
+      <td>${total.toFixed(2)}</td>
+      <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}` : '-'}</td>
+      <td>${isDelivery ? (order.delivery_time || '-') : (order.pickup_time || '-')}</td>
+      <td>${order.payment_method || ''}</td>`;
+    tbody.prepend(tr);
+  }
   socket.on('new_order', order => {
     beep();
-    alert(`Nieuwe bestelling ontvangen!\n\n${formatOrder(order)}`);
+    addRow(order);
   });
 </script>
 </body>
