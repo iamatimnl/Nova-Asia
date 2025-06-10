@@ -84,24 +84,34 @@ def pos():
 # 接收前端订单提交
 @app.route('/api/orders', methods=["POST"])
 def api_orders():
-    data = request.get_json()
-    order = Order(
-        order_type=data.get("order_type"),
-        customer_name=data.get("customer_name"),
-        phone=data.get("phone"),
-        email=data.get("email"),
-        pickup_time=data.get("pickup_time"),
-        delivery_time=data.get("delivery_time"),
-        payment_method=data.get("payment_method"),
-        postcode=data.get("postcode"),
-        house_number=data.get("house_number"),
-        street=data.get("street"),
-        city=data.get("city"),
-        items=json.dumps(data.get("items", {})),
-    )
-    db.session.add(order)
-    db.session.commit()
-    return jsonify({"success": True})
+    try:
+        data = request.get_json()
+
+        order = Order(
+            order_type=data.get("order_type"),
+            customer_name=data.get("customer_name"),
+            phone=data.get("phone"),
+            email=data.get("email"),
+            pickup_time=data.get("pickup_time"),
+            delivery_time=data.get("delivery_time"),
+            payment_method=data.get("payment_method"),
+            postcode=data.get("postcode"),
+            house_number=data.get("house_number"),
+            street=data.get("street"),
+            city=data.get("city"),
+            items=json.dumps(data.get("items", {})),
+        )
+        db.session.add(order)
+        db.session.commit()
+
+        print("✅ 接收到订单:", data)  # 可选日志
+        return jsonify({"status": "ok"}), 200
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"status": "fail", "error": str(e)}), 500
+
 
 # Telegram 通知接口
 @app.route('/api/send', methods=["POST"])
