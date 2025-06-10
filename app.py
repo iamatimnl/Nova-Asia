@@ -8,6 +8,8 @@ from flask_login import (
     login_required,
 )
 from flask_socketio import SocketIO
+import eventlet
+eventlet.monkey_patch()
 from datetime import datetime
 import os
 import json
@@ -28,7 +30,7 @@ with app.app_context():
 
 
 # Socket.IO for real-time updates
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
 
 def send_telegram(message: str):
