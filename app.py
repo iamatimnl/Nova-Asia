@@ -7,6 +7,7 @@ from flask_login import (
     logout_user,
     login_required,
 )
+from flask_socketio import SocketIO
 from datetime import datetime
 import os
 import json
@@ -24,6 +25,10 @@ print(repr(os.getenv("DATABASE_URL")))
 db = SQLAlchemy(app)
 with app.app_context():
     db.create_all()
+
+
+# Socket.IO for real-time updates
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 
 def send_telegram(message: str):
@@ -123,7 +128,27 @@ def pos():
         )
         db.session.add(order)
         db.session.commit()
-        return jsonify({"success": True})
+
+        # Notify POS clients
+        try:
+            payload = {
+                "id": order.id,
+                "order_type": order.order_type,
+                "customer_name": order.customer_name,
+                "phone": order.phone,
+                "items": json.loads(order.items or "{}"),
+            }
+            socketio.emit("new_order", payload, broadcast=True)
+        except Exception as e:
+            print(f"Socket emit failed: {e}")
+
+        resp = {"success": True}
+        if str(order.payment_method).lower() == "online":
+            url = os.getenv("TIKKIE_URL")
+            if url:
+                resp["payment_url"] = url
+
+        return jsonify(resp)
     return render_template("pos.html")
 
 
@@ -151,6 +176,19 @@ def api_orders():
         db.session.add(order)
         db.session.commit()
 
+        # Broadcast new order to connected POS clients
+        try:
+            order_payload = {
+                "id": order.id,
+                "order_type": order.order_type,
+                "customer_name": order.customer_name,
+                "phone": order.phone,
+                "items": json.loads(order.items or "{}"),
+            }
+            socketio.emit("new_order", order_payload, broadcast=True)
+        except Exception as e:
+            print(f"Socket emit failed: {e}")
+
         # Optional notifications
         if data.get("message"):
             send_telegram(data.get("message"))
@@ -158,7 +196,15 @@ def api_orders():
                 send_email(order.email, "Order Confirmation", data.get("message"))
 
         print("✅ 接收到订单:", data)  # 可选日志
-        return jsonify({"status": "ok"}), 200
+
+        # Include payment link when using online method
+        resp = {"status": "ok"}
+        if str(order.payment_method).lower() == "online":
+            pay_url = os.getenv("TIKKIE_URL")
+            if pay_url:
+                resp["payment_url"] = pay_url
+
+        return jsonify(resp), 200
 
     except Exception as e:
         import traceback
@@ -288,5 +334,5 @@ def logout():
 
 # 启动
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    socketio.run(app, host="0.0.0.0", port=5000)
 

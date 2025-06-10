@@ -6,7 +6,8 @@ This repository demonstrates a minimal Flask deployment on Render. The goal is t
 
 - `app.py` – Flask application.
 - `wsgi.py` – Gunicorn entry point.
-- `requirements.txt` – Dependencies.
+- `requirements.txt` – Dependencies. Now includes `Flask-SocketIO` for real-time
+  updates.
 - `runtime.txt` – Python version lock.
 - `render.yaml` – Render configuration.
 
@@ -27,3 +28,10 @@ services:
 ```
 
 Create a new Web Service on Render, link this repository, and it will deploy using the configuration above.
+
+## Environment Variables
+
+- `DATABASE_URL` - database connection URI.
+- `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` - optional Telegram notification settings.
+- `SMTP_SERVER`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `FROM_EMAIL` - optional SMTP settings.
+- `TIKKIE_URL` - URL to redirect customers for online payments.
