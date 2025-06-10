@@ -426,7 +426,7 @@ function submitOrder(){
     street: delivery?document.getElementById('street').value:null,
     city: delivery?document.getElementById('city').value:null
   };
-  fetch('https://flask-order-api.onrender.com/submit_order', {
+  fetch('/submit_order', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
@@ -445,7 +445,7 @@ function submitOrder(){
 </script>
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script>
-  const socket = io("https://flask-order-api.onrender.com");  // ⬅️ 这是你的 Flask API 在 Render 的地址
+  const socket = io();  // Connect to the same origin
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   function beep(){
     const osc = audioCtx.createOscillator();
