@@ -1793,7 +1793,7 @@ function checkout() {
         ? document.getElementById('deliveryArea').value.trim()
         : '',
       items: itemsToSend,
-      message: message // ✅ 仍然推送到 Telegram
+      message, email // ✅ 仍然推送到 Telegram
     })
   })
     .then(res => res.json())
