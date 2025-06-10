@@ -1749,25 +1749,37 @@ function checkout() {
   const totalPrice = document.getElementById('total').textContent;
   const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}\nTotaal: €${totalPrice}`;
 
-  fetch('/submit_order', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    orderType: orderType,
-    name: ...,
-    phone: ...,
-    email: ...,
-    pickup_time: ...,
-    delivery_time: ...,
-    paymentMethod: ...,
-    postcode: ...,
-    house_number: ...,
-    street: ...,
-    city: ...,
-    items: cart,
-    message: message   // 👈 仍然保留，供 Telegram 使用
+    fetch('/submit_order', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      orderType: orderType,
+      name: orderType === 'afhalen'
+        ? document.getElementById('pickupName').value.trim()
+        : document.getElementById('deliveryName').value.trim(),
+      phone: orderType === 'afhalen'
+        ? document.getElementById('pickupPhone').value.trim()
+        : document.getElementById('deliveryPhone').value.trim(),
+      email: email,
+      pickup_time: orderType === 'afhalen'
+        ? document.getElementById('pickupTime').value
+        : '',
+      delivery_time: orderType === 'bezorgen'
+        ? document.getElementById('deliveryTime').value
+        : '',
+      paymentMethod: paymentMethod,
+      postcode: orderType === 'bezorgen'
+        ? document.getElementById('deliveryPostcode').value.trim()
+        : '',
+      house_number: '', // ✅ 如果你未来想支持可分开的地址，这里可以改进
+      street: orderType === 'bezorgen'
+        ? document.getElementById('deliveryAddress').value.trim()
+        : '',
+      city: 'Oegstgeest', // ✅ 你可以固定填店铺所在城市，或用其它逻辑获取
+      items: cart,
+      message: message // ✅ 仍然推送到 Telegram
+    })
   })
-})
     .then(res => res.json())
     .then(data => {
       if (data.status === 'ok') {
