@@ -358,12 +358,26 @@ function submitOrder(){
 </script>
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script>
-  const socket = io({transports:['websocket']});  // prefer WebSocket
+  const socket = io(window.location.origin, { transports: ['websocket'] });
+
   let pollTimer;
-  window.addEventListener('beforeunload',()=>socket.disconnect());
-  socket.on('connect_error',()=>{setTimeout(()=>socket.connect(),1000);});
-  socket.on('disconnect', startPolling);
-  socket.on('connect', stopPolling);
+
+  window.addEventListener('beforeunload', () => socket.disconnect());
+
+  socket.on('connect_error', () => {
+    setTimeout(() => socket.connect(), 1000);
+  });
+
+  socket.on('disconnect', () => {
+    console.warn('⚠️ Socket 连接断开');
+    startPolling();
+  });
+
+  socket.on('connect', () => {
+    console.log('✅ Socket 连接成功');
+    stopPolling();
+  });
+
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   function beep(){
     const osc = audioCtx.createOscillator();
@@ -376,12 +390,7 @@ function submitOrder(){
     osc.start();
     osc.stop(audioCtx.currentTime + 0.2);
   }
-  function formatOrder(o){
-    const items = Object.entries(o.items || {}).map(([n,i])=>`${n} x ${i.qty}`).join('\n');
-    const name = o.customer_name ? `Klant: ${o.customer_name}\n` : '';
-    const type = ['delivery','bezorgen'].includes(o.order_type) ? 'Bezorgen' : 'Afhalen';
-    return `${name}${type}\n${items}`;
-  }
+
   function addRow(order){
     const tbody = document.querySelector('.orders-panel tbody');
     if(!tbody) return;
@@ -403,7 +412,9 @@ function submitOrder(){
       <td>${order.payment_method || ''}</td>`;
     tbody.prepend(tr);
   }
+
   socket.on('new_order', order => {
+    console.log('🆕 新订单:', order);
     beep();
     addRow(order);
   });
@@ -430,27 +441,7 @@ function submitOrder(){
     }
   }
 </script>
-<!-- Socket.IO 客户端 -->
-<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-<script>
-  const socket = io(window.location.origin, {
-    transports: ['websocket'],
-  });
 
-  socket.on('connect', () => {
-    console.log('✅ Socket 连接成功');
-  });
-
-  socket.on('new_order', (order) => {
-    console.log('🆕 新订单:', order);
-    // 你可以在此调用函数将 order 动态插入页面列表
-    // 例如：addOrderToDOM(order);
-  });
-
-  socket.on('disconnect', () => {
-    console.warn('⚠️ Socket 连接断开');
-  });
-</script>
 
   
 </body>
