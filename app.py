@@ -117,6 +117,11 @@ def api_orders():
         import traceback
         traceback.print_exc()
         return jsonify({"status": "fail", "error": str(e)}), 500
+        
+@app.route('/submit_order', methods=["POST"])
+def submit_order():
+    # 兼容旧接口，转发数据到现有逻辑
+    return api_orders()
 
 
 # Telegram 通知接口
