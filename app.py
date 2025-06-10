@@ -89,19 +89,20 @@ def api_orders():
         data = request.get_json()
 
         order = Order(
-            order_type=data.get("order_type"),
-            customer_name=data.get("customer_name"),
-            phone=data.get("phone"),
-            email=data.get("email"),
-            pickup_time=data.get("pickup_time"),
-            delivery_time=data.get("delivery_time"),
-            payment_method=data.get("payment_method"),
-            postcode=data.get("postcode"),
-            house_number=data.get("house_number"),
-            street=data.get("street"),
-            city=data.get("city"),
-            items=json.dumps(data.get("items", {})),
-        )
+    order_type=data.get("orderType"),              # ✅ 正确字段
+    customer_name=data.get("name"),                # ✅ 正确字段
+    phone=data.get("phone"),                       # ✅ 没有的话可以留空
+    email=data.get("customerEmail"),               # ✅ 正确字段
+    pickup_time=data.get("pickup_time"),           # ❓ 如果没传，也可以不填
+    delivery_time=data.get("delivery_time"),       # ❓ 同上
+    payment_method=data.get("paymentMethod"),      # ✅ 正确字段
+    postcode=data.get("postcode"),                 # ❓ 如果没用可以删掉
+    house_number=data.get("house_number"),
+    street=data.get("street"),
+    city=data.get("city"),
+    items=json.dumps(data.get("items", {})),       # ✅ 正常工作
+)
+
         db.session.add(order)
         db.session.commit()
 
