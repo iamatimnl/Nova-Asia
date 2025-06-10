@@ -721,7 +721,44 @@ input#bezorgen:checked ~ .slider {
     </div>
   </div>
 </section>
-{% include "menu.html" %}
+<section id="checkbox-group">
+<div class="checkbox-group">
+<h2>Draag bij aan duurzaamheid en voorkom verspilling 🌱</h2>
+<p style="margin-top: -12px; font-size: 0.95rem; color: #555; text-align: center;">
+    Geef aan hoeveel u nodig heeft:
+  </p>
+<div class="supply-row">
+  <img alt="Stokjes" class="supply-img photo" src="{{ url_for('static', filename='images/chopsticks.png') }}"/>
+  <div class="supply-content">
+    <label for="chopstickCount">Aantal stokjes</label>
+    <select id="chopstickCount" class="supply-select"></select>
+  </div>
+</div>
+<!-- Sojasaus -->
+<div class="supply-row">
+<img alt="Sojasaus" class="supply-img photo" src="{{ url_for('static', filename='images/soja saus.webp') }}"/>
+<div class="supply-content">
+<label for="soyCount">Aantal sojasaus flesjes</label>
+<select id="soyCount" class="supply-select"></select>
+</div>
+</div>
+<!-- Wasabi -->
+<div class="supply-row">
+<img alt="Wasabi" class="supply-img photo" src="{{ url_for('static', filename='images/wasabi.webp') }}"/>
+<div class="supply-content">
+<label for="wasabiCount">Aantal wasabi</label>
+<select id="wasabiCount" class="supply-select"></select>
+</div>
+</div>
+<!-- Gember -->
+<div class="supply-row">
+<img alt="Gember" class="supply-img photo" src="{{ url_for('static', filename='images/gember.webp') }}"/>
+<div class="supply-content">
+<label for="gemberCount">Aantal gember</label>
+<select id="gemberCount" class="supply-select"></select>
+</div>
+</div>
+</div></section>
 
 
 <div class="cart-section" id="mobileCart">
