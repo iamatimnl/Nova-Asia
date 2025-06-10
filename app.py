@@ -138,6 +138,13 @@ def api_send():
             return jsonify({"status": "error", "error": str(e)}), 500
     return jsonify({"status": "ok"})
 
+@app.route('/create_db')
+def create_db():
+    try:
+        db.create_all()
+        return "✅ Database tables created!"
+    except Exception as e:
+        return f"❌ Error: {e}"
 
 
 
