@@ -1749,11 +1749,25 @@ function checkout() {
   const totalPrice = document.getElementById('total').textContent;
   const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}\nTotaal: €${totalPrice}`;
 
-  fetch('https://flask-order-api.onrender.com/submit_order', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message, email })
+  fetch('/submit_order', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    orderType: orderType,
+    name: ...,
+    phone: ...,
+    email: ...,
+    pickup_time: ...,
+    delivery_time: ...,
+    paymentMethod: ...,
+    postcode: ...,
+    house_number: ...,
+    street: ...,
+    city: ...,
+    items: cart,
+    message: message   // 👈 仍然保留，供 Telegram 使用
   })
+})
     .then(res => res.json())
     .then(data => {
       if (data.status === 'ok') {
