@@ -170,10 +170,10 @@ def pos_orders_today():
     for o in orders:
         try:
             o.items_dict = json.loads(o.items or "{}")
-        except Exception:
+        except Exception as e:
+            print(f"❌ JSON解析失败: {e}")
             o.items_dict = {}
     return render_template("pos_orders.html", orders=orders)
-
 # 登录
 @app.route('/login', methods=["GET", "POST"])
 def login():
