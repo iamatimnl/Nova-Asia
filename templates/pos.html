@@ -367,7 +367,7 @@ function submitOrder(){
     street: delivery?document.getElementById('street').value:null,
     city: delivery?document.getElementById('city').value:null
   };
-  fetch('/submit_order', {
+  fetch('https://flask-order-api.onrender.com/submit_order', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
