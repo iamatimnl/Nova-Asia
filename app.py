@@ -136,6 +136,14 @@ def api_send():
             return jsonify({"status": "error", "error": str(e)}), 500
     return jsonify({"status": "ok"})
 
+@app.route('/init_db')
+@login_required
+def init_db():
+    if current_user.id != "admin":
+        return "Unauthorized", 403
+    with app.app_context():
+        db.create_all()
+    return "✅ Database tables created!"
 
 
 # 管理页面
