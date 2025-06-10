@@ -164,7 +164,11 @@ def admin_orders():
         try:
             items = json.loads(o.items or "{}")
         except Exception:
-            items = {}
+            try:
+                import ast
+                items = ast.literal_eval(o.items)
+            except Exception:
+                items = {}
         total = sum(float(i.get("price", 0)) * int(i.get("qty", 0)) for i in items.values())
         order_data.append({"order": o, "total": total})
     return render_template("admin_orders.html", order_data=order_data)
@@ -178,9 +182,13 @@ def pos_orders_today():
     for o in orders:
         try:
             o.items_dict = json.loads(o.items or "{}")
-        except Exception as e:
-            print(f"❌ JSON解析失败: {e}")
-            o.items_dict = {}
+        except Exception:
+            try:
+                import ast
+                o.items_dict = ast.literal_eval(o.items)
+            except Exception as e:
+                print(f"❌ JSON解析失败: {e}")
+                o.items_dict = {}
     return render_template("pos_orders.html", orders=orders)
 # 登录
 @app.route('/login', methods=["GET", "POST"])
