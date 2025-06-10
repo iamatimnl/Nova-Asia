@@ -80,6 +80,11 @@ def pos():
         db.session.commit()
         return jsonify({"success": True})
     return render_template("pos.html")
+@app.route('/init_db')
+def init_db():
+    with app.app_context():
+        db.create_all()
+    return "✅ Database tables created!"
 
 # 接收前端订单提交
 @app.route('/api/orders', methods=["POST"])
