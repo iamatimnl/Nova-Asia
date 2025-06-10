@@ -243,6 +243,7 @@ def pos_orders_today():
                 o.items_dict = {}
 
         total = sum(float(i.get("price", 0)) * int(i.get("qty", 0)) for i in o.items_dict.values())
+        o.total = total
         summary = "\n".join(f"{name} x {item['qty']}" for name, item in o.items_dict.items())
 
         if o.order_type == "afhalen":

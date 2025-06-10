@@ -23,21 +23,25 @@
     <thead>
       <tr>
         <th>Tijd</th>
+        <th>Type</th>
         <th>Klant</th>
         <th>Telefoon</th>
+        <th>Email</th>
         <th>Items</th>
+        <th>Totaal (&euro;)</th>
         <th>Adres</th>
+        <th>Tijdslot</th>
         <th>Betaling</th>
-        <th>Type</th>
-        <th>Bericht</th>
       </tr>
     </thead>
     <tbody>
     {% for order in orders %}
       <tr>
         <td>{{ order.created_at.strftime('%H:%M') }}</td>
+        <td>{{ 'Bezorgen' if order.order_type == 'delivery' else 'Afhalen' }}</td>
         <td>{{ order.customer_name or '' }}</td>
         <td>{{ order.phone or '' }}</td>
+        <td>{{ order.email or '-' }}</td>
         <td>
           <ul>
           {% for name, item in order.items_dict.items() %}
@@ -45,14 +49,20 @@
           {% endfor %}
           </ul>
         </td>
+        <td>{{ '%.2f' % order.total }}</td>
         <td>
           {% if order.order_type == 'delivery' %}
             {{ order.street }} {{ order.house_number }} {{ order.postcode }} {{ order.city }}
           {% else %}-{% endif %}
         </td>
+        <td>
+          {% if order.order_type == 'delivery' %}
+            {{ order.delivery_time or '-' }}
+          {% else %}
+            {{ order.pickup_time or '-' }}
+          {% endif %}
+        </td>
         <td>{{ order.payment_method }}</td>
-        <td>{{ 'Bezorgen' if order.order_type == 'delivery' else 'Afhalen' }}</td>
-        <td><pre style="white-space: pre-wrap;">{{ order.formatted }}</pre></td>
       </tr>
     {% endfor %}
     </tbody>
