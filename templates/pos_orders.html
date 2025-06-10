@@ -72,8 +72,11 @@
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script>
     const socket = io({transports:['websocket']});
+    let pollTimer;
     window.addEventListener('beforeunload',()=>socket.disconnect());
     socket.on('connect_error',()=>{setTimeout(()=>socket.connect(),1000);});
+    socket.on('disconnect', startPolling);
+    socket.on('connect', stopPolling);
     function addRow(order){
       const tbody = document.querySelector('table tbody');
       const tr = document.createElement('tr');
@@ -94,6 +97,28 @@
       tbody.prepend(tr);
     }
     socket.on('new_order', addRow);
+
+    function fetchOrders(){
+      fetch('/pos/orders_today?json=1').then(r=>r.json()).then(data=>{
+        const tbody = document.querySelector('table tbody');
+        if(!tbody) return;
+        tbody.innerHTML='';
+        data.forEach(addRow);
+      }).catch(()=>{});
+    }
+
+    function startPolling(){
+      if(pollTimer) return;
+      fetchOrders();
+      pollTimer = setInterval(fetchOrders,10000);
+    }
+
+    function stopPolling(){
+      if(pollTimer){
+        clearInterval(pollTimer);
+        pollTimer = null;
+      }
+    }
   </script>
 </body>
 </html>
