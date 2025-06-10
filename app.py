@@ -136,6 +136,15 @@ def pos():
                 "order_type": order.order_type,
                 "customer_name": order.customer_name,
                 "phone": order.phone,
+                "email": order.email,
+                "payment_method": order.payment_method,
+                "pickup_time": order.pickup_time,
+                "delivery_time": order.delivery_time,
+                "postcode": order.postcode,
+                "house_number": order.house_number,
+                "street": order.street,
+                "city": order.city,
+                "created_at": order.created_at.strftime("%H:%M"),
                 "items": json.loads(order.items or "{}"),
             }
             socketio.emit("new_order", payload, broadcast=True)
@@ -183,6 +192,15 @@ def api_orders():
                 "order_type": order.order_type,
                 "customer_name": order.customer_name,
                 "phone": order.phone,
+                "email": order.email,
+                "payment_method": order.payment_method,
+                "pickup_time": order.pickup_time,
+                "delivery_time": order.delivery_time,
+                "postcode": order.postcode,
+                "house_number": order.house_number,
+                "street": order.street,
+                "city": order.city,
+                "created_at": order.created_at.strftime("%H:%M"),
                 "items": json.loads(order.items or "{}"),
             }
             socketio.emit("new_order", order_payload, broadcast=True)
