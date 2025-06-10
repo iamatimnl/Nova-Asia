@@ -9,7 +9,7 @@ This repository demonstrates a minimal Flask deployment on Render. The goal is t
 - `requirements.txt` – Dependencies. Now includes `Flask-SocketIO` for real-time
   updates.
 - `runtime.txt` – Python version lock.
-- `render.yaml` – Render configuration.
+- `render.yaml` – Render configuration with an `eventlet` worker.
 
 ## Render configuration
 
@@ -23,8 +23,8 @@ services:
     buildCommand: |
       pip install --upgrade pip
       pip install -r requirements.txt
-      pip install gunicorn
-    startCommand: gunicorn wsgi:app
+      pip install gunicorn eventlet
+    startCommand: gunicorn --worker-class eventlet -w 1 wsgi:app
 ```
 
 Create a new Web Service on Render, link this repository, and it will deploy using the configuration above.
