@@ -433,7 +433,7 @@ function submitOrder(){
   })
     .then(r => r.json())
     .then(res => {
-      if (res.success) {
+      if (res.success || res.status === 'ok') {
         alert('Bestelling succesvol verzonden!');
         location.reload();
       } else {
