@@ -1752,21 +1752,8 @@ function checkout() {
   fetch('https://flask-order-api.onrender.com/submit_order', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-  orderType: orderType,
-  name: name,
-  phone: phone,
-  customerEmail: email,
-  pickup_time: time,       // 如果是 afhalen
-  delivery_time: time,     // 如果是 bezorgen
-  paymentMethod: paymentMethod,
-  postcode: postcodeRaw,
-  house_number: '',        // 可选，如果没有可以空
-  street: address,         // 可选
-  city: '',                // 可选
-  items: cart,             // 这是最关键的，要传给后端保存
-  message: message         // 可选，如果你还想保留 telegram 报文
-})
+   body: JSON.stringify({ message, email })
+
     .then(res => res.json())
     .then(data => {
       if (data.status === 'ok') {
