@@ -312,6 +312,7 @@ def pos_orders_today():
     today = datetime.utcnow().date()
     start = datetime.combine(today, datetime.min.time())
     orders = Order.query.filter(Order.created_at >= start).order_by(Order.created_at.desc()).all()
+    order_dicts = []
     for o in orders:
         try:
             o.items_dict = json.loads(o.items or "{}")
@@ -346,6 +347,27 @@ def pos_orders_today():
         o.formatted = (
             f"📦 Nieuwe bestelling bij *Nova Asia*:\n\n{summary}\n{details}\nTotaal: €{total:.2f}"
         )
+
+        order_dicts.append({
+            "id": o.id,
+            "order_type": o.order_type,
+            "customer_name": o.customer_name,
+            "phone": o.phone,
+            "email": o.email,
+            "payment_method": o.payment_method,
+            "pickup_time": o.pickup_time,
+            "delivery_time": o.delivery_time,
+            "postcode": o.postcode,
+            "house_number": o.house_number,
+            "street": o.street,
+            "city": o.city,
+            "created_at": o.created_at.strftime("%H:%M"),
+            "items": o.items_dict,
+            "total": total,
+        })
+
+    if request.args.get("json"):
+        return jsonify(order_dicts)
 
     return render_template("pos_orders.html", orders=orders)
 # 登录
