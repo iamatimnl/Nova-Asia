@@ -137,12 +137,6 @@ def api_send():
     return jsonify({"status": "ok"})
 
 
-@app.route('/init_db')
-def init_db():
-    with app.app_context():
-        db.create_all()
-    return "✅ Database tables created!"
-
 
 # 管理页面
 @app.route('/admin')
