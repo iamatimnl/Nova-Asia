@@ -705,8 +705,12 @@ input#bezorgen:checked ~ .slider {
       <input id="deliveryEmail" type="email" />
       <label>Adres:</label>
       <input id="deliveryAddress" type="text" />
+      <label>Huisnummer:</label>
+      <input id="deliveryHouseNumber" type="text" />
       <label>Postcode:</label>
       <input id="deliveryPostcode" type="text" />
+      <label>Gebied:</label>
+      <input id="deliveryArea" type="text" />
       <label>Bezorgtijd:</label>
       <input id="deliveryTime" type="time" />
       <label>Betaalmethode:</label>
@@ -1718,7 +1722,9 @@ function checkout() {
     const phone = document.getElementById('deliveryPhone').value.trim();
     email = document.getElementById('deliveryEmail').value.trim();
     const address = document.getElementById('deliveryAddress').value.trim();
+    const houseNumber = document.getElementById('deliveryHouseNumber').value.trim();
     const postcodeRaw = document.getElementById('deliveryPostcode').value.trim();
+    const area = document.getElementById('deliveryArea').value.trim();
     const time = document.getElementById('deliveryTime').value;
     paymentMethod = document.getElementById('deliveryPayment').value;
 
@@ -1726,8 +1732,8 @@ function checkout() {
     const postcode = postcodeClean.slice(0, 4);
     const allowedPostcodes = ['2341', '2342', '2343', '2333', '2334', '2231', '2232', '2361', '2235'];
 
-    if (!name || !phone || !address || !postcodeRaw || !time) {
-      alert("Vul alstublieft alle bezorgvelden in: naam, telefoon, adres, postcode en tijd.");
+    if (!name || !phone || !address || !houseNumber || !postcodeRaw || !area || !time) {
+      alert("Vul alstublieft alle bezorgvelden in: naam, telefoon, adres, huisnummer, postcode, gebied en tijd.");
       return;
     }
 
@@ -1743,7 +1749,7 @@ function checkout() {
 
     customerDetails = `\n[Bezorgen]\nNaam: ${name}\nTelefoon: ${phone}`;
     if (email) customerDetails += `\nEmail: ${email}`;
-    customerDetails += `\nAdres: ${address}\nPostcode: ${postcodeRaw}\nBezorgtijd: ${time}\nBetaalwijze: ${paymentMethod}`;
+    customerDetails += `\nAdres: ${address} ${houseNumber}\nPostcode: ${postcodeRaw}\nGebied: ${area}\nBezorgtijd: ${time}\nBetaalwijze: ${paymentMethod}`;
   }
 
   const totalPrice = document.getElementById('total').textContent;
@@ -1777,11 +1783,15 @@ function checkout() {
       postcode: orderType === 'bezorgen'
         ? document.getElementById('deliveryPostcode').value.trim()
         : '',
-      house_number: '', // ✅ 如果你未来想支持可分开的地址，这里可以改进
+      house_number: orderType === 'bezorgen'
+        ? document.getElementById('deliveryHouseNumber').value.trim()
+        : '',
       street: orderType === 'bezorgen'
         ? document.getElementById('deliveryAddress').value.trim()
         : '',
-      city: 'Oegstgeest', // ✅ 你可以固定填店铺所在城市，或用其它逻辑获取
+      city: orderType === 'bezorgen'
+        ? document.getElementById('deliveryArea').value.trim()
+        : '',
       items: itemsToSend,
       message: message // ✅ 仍然推送到 Telegram
     })
@@ -1876,6 +1886,32 @@ function checkout() {
       hint.textContent = '';
     }
   });
+</script>
+<script>
+  const houseNumInput = document.getElementById('deliveryHouseNumber');
+  const streetInput = document.getElementById('deliveryAddress');
+  const areaInput = document.getElementById('deliveryArea');
+
+  function autofillAddress() {
+    const postcode = postcodeInput.value.trim();
+    const number = houseNumInput.value.trim();
+    if (!postcode || !number) return;
+    const url = `https://nominatim.openstreetmap.org/search?format=json&postalcode=${encodeURIComponent(postcode)}&street=${encodeURIComponent(number)}&country=Netherlands&limit=1`;
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          const addr = data[0].address || {};
+          if (addr.road && !streetInput.value) streetInput.value = addr.road;
+          const city = addr.city || addr.town || addr.village;
+          if (city && !areaInput.value) areaInput.value = city;
+        }
+      })
+      .catch(err => console.error('Address lookup failed', err));
+  }
+
+  postcodeInput.addEventListener('blur', autofillAddress);
+  houseNumInput.addEventListener('blur', autofillAddress);
 </script>
 
 
