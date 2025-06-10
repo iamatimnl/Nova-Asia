@@ -78,11 +78,12 @@
         {% for info in order_data %}
             <tr>
                 <td>{{ info.order.id }}</td>
-                <td>{{ 'Delivery' if info.order.order_type == 'delivery' else 'Pickup' }}</td>
+                {% set is_delivery = info.order.order_type in ['delivery', 'bezorgen'] %}
+                <td>{{ 'Delivery' if is_delivery else 'Pickup' }}</td>
                 <td>{{ info.order.customer_name }}</td>
                 <td>{{ info.order.phone }}</td>
                 <td>
-                    {% if info.order.order_type == 'delivery' %}
+                    {% if is_delivery %}
                         {{ info.order.street }} {{ info.order.house_number }} {{ info.order.postcode }} {{ info.order.city }}
                     {% else %}-{% endif %}
                 </td>

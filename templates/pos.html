@@ -461,7 +461,7 @@ function submitOrder(){
   function formatOrder(o){
     const items = Object.entries(o.items || {}).map(([n,i])=>`${n} x ${i.qty}`).join('\n');
     const name = o.customer_name ? `Klant: ${o.customer_name}\n` : '';
-    const type = o.order_type === 'delivery' ? 'Bezorgen' : 'Afhalen';
+    const type = ['delivery','bezorgen'].includes(o.order_type) ? 'Bezorgen' : 'Afhalen';
     return `${name}${type}\n${items}`;
   }
   socket.on('new_order', order => {

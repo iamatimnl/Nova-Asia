@@ -246,7 +246,8 @@ def pos_orders_today():
         o.total = total
         summary = "\n".join(f"{name} x {item['qty']}" for name, item in o.items_dict.items())
 
-        if o.order_type == "afhalen":
+        is_pickup = o.order_type in ["afhalen", "pickup"]
+        if is_pickup:
             details = f"[Afhalen]\nNaam: {o.customer_name}\nTelefoon: {o.phone}"
             if o.email:
                 details += f"\nEmail: {o.email}"
