@@ -28,6 +28,7 @@ login_manager.login_view = "login"
 
 # 数据模型
 class Order(db.Model):
+    __tablename__ = 'orders'  # ✅ 避免使用 SQL 保留字
     id = db.Column(db.Integer, primary_key=True)
     order_type = db.Column(db.String(20))
     customer_name = db.Column(db.String(100))
@@ -42,6 +43,7 @@ class Order(db.Model):
     city = db.Column(db.String(100))
     items = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
 
 class User(UserMixin):
     def __init__(self, user_id: str):
