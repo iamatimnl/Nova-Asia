@@ -11,6 +11,7 @@ from datetime import datetime
 import os
 import json
 import requests
+import smtplib
 
 # 初始化 Flask
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -23,6 +24,41 @@ print(repr(os.getenv("DATABASE_URL")))
 db = SQLAlchemy(app)
 with app.app_context():
     db.create_all()
+
+
+def send_telegram(message: str):
+    """Send a Telegram message if tokens are configured."""
+    token = os.getenv("TELEGRAM_BOT_TOKEN")
+    chat_id = os.getenv("TELEGRAM_CHAT_ID")
+    if token and chat_id and message:
+        try:
+            resp = requests.post(
+                f"https://api.telegram.org/bot{token}/sendMessage",
+                json={"chat_id": chat_id, "text": message},
+                timeout=5,
+            )
+            resp.raise_for_status()
+        except Exception as e:
+            print(f"Telegram send error: {e}")
+
+
+def send_email(to_email: str, subject: str, body: str):
+    """Send a confirmation email if SMTP settings are provided."""
+    server = os.getenv("SMTP_SERVER")
+    username = os.getenv("SMTP_USERNAME")
+    password = os.getenv("SMTP_PASSWORD")
+    from_email = os.getenv("FROM_EMAIL", username)
+    port = int(os.getenv("SMTP_PORT", "587"))
+    if not (server and username and password and to_email):
+        return
+    try:
+        with smtplib.SMTP(server, port) as smtp:
+            smtp.starttls()
+            smtp.login(username, password)
+            msg = f"Subject: {subject}\n\n{body}"
+            smtp.sendmail(from_email, to_email, msg)
+    except Exception as e:
+        print(f"Email send error: {e}")
 
 # 设置登录管理
 login_manager = LoginManager(app)
@@ -65,15 +101,15 @@ def home():
 @login_required
 def pos():
     if request.method == "POST":
-        data = request.get_json()
+        data = request.get_json() or {}
         order = Order(
-            order_type=data.get("order_type"),
-            customer_name=data.get("customer_name"),
+            order_type=data.get("order_type") or data.get("orderType"),
+            customer_name=data.get("customer_name") or data.get("name"),
             phone=data.get("phone"),
-            email=data.get("email"),
+            email=data.get("email") or data.get("customerEmail"),
             pickup_time=data.get("pickup_time"),
             delivery_time=data.get("delivery_time"),
-            payment_method=data.get("payment_method"),
+            payment_method=data.get("payment_method") or data.get("paymentMethod"),
             postcode=data.get("postcode"),
             house_number=data.get("house_number"),
             street=data.get("street"),
@@ -90,25 +126,31 @@ def pos():
 @app.route('/api/orders', methods=["POST"])
 def api_orders():
     try:
-        data = request.get_json()
+        data = request.get_json() or {}
 
         order = Order(
-    order_type=data.get("orderType"),              # ✅ 正确字段
-    customer_name=data.get("name"),                # ✅ 正确字段
-    phone=data.get("phone"),                       # ✅ 没有的话可以留空
-    email=data.get("customerEmail"),               # ✅ 正确字段
-    pickup_time=data.get("pickup_time"),           # ❓ 如果没传，也可以不填
-    delivery_time=data.get("delivery_time"),       # ❓ 同上
-    payment_method=data.get("paymentMethod"),      # ✅ 正确字段
-    postcode=data.get("postcode"),                 # ❓ 如果没用可以删掉
-    house_number=data.get("house_number"),
-    street=data.get("street"),
-    city=data.get("city"),
-    items=json.dumps(data.get("items", {})),       # ✅ 正常工作
-)
+            order_type=data.get("orderType") or data.get("order_type"),
+            customer_name=data.get("name") or data.get("customer_name"),
+            phone=data.get("phone"),
+            email=data.get("customerEmail") or data.get("email"),
+            pickup_time=data.get("pickup_time"),
+            delivery_time=data.get("delivery_time"),
+            payment_method=data.get("paymentMethod") or data.get("payment_method"),
+            postcode=data.get("postcode"),
+            house_number=data.get("house_number"),
+            street=data.get("street"),
+            city=data.get("city"),
+            items=json.dumps(data.get("items", {})),
+        )
 
         db.session.add(order)
         db.session.commit()
+
+        # Optional notifications
+        if data.get("message"):
+            send_telegram(data.get("message"))
+            if order.email:
+                send_email(order.email, "Order Confirmation", data.get("message"))
 
         print("✅ 接收到订单:", data)  # 可选日志
         return jsonify({"status": "ok"}), 200

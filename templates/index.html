@@ -1749,6 +1749,12 @@ function checkout() {
   const totalPrice = document.getElementById('total').textContent;
   const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}\nTotaal: €${totalPrice}`;
 
+  const itemsToSend = { ...cart };
+  Object.keys(extras).forEach(id => {
+    const qty = parseInt(document.getElementById(id).value || 0);
+    if (qty > 0) itemsToSend[extras[id].label] = { price: 0, qty };
+  });
+
     fetch('/submit_order', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -1776,7 +1782,7 @@ function checkout() {
         ? document.getElementById('deliveryAddress').value.trim()
         : '',
       city: 'Oegstgeest', // ✅ 你可以固定填店铺所在城市，或用其它逻辑获取
-      items: cart,
+      items: itemsToSend,
       message: message // ✅ 仍然推送到 Telegram
     })
   })
