@@ -15,6 +15,11 @@ import os
 import json
 import requests
 import smtplib
+from utils.notifications import (
+    send_telegram_message,
+    send_email_notification,
+    send_confirmation_email
+)
 
 # 初始化 Flask
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -202,7 +207,16 @@ def api_orders():
         db.session.add(order)
         db.session.commit()
 
-        # Broadcast new order to connected POS clients
+        # ✅ 生成订单文本
+        order_text = generate_order_text(order)
+
+        # ✅ 通知
+        send_telegram_message(order_text)
+        send_email_notification(order_text)
+        if order.email:
+            send_confirmation_email(order_text, order.email)
+
+        # ✅ 广播给 POS 界面
         try:
             order_payload = {
                 "id": order.id,
@@ -224,15 +238,9 @@ def api_orders():
         except Exception as e:
             print(f"Socket emit failed: {e}")
 
-        # Optional notifications
-        if data.get("message"):
-            send_telegram(data.get("message"))
-            if order.email:
-                send_email(order.email, "Order Confirmation", data.get("message"))
+        print("✅ 接收到订单:", data)
 
-        print("✅ 接收到订单:", data)  # 可选日志
-
-        # Include payment link when using online method
+        # ✅ 返回支付链接（可选）
         resp = {"status": "ok"}
         if str(order.payment_method).lower() == "online":
             pay_url = os.getenv("TIKKIE_URL")
@@ -245,6 +253,7 @@ def api_orders():
         import traceback
         traceback.print_exc()
         return jsonify({"status": "fail", "error": str(e)}), 500
+
         
 @app.route('/submit_order', methods=["POST"])
 def submit_order():
