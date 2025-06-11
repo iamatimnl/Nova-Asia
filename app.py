@@ -83,7 +83,7 @@ def get_orders_today():
         return jsonify({'error': str(e)}), 500
 
 
-def send_telegram(message: str):
+def send_telegram_message(message: str) -> bool:
     """Send a Telegram message if tokens are configured."""
     token = os.getenv("TELEGRAM_BOT_TOKEN")
     chat_id = os.getenv("TELEGRAM_CHAT_ID")
@@ -95,11 +95,15 @@ def send_telegram(message: str):
                 timeout=5,
             )
             resp.raise_for_status()
-            print("Telegram message sent")
+            print("✅ Telegram message sent")
+            return True
         except Exception as e:
-            print(f"Telegram send error: {e}")
+            print(f"❌ Telegram send error: {e}")
+            return False
     else:
-        print("Telegram configuration missing or empty message")
+        print("❌ Telegram configuration missing or empty message")
+        return False
+
 
 
 def send_email(to_email: str, subject: str, body: str):
