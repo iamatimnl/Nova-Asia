@@ -299,17 +299,19 @@ function toggleAddress(){
   document.getElementById('houseNumber').required=delivery;
   document.getElementById('deliveryPayment').required=delivery;
 }
-function fetchAddress(){
-  const pc=document.getElementById('postcode').value.replace(/\s+/g,'');
+async function fetchAddress(){
+  const pc=document.getElementById('postcode').value.trim();
   const num=document.getElementById('houseNumber').value.trim();
-  if(pc.length===6 && num){
-    fetch(`https://free.bedrijfsdata.nl/v1.1/bag?postcode=${pc}&number=${num}`)
-      .then(r=>r.json()).then(d=>{
-        if(d && d.street){
-          document.getElementById('street').value=d.street;
-          document.getElementById('city').value=d.city;
-        }
-      }).catch(()=>{});
+  if(pc && num){
+    const url=`https://api.postcodeapi.nu/v3/lookup/${encodeURIComponent(pc)}/${encodeURIComponent(num)}`;
+    try{
+      const res=await fetch(url,{headers:{'X-Api-Key':'juW6MEgEeL2BEM0rInEtB5a15BqXjWwO3YqrdH0z'}});
+      if(res.ok){
+        const d=await res.json();
+        if(d.street) document.getElementById('street').value=d.street;
+        if(d.city) document.getElementById('city').value=d.city;
+      }
+    }catch(e){console.warn('Adres ophalen mislukt');}
   }
 }
 function submitOrder() {

@@ -1799,14 +1799,14 @@ function checkout() {
     .then(res => res.json())
     .then(data => {
       if (data.status === 'ok') {
-        if (paymentMethod === 'online' && data.paymentLink) {
-          window.location.href = data.paymentLink;
-          return;
-        }
         showFeedback('Bestelling succesvol verzonden!');
         for (const k in cart) delete cart[k];
         updateCart();
-        setTimeout(() => { window.location.href = '/'; }, 2000);
+        if (paymentMethod === 'online' && data.paymentLink) {
+          window.location.href = data.paymentLink;
+        } else {
+          setTimeout(() => { window.location.href = '/'; }, 2000);
+        }
       } else {
         showFeedback('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.', true);
       }
@@ -1892,22 +1892,25 @@ function checkout() {
   const streetInput = document.getElementById('deliveryAddress');
   const areaInput = document.getElementById('deliveryArea');
 
-  function autofillAddress() {
+  async function autofillAddress() {
     const postcode = postcodeInput.value.trim();
     const number = houseNumInput.value.trim();
     if (!postcode || !number) return;
-    const url = `https://nominatim.openstreetmap.org/search?format=json&postalcode=${encodeURIComponent(postcode)}&street=${encodeURIComponent(number)}&country=Netherlands&limit=1`;
-    fetch(url)
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data) && data.length > 0) {
-          const addr = data[0].address || {};
-          if (addr.road && !streetInput.value) streetInput.value = addr.road;
-          const city = addr.city || addr.town || addr.village;
-          if (city && !areaInput.value) areaInput.value = city;
-        }
-      })
-      .catch(err => console.error('Address lookup failed', err));
+    const url = `https://api.postcodeapi.nu/v3/lookup/${encodeURIComponent(postcode)}/${encodeURIComponent(number)}`;
+    try {
+      const res = await fetch(url, {
+        headers: { 'X-Api-Key': 'juW6MEgEeL2BEM0rInEtB5a15BqXjWwO3YqrdH0z' }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.street && !streetInput.value) streetInput.value = data.street;
+        if (data.city && !areaInput.value) areaInput.value = data.city;
+      } else {
+        console.warn('Adres ophalen mislukt');
+      }
+    } catch (err) {
+      console.warn('Adres ophalen mislukt');
+    }
   }
 
   postcodeInput.addEventListener('blur', autofillAddress);
