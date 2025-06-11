@@ -21,7 +21,8 @@ import smtplib
 from utils.notifications import (
     send_telegram_message,
     send_email_notification,
-    send_confirmation_email
+    send_confirmation_email,
+    generate_order_text
 )
 
 # 初始化 Flask
