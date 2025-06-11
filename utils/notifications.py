@@ -43,20 +43,31 @@ def send_telegram_message(text):
         print("❌ Telegram 错误:", e)
         return False
 
-def send_email(subject, body, to_email):
-    try:
-        msg = MIMEText(body, "plain", "utf-8")
-        msg["Subject"] = Header(subject, "utf-8")
-        msg["From"] = formataddr(("Nova Asia", SENDER_EMAIL))
-        msg["To"] = to_email
+ddef send_email_notification(order_text):
+    subject = "Nova Asia - Nieuwe bestelling"
+    sender = os.getenv("SMTP_USERNAME")
+    password = os.getenv("SMTP_PASSWORD")
+    receiver = os.getenv("FROM_EMAIL") or sender
+    server_addr = os.getenv("SMTP_SERVER", "smtp.gmail.com")
+    port = int(os.getenv("SMTP_PORT", "587"))
 
-        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+    if not all([sender, password, receiver]):
+        print("❌ Email config missing")
+        return False
+
+    msg = MIMEText(order_text, "plain", "utf-8")
+    msg["Subject"] = Header(subject, "utf-8")
+    msg["From"] = formataddr(("NovaAsia", sender))
+    msg["To"] = receiver
+
+    try:
+        with smtplib.SMTP(server_addr, port) as server:
             server.starttls()
-            server.login(SENDER_EMAIL, SENDER_PASSWORD)
-            server.sendmail(SENDER_EMAIL, [to_email], msg.as_string())
+            server.login(sender, password)
+            server.sendmail(sender, [receiver], msg.as_string())
         return True
     except Exception as e:
-        print("❌ 邮件发送失败:", e)
+        print(f"❌ Email error: {e}")
         return False
 
 def send_pos_order(order_data):
