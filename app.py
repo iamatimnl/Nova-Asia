@@ -39,7 +39,19 @@ with app.app_context():
 
 # Socket.IO for real-time updates
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
-
+@app.route('/orders_today/json')
+def get_orders_today():
+    try:
+        # 示例：从本地 JSON 文件中加载（你也可以替换为数据库读取）
+        with open('orders.json', 'r', encoding='utf-8') as f:
+            all_orders = json.load(f)
+        
+        today = datetime.today().strftime('%Y-%m-%d')
+        today_orders = [order for order in all_orders if order['date'].startswith(today)]
+        
+        return jsonify(today_orders)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 def send_telegram(message: str):
     """Send a Telegram message if tokens are configured."""
