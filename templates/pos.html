@@ -297,6 +297,13 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('submitOrder').addEventListener('click',submitOrder);
   updateCart();
   toggleAddress();
+  // 🔊 解锁 AudioContext
+  document.body.addEventListener('click', () => {
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+  }, { once: true });
+  
 });
 function toggleAddress(){
   const delivery=document.getElementById('typeDelivery').checked;
