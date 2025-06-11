@@ -483,6 +483,15 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for("login"))
+@app.route("/test_telegram", methods=["POST"])
+def test_telegram():
+    data = request.get_json()
+    message = data.get("message", "测试消息")
+    try:
+        success = send_telegram_message(message)
+        return jsonify({"status": "ok" if success else "fail"})
+    except Exception as e:
+        return jsonify({"status": "error", "error": str(e)}), 500
 
 # 启动
 if __name__ == "__main__":
