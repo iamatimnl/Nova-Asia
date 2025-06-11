@@ -216,8 +216,11 @@ def api_orders():
         order_text = generate_order_text(order)
 
         # ✅ 通知
-        send_telegram_message(order_text)
-        send_email_notification(order_text)
+       print("📨 开始发送 Telegram 和 Email")
+       send_telegram_message(order_text)
+       send_email_notification(order_text)
+       print("✅ 已调用 Telegram 和 Email 发送函数")
+
         if order.email:
             send_confirmation_email("Bestelbevestiging", order_text, order.email)
 
