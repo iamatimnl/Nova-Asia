@@ -24,7 +24,8 @@ from utils.notifications import (
     send_confirmation_email,
     generate_order_text
 )
-
+from dotenv import load_dotenv
+load_dotenv()
 # 初始化 Flask
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app = Flask(__name__, template_folder="templates", static_folder="static")
