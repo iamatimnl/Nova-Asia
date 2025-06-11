@@ -261,6 +261,14 @@ def api_orders():
         traceback.print_exc()
         return jsonify({"status": "fail", "error": str(e)}), 500
 
+@app.route("/test_dns")
+def test_dns():
+    import socket
+    try:
+        ip = socket.gethostbyname('api.telegram.org')
+        return f"Resolved Telegram IP: {ip}"
+    except Exception as e:
+        return f"DNS error: {e}"
 
 
         
