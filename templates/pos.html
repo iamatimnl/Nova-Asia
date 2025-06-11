@@ -436,21 +436,11 @@ function submitOrder() {
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script>
   const socket = io('https://flask-order-api.onrender.com', { transports: ['websocket'] });
-
+  socket.on('new_order', order => {
+    notifyNewOrder(); // 声音和提示弹窗
+  }); 
   let pollTimer;
 
-  // 音效播放
-  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  function beep() {
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(660, audioCtx.currentTime);
-    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start();
-    osc.stop(audioCtx.currentTime + 0.2);
   }
 
   // 添加订单到表格
@@ -528,6 +518,29 @@ function submitOrder() {
   }
 
   window.addEventListener('beforeunload', () => socket.disconnect());
+</script>
+<script>
+  // 创建 AudioContext 对象
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+  // 播放提示音
+  function beep() {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(660, audioCtx.currentTime); // 可调整频率
+    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);     // 音量设置
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.2); // 播放持续 0.2 秒
+  }
+
+  // 弹窗提示或未来可换 toast
+  function notifyNewOrder() {
+    beep();
+    alert('Nieuwe bestelling ontvangen!');
+  }
 </script>
 
 
