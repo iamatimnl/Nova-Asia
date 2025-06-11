@@ -162,6 +162,21 @@ def submit_order():
         error_msg = "Onbekende fout"
 
     return jsonify({"status": "fail", "error": error_msg}), 500
+def send_confirmation_email(subject, content, recipient):
+    msg = MIMEText(content, "plain", "utf-8")
+    msg["Subject"] = Header(subject, "utf-8")
+    msg["From"] = formataddr(("NovaAsia", SMTP_USERNAME))
+    msg["To"] = recipient
+
+    try:
+        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+            server.starttls()
+            server.login(SMTP_USERNAME, SMTP_PASSWORD)
+            server.sendmail(SMTP_USERNAME, [recipient], msg.as_string())
+        return True
+    except Exception as e:
+        print(f"❌ Email confirmation failed: {e}")
+        return False
 
 # === 启动服务 ===
 if __name__ == "__main__":
