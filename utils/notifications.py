@@ -6,8 +6,7 @@ from datetime import datetime, date
 from email.mime.text import MIMEText
 from email.header import Header
 from email.utils import formataddr
-from dotenv import load_dotenv
-load_dotenv()
+
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
