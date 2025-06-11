@@ -11,8 +11,6 @@ from flask_login import (
 )
 from flask_socketio import SocketIO
 from flask_cors import CORS
-import eventlet
-eventlet.monkey_patch()
 from datetime import datetime
 import os
 import json
