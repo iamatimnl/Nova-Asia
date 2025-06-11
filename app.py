@@ -39,19 +39,49 @@ with app.app_context():
 
 # Socket.IO for real-time updates
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
+
+
 @app.route('/orders_today/json')
 def get_orders_today():
     try:
-        # 示例：从本地 JSON 文件中加载（你也可以替换为数据库读取）
-        with open('orders.json', 'r', encoding='utf-8') as f:
-            all_orders = json.load(f)
-        
-        today = datetime.today().strftime('%Y-%m-%d')
-        today_orders = [order for order in all_orders if order['date'].startswith(today)]
-        
-        return jsonify(today_orders)
+        today = datetime.utcnow().date()
+        start_of_day = datetime.combine(today, datetime.min.time())
+        orders = Order.query.filter(Order.created_at >= start_of_day).order_by(Order.created_at.desc()).all()
+
+        result = []
+        for o in orders:
+            try:
+                items = json.loads(o.items or "{}")
+            except Exception:
+                import ast
+                items = ast.literal_eval(o.items or "{}")
+
+            total = sum(float(i.get("price", 0)) * int(i.get("qty", 0)) for i in items.values())
+
+            result.append({
+                "id": o.id,
+                "order_type": o.order_type,
+                "customer_name": o.customer_name,
+                "phone": o.phone,
+                "email": o.email,
+                "payment_method": o.payment_method,
+                "pickup_time": o.pickup_time,
+                "delivery_time": o.delivery_time,
+                "postcode": o.postcode,
+                "house_number": o.house_number,
+                "street": o.street,
+                "city": o.city,
+                "created_at": o.created_at.strftime("%H:%M"),
+                "items": items,
+                "total": total
+            })
+
+        return jsonify(result)
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
+
 
 def send_telegram(message: str):
     """Send a Telegram message if tokens are configured."""
