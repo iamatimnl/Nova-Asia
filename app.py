@@ -157,7 +157,7 @@ def pos():
         if str(order.payment_method).lower() == "online":
             url = os.getenv("TIKKIE_URL")
             if url:
-                resp["payment_url"] = url
+                resp["paymentLink"] = url
 
         return jsonify(resp)
     today = datetime.utcnow().date()
@@ -237,7 +237,7 @@ def api_orders():
         if str(order.payment_method).lower() == "online":
             pay_url = os.getenv("TIKKIE_URL")
             if pay_url:
-                resp["payment_url"] = pay_url
+                resp["paymentLink"] = pay_url
 
         return jsonify(resp), 200
 

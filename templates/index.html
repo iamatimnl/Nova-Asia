@@ -1799,8 +1799,8 @@ function checkout() {
     .then(res => res.json())
     .then(data => {
       if (data.status === 'ok') {
-        if (paymentMethod === 'online' && data.payment_url) {
-          window.location.href = data.payment_url;
+        if (paymentMethod === 'online' && data.paymentLink) {
+          window.location.href = data.paymentLink;
           return;
         }
         showFeedback('Bestelling succesvol verzonden!');
