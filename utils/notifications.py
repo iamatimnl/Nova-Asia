@@ -1,4 +1,11 @@
-# utils/notifications.py
+import requests
+import smtplib
+import json  # ⬅️ 缺失的导入
+from email.mime.text import MIMEText
+from email.header import Header
+from email.utils import formataddr
+import os
+
 import requests, smtplib
 from email.mime.text import MIMEText
 from email.header import Header
