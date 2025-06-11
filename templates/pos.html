@@ -374,8 +374,8 @@ function submitOrder() {
   })
     .then(r => r.json())
     .then(res => {
-      if (res.payment_url) {
-        window.location.href = res.payment_url;
+      if (res.paymentLink) {
+        window.location.href = res.paymentLink;
       } else if (res.success || res.status === 'ok') {
         alert('Bestelling succesvol verzonden!');
         location.reload();
