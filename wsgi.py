@@ -1,8 +1,9 @@
-from app import app, socketio
+# wsgi.py
+from notifier import app, socketio  # ✅ 现在从 notifier.py 中导入
 
 def run():
-    socketio.run(app, debug=True)
+    socketio.run(app, host="0.0.0.0", port=5000, debug=True)
 
-# 仅当你本地运行 python wsgi.py 时才执行
 if __name__ == "__main__":
     run()
+
