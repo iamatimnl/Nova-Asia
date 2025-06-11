@@ -5,6 +5,42 @@ from email.header import Header
 from email.utils import formataddr
 import os
 
+def generate_order_text(order):
+    try:
+        items = json.loads(order.items or "{}")
+    except:
+        items = {}
+    
+    lines = []
+    lines.append(f"🧾 Nieuwe bestelling bij Nova Asia:")
+    lines.append("")
+    for name, item in items.items():
+        qty = item.get("qty", 1)
+        lines.append(f" - {name} x {qty}")
+    
+    lines.append("")
+    if order.order_type in ["afhalen", "pickup"]:
+        lines.append("[Afhalen]")
+        lines.append(f"Naam: {order.customer_name}")
+        lines.append(f"Telefoon: {order.phone}")
+        if order.email:
+            lines.append(f"Email: {order.email}")
+        lines.append(f"Afhaaltijd: {order.pickup_time}")
+    else:
+        lines.append("[Bezorgen]")
+        lines.append(f"Naam: {order.customer_name}")
+        lines.append(f"Telefoon: {order.phone}")
+        if order.email:
+            lines.append(f"Email: {order.email}")
+        lines.append(f"Adres: {order.street} {order.house_number}, {order.postcode} {order.city}")
+        lines.append(f"Bezorgtijd: {order.delivery_time}")
+    
+    lines.append(f"Betaalwijze: {order.payment_method}")
+    return "\n".join(lines)
+
+
+
+
 def send_telegram_message(order_text):
     BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
     CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
