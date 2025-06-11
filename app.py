@@ -157,7 +157,7 @@ def pos():
                 "created_at": order.created_at.strftime("%H:%M"),
                 "items": json.loads(order.items or "{}"),
             }
-            socketio.emit("new_order", payload, broadcast=True)
+            socketio.emit('new_order', order_data)
         except Exception as e:
             print(f"Socket emit failed: {e}")
 
