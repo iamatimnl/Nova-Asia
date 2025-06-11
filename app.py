@@ -219,7 +219,8 @@ def api_orders():
         send_telegram_message(order_text)
         send_email_notification(order_text)
         if order.email:
-            send_confirmation_email(order_text, order.email)
+            send_confirmation_email("Bestelbevestiging", order_text, order.email)
+
 
         # ✅ 广播给 POS 界面
         try:
