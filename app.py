@@ -57,6 +57,9 @@ def load_user(user_id: str):
 @app.route("/")
 def home():
     return render_template("index.html")  # 如果你在 templates/ 目录下放了 index.html
+@app.route("/pos")
+def pos():
+    return render_template("pos.html")
 
 @app.route("/submit_order", methods=["POST"])
 def submit_order():
