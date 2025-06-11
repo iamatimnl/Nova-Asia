@@ -211,5 +211,8 @@ def submit_order():
     elif not pos_ok:
         error_msg = f"POS-fout: {pos_error}"
     return jsonify({"status": "fail", "error": error_msg}), 500
-un(app, host="0.0.0.0", port=5000)
+# === 启动 ===
+if __name__ == "__main__":
+    socketio.run(app, host="0.0.0.0", port=5000)
+
 
