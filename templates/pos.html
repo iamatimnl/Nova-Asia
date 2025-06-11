@@ -536,7 +536,7 @@ socket.on('new_order', order => {
 </script>
  <script>
 function checkForNewOrders(){
-  fetch('https://nova-asia.onrender.com/orders_today/json')   // 替换成你真实的 API 路径
+  fetch('https://nova-asia.onrender.com/submit_order')   // 替换成你真实的 API 路径
     .then(res => res.json())
     .then(orders => {
       orders.forEach(order => {
