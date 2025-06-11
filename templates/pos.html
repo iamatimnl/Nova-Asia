@@ -312,49 +312,80 @@ function fetchAddress(){
       }).catch(()=>{});
   }
 }
-function submitOrder(){
-  const name=document.getElementById('custName').value.trim();
-  const phone=document.getElementById('custPhone').value.trim();
-  if(!name||!phone){ alert('Vul naam en telefoon in.'); return; }
-  const delivery=document.getElementById('typeDelivery').checked;
-  if(!delivery){
-    if(!document.getElementById('pickupTime').value){ alert('Pickup tijd is verplicht.'); return; }
-  }else{
-    if(!document.getElementById('postcode').value||!document.getElementById('houseNumber').value||!document.getElementById('street').value||!document.getElementById('city').value){
-      alert('Adresgegevens zijn verplicht.'); return; }
+function submitOrder() {
+  const name = document.getElementById('custName').value.trim();
+  const phone = document.getElementById('custPhone').value.trim();
+  if (!name || !phone) {
+    alert('Vul naam en telefoon in.');
+    return;
   }
-  if(Object.keys(cart).length===0){ alert('Geen producten geselecteerd.'); return; }
-  const data={
-    customer_name:name,
-    phone:phone,
-    order_type:delivery?'delivery':'pickup',
-    items:cart,
-    payment_method: delivery?document.getElementById('deliveryPayment').value:document.getElementById('pickupPayment').value,
-    pickup_time: !delivery?document.getElementById('pickupTime').value:null,
-    delivery_time: delivery?document.getElementById('deliveryTime').value:null,
-    postcode: delivery?document.getElementById('postcode').value:null,
-    house_number: delivery?document.getElementById('houseNumber').value:null,
-    street: delivery?document.getElementById('street').value:null,
-    city: delivery?document.getElementById('city').value:null
+
+  const delivery = document.getElementById('typeDelivery').checked;
+
+  if (!delivery) {
+    if (!document.getElementById('pickupTime').value) {
+      alert('Pickup tijd is verplicht.');
+      return;
+    }
+  } else {
+    if (
+      !document.getElementById('postcode').value ||
+      !document.getElementById('houseNumber').value ||
+      !document.getElementById('street').value ||
+      !document.getElementById('city').value
+    ) {
+      alert('Adresgegevens zijn verplicht.');
+      return;
+    }
+  }
+
+  if (Object.keys(cart).length === 0) {
+    alert('Geen producten geselecteerd.');
+    return;
+  }
+
+  // 🧾 自动生成订单文字（message）
+  const orderText = Object.entries(cart).map(([name, item]) => {
+    return `${name} x ${item.qty} (€${(item.qty * item.price).toFixed(2)})`;
+  }).join(', ');
+
+  // ✏️ 备注信息（remark）
+  const remark = delivery
+    ? `${document.getElementById('street').value} ${document.getElementById('houseNumber').value}, ${document.getElementById('postcode').value} ${document.getElementById('city').value}`
+    : `Afhalen om ${document.getElementById('pickupTime').value}`;
+
+  // 🧾 请求体
+  const payload = {
+    message: orderText,
+    remark: remark,
+    paymentMethod: delivery
+      ? document.getElementById('deliveryPayment').value
+      : document.getElementById('pickupPayment').value,
+    orderType: delivery ? 'delivery' : 'pickup',
+    name: name,
+    items: cart
   };
-  fetch('/submit_order', {
+
+  // ✅ 提交到远程 Flask Render 后端
+  fetch('https://flask-order-api.onrender.com/submit_order', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
+    body: JSON.stringify(payload)
   })
-    .then(r=>r.json())
-    .then(res=>{
-      if(res.payment_url){
-        window.location.href=res.payment_url;
-      }else if(res.success||res.status==='ok'){
+    .then(r => r.json())
+    .then(res => {
+      if (res.payment_url) {
+        window.location.href = res.payment_url;
+      } else if (res.success || res.status === 'ok') {
         alert('Bestelling succesvol verzonden!');
         location.reload();
-      }else{
+      } else {
         alert('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.');
       }
     })
-    .catch(()=>alert('verzend fout'));
+    .catch(() => alert('Verzendfout – server niet bereikbaar.'));
 }
+
 
 </script>
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
