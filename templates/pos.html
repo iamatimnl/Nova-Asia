@@ -486,6 +486,8 @@ function checkForNewOrders(){
       console.error('Fout bij ophalen nieuwe bestellingen:', err);
     });
 }
+// 每 5 秒轮询一次服务器
+setInterval(checkForNewOrders, 5000);   
 </script>
  <script>
 let knownOrderIds = new Set();  // 保存已处理的订单 ID
