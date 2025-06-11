@@ -223,6 +223,10 @@
             <option value="paid">Already Paid</option>
           </select>
         </div>
+        <div id="qrCodeContainer" class="hidden" style="text-align:center;margin-top:10px;">
+          <p><strong>📍 Scan voor navigatie:</strong></p>
+          <img id="qrCodePreview" src="" alt="QR Code" />
+        </div>
       </div>
     </section>
     {% include 'menu.html' %}
@@ -285,6 +289,10 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('typeDelivery').addEventListener('change',toggleAddress);
   document.getElementById('postcode').addEventListener('blur',fetchAddress);
   document.getElementById('houseNumber').addEventListener('blur',fetchAddress);
+  document.getElementById('postcode').addEventListener('blur',updateQRCode);
+  document.getElementById('houseNumber').addEventListener('blur',updateQRCode);
+  document.getElementById('street').addEventListener('blur',updateQRCode);
+  document.getElementById('city').addEventListener('blur',updateQRCode);
   document.getElementById('submitOrder').addEventListener('click',submitOrder);
   updateCart();
   toggleAddress();
@@ -298,6 +306,11 @@ function toggleAddress(){
   document.getElementById('postcode').required=delivery;
   document.getElementById('houseNumber').required=delivery;
   document.getElementById('deliveryPayment').required=delivery;
+  if(!delivery){
+    document.getElementById('qrCodeContainer').classList.add('hidden');
+  } else {
+    updateQRCode();
+  }
 }
 async function fetchAddress(){
   const pc=document.getElementById('postcode').value.trim();
@@ -312,6 +325,25 @@ async function fetchAddress(){
         if(d.city) document.getElementById('city').value=d.city;
       }
     }catch(e){console.warn('Adres ophalen mislukt');}
+    updateQRCode();
+  }
+}
+function updateQRCode(){
+  const street=document.getElementById('street').value.trim();
+  const house=document.getElementById('houseNumber').value.trim();
+  const pc=document.getElementById('postcode').value.trim();
+  const city=document.getElementById('city').value.trim();
+  const container=document.getElementById('qrCodeContainer');
+  const img=document.getElementById('qrCodePreview');
+  if(street && house && pc && city){
+    const address=`${street} ${house}, ${pc} ${city}`;
+    const googleMapsLink=`https://www.google.com/maps?q=${encodeURIComponent(address)}`;
+    const qrCodeUrl=`https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=${encodeURIComponent(googleMapsLink)}`;
+    img.src=qrCodeUrl;
+    container.classList.remove('hidden');
+  }else{
+    img.src='';
+    container.classList.add('hidden');
   }
 }
 function submitOrder() {
