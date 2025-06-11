@@ -465,6 +465,32 @@ socket.on('new_order', order => {
   alert(`Nieuwe bestelling ontvangen!\n\n${formatOrder(order)}`);
 });
 </script>
+ <script>
+function checkForNewOrders(){
+  fetch('/orders_today/json')  // 替换成你真实的 API 路径
+    .then(res => res.json())
+    .then(orders => {
+      orders.forEach(order => {
+        if (!knownOrderIds.has(order.id)) {
+          knownOrderIds.add(order.id);
+          // 播放声音
+          beep();
+          // 可选：弹窗提示
+          alert(`Nieuwe bestelling ontvangen!\n\n${formatOrder(order)}`);
+          // 你可以在此处把订单插入 DOM 显示
+          addOrderToDOM(order);  // 你自己定义的函数
+        }
+      });
+    })
+    .catch(err => {
+      console.error('Fout bij ophalen nieuwe bestellingen:', err);
+    });
+}
+</script>
+ <script>
+let knownOrderIds = new Set();  // 保存已处理的订单 ID
+</script>
+
 
  
   
