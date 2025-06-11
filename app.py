@@ -263,6 +263,22 @@ def api_orders():
         traceback.print_exc()
         return jsonify({"status": "fail", "error": str(e)}), 500
 
+  socketio.emit("new_order", {
+    "order_type": order.order_type,
+    "customer_name": order.customer_name,
+    "phone": order.phone,
+    "email": order.email,
+    "pickup_time": order.pickup_time,
+    "delivery_time": order.delivery_time,
+    "payment_method": order.payment_method,
+    "postcode": order.postcode,
+    "house_number": order.house_number,
+    "street": order.street,
+    "city": order.city,
+    "items": json.loads(order.items)
+})
+
+
         
 @app.route('/submit_order', methods=["POST"])
 def submit_order():
