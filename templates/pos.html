@@ -429,27 +429,11 @@ function submitOrder() {
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script>
   const socket = io(window.location.origin, { transports: ['websocket'] });
-
   let pollTimer;
 
-  window.addEventListener('beforeunload', () => socket.disconnect());
-
-  socket.on('connect_error', () => {
-    setTimeout(() => socket.connect(), 1000);
-  });
-
-  socket.on('disconnect', () => {
-    console.warn('⚠️ Socket 连接断开');
-    startPolling();
-  });
-
-  socket.on('connect', () => {
-    console.log('✅ Socket 连接成功');
-    stopPolling();
-  });
-
+  // 音效播放
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  function beep(){
+  function beep() {
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
     osc.type = 'sine';
@@ -461,14 +445,17 @@ function submitOrder() {
     osc.stop(audioCtx.currentTime + 0.2);
   }
 
-  function addRow(order){
+  // 添加订单到表格
+  function addRow(order) {
     const tbody = document.querySelector('.orders-panel tbody');
-    if(!tbody) return;
+    if (!tbody) return;
+
     const tr = document.createElement('tr');
-    if(order.id) tr.dataset.id = order.id;
-    const isDelivery = ['delivery','bezorgen'].includes(order.order_type);
-    const items = Object.entries(order.items || {}).map(([n,i]) => `<li>${n} x ${i.qty}</li>`).join('');
-    const total = Object.values(order.items || {}).reduce((s,i)=>s + (parseFloat(i.price||0)*parseInt(i.qty||0)),0);
+    if (order.id) tr.dataset.id = order.id;
+    const isDelivery = ['delivery', 'bezorgen'].includes(order.order_type);
+    const items = Object.entries(order.items || {}).map(([n, i]) => `<li>${n} x ${i.qty}</li>`).join('');
+    const total = Object.values(order.items || {}).reduce((s, i) => s + (parseFloat(i.price || 0) * parseInt(i.qty || 0)), 0);
+
     tr.innerHTML = `
       <td>${order.created_at || ''}</td>
       <td>${isDelivery ? 'Bezorgen' : 'Afhalen'}</td>
@@ -480,87 +467,60 @@ function submitOrder() {
       <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}` : '-'}</td>
       <td>${isDelivery ? (order.delivery_time || '-') : (order.pickup_time || '-')}</td>
       <td>${order.payment_method || ''}</td>`;
+      
     tbody.prepend(tr);
   }
 
+  // Socket 监听新订单
   socket.on('new_order', order => {
-    console.log('🆕 新订单:', order);
+    console.log('🆕 Nieuwe bestelling:', order);
     beep();
     addRow(order);
   });
 
-  function fetchOrders(){
-    fetch('/pos/orders_today?json=1').then(r=>r.json()).then(data=>{
-      const tbody = document.querySelector('.orders-panel tbody');
-      if(!tbody) return;
-      tbody.innerHTML='';
-      data.forEach(addRow);
-    }).catch(()=>{});
+  // 断线后启用轮询
+  socket.on('disconnect', () => {
+    console.warn('⚠️ Socket verbroken – schakel over op polling');
+    startPolling();
+  });
+
+  socket.on('connect', () => {
+    console.log('✅ Socket verbonden');
+    stopPolling();
+  });
+
+  socket.on('connect_error', () => {
+    setTimeout(() => socket.connect(), 1000);
+  });
+
+  // 轮询作为备份
+  function fetchOrders() {
+    fetch('/pos/orders_today?json=1')
+      .then(r => r.json())
+      .then(data => {
+        const tbody = document.querySelector('.orders-panel tbody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        data.forEach(addRow);
+      }).catch(() => {});
   }
 
-  function startPolling(){
-    if(pollTimer) return;
+  function startPolling() {
+    if (pollTimer) return;
     fetchOrders();
-    pollTimer = setInterval(fetchOrders,10000);
+    pollTimer = setInterval(fetchOrders, 10000); // 每10秒
   }
 
-  function stopPolling(){
-    if(pollTimer){
+  function stopPolling() {
+    if (pollTimer) {
       clearInterval(pollTimer);
       pollTimer = null;
     }
   }
-  function beep() {
-  const sound = document.getElementById("notifySound");
-  if (sound) sound.play();
-}
 
+  window.addEventListener('beforeunload', () => socket.disconnect());
 </script>
-<script>
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-function beep(){
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(660, audioCtx.currentTime);
-  gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-  osc.start();
-  osc.stop(audioCtx.currentTime + 0.2);
-}
-socket.on('new_order', order => {
-  beep();
-  alert(`Nieuwe bestelling ontvangen!\n\n${formatOrder(order)}`);
-});
-</script>
- <script>
-function checkForNewOrders(){
-  fetch('https://nova-asia.onrender.com/submit_order')   // 替换成你真实的 API 路径
-    .then(res => res.json())
-    .then(orders => {
-      orders.forEach(order => {
-        if (!knownOrderIds.has(order.id)) {
-          knownOrderIds.add(order.id);
-          // 播放声音
-          beep();
-          // 可选：弹窗提示
-          alert(`Nieuwe bestelling ontvangen!\n\n${formatOrder(order)}`);
-          // 你可以在此处把订单插入 DOM 显示
-          addOrderToDOM(order);  // 你自己定义的函数
-        }
-      });
-    })
-    .catch(err => {
-      console.error('Fout bij ophalen nieuwe bestellingen:', err);
-    });
-}
-// 每 5 秒轮询一次服务器
-setInterval(checkForNewOrders, 5000);   
-</script>
- <script>
-let knownOrderIds = new Set();  // 保存已处理的订单 ID
-</script>
+
 
 
  
