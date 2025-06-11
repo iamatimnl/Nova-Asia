@@ -43,7 +43,7 @@ def send_telegram_message(text):
         print("❌ Telegram 错误:", e)
         return False
 
-ddef send_email_notification(order_text):
+def send_email_notification(order_text):
     subject = "Nova Asia - Nieuwe bestelling"
     sender = os.getenv("SMTP_USERNAME")
     password = os.getenv("SMTP_PASSWORD")
