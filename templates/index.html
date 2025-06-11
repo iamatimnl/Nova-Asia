@@ -1761,9 +1761,9 @@ function checkout() {
     if (qty > 0) itemsToSend[extras[id].label] = { price: 0, qty };
   });
 
-    fetch('https://flask-order-api.onrender.com/submit_order', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    fetch('https://nova-asia.onrender.com/api/orders', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       orderType: orderType,
       name: orderType === 'afhalen'
