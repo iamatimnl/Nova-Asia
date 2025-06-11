@@ -447,8 +447,26 @@ function submitOrder(){
 }
 
 </script>
+<script>
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function beep(){
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(660, audioCtx.currentTime);
+  gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + 0.2);
+}
+socket.on('new_order', order => {
+  beep();
+  alert(`Nieuwe bestelling ontvangen!\n\n${formatOrder(order)}`);
+});
+</script>
 
-
+ 
   
 </body>
 </html>
