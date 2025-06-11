@@ -178,6 +178,7 @@ def get_orders_today():
     return jsonify(_orders_overview())
 
 @app.route("/submit_order", methods=["POST"])
+@app.route("/submit_order", methods=["POST"])
 def submit_order():
     data = request.get_json()
     message = data.get("message", "")
@@ -188,12 +189,12 @@ def submit_order():
     full_message = message + (f"\nOpmerking: {remark}" if remark else "")
 
     telegram_ok = send_telegram_message(full_message)
-    email_ok = send_email("Nieuwe bestelling", full_message, RECEIVER_EMAIL)
+    email_ok = send_email_notification(full_message)
     pos_ok, pos_error = send_pos_order(data)
     record_order(data, pos_ok)
 
     if email:
-        send_email("Bestelbevestiging", full_message, email)
+        send_confirmation_email("Bestelbevestiging", full_message, email)
 
     socketio.emit("new_order", data)
 
@@ -204,9 +205,12 @@ def submit_order():
         return jsonify(response), 200
 
     error_msg = "Beide mislukt"
-    if not telegram_ok: error_msg = "Telegram-fout"
-    elif not email_ok: error_msg = "E-mailfout"
-    elif not pos_ok: error_msg = f"POS-fout: {pos_error}"
+    if not telegram_ok:
+        error_msg = "Telegram-fout"
+    elif not email_ok:
+        error_msg = "E-mailfout"
+    elif not pos_ok:
+        error_msg = f"POS-fout: {pos_error}"
     return jsonify({"status": "fail", "error": error_msg}), 500
 
 # === 启动 ===
