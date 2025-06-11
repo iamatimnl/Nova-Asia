@@ -88,7 +88,7 @@
                     {% else %}-{% endif %}
                 </td>
                 <td>{{ info.order.payment_method }}</td>
-                <td>{{ info.order.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>{{ info.order.created_at_local.strftime('%Y-%m-%d %H:%M') }}</td>
                 <td>{{ '%.2f' % info.total }}</td>
             </tr>
         {% endfor %}

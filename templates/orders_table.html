@@ -17,7 +17,7 @@
     <tbody>
     {% for order in orders %}
       <tr>
-        <td>{{ order.created_at.strftime('%H:%M') }}</td>
+        <td>{{ order.created_at_local.strftime('%H:%M') }}</td>
         {% set is_delivery = order.order_type in ['delivery', 'bezorgen'] %}
         <td>{{ 'Bezorgen' if is_delivery else 'Afhalen' }}</td>
         <td>{{ order.customer_name or '' }}</td>

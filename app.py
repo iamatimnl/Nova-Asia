@@ -10,7 +10,8 @@ from flask_login import (
 from flask_socketio import SocketIO
 import eventlet
 eventlet.monkey_patch()
-from datetime import datetime
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 import os
 import json
 import requests
@@ -27,6 +28,17 @@ print(repr(os.getenv("DATABASE_URL")))
 db = SQLAlchemy(app)
 with app.app_context():
     db.create_all()
+
+UTC = timezone.utc
+NL_TZ = ZoneInfo("Europe/Amsterdam")
+
+def to_nl(dt: datetime) -> datetime:
+    """Convert naive UTC datetime to Europe/Amsterdam timezone."""
+    if dt is None:
+        return dt
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=UTC)
+    return dt.astimezone(NL_TZ)
 
 
 # Socket.IO for real-time updates
@@ -146,7 +158,7 @@ def pos():
                 "house_number": order.house_number,
                 "street": order.street,
                 "city": order.city,
-                "created_at": order.created_at.strftime("%H:%M"),
+                "created_at": to_nl(order.created_at).strftime("%H:%M"),
                 "items": json.loads(order.items or "{}"),
             }
             socketio.emit("new_order", payload, broadcast=True)
@@ -160,8 +172,9 @@ def pos():
                 resp["paymentLink"] = url
 
         return jsonify(resp)
-    today = datetime.utcnow().date()
-    start = datetime.combine(today, datetime.min.time())
+    today = datetime.now(NL_TZ).date()
+    start_local = datetime.combine(today, datetime.min.time(), tzinfo=NL_TZ)
+    start = start_local.astimezone(UTC).replace(tzinfo=None)
     orders = Order.query.filter(Order.created_at >= start).order_by(Order.created_at.desc()).all()
     for o in orders:
         try:
@@ -175,6 +188,7 @@ def pos():
                 o.items_dict = {}
 
         o.total = sum(float(i.get("price", 0)) * int(i.get("qty", 0)) for i in o.items_dict.values())
+        o.created_at_local = to_nl(o.created_at)
     return render_template("pos.html", orders=orders)
 
 
@@ -217,7 +231,7 @@ def api_orders():
                 "house_number": order.house_number,
                 "street": order.street,
                 "city": order.city,
-                "created_at": order.created_at.strftime("%H:%M"),
+                "created_at": to_nl(order.created_at).strftime("%H:%M"),
                 "items": json.loads(order.items or "{}"),
             }
             socketio.emit("new_order", order_payload, broadcast=True)
@@ -303,14 +317,16 @@ def admin_orders():
             except Exception:
                 items = {}
         total = sum(float(i.get("price", 0)) * int(i.get("qty", 0)) for i in items.values())
+        o.created_at_local = to_nl(o.created_at)
         order_data.append({"order": o, "total": total})
     return render_template("admin_orders.html", order_data=order_data)
 
 @app.route('/pos/orders_today')
 @login_required
 def pos_orders_today():
-    today = datetime.utcnow().date()
-    start = datetime.combine(today, datetime.min.time())
+    today = datetime.now(NL_TZ).date()
+    start_local = datetime.combine(today, datetime.min.time(), tzinfo=NL_TZ)
+    start = start_local.astimezone(UTC).replace(tzinfo=None)
     orders = Order.query.filter(Order.created_at >= start).order_by(Order.created_at.desc()).all()
     order_dicts = []
     for o in orders:
@@ -326,6 +342,7 @@ def pos_orders_today():
 
         total = sum(float(i.get("price", 0)) * int(i.get("qty", 0)) for i in o.items_dict.values())
         o.total = total
+        o.created_at_local = to_nl(o.created_at)
         summary = "\n".join(f"{name} x {item['qty']}" for name, item in o.items_dict.items())
 
         is_pickup = o.order_type in ["afhalen", "pickup"]
@@ -361,7 +378,7 @@ def pos_orders_today():
             "house_number": o.house_number,
             "street": o.street,
             "city": o.city,
-            "created_at": o.created_at.strftime("%H:%M"),
+            "created_at": to_nl(o.created_at).strftime("%H:%M"),
             "items": o.items_dict,
             "total": total,
         })
