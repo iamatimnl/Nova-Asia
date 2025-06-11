@@ -483,6 +483,7 @@ function submitOrder() {
   socket.on('new_order', order => {
     console.log('🆕 Nieuwe bestelling:', order);
     beep();
+    alert('Nieuwe bestelling ontvangen!');
     addRow(order);
   });
 
