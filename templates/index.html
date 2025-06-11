@@ -1761,7 +1761,7 @@ function checkout() {
     if (qty > 0) itemsToSend[extras[id].label] = { price: 0, qty };
   });
 
-   fetch('https://nova-asia.onrender.com/submit_order', {
+   fetch('https://flask-order-api.onrender.com/submit_order', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
