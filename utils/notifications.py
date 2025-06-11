@@ -18,13 +18,15 @@ CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 # === 配置 ===
-BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
-SENDER_EMAIL = os.getenv("SMTP_USERNAME")
-SENDER_PASSWORD = os.getenv("SMTP_PASSWORD")
-RECEIVER_EMAIL = os.getenv("FROM_EMAIL", SENDER_EMAIL)
-SMTP_SERVER = os.getenv("SMTP_SERVER", "smtp.gmail.com")
-SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
+BOT_TOKEN = "7509433067:AAGoLc1NVWqmgKGcrRVb3DwMh1o5_v5Fyio"
+CHAT_ID = "-1001643565671"
+
+SMTP_SERVER = "smtp.gmail.com"
+SMTP_PORT = 587
+SMTP_USERNAME = "qianchennl@gmail.com"
+SMTP_PASSWORD = "wtuyxljsjwftyzfm"
+SENDER_NAME = "qianchennl@gmail.com"
+SENDER_EMAIL = "SMTP_USERNAME"
 
 POS_API_URL = "https://nova-asia.onrender.com/api/orders"
 TIKKIE_PAYMENT_LINK = "https://tikkie.me/pay/example"
