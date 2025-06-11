@@ -711,6 +711,7 @@ input#bezorgen:checked ~ .slider {
       <input id="deliveryPostcode" type="text" />
       <label>Gebied:</label>
       <input id="deliveryArea" type="text" />
+      <div id="mapLinkContainer" style="margin-top: 4px;"></div>
       <label>Bezorgtijd:</label>
       <input id="deliveryTime" type="time" />
       <label>Betaalmethode:</label>
@@ -1891,6 +1892,7 @@ function checkout() {
   const houseNumInput = document.getElementById('deliveryHouseNumber');
   const streetInput = document.getElementById('deliveryAddress');
   const areaInput = document.getElementById('deliveryArea');
+  const mapLinkContainer = document.getElementById('mapLinkContainer');
 
   async function autofillAddress() {
     const postcode = postcodeInput.value.trim();
@@ -1913,8 +1915,24 @@ function checkout() {
     }
   }
 
-  postcodeInput.addEventListener('blur', autofillAddress);
-  houseNumInput.addEventListener('blur', autofillAddress);
+  function updateMapLink() {
+    const street = streetInput.value.trim();
+    const house = houseNumInput.value.trim();
+    const pc = postcodeInput.value.trim();
+    const city = areaInput.value.trim();
+    if (street && house && pc && city) {
+      const address = `${street} ${house}, ${pc} ${city}`;
+      const url = `https://www.google.com/maps?q=${encodeURIComponent(address)}`;
+      mapLinkContainer.innerHTML = `<a href="${url}" target="_blank" style="color: var(--accent-color); text-decoration: underline;">Bekijk op Google Maps</a>`;
+    } else {
+      mapLinkContainer.innerHTML = '';
+    }
+  }
+
+  postcodeInput.addEventListener('blur', () => { autofillAddress(); updateMapLink(); });
+  houseNumInput.addEventListener('blur', () => { autofillAddress(); updateMapLink(); });
+  streetInput.addEventListener('blur', updateMapLink);
+  areaInput.addEventListener('blur', updateMapLink);
 </script>
 
 
