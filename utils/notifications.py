@@ -57,32 +57,37 @@ def send_email_notification(subject, body, to_email):
         return False
 
 def generate_order_text(order):
-    try:
-        items = json.loads(order.get("items") or "{}")
-    except Exception:
-        import ast
-        items = ast.literal_eval(order.get("items", "{}"))
+    import json, ast
 
-    summary = "\n".join(f"{name} x {item.get('qty')}" for name, item in items.items())
-    total = sum(float(item.get("price", 0)) * int(item.get("qty", 0)) for item in items.values())
+    # 如果传进来是 SQLAlchemy 对象
+    if hasattr(order, '__table__'):
+        # 手动转换为 dict
+        order_dict = {
+            "order_type": order.order_type,
+            "customer_name": order.customer_name,
+            "phone": order.phone,
+            "email": order.email,
+            "pickup_time": order.pickup_time,
+            "delivery_time": order.delivery_time,
+            "payment_method": order.payment_method,
+            "postcode": order.postcode,
+            "house_number": order.house_number,
+            "street": order.street,
+            "city": order.city,
+            "created_at": order.created_at.strftime("%Y-%m-%d %H:%M"),
+        }
 
-    is_pickup = order.get("orderType") in ["afhalen", "pickup"]
-    if is_pickup:
-        details = f"[Afhalen]\nNaam: {order.get('name')}\nTelefoon: {order.get('phone')}"
-        if order.get("email"):
-            details += f"\nEmail: {order.get('email')}"
-        details += f"\nAfhaaltijd: {order.get('pickup_time')}\nBetaalwijze: {order.get('paymentMethod')}"
+        try:
+            order_dict["items"] = json.loads(order.items or "{}")
+        except Exception:
+            order_dict["items"] = ast.literal_eval(order.items or "{}")
     else:
-        details = f"[Bezorgen]\nNaam: {order.get('name')}\nTelefoon: {order.get('phone')}"
-        if order.get("email"):
-            details += f"\nEmail: {order.get('email')}"
-        details += (
-            f"\nAdres: {order.get('street')} {order.get('house_number')}"
-            f"\nPostcode: {order.get('postcode')}\nBezorgtijd: {order.get('delivery_time')}"
-            f"\nBetaalwijze: {order.get('paymentMethod')}"
-        )
+        # 否则就是字典，直接用
+        order_dict = order
 
-    return f"📦 Nieuwe bestelling bij *Nova Asia*:\n\n{summary}\n{details}\nTotaal: €{total:.2f}"
+    # 以下逻辑使用 order_dict（不再用 order.get）
+    items = order_dict.get("items", {})
+    ...
 
 def send_pos_order(data):
     try:
