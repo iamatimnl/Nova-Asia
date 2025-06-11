@@ -10,6 +10,7 @@ from flask_login import (
     login_required,
 )
 from flask_socketio import SocketIO
+from flask_cors import CORS
 import eventlet
 eventlet.monkey_patch()
 from datetime import datetime
@@ -26,6 +27,7 @@ from utils.notifications import (
 # 初始化 Flask
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app = Flask(__name__, template_folder="templates", static_folder="static")
+CORS(app, resources={r"/*": {"origins": "*"}})
 app.config["SECRET_KEY"] = "replace-this"
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
 print(repr(os.getenv("DATABASE_URL")))
