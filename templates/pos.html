@@ -226,6 +226,7 @@
         <div id="qrCodeContainer" class="hidden" style="text-align:center;margin-top:10px;">
           <p><strong>📍 Scan voor navigatie:</strong></p>
           <img id="qrCodePreview" src="" alt="QR Code" />
+          <div id="mapsLinkContainer" style="margin-top:4px;"></div>
         </div>
       </div>
     </section>
@@ -335,14 +336,17 @@ function updateQRCode(){
   const city=document.getElementById('city').value.trim();
   const container=document.getElementById('qrCodeContainer');
   const img=document.getElementById('qrCodePreview');
+  const linkContainer=document.getElementById('mapsLinkContainer');
   if(street && house && pc && city){
     const address=`${street} ${house}, ${pc} ${city}`;
     const googleMapsLink=`https://www.google.com/maps?q=${encodeURIComponent(address)}`;
     const qrCodeUrl=`https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=${encodeURIComponent(googleMapsLink)}`;
     img.src=qrCodeUrl;
+    linkContainer.innerHTML=`<a href="${googleMapsLink}" target="_blank" style="color: var(--accent-color); text-decoration: underline;">Open in Google Maps</a>`;
     container.classList.remove('hidden');
   }else{
     img.src='';
+    linkContainer.innerHTML='';
     container.classList.add('hidden');
   }
 }
