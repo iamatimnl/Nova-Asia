@@ -31,6 +31,47 @@ TIKKIE_PAYMENT_LINK = "https://tikkie.me/pay/example"
 ORDERS = []  # 简单的内存订单记录
 
 # === 功能函数 ===
+def generate_order_text(order):
+    """Create a human readable summary for an Order object."""
+    try:
+        items = json.loads(order.items or "{}")
+    except Exception:
+        try:
+            import ast
+            items = ast.literal_eval(order.items)
+        except Exception:
+            items = {}
+
+    summary = "\n".join(
+        f"{name} x {item.get('qty')}" for name, item in items.items()
+    )
+    total = sum(
+        float(item.get("price", 0)) * int(item.get("qty", 0))
+        for item in items.values()
+    )
+
+    is_pickup = order.order_type in ["afhalen", "pickup"]
+    if is_pickup:
+        details = f"[Afhalen]\nNaam: {order.customer_name}\nTelefoon: {order.phone}"
+        if order.email:
+            details += f"\nEmail: {order.email}"
+        details += (
+            f"\nAfhaaltijd: {order.pickup_time}\nBetaalwijze: {order.payment_method}"
+        )
+    else:
+        details = f"[Bezorgen]\nNaam: {order.customer_name}\nTelefoon: {order.phone}"
+        if order.email:
+            details += f"\nEmail: {order.email}"
+        details += (
+            f"\nAdres: {order.street} {order.house_number}"
+            f"\nPostcode: {order.postcode}\nBezorgtijd: {order.delivery_time}"
+            f"\nBetaalwijze: {order.payment_method}"
+        )
+
+    return (
+        f"📦 Nieuwe bestelling bij *Nova Asia*:\n\n{summary}\n{details}\nTotaal: €{total:.2f}"
+    )
+
 def send_telegram_message(text):
     if not BOT_TOKEN or not CHAT_ID:
         print("❌ 缺少 Telegram 配置")
