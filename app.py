@@ -252,17 +252,44 @@ def api_orders():
         db.session.add(order)
         db.session.commit()
 
-        # ✅ 生成订单文本
+      
+
+               # ✅ 生成订单文本
         order_text = generate_order_text(order)
 
-        # ✅ 通知
+        # ✅ 通知发送（Telegram + 店主 + 顾客）
         print("📨 开始发送 Telegram 和 Email")
-        send_telegram_message(order_text)
-        send_email_notification(order_text)
-        print("✅ 已调用 Telegram 和 Email 发送函数")
 
+        # 1️⃣ Telegram 发 POS 通知
+        try:
+            send_telegram_message(order_text)
+        except Exception as e:
+            print(f"❌ Telegram 错误: {e}")
+
+        # 2️⃣ 给店主发送订单通知邮件
+        try:
+            send_email_notification(
+                subject="Nieuwe bestelling via Nova Asia",
+                body=order_text,
+                to_email="qianchennl@gmail.com"
+            )
+        except Exception as e:
+            print(f"❌ 店主邮件发送失败: {e}")
+
+        # 3️⃣ 如果顾客填写了 email，就发送确认邮件
         if order.email:
-            send_confirmation_email("Bestelbevestiging", order_text, order.email)
+            try:
+                send_confirmation_email(
+                    subject="Uw bestelling bij Nova Asia",
+                    body=order_text,
+                    to_email=order.email
+                )
+            except Exception as e:
+                print(f"❌ 顾客确认邮件发送失败: {e}")
+
+        print("✅ 所有通知处理完毕")
+
+
 
         # ✅ 广播给 POS 界面
         try:
