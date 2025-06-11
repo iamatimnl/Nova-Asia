@@ -238,6 +238,7 @@
     {% include 'orders_table.html' %}
   </div>
 </div>
+<audio id="notifySound" src="/sound/beep.mp3" preload="auto"></audio>
 
 <script>
 const cart = {};
@@ -440,6 +441,11 @@ function submitOrder(){
       pollTimer = null;
     }
   }
+  function beep() {
+  const sound = document.getElementById("notifySound");
+  if (sound) sound.play();
+}
+
 </script>
 
 
