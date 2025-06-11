@@ -13,7 +13,7 @@ import os
 import json
 import requests
 import smtplib
-from utils.notifications import send_telegram_message, send_email_notification, send_confirmation_email, generate_order_text
+
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
 CORS(app, resources={r"/*": {"origins": "*"}})
