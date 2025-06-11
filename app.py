@@ -54,6 +54,9 @@ login_manager.login_view = "login"
 @login_manager.user_loader
 def load_user(user_id: str):
     return User("admin") if user_id == "admin" else None
+@app.route("/")
+def home():
+    return render_template("index.html")  # 如果你在 templates/ 目录下放了 index.html
 
 @app.route("/submit_order", methods=["POST"])
 def submit_order():
