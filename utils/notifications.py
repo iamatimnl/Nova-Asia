@@ -88,6 +88,33 @@ def record_order(data, pos_ok):
         "orderType": data.get("orderType"),
         "pos_ok": pos_ok,
     })
+def send_confirmation_email(subject, content, recipient):
+    from email.mime.text import MIMEText
+    from email.header import Header
+    import smtplib
+    from email.utils import formataddr
+    import os
+
+    sender = os.getenv("SMTP_USERNAME")
+    password = os.getenv("SMTP_PASSWORD")
+    receiver = recipient
+    server_addr = os.getenv("SMTP_SERVER", "smtp.gmail.com")
+    port = int(os.getenv("SMTP_PORT", "587"))
+
+    msg = MIMEText(content, "plain", "utf-8")
+    msg["Subject"] = Header(subject, "utf-8")
+    msg["From"] = formataddr(("NovaAsia", sender))
+    msg["To"] = receiver
+
+    try:
+        with smtplib.SMTP(server_addr, port) as server:
+            server.starttls()
+            server.login(sender, password)
+            server.sendmail(sender, [receiver], msg.as_string())
+        return True
+    except Exception as e:
+        print(f"❌ Email confirmation failed: {e}")
+        return False
 
 def _orders_overview():
     today = date.today()
