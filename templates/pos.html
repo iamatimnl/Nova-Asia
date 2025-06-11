@@ -503,15 +503,16 @@ function submitOrder() {
 
   // 轮询作为备份
   function fetchOrders() {
-    fetch('/pos/orders_today?json=1')
-      .then(r => r.json())
-      .then(data => {
-        const tbody = document.querySelector('.orders-panel tbody');
-        if (!tbody) return;
-        tbody.innerHTML = '';
-        data.forEach(addRow);
-      }).catch(() => {});
-  }
+  fetch('/pos/orders_today?json=1')
+    .then(r => r.json())
+    .then(data => {
+      const tbody = document.querySelector('.orders-panel tbody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      data.reverse().forEach(addRow); // 让最新订单在最上面
+    }).catch(() => {});
+ }
+
 
   function startPolling() {
     if (pollTimer) return;
