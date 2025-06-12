@@ -687,7 +687,7 @@ input#bezorgen:checked ~ .slider {
       <label>Email (optioneel):</label>
       <input id="pickupEmail" type="email" />
       <label>Tijd van afhalen:</label>
-      <input id="pickupTime" type="time" />
+      <input id="pickup_time" type="time" />
       <label>Betaalmethode:</label>
       <select id="pickupPayment">
         <option value="winkel">In de winkel</option>
@@ -713,7 +713,7 @@ input#bezorgen:checked ~ .slider {
       <input id="deliveryArea" type="text" />
       <div id="mapLinkContainer" style="margin-top: 4px;"></div>
       <label>Bezorgtijd:</label>
-      <input id="deliveryTime" type="time" />
+      <input id="delivery_time" type="time" />
       <label>Betaalmethode:</label>
       <select id="deliveryPayment">
         <option value="contant">Contant</option>
@@ -1707,7 +1707,7 @@ function checkout() {
     const name = document.getElementById('pickupName').value.trim();
     const phone = document.getElementById('pickupPhone').value.trim();
     email = document.getElementById('pickupEmail').value.trim();
-    const time = document.getElementById('pickupTime').value;
+    const time = document.getElementById('pickup_time').value;
     paymentMethod = document.getElementById('pickupPayment').value;
 
     if (!name || !phone || !time) {
@@ -1726,7 +1726,7 @@ function checkout() {
     const houseNumber = document.getElementById('deliveryHouseNumber').value.trim();
     const postcodeRaw = document.getElementById('deliveryPostcode').value.trim();
     const area = document.getElementById('deliveryArea').value.trim();
-    const time = document.getElementById('deliveryTime').value;
+    const time = document.getElementById('delivery_time').value;
     paymentMethod = document.getElementById('deliveryPayment').value;
 
     const postcodeClean = postcodeRaw.replace(/\s+/g, '');
@@ -1774,11 +1774,11 @@ function checkout() {
         ? document.getElementById('pickupPhone').value.trim()
         : document.getElementById('deliveryPhone').value.trim(),
       email: email,
-      pickupTime: orderType === 'afhalen'
-        ? document.getElementById('pickupTime').value
+      pickup_time: orderType === 'afhalen'
+        ? document.getElementById('pickup_time').value
         : '',
-      deliveryTime: orderType === 'bezorgen'
-        ? document.getElementById('deliveryTime').value
+      delivery_time: orderType === 'bezorgen'
+        ? document.getElementById('delivery_time').value
         : '',
       paymentMethod: paymentMethod,
       postcode: orderType === 'bezorgen'

@@ -38,9 +38,9 @@
         </td>
         <td>
           {% if is_delivery %}
-            {{ order.deliveryTime or '-' }}
+            {{ order.delivery_time or '-' }}
           {% else %}
-            {{ order.pickupTime or '-' }}
+            {{ order.pickup_time or '-' }}
           {% endif %}
         </td>
         <td>{{ order.payment_method }}</td>
