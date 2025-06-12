@@ -175,7 +175,8 @@
   .orders-panel th { background:#f2f2f2; }
   .orders-panel ul { margin:0; padding-left:20px; }
   .cart-area {
-    background: var(--off-white);
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(8px);
     border: 1px solid #e0e0e0;
     border-radius: 16px;
     padding: 20px;
@@ -355,18 +356,6 @@ function updateCart(){
     li.appendChild(sel);
     list.appendChild(li);
     if(item.qty>0) total+=subtotal;
-  });
-  const title=document.createElement('li');
-  title.textContent='— Extra\u2019s —';
-  title.style.marginTop='10px';
-  title.style.fontWeight='bold';
-  list.appendChild(title);
-  Object.keys(extras).forEach(id=>{
-    const li=document.createElement('li');
-    li.textContent=`${extras[id].label}: `;
-    const sel=createSelect(parseInt(document.getElementById(id).value||0),v=>{ document.getElementById(id).value=v; updateCart();});
-    li.appendChild(sel);
-    list.appendChild(li);
   });
   document.getElementById('total').textContent=total.toFixed(2);
 }
