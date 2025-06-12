@@ -493,17 +493,18 @@ function submitOrder() {
   }
 
   // 🧾 自动生成订单文字（message）
-  let orderText = Object.entries(cart).map(([name, item]) => {
-    return `${name} x ${item.qty} (€${(item.qty * item.price).toFixed(2)})`;
-  }).join(', ');
-  Object.keys(extras).forEach(id => {
-    const qty = parseInt(document.getElementById(id).value || 0);
-    if (qty > 0) orderText += `, ${extras[id].label} x ${qty}`;
-  });
-  if (remark) orderText += `, Opmerking: ${remark}`;
-
   // ✏️ 备注信息（remark）
-  const remark = document.getElementById('remark').value.trim();
+const remark = document.getElementById('remark').value.trim();
+
+// 🧾 自动生成订单文字（message）
+let orderText = Object.entries(cart).map(([name, item]) => {
+  return `${name} x ${item.qty} (€${(item.qty * item.price).toFixed(2)})`;
+}).join(', ');
+Object.keys(extras).forEach(id => {
+  const qty = parseInt(document.getElementById(id).value || 0);
+  if (qty > 0) orderText += `, ${extras[id].label} x ${qty}`;
+});
+if (remark) orderText += `, Opmerking: ${remark}`;
 
   // 🧾 请求体
   const itemsToSend = { ...cart };
