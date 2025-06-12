@@ -70,17 +70,14 @@
     flex: 0 0 auto;
     padding: 10px 16px;
     margin-left: 10px;
-    background: linear-gradient(#fff, #eee);
-    border: 1px solid #ccc;
+    background: #e5e5ea;
+    border: none;
     border-radius: 20px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    color: var(--accent-color);
-    font-weight: bold;
+    color: #333;
     cursor: pointer;
+    transition: background 0.3s ease;
   }
-  .today-btn:active {
-    box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
-  }
+  .today-btn:hover { background:#dcdce0; }
   .indicator {
     position: absolute;
     height: 32px;
@@ -134,11 +131,15 @@
     justify-content: center;
     border-radius: 50%;
     border: none;
+    background:#e5e5ea;
+    color:#333;
     transition: background 0.2s ease;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
   }
-  .add-button { background: var(--accent-color); color: white; }
-  .remove-button { background: var(--sakura); color: white; }
+  .menu-item button:hover { background:#dcdce0; }
+  .add-button { background:#b3d4ff; color:#333; }
+  .add-button:hover { background:#a3c8ff; }
+  .remove-button { background:#ffd6d6; color:#333; }
+  .remove-button:hover { background:#ffc2c2; }
   @media (max-width: 600px) {
     .menu-item button { width:1.8rem; height:1.8rem; font-size:0.9rem; }
     .menu-item img { max-width:80px; }
@@ -182,6 +183,21 @@
     position: sticky;
     top: 70px;
   }
+  .supply-row {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:10px 0;
+  }
+  .supply-select {
+    min-width:80px;
+    padding:6px 10px;
+    font-size:0.95rem;
+    border-radius:10px;
+    border:1px solid #ccc;
+    background:white;
+    appearance:none;
+  }
   @media (min-width: 768px) {
     .pos-layout { flex-direction: row; align-items:flex-start; }
     .side-tools { flex:0 0 180px; }
@@ -192,11 +208,13 @@
     margin-top:10px;
     padding:12px;
     font-size:1.1rem;
-    background: var(--accent-color);
-    color:white;
+    background:#b3d4ff;
+    color:#333;
     border:none;
     border-radius:12px;
+    transition: background 0.3s ease;
   }
+  .cart-area button:hover { background:#a3c8ff; }
   .hidden { display:none; }
 </style>
 </head>
@@ -230,6 +248,24 @@
     <div class="cart-area">
       <h2>Overzicht</h2>
       <ul id="cart"></ul>
+      <div class="supply-row">
+        <label for="chopstickCount">Aantal stokjes</label>
+        <select id="chopstickCount" class="supply-select"></select>
+      </div>
+      <div class="supply-row">
+        <label for="soyCount">Aantal sojasaus flesjes</label>
+        <select id="soyCount" class="supply-select"></select>
+      </div>
+      <div class="supply-row">
+        <label for="gemberCount">Aantal gember porties</label>
+        <select id="gemberCount" class="supply-select"></select>
+      </div>
+      <div class="supply-row">
+        <label for="wasabiCount">Aantal wasabi flesjes</label>
+        <select id="wasabiCount" class="supply-select"></select>
+      </div>
+      <label for="remark" style="display:block;margin-top:10px;">Opmerking:</label>
+      <textarea id="remark" rows="2" placeholder="Bijv. geen komkomer, extra mayo"></textarea>
       <div class="total">Totaal: €<span id="total">0.00</span></div>
     </div>
     <div class="product-list">
@@ -266,9 +302,9 @@
           <label for="houseNumber">Huisnummer*</label>
           <input id="houseNumber" type="text" />
           <label for="street">Straat*</label>
-          <input id="street" type="text" readonly />
+          <input id="street" type="text" />
           <label for="city">Plaats*</label>
-          <input id="city" type="text" readonly />
+          <input id="city" type="text" />
           <label for="deliveryTime">Bezorgtijd (optioneel)</label>
           <input id="deliveryTime" type="time" />
           <label for="deliveryPayment">Betaalmethode*</label>
@@ -292,6 +328,12 @@
 
 <script>
 const cart = {};
+const extras = {
+  chopstickCount: { label: 'Stokjes', price: 0 },
+  soyCount: { label: 'Sojasaus', price: 0 },
+  gemberCount: { label: 'Gember', price: 0 },
+  wasabiCount: { label: 'Wasabi', price: 0 }
+};
 function populateSelect(sel){
   for(let i=0;i<=20;i++){ const opt=document.createElement('option'); opt.value=i; opt.textContent=i; sel.appendChild(opt); }
 }
@@ -314,6 +356,18 @@ function updateCart(){
     list.appendChild(li);
     if(item.qty>0) total+=subtotal;
   });
+  const title=document.createElement('li');
+  title.textContent='— Extra\u2019s —';
+  title.style.marginTop='10px';
+  title.style.fontWeight='bold';
+  list.appendChild(title);
+  Object.keys(extras).forEach(id=>{
+    const li=document.createElement('li');
+    li.textContent=`${extras[id].label}: `;
+    const sel=createSelect(parseInt(document.getElementById(id).value||0),v=>{ document.getElementById(id).value=v; updateCart();});
+    li.appendChild(sel);
+    list.appendChild(li);
+  });
   document.getElementById('total').textContent=total.toFixed(2);
 }
 
@@ -330,6 +384,10 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
   document.querySelectorAll('.qty-minus').forEach(btn=>{
     btn.addEventListener('click',()=>{ const sel=document.getElementById(btn.dataset.target); let val=parseInt(sel.value); if(val>0) val--; sel.value=val; const parent=sel.closest('.menu-item'); setQty(parent.dataset.name,parseFloat(parent.dataset.price),val); });
+  });
+  ['chopstickCount','soyCount','gemberCount','wasabiCount'].forEach(id=>{
+    populateSelect(document.getElementById(id));
+    document.getElementById(id).addEventListener('change',updateCart);
   });
   document.getElementById('toggleToday').addEventListener('click',toggleToday);
   document.getElementById('closeToday').addEventListener('click',toggleToday);
@@ -446,16 +504,25 @@ function submitOrder() {
   }
 
   // 🧾 自动生成订单文字（message）
-  const orderText = Object.entries(cart).map(([name, item]) => {
+  let orderText = Object.entries(cart).map(([name, item]) => {
     return `${name} x ${item.qty} (€${(item.qty * item.price).toFixed(2)})`;
   }).join(', ');
+  Object.keys(extras).forEach(id => {
+    const qty = parseInt(document.getElementById(id).value || 0);
+    if (qty > 0) orderText += `, ${extras[id].label} x ${qty}`;
+  });
+  if (remark) orderText += `, Opmerking: ${remark}`;
 
   // ✏️ 备注信息（remark）
-  const remark = delivery
-    ? `${document.getElementById('street').value} ${document.getElementById('houseNumber').value}, ${document.getElementById('postcode').value} ${document.getElementById('city').value}`
-    : `Afhalen om ${document.getElementById('pickupTime').value}`;
+  const remark = document.getElementById('remark').value.trim();
 
   // 🧾 请求体
+  const itemsToSend = { ...cart };
+  Object.keys(extras).forEach(id => {
+    const qty = parseInt(document.getElementById(id).value || 0);
+    if (qty > 0) itemsToSend[extras[id].label] = { price: 0, qty };
+  });
+
   const payload = {
     message: orderText,
     remark: remark,
@@ -464,10 +531,10 @@ function submitOrder() {
       : document.getElementById('pickupPayment').value,
     orderType: delivery ? 'delivery' : 'pickup',
     name: name,
-  items: cart,
-  pickupTime: !delivery ? document.getElementById('pickupTime').value : '',
-  deliveryTime: delivery ? document.getElementById('deliveryTime').value : ''
-   };
+    items: itemsToSend,
+    pickupTime: !delivery ? document.getElementById('pickupTime').value : '',
+    deliveryTime: delivery ? document.getElementById('deliveryTime').value : ''
+  };
 
 
 
