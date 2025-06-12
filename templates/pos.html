@@ -471,6 +471,7 @@ function submitOrder() {
     const delivery = order.delivery_time;
 
     tr.innerHTML = `
+      <td>${order.created_date || ''}</td>
       <td>${order.created_at || ''}</td>
       <td>${isDelivery ? 'Bezorgen' : 'Afhalen'}</td>
       <td>${order.customer_name || ''}</td>
