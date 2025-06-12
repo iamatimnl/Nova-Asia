@@ -400,6 +400,7 @@ function submitOrder() {
     : `Afhalen om ${document.getElementById('pickupTime').value}`;
 
   // 🧾 请求体
+  // 🧾 请求体
   const payload = {
     message: orderText,
     remark: remark,
@@ -410,6 +411,7 @@ function submitOrder() {
     name: name,
     items: cart
   };
+
 
   // ✅ 提交到远程 Flask Render 后端
   fetch('https://flask-order-api.onrender.com/submit_order', {
