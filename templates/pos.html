@@ -66,6 +66,21 @@
     z-index: 2;
   }
   .navbar a.active { color: white; }
+  .today-btn {
+    flex: 0 0 auto;
+    padding: 10px 16px;
+    margin-left: 10px;
+    background: linear-gradient(#fff, #eee);
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    color: var(--accent-color);
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .today-btn:active {
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
+  }
   .indicator {
     position: absolute;
     height: 32px;
@@ -132,9 +147,28 @@
   .pos-layout { display: flex; flex-direction: column; gap:20px; }
   .side-tools { width: 180px; }
   .center-area { flex:1; }
-  .checkout-panel { width:300px; background: var(--off-white); padding:20px; border-radius:16px; }
-  .orders-slide { position: fixed; left:-320px; top:0; height:100%; width:300px; background: var(--off-white); overflow:auto; transition:left 0.3s; z-index:1000; padding:10px; }
-  .orders-slide.visible { left:0; }
+  .checkout-panel {
+    width:300px;
+    background: var(--off-white);
+    padding:20px;
+    border-radius:16px;
+    position: sticky;
+    top: 70px;
+  }
+  .orders-slide {
+    position: fixed;
+    left: -95%;
+    top: 60px;
+    height: calc(100vh - 60px);
+    width: 90%;
+    max-width: 1200px;
+    background: var(--off-white);
+    overflow: auto;
+    transition: left 0.3s;
+    z-index: 1000;
+    padding: 10px;
+  }
+  .orders-slide.visible { left: 5%; }
   .orders-panel table { width:100%; border-collapse: collapse; }
   .orders-panel th, .orders-panel td { border:1px solid #ddd; padding:8px; text-align:left; }
   .orders-panel th { background:#f2f2f2; }
@@ -145,6 +179,8 @@
     border-radius: 16px;
     padding: 20px;
     margin-bottom:20px;
+    position: sticky;
+    top: 70px;
   }
   @media (min-width: 768px) {
     .pos-layout { flex-direction: row; align-items:flex-start; }
@@ -176,13 +212,13 @@
       <a href="#snack">Snack</a>
       <a href="#vegan">Vegan</a>
     </div>
+    <button id="toggleToday" class="today-btn">Bestellingen Vandaag</button>
     <div class="indicator" id="indicator"></div>
   </nav>
 </div>
 <h1>Bestelling</h1>
 <div class="pos-layout">
   <div class="side-tools">
-    <button id="toggleToday">📅 Vandaag</button>
     <div id="todayOrders" class="orders-slide">
       <button id="closeToday">×</button>
       <div class="orders-panel">
