@@ -1774,13 +1774,12 @@ function checkout() {
         ? document.getElementById('pickupPhone').value.trim()
         : document.getElementById('deliveryPhone').value.trim(),
       email: email,
-      pickupTime: orderType === 'afhalen'
+      pickup_time: orderType === 'afhalen'
         ? document.getElementById('pickupTime').value
         : '',
-      deliveryTime: orderType === 'bezorgen'
+      delivery_time: orderType === 'bezorgen'
         ? document.getElementById('deliveryTime').value
         : '',
-
       paymentMethod: paymentMethod,
       postcode: orderType === 'bezorgen'
         ? document.getElementById('deliveryPostcode').value.trim()
