@@ -158,6 +158,7 @@ def pos():
                 "house_number": order.house_number,
                 "street": order.street,
                 "city": order.city,
+                "created_date": to_nl(order.created_at).strftime("%Y-%m-%d"),
                 "created_at": to_nl(order.created_at).strftime("%H:%M"),
                 "items": json.loads(order.items or "{}"),
             }
@@ -231,6 +232,7 @@ def api_orders():
                 "house_number": order.house_number,
                 "street": order.street,
                 "city": order.city,
+                "created_date": to_nl(order.created_at).strftime("%Y-%m-%d"),
                 "created_at": to_nl(order.created_at).strftime("%H:%M"),
                 "items": json.loads(order.items or "{}"),
             }
@@ -378,6 +380,7 @@ def pos_orders_today():
             "house_number": o.house_number,
             "street": o.street,
             "city": o.city,
+            "created_date": to_nl(o.created_at).strftime("%Y-%m-%d"),
             "created_at": to_nl(o.created_at).strftime("%H:%M"),
             "items": o.items_dict,
             "total": total,

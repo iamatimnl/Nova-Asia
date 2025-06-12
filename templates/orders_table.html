@@ -2,6 +2,7 @@
   <table>
     <thead>
       <tr>
+        <th>Datum</th>
         <th>Tijd</th>
         <th>Type</th>
         <th>Klant</th>
@@ -17,6 +18,7 @@
     <tbody>
     {% for order in orders %}
       <tr>
+        <td>{{ order.created_at_local.strftime('%Y-%m-%d') }}</td>
         <td>{{ order.created_at_local.strftime('%H:%M') }}</td>
         {% set is_delivery = order.order_type in ['delivery', 'bezorgen'] %}
         <td>{{ 'Bezorgen' if is_delivery else 'Afhalen' }}</td>
