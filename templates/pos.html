@@ -129,28 +129,29 @@
     .menu-item img { max-width:80px; }
   }
   @media (max-width: 600px) { .menu-item { flex-direction: column; align-items: flex-start; } }
-  .pos-container { display: flex; flex-direction: column; }
-  .left-panel { display:flex; flex-direction: column; flex:2; }
-  .orders-panel { margin-top:20px; }
+  .pos-layout { display: flex; flex-direction: column; gap:20px; }
+  .side-tools { width: 180px; }
+  .center-area { flex:1; }
+  .checkout-panel { width:300px; background: var(--off-white); padding:20px; border-radius:16px; }
+  .orders-slide { position: fixed; left:-320px; top:0; height:100%; width:300px; background: var(--off-white); overflow:auto; transition:left 0.3s; z-index:1000; padding:10px; }
+  .orders-slide.visible { left:0; }
   .orders-panel table { width:100%; border-collapse: collapse; }
   .orders-panel th, .orders-panel td { border:1px solid #ddd; padding:8px; text-align:left; }
   .orders-panel th { background:#f2f2f2; }
   .orders-panel ul { margin:0; padding-left:20px; }
-  .order-summary {
+  .cart-area {
     background: var(--off-white);
     border: 1px solid #e0e0e0;
     border-radius: 16px;
     padding: 20px;
-    margin-top: 20px;
+    margin-bottom:20px;
   }
   @media (min-width: 768px) {
-    .pos-container { flex-direction: row; align-items: flex-start; }
-    .left-panel { flex-direction: row; flex:2; }
-    .product-list { flex:2; margin-right:20px; }
-    .order-summary { width:300px; margin-right:20px; margin-top:0; }
-    .orders-panel { flex:1; max-width:400px; }
+    .pos-layout { flex-direction: row; align-items:flex-start; }
+    .side-tools { flex:0 0 180px; }
+    .center-area { flex:2; margin-right:20px; }
   }
-  .order-summary button {
+  .cart-area button {
     width:100%;
     margin-top:10px;
     padding:12px;
@@ -179,9 +180,27 @@
   </nav>
 </div>
 <h1>Bestelling</h1>
-<div class="pos-container">
-  <div class="left-panel">
+<div class="pos-layout">
+  <div class="side-tools">
+    <button id="toggleToday">📅 Vandaag</button>
+    <div id="todayOrders" class="orders-slide">
+      <button id="closeToday">×</button>
+      <div class="orders-panel">
+        {% include 'orders_table.html' %}
+      </div>
+    </div>
+  </div>
+  <div class="center-area">
+    <div class="cart-area">
+      <h2>Overzicht</h2>
+      <ul id="cart"></ul>
+      <div class="total">Totaal: €<span id="total">0.00</span></div>
+    </div>
     <div class="product-list">
+      {% include 'menu.html' %}
+    </div>
+  </div>
+  <div class="checkout-panel">
     <section id="customer-info">
       <div class="delivery-options">
         <h2>Klantgegevens</h2>
@@ -196,8 +215,8 @@
           <label for="typeDelivery">Delivery</label>
         </div>
         <div id="pickupFields" style="margin-top:10px;">
-          <label for="pickup_time">Pickup Tijd*</label>
-          <input id="pickup_time" type="time" />
+          <label for="pickupTime">Pickup Tijd*</label>
+          <input id="pickupTime" type="time" />
           <label for="pickupPayment">Betaalmethode*</label>
           <select id="pickupPayment">
             <option value="cash">Cash</option>
@@ -214,8 +233,8 @@
           <input id="street" type="text" readonly />
           <label for="city">Plaats*</label>
           <input id="city" type="text" readonly />
-          <label for="delivery_time">Bezorgtijd (optioneel)</label>
-          <input id="delivery_time" type="time" />
+          <label for="deliveryTime">Bezorgtijd (optioneel)</label>
+          <input id="deliveryTime" type="time" />
           <label for="deliveryPayment">Betaalmethode*</label>
           <select id="deliveryPayment">
             <option value="cash">Cash</option>
@@ -230,17 +249,7 @@
         </div>
       </div>
     </section>
-    {% include 'menu.html' %}
-  </div>
-  <div class="order-summary">
-    <h2>Overzicht</h2>
-    <ul id="cart"></ul>
-    <div class="total">Totaal: €<span id="total">0.00</span></div>
     <button id="submitOrder">Submit Order</button>
-  </div>
-  </div>
-  <div class="orders-panel">
-    {% include 'orders_table.html' %}
   </div>
 </div>
 <audio id="notifySound" src="/sound/beep.mp3" preload="auto"></audio>
@@ -286,6 +295,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('.qty-minus').forEach(btn=>{
     btn.addEventListener('click',()=>{ const sel=document.getElementById(btn.dataset.target); let val=parseInt(sel.value); if(val>0) val--; sel.value=val; const parent=sel.closest('.menu-item'); setQty(parent.dataset.name,parseFloat(parent.dataset.price),val); });
   });
+  document.getElementById('toggleToday').addEventListener('click',toggleToday);
+  document.getElementById('closeToday').addEventListener('click',toggleToday);
   document.getElementById('typePickup').addEventListener('change',toggleAddress);
   document.getElementById('typeDelivery').addEventListener('change',toggleAddress);
   document.getElementById('postcode').addEventListener('blur',fetchAddress);
@@ -303,13 +314,22 @@ document.addEventListener('DOMContentLoaded',()=>{
       audioCtx.resume();
     }
   }, { once: true });
-  
+
 });
+
+function toggleToday(){
+  const panel=document.getElementById('todayOrders');
+  panel.classList.toggle('visible');
+  if(panel.classList.contains('visible')){
+    fetchOrders();
+  }
+}
+
 function toggleAddress(){
   const delivery=document.getElementById('typeDelivery').checked;
   document.getElementById('pickupFields').classList.toggle('hidden',delivery);
   document.getElementById('deliveryFields').classList.toggle('hidden',!delivery);
-  document.getElementById('pickup_time').required=!delivery?true:false;
+  document.getElementById('pickupTime').required=!delivery?true:false;
   document.getElementById('pickupPayment').required=!delivery?true:false;
   document.getElementById('postcode').required=delivery;
   document.getElementById('houseNumber').required=delivery;
@@ -368,7 +388,7 @@ function submitOrder() {
   const delivery = document.getElementById('typeDelivery').checked;
 
   if (!delivery) {
-    if (!document.getElementById('pickup_time').value) {
+    if (!document.getElementById('pickupTime').value) {
       alert('Pickup tijd is verplicht.');
       return;
     }
@@ -397,7 +417,7 @@ function submitOrder() {
   // ✏️ 备注信息（remark）
   const remark = delivery
     ? `${document.getElementById('street').value} ${document.getElementById('houseNumber').value}, ${document.getElementById('postcode').value} ${document.getElementById('city').value}`
-    : `Afhalen om ${document.getElementById('pickup_time').value}`;
+    : `Afhalen om ${document.getElementById('pickupTime').value}`;
 
   // 🧾 请求体
   const payload = {
@@ -408,9 +428,9 @@ function submitOrder() {
       : document.getElementById('pickupPayment').value,
     orderType: delivery ? 'delivery' : 'pickup',
     name: name,
-    items: cart,
-    pickup_time: !delivery ? document.getElementById('pickup_time').value : '',
-    delivery_time: delivery ? document.getElementById('delivery_time').value : ''
+  items: cart,
+  pickupTime: !delivery ? document.getElementById('pickupTime').value : '',
+  deliveryTime: delivery ? document.getElementById('deliveryTime').value : ''
    };
 
 
@@ -427,7 +447,9 @@ function submitOrder() {
         window.location.href = res.paymentLink;
       } else if (res.success || res.status === 'ok') {
         alert('Bestelling succesvol verzonden!');
-        location.reload();
+        for(const k in cart) delete cart[k];
+        updateCart();
+        fetchOrders();
       } else {
         alert('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.');
       }
@@ -467,8 +489,8 @@ function submitOrder() {
     const isDelivery = ['delivery', 'bezorgen'].includes(order.order_type);
     const items = Object.entries(order.items || {}).map(([n, i]) => `<li>${n} x ${i.qty}</li>`).join('');
     const total = Object.values(order.items || {}).reduce((s, i) => s + (parseFloat(i.price || 0) * parseInt(i.qty || 0)), 0);
-    const pickup = order.pickup_time;
-    const delivery = order.delivery_time;
+    const pickup = order.pickupTime;
+    const delivery = order.deliveryTime;
 
     tr.innerHTML = `
       <td>${order.created_date || ''}</td>
