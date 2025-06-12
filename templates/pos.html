@@ -196,8 +196,8 @@
           <label for="typeDelivery">Delivery</label>
         </div>
         <div id="pickupFields" style="margin-top:10px;">
-          <label for="pickupTime">Pickup Tijd*</label>
-          <input id="pickupTime" type="time" />
+          <label for="pickup_time">Pickup Tijd*</label>
+          <input id="pickup_time" type="time" />
           <label for="pickupPayment">Betaalmethode*</label>
           <select id="pickupPayment">
             <option value="cash">Cash</option>
@@ -214,8 +214,8 @@
           <input id="street" type="text" readonly />
           <label for="city">Plaats*</label>
           <input id="city" type="text" readonly />
-          <label for="deliveryTime">Bezorgtijd (optioneel)</label>
-          <input id="deliveryTime" type="time" />
+          <label for="delivery_time">Bezorgtijd (optioneel)</label>
+          <input id="delivery_time" type="time" />
           <label for="deliveryPayment">Betaalmethode*</label>
           <select id="deliveryPayment">
             <option value="cash">Cash</option>
@@ -309,7 +309,7 @@ function toggleAddress(){
   const delivery=document.getElementById('typeDelivery').checked;
   document.getElementById('pickupFields').classList.toggle('hidden',delivery);
   document.getElementById('deliveryFields').classList.toggle('hidden',!delivery);
-  document.getElementById('pickupTime').required=!delivery?true:false;
+  document.getElementById('pickup_time').required=!delivery?true:false;
   document.getElementById('pickupPayment').required=!delivery?true:false;
   document.getElementById('postcode').required=delivery;
   document.getElementById('houseNumber').required=delivery;
@@ -368,7 +368,7 @@ function submitOrder() {
   const delivery = document.getElementById('typeDelivery').checked;
 
   if (!delivery) {
-    if (!document.getElementById('pickupTime').value) {
+    if (!document.getElementById('pickup_time').value) {
       alert('Pickup tijd is verplicht.');
       return;
     }
@@ -397,7 +397,7 @@ function submitOrder() {
   // ✏️ 备注信息（remark）
   const remark = delivery
     ? `${document.getElementById('street').value} ${document.getElementById('houseNumber').value}, ${document.getElementById('postcode').value} ${document.getElementById('city').value}`
-    : `Afhalen om ${document.getElementById('pickupTime').value}`;
+    : `Afhalen om ${document.getElementById('pickup_time').value}`;
 
   // 🧾 请求体
   const payload = {
@@ -409,8 +409,8 @@ function submitOrder() {
     orderType: delivery ? 'delivery' : 'pickup',
     name: name,
     items: cart,
-    pickupTime: !delivery ? document.getElementById('pickupTime').value : '',
-    deliveryTime: delivery ? document.getElementById('deliveryTime').value : ''
+    pickup_time: !delivery ? document.getElementById('pickup_time').value : '',
+    delivery_time: delivery ? document.getElementById('delivery_time').value : ''
    };
 
 
@@ -467,8 +467,8 @@ function submitOrder() {
     const isDelivery = ['delivery', 'bezorgen'].includes(order.order_type);
     const items = Object.entries(order.items || {}).map(([n, i]) => `<li>${n} x ${i.qty}</li>`).join('');
     const total = Object.values(order.items || {}).reduce((s, i) => s + (parseFloat(i.price || 0) * parseInt(i.qty || 0)), 0);
-    const pickup = order.pickupTime;
-    const delivery = order.deliveryTime;
+    const pickup = order.pickup_time;
+    const delivery = order.delivery_time;
 
     tr.innerHTML = `
       <td>${order.created_at || ''}</td>
