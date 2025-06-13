@@ -17,6 +17,7 @@ import os
 import json
 import requests
 import smtplib
+from urllib.parse import quote
 
 # 初始化 Flask
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -48,6 +49,14 @@ def to_nl(dt: datetime) -> datetime:
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=UTC)
     return dt.astimezone(NL_TZ)
+
+
+def build_maps_link(street: str, house_number: str, postcode: str, city: str) -> str | None:
+    """Create a Google Maps search URL for the given address."""
+    if not all([street, house_number, postcode, city]):
+        return None
+    address = f"{street} {house_number}, {postcode} {city}"
+    return f"https://www.google.com/maps?q={quote(address)}"
 
 
 # Socket.IO for real-time updates
@@ -171,6 +180,7 @@ def pos():
                 "house_number": order.house_number,
                 "street": order.street,
                 "city": order.city,
+                "maps_link": build_maps_link(order.street, order.house_number, order.postcode, order.city),
                 "opmerking": order.opmerking,
                 "created_date": to_nl(order.created_at).strftime("%Y-%m-%d"),
                 "created_at": to_nl(order.created_at).strftime("%H:%M"),
@@ -204,6 +214,7 @@ def pos():
 
         o.total = sum(float(i.get("price", 0)) * int(i.get("qty", 0)) for i in o.items_dict.values())
         o.created_at_local = to_nl(o.created_at)
+        o.maps_link = build_maps_link(o.street, o.house_number, o.postcode, o.city)
     return render_template("pos.html", orders=orders)
 
 
@@ -249,6 +260,7 @@ def api_orders():
                 "house_number": order.house_number,
                 "street": order.street,
                 "city": order.city,
+                "maps_link": build_maps_link(order.street, order.house_number, order.postcode, order.city),
                 "opmerking": order.opmerking,
                 "created_date": to_nl(order.created_at).strftime("%Y-%m-%d"),
                 "created_at": to_nl(order.created_at).strftime("%H:%M"),
@@ -405,6 +417,7 @@ def pos_orders_today():
             "house_number": o.house_number,
             "street": o.street,
             "city": o.city,
+            "maps_link": build_maps_link(o.street, o.house_number, o.postcode, o.city),
             "opmerking": o.opmerking,
             "created_date": to_nl(o.created_at).strftime("%Y-%m-%d"),
             "created_at": to_nl(o.created_at).strftime("%H:%M"),
