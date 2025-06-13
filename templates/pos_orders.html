@@ -53,7 +53,7 @@
           {% endfor %}
           </ul>
         </td>
-        <td>{{ order.remark or '-' }}</td>
+        <td>{{ order.opmerking or '-' }}</td>
         <td>{{ '%.2f' % order.total }}</td>
         <td>
           {% if is_delivery %}
@@ -90,7 +90,7 @@
       const isDelivery = ['delivery','bezorgen'].includes(order.order_type);
       const items = Object.entries(order.items || {}).map(([n,i]) => `<li>${n} x ${i.qty}</li>`).join('');
       const total = Object.values(order.items || {}).reduce((s,i)=>s + (parseFloat(i.price||0)*parseInt(i.qty||0)),0);
-      const remark = order.remark || order.opmerking || '';
+      const remark = order.opmerking || order.remark || '';
       const pickup = order.pickup_time;
       const delivery = order.delivery_time;
       tr.innerHTML = `
