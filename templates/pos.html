@@ -174,6 +174,32 @@
   .orders-panel th, .orders-panel td { border:1px solid #ddd; padding:8px; text-align:left; }
   .orders-panel th { background:#f2f2f2; }
   .orders-panel ul { margin:0; padding-left:20px; }
+  input, select, textarea {
+    border:1px solid #ccc;
+    border-radius:8px;
+    padding:6px 10px;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+    transition:border-color 0.2s, box-shadow 0.2s;
+  }
+  input:hover, select:hover, textarea:hover {
+    border-color:#999;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline:none;
+    border-color:var(--accent-color);
+    box-shadow:0 0 0 2px rgba(63,92,75,0.2);
+  }
+  #closeToday {
+    position:absolute;
+    top:10px;
+    right:10px;
+    background:#eee;
+    border:1px solid #ccc;
+    border-radius:8px;
+    padding:4px 8px;
+    cursor:pointer;
+  }
+  #closeToday:hover { background:#e0e0e0; }
   .cart-area {
     background: rgba(255,255,255,0.7);
     backdrop-filter: blur(8px);
@@ -335,6 +361,34 @@ const extras = {
   gemberCount: { label: 'Gember', price: 0 },
   wasabiCount: { label: 'Wasabi', price: 0 }
 };
+
+function changeBubbleQty(delta){
+  const sel=document.getElementById('bubbleTeaQty');
+  let val=parseInt(sel.value||0);
+  val=Math.max(0,Math.min(20,val+delta));
+  sel.value=val;
+  const type=document.getElementById('bubbleType').value;
+  const flavor=document.getElementById('bubbleFlavor').value;
+  const topping=document.getElementById('bubbleTopping').value;
+  if(!type||!flavor||!topping) return;
+  const name=`Bubble Tea (${type}, ${flavor}, ${topping})`;
+  setQty(name,5,val);
+}
+
+function changeXbentoQty(delta){
+  const sel=document.getElementById('xBentoQty');
+  let val=parseInt(sel.value||0);
+  const main=document.getElementById('xBentoMain').value;
+  const side=document.getElementById('xBentoSide').value;
+  const rice=document.getElementById('xBentoRice').value;
+  if(!main||!side||!rice) return;
+  val=Math.max(0,Math.min(20,val+delta));
+  sel.value=val;
+  let price=14;
+  if(rice.includes('Fried rice')) price+=5;
+  const name=`Xbento (${main}, ${side}, ${rice})`;
+  setQty(name,price,val);
+}
 function populateSelect(sel){
   for(let i=0;i<=20;i++){ const opt=document.createElement('option'); opt.value=i; opt.textContent=i; sel.appendChild(opt); }
 }
@@ -361,17 +415,40 @@ function updateCart(){
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
+  const skip=['bubbleTeaQty','bubbleType','bubbleFlavor','bubbleTopping','xBentoMain','xBentoSide','xBentoRice'];
   document.querySelectorAll('.menu-item select').forEach(sel=>{
-    populateSelect(sel);
-    const parent=sel.closest('.menu-item');
-    const name=parent.dataset.name;
-    const price=parseFloat(parent.dataset.price);
-    sel.addEventListener('change',()=>{ setQty(name,price,parseInt(sel.value)); });
+    if(!skip.includes(sel.id)){
+      populateSelect(sel);
+      const parent=sel.closest('.menu-item');
+      const name=parent.dataset.name;
+      const price=parseFloat(parent.dataset.price);
+      sel.addEventListener('change',()=>{ setQty(name,price,parseInt(sel.value)); });
+    }
   });
+
+  ['bubbleTeaQty','xBentoQty'].forEach(id=>{
+    const s=document.getElementById(id);
+    for(let i=0;i<=20;i++){const opt=document.createElement('option');opt.value=i;opt.text=i;s.appendChild(opt);} s.value=0;
+  });
+
+  document.querySelector('.qty-plus[data-target="bubbleTeaQty"]').addEventListener('click',()=>{
+    if(!document.getElementById('bubbleType').value||!document.getElementById('bubbleFlavor').value||!document.getElementById('bubbleTopping').value){alert('🧋 Kies eerst type, smaak en topping voor je bubble tea.');return;}changeBubbleQty(1);});
+  document.querySelector('.qty-minus[data-target="bubbleTeaQty"]').addEventListener('click',()=>{
+    if(!document.getElementById('bubbleType').value||!document.getElementById('bubbleFlavor').value||!document.getElementById('bubbleTopping').value){alert('🧋 Kies eerst type, smaak en topping voor je bubble tea.');return;}changeBubbleQty(-1);});
+  document.getElementById('bubbleTeaQty').addEventListener('change',()=>{if(!document.getElementById('bubbleType').value||!document.getElementById('bubbleFlavor').value||!document.getElementById('bubbleTopping').value){alert('🧋 Kies eerst type, smaak en topping voor je bubble tea.');document.getElementById('bubbleTeaQty').value=0;return;}changeBubbleQty(0);});
+
+  document.querySelector('.qty-plus[data-target="xBentoQty"]').addEventListener('click',()=>{
+    if(!document.getElementById('xBentoMain').value||!document.getElementById('xBentoSide').value||!document.getElementById('xBentoRice').value){alert('🍱 Kies eerst hoofdgerecht, bijgerecht en rijstsoort voor je Xbento.');return;}changeXbentoQty(1);});
+  document.querySelector('.qty-minus[data-target="xBentoQty"]').addEventListener('click',()=>{
+    if(!document.getElementById('xBentoMain').value||!document.getElementById('xBentoSide').value||!document.getElementById('xBentoRice').value){alert('🍱 Kies eerst hoofdgerecht, bijgerecht en rijstsoort voor je Xbento.');return;}changeXbentoQty(-1);});
+  document.getElementById('xBentoQty').addEventListener('change',()=>{if(!document.getElementById('xBentoMain').value||!document.getElementById('xBentoSide').value||!document.getElementById('xBentoRice').value){alert('🍱 Kies eerst hoofdgerecht, bijgerecht en rijstsoort voor je Xbento.');document.getElementById('xBentoQty').value=0;return;}changeXbentoQty(0);});
+
   document.querySelectorAll('.qty-plus').forEach(btn=>{
+    if(['bubbleTeaQty','xBentoQty'].includes(btn.dataset.target)) return;
     btn.addEventListener('click',()=>{ const sel=document.getElementById(btn.dataset.target); let val=parseInt(sel.value); if(val<20) val++; sel.value=val; const parent=sel.closest('.menu-item'); setQty(parent.dataset.name,parseFloat(parent.dataset.price),val); });
   });
   document.querySelectorAll('.qty-minus').forEach(btn=>{
+    if(['bubbleTeaQty','xBentoQty'].includes(btn.dataset.target)) return;
     btn.addEventListener('click',()=>{ const sel=document.getElementById(btn.dataset.target); let val=parseInt(sel.value); if(val>0) val--; sel.value=val; const parent=sel.closest('.menu-item'); setQty(parent.dataset.name,parseFloat(parent.dataset.price),val); });
   });
   ['chopstickCount','soyCount','gemberCount','wasabiCount'].forEach(id=>{
