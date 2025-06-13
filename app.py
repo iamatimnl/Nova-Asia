@@ -103,8 +103,6 @@ class Order(db.Model):
     house_number = db.Column(db.String(10))
     street = db.Column(db.String(100))
     city = db.Column(db.String(100))
-    remark = db.Column(db.Text)
-    maps_link = db.Column(db.String(255))
     items = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -140,8 +138,6 @@ def pos():
             house_number=data.get("house_number"),
             street=data.get("street"),
             city=data.get("city"),
-            remark=data.get("remark") or data.get("opmerking"),
-            maps_link=data.get("maps_link"),
             items=json.dumps(data.get("items", {})),
         )
         db.session.add(order)
@@ -164,8 +160,6 @@ def pos():
                 "house_number": order.house_number,
                 "street": order.street,
                 "city": order.city,
-                "remark": order.remark,
-                "maps_link": order.maps_link,
                 "created_date": to_nl(order.created_at).strftime("%Y-%m-%d"),
                 "created_at": to_nl(order.created_at).strftime("%H:%M"),
                 "items": json.loads(order.items or "{}"),
@@ -219,8 +213,6 @@ def api_orders():
             house_number=data.get("house_number"),
             street=data.get("street"),
             city=data.get("city"),
-            remark=data.get("remark") or data.get("opmerking"),
-            maps_link=data.get("maps_link"),
             items=json.dumps(data.get("items", {})),
         )
 
@@ -244,8 +236,6 @@ def api_orders():
                 "house_number": order.house_number,
                 "street": order.street,
                 "city": order.city,
-                "remark": order.remark,
-                "maps_link": order.maps_link,
                 "created_date": to_nl(order.created_at).strftime("%Y-%m-%d"),
                 "created_at": to_nl(order.created_at).strftime("%H:%M"),
                 "items": json.loads(order.items or "{}"),
@@ -396,8 +386,6 @@ def pos_orders_today():
             "house_number": o.house_number,
             "street": o.street,
             "city": o.city,
-            "remark": o.remark,
-            "maps_link": o.maps_link,
             "created_date": to_nl(o.created_at).strftime("%Y-%m-%d"),
             "created_at": to_nl(o.created_at).strftime("%H:%M"),
             "items": o.items_dict,
@@ -430,6 +418,8 @@ def logout():
 # 启动
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000)
+
+
 
 
 
