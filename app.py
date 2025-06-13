@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import inspect, text
 from flask_login import (
     LoginManager,
     UserMixin,
@@ -304,6 +305,17 @@ def api_send():
 @app.route('/create_db')
 def create_db():
     try:
+        inspector = inspect(db.engine)
+        cols = set()
+        if inspector.has_table("orders"):
+            cols = {c["name"] for c in inspector.get_columns("orders")}
+
+        with db.engine.begin() as conn:
+            if "remark" not in cols:
+                conn.execute(text("ALTER TABLE orders ADD COLUMN remark TEXT"))
+            if "maps_link" not in cols:
+                conn.execute(text("ALTER TABLE orders ADD COLUMN maps_link VARCHAR(255)"))
+
         db.create_all()
         return "✅ Database tables created!"
     except Exception as e:
