@@ -591,8 +591,24 @@ input#bezorgen:checked ~ .slider {
   z-index: 1000;
   display: none;
 }
-.feedback.error {
-  background: #c55;
+  .feedback.error {
+    background: #c55;
+  }
+
+input, select, textarea {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 8px 10px;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+input:hover, select:hover, textarea:hover {
+  border-color: #999;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(63,92,75,0.2);
 }
 .cart-section select {
   width: 20%;
@@ -1675,6 +1691,20 @@ function showFeedback(msg, isError=false) {
   setTimeout(() => { el.style.display = 'none'; }, 3000);
 }
 
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function beep(){
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(660, audioCtx.currentTime);
+  gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + 0.2);
+}
+document.body.addEventListener('click',()=>{if(audioCtx.state==='suspended') audioCtx.resume();},{once:true});
+
 function checkout() {
   const paidItems = Object.values(cart).filter(item => item.price > 0 && item.qty > 0);
   if (paidItems.length === 0) {
@@ -1773,6 +1803,7 @@ function checkout() {
         ? document.getElementById('pickupPhone').value.trim()
         : document.getElementById('deliveryPhone').value.trim(),
       email: email,
+      customerEmail: email,
       pickup_time: orderType === 'afhalen'
         ? document.getElementById('pickup_time').value
         : '',
@@ -1799,6 +1830,7 @@ function checkout() {
     .then(res => res.json())
     .then(data => {
       if (data.status === 'ok') {
+        beep();
         showFeedback('Bestelling succesvol verzonden!');
         for (const k in cart) delete cart[k];
         updateCart();
