@@ -8,6 +8,7 @@ from flask_login import (
     login_required,
 )
 from flask_socketio import SocketIO
+from sqlalchemy import text
 import eventlet
 eventlet.monkey_patch()
 from datetime import datetime, timezone
@@ -28,6 +29,14 @@ print(repr(os.getenv("DATABASE_URL")))
 db = SQLAlchemy(app)
 with app.app_context():
     db.create_all()
+    try:
+        inspector = db.inspect(db.engine)
+        cols = {c["name"] for c in inspector.get_columns("orders")}
+        if "opmerking" not in cols:
+            with db.engine.begin() as conn:
+                conn.execute(text("ALTER TABLE orders ADD COLUMN opmerking TEXT"))
+    except Exception as e:
+        print(f"DB init error: {e}")
 
 UTC = timezone.utc
 NL_TZ = ZoneInfo("Europe/Amsterdam")
