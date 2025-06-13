@@ -87,6 +87,8 @@
                 <td>
                     {% if is_delivery %}
                         {{ info.order.street }} {{ info.order.house_number }} {{ info.order.postcode }} {{ info.order.city }}
+                        {% set addr = info.order.street ~ ' ' ~ info.order.house_number ~ ', ' ~ info.order.postcode ~ ' ' ~ info.order.city %}
+                        <a href="https://www.google.com/maps?q={{ addr | urlencode }}" target="_blank">📍Maps</a>
                     {% else %}-{% endif %}
                 </td>
                 <td>{{ info.order.opmerking or '-' }}</td>
