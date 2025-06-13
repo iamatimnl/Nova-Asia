@@ -33,7 +33,7 @@
           {% endfor %}
           </ul>
         </td>
-        <td>{{ order.remark or '-' }}</td>
+        <td>{{ order.opmerking or '-' }}</td>
         <td>{{ '%.2f' % order.total }}</td>
         <td>
           {% if is_delivery %}
