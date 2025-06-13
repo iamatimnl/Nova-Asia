@@ -8,6 +8,7 @@ from flask_login import (
     login_required,
 )
 from flask_socketio import SocketIO
+from sqlalchemy import text
 import eventlet
 eventlet.monkey_patch()
 from datetime import datetime, timezone
@@ -28,6 +29,14 @@ print(repr(os.getenv("DATABASE_URL")))
 db = SQLAlchemy(app)
 with app.app_context():
     db.create_all()
+    try:
+        inspector = db.inspect(db.engine)
+        cols = {c["name"] for c in inspector.get_columns("orders")}
+        if "opmerking" not in cols:
+            with db.engine.begin() as conn:
+                conn.execute(text("ALTER TABLE orders ADD COLUMN opmerking TEXT"))
+    except Exception as e:
+        print(f"DB init error: {e}")
 
 UTC = timezone.utc
 NL_TZ = ZoneInfo("Europe/Amsterdam")
@@ -103,6 +112,7 @@ class Order(db.Model):
     house_number = db.Column(db.String(10))
     street = db.Column(db.String(100))
     city = db.Column(db.String(100))
+    opmerking = db.Column(db.Text)
     items = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -138,6 +148,7 @@ def pos():
             house_number=data.get("house_number"),
             street=data.get("street"),
             city=data.get("city"),
+            opmerking=data.get("opmerking") or data.get("remark"),
             items=json.dumps(data.get("items", {})),
         )
         db.session.add(order)
@@ -160,6 +171,7 @@ def pos():
                 "house_number": order.house_number,
                 "street": order.street,
                 "city": order.city,
+                "opmerking": order.opmerking,
                 "created_date": to_nl(order.created_at).strftime("%Y-%m-%d"),
                 "created_at": to_nl(order.created_at).strftime("%H:%M"),
                 "items": json.loads(order.items or "{}"),
@@ -213,6 +225,7 @@ def api_orders():
             house_number=data.get("house_number"),
             street=data.get("street"),
             city=data.get("city"),
+            opmerking=data.get("opmerking") or data.get("remark"),
             items=json.dumps(data.get("items", {})),
         )
 
@@ -236,6 +249,7 @@ def api_orders():
                 "house_number": order.house_number,
                 "street": order.street,
                 "city": order.city,
+                "opmerking": order.opmerking,
                 "created_date": to_nl(order.created_at).strftime("%Y-%m-%d"),
                 "created_at": to_nl(order.created_at).strftime("%H:%M"),
                 "items": json.loads(order.items or "{}"),
@@ -294,6 +308,11 @@ def api_send():
 @app.route('/create_db')
 def create_db():
     try:
+        inspector = db.inspect(db.engine)
+        cols = {c["name"] for c in inspector.get_columns("orders")}
+        if "opmerking" not in cols:
+            with db.engine.begin() as conn:
+                conn.execute(db.text("ALTER TABLE orders ADD COLUMN opmerking TEXT"))
         db.create_all()
         return "✅ Database tables created!"
     except Exception as e:
@@ -386,6 +405,7 @@ def pos_orders_today():
             "house_number": o.house_number,
             "street": o.street,
             "city": o.city,
+            "opmerking": o.opmerking,
             "created_date": to_nl(o.created_at).strftime("%Y-%m-%d"),
             "created_at": to_nl(o.created_at).strftime("%H:%M"),
             "items": o.items_dict,

@@ -625,7 +625,7 @@ if (remark) orderText += `, Opmerking: ${remark}`;
     city: delivery ? document.getElementById('city').value.trim() : '',
     items: itemsToSend,
     message: orderText,
-    remark: remark
+    opmerking: remark
   };
 
 
@@ -688,7 +688,7 @@ if (remark) orderText += `, Opmerking: ${remark}`;
     const isDelivery = ['delivery', 'bezorgen'].includes(order.order_type);
     const items = Object.entries(order.items || {}).map(([n, i]) => `<li>${n} x ${i.qty}</li>`).join('');
     const total = Object.values(order.items || {}).reduce((s, i) => s + (parseFloat(i.price || 0) * parseInt(i.qty || 0)), 0);
-    const remark = order.remark || order.opmerking || '';
+    const remark = order.opmerking || order.remark || '';
     const pickup = order.pickupTime;
     const delivery = order.deliveryTime;
 
