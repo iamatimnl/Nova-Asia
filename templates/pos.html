@@ -688,6 +688,7 @@ if (remark) orderText += `, Opmerking: ${remark}`;
     const isDelivery = ['delivery', 'bezorgen'].includes(order.order_type);
     const items = Object.entries(order.items || {}).map(([n, i]) => `<li>${n} x ${i.qty}</li>`).join('');
     const total = Object.values(order.items || {}).reduce((s, i) => s + (parseFloat(i.price || 0) * parseInt(i.qty || 0)), 0);
+    const remark = order.remark || order.opmerking || '';
     const pickup = order.pickupTime;
     const delivery = order.deliveryTime;
 
@@ -699,8 +700,9 @@ if (remark) orderText += `, Opmerking: ${remark}`;
       <td>${order.phone || ''}</td>
       <td>${order.email || '-'}</td>
       <td><ul>${items}</ul></td>
+      <td>${remark || '-'}</td>
       <td>${total.toFixed(2)}</td>
-      <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}` : '-'}</td>
+      <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
       <td>${isDelivery ? (delivery || '-') : (pickup || '-')}</td>
       <td>${order.payment_method || ''}</td>`;
       

@@ -9,6 +9,7 @@
         <th>Telefoon</th>
         <th>Email</th>
         <th>Items</th>
+        <th>Opmerking</th>
         <th>Totaal (&euro;)</th>
         <th>Adres</th>
         <th>Tijdslot</th>
@@ -32,10 +33,14 @@
           {% endfor %}
           </ul>
         </td>
+        <td>{{ order.remark or '-' }}</td>
         <td>{{ '%.2f' % order.total }}</td>
         <td>
           {% if is_delivery %}
             {{ order.street }} {{ order.house_number }} {{ order.postcode }} {{ order.city }}
+            {% if order.maps_link %}
+              <a href="{{ order.maps_link }}" target="_blank">📍Maps</a>
+            {% endif %}
           {% else %}-{% endif %}
         </td>
         <td>

@@ -29,6 +29,7 @@
         <th>Telefoon</th>
         <th>Email</th>
         <th>Items</th>
+        <th>Opmerking</th>
         <th>Totaal (&euro;)</th>
         <th>Adres</th>
         <th>Tijdslot</th>
@@ -52,10 +53,14 @@
           {% endfor %}
           </ul>
         </td>
+        <td>{{ order.remark or '-' }}</td>
         <td>{{ '%.2f' % order.total }}</td>
         <td>
           {% if is_delivery %}
             {{ order.street }} {{ order.house_number }} {{ order.postcode }} {{ order.city }}
+            {% if order.maps_link %}
+              <a href="{{ order.maps_link }}" target="_blank">📍Maps</a>
+            {% endif %}
           {% else %}-{% endif %}
         </td>
         <td>
@@ -85,6 +90,7 @@
       const isDelivery = ['delivery','bezorgen'].includes(order.order_type);
       const items = Object.entries(order.items || {}).map(([n,i]) => `<li>${n} x ${i.qty}</li>`).join('');
       const total = Object.values(order.items || {}).reduce((s,i)=>s + (parseFloat(i.price||0)*parseInt(i.qty||0)),0);
+      const remark = order.remark || order.opmerking || '';
       const pickup = order.pickup_time;
       const delivery = order.delivery_time;
       tr.innerHTML = `
@@ -95,8 +101,9 @@
         <td>${order.phone || ''}</td>
         <td>${order.email || '-'}</td>
         <td><ul>${items}</ul></td>
+        <td>${remark || '-'}</td>
         <td>${total.toFixed(2)}</td>
-        <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}` : '-'}</td>
+        <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
         <td>${isDelivery ? (delivery || '-') : (pickup || '-')}</td>
         <td>${order.payment_method || ''}</td>`;
       tbody.prepend(tr);
