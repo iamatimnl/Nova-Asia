@@ -304,6 +304,13 @@ def api_send():
 @app.route('/create_db')
 def create_db():
     try:
+        inspector = db.inspect(db.engine)
+        cols = {c["name"] for c in inspector.get_columns("orders")}
+        with db.engine.begin() as conn:
+            if "remark" not in cols:
+                conn.execute(db.text("ALTER TABLE orders ADD COLUMN remark TEXT"))
+            if "maps_link" not in cols:
+                conn.execute(db.text("ALTER TABLE orders ADD COLUMN maps_link VARCHAR(255)"))
         db.create_all()
         return "✅ Database tables created!"
     except Exception as e:
