@@ -53,9 +53,10 @@
             td:nth-of-type(3):before { content: "Customer"; }
             td:nth-of-type(4):before { content: "Phone"; }
             td:nth-of-type(5):before { content: "Address"; }
-            td:nth-of-type(6):before { content: "Payment"; }
-            td:nth-of-type(7):before { content: "Created"; }
-            td:nth-of-type(8):before { content: "Total"; }
+            td:nth-of-type(6):before { content: "Remark"; }
+            td:nth-of-type(7):before { content: "Payment"; }
+            td:nth-of-type(8):before { content: "Created"; }
+            td:nth-of-type(9):before { content: "Total"; }
         }
     </style>
 </head>
@@ -69,6 +70,7 @@
                 <th>Klant</th>
                 <th>Telefoon</th>
                 <th>Adres</th>
+                <th>Opmerking</th>
                 <th>Betaalmethode</th>
                 <th>Aangemaakt</th>
                 <th>Totaal (€)</th>
@@ -87,6 +89,7 @@
                         {{ info.order.street }} {{ info.order.house_number }} {{ info.order.postcode }} {{ info.order.city }}
                     {% else %}-{% endif %}
                 </td>
+                <td>{{ info.order.opmerking or '-' }}</td>
                 <td>{{ info.order.payment_method }}</td>
                 <td>{{ info.order.created_at_local.strftime('%Y-%m-%d %H:%M') }}</td>
                 <td>{{ '%.2f' % info.total }}</td>
