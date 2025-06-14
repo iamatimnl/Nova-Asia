@@ -370,15 +370,7 @@
       <div class="totals">
         <div>Subtotaal: €<span id="subtotal">0.00</span></div>
         <div>Verpakkingskosten: €<span id="packaging">0.00</span></div>
-        <div id="deliveryRow" style="display:none;">Bezorgkosten: €<span id="deliveryFee">2.50</span></div>
-        <div>
-          Korting: <input id="discount" type="text" value="0" list="discountOptions" style="max-width:80px;" />
-          <datalist id="discountOptions">
-            <option value="5%"></option>
-            <option value="10%"></option>
-            <option value="15%"></option>
-            <option value="20%"></option>
-          </datalist>
+
         </div>
         <div>BTW (9%): €<span id="vat">0.00</span></div>
         <div class="total">Totaal: €<span id="total">0.00</span></div>
@@ -519,13 +511,7 @@ function updateCart(){
     if(item.qty>0){ subtotal+=lineTotal; itemQty+=item.qty; }
   });
   const packaging=itemQty*PACKAGING_RATE;
-  const deliverySelected=document.getElementById('typeDelivery').checked;
-  const delivery=deliverySelected?DELIVERY_FEE:0;
-  document.getElementById('deliveryRow').style.display=deliverySelected?'block':'none';
-  const discountVal=parseDiscount(document.getElementById('discount').value, subtotal);
-  const base=Math.max(0, subtotal-discountVal)+packaging;
-  const vat=base*VAT_RATE;
-  const total=base+vat+delivery;
+
 
   document.getElementById('subtotal').textContent=subtotal.toFixed(2);
   document.getElementById('packaging').textContent=packaging.toFixed(2);
