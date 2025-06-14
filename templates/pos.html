@@ -283,6 +283,24 @@
   }
   .cart-area button:hover { background:#a3c8ff; }
   .hidden { display:none; }
+ .pos-layout {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.center-area {
+  flex: 3; /* 从 flex:1 改为 flex:3，加宽菜单展示 */
+  margin-right: 20px;
+}
+
+.checkout-panel {
+  flex: 1.2; /* 稍微占位即可，避免右侧过宽 */
+  max-width: 340px;
+}
+
+  
 </style>
 </head>
 <body>
