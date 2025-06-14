@@ -1660,9 +1660,9 @@ function updateCart() {
   });
 
   const packaging = itemQty * PACKAGING_RATE;
-
-
-  document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+  const base = subtotal + packaging + delivery;
+  const vat = base * VAT_RATE;
+  const total = base + vat;
   document.getElementById('packaging').textContent = packaging.toFixed(2);
   document.getElementById('deliveryFee').textContent = delivery.toFixed(2);
   document.getElementById('vat').textContent = vat.toFixed(2);

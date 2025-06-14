@@ -345,50 +345,6 @@
       </div>
     </div>
   </div>
-  <div class="center-area">
-    <div class="cart-area">
-      <h2>Overzicht</h2>
-      <ul id="cart"></ul>
-      <div class="supply-row">
-        <label for="chopstickCount">Aantal stokjes</label>
-        <select id="chopstickCount" class="supply-select"></select>
-      </div>
-      <div class="supply-row">
-        <label for="soyCount">Aantal sojasaus flesjes</label>
-        <select id="soyCount" class="supply-select"></select>
-      </div>
-      <div class="supply-row">
-        <label for="gemberCount">Aantal gember porties</label>
-        <select id="gemberCount" class="supply-select"></select>
-      </div>
-      <div class="supply-row">
-        <label for="wasabiCount">Aantal wasabi flesjes</label>
-        <select id="wasabiCount" class="supply-select"></select>
-      </div>
-      <label for="remark" style="display:block;margin-top:10px;">Opmerking:</label>
-      <textarea id="remark" rows="2" placeholder="Bijv. geen komkomer, extra mayo"></textarea>
-      <div class="totals">
-        <div>Subtotaal: €<span id="subtotal">0.00</span></div>
-        <div>Verpakkingskosten: €<span id="packaging">0.00</span></div>
-
-        </div>
-        <div>BTW (9%): €<span id="vat">0.00</span></div>
-        <div class="total">Totaal: €<span id="total">0.00</span></div>
-        <p style="font-size:0.9rem;">Alle prijzen zijn inclusief BTW</p>
-      </div>
-    </div>
-    <div class="product-list">
-      {% include 'menu.html' %}
-    </div>
-  </div>
-  <div class="checkout-panel">
-    <section id="customer-info">
-      <div class="delivery-options">
-        <h2>Klantgegevens</h2>
-        <label for="custName">Naam*</label>
-        <input id="custName" type="text" placeholder="Naam" required />
-        <label for="custPhone">Telefoonnummer*</label>
-        <input id="custPhone" type="tel" placeholder="Telefoonnummer" required />
         <div style="margin-top:10px;">
           <input type="radio" id="typePickup" name="orderType" value="pickup" checked />
           <label for="typePickup">Pickup</label>
@@ -432,6 +388,55 @@
     </section>
     <button id="submitOrder">Submit Order</button>
   </div>
+  <div class="center-area">
+    <div class="cart-area">
+      <h2>Overzicht</h2>
+      <ul id="cart"></ul>
+      <div class="supply-row">
+        <label for="chopstickCount">Aantal stokjes</label>
+        <select id="chopstickCount" class="supply-select"></select>
+      </div>
+      <div class="supply-row">
+        <label for="soyCount">Aantal sojasaus flesjes</label>
+        <select id="soyCount" class="supply-select"></select>
+      </div>
+      <div class="supply-row">
+        <label for="gemberCount">Aantal gember porties</label>
+        <select id="gemberCount" class="supply-select"></select>
+      </div>
+      <div class="supply-row">
+        <label for="wasabiCount">Aantal wasabi flesjes</label>
+        <select id="wasabiCount" class="supply-select"></select>
+      </div>
+      <label for="remark" style="display:block;margin-top:10px;">Opmerking:</label>
+      <textarea id="remark" rows="2" placeholder="Bijv. geen komkomer, extra mayo"></textarea>
+      <div class="totals">
+        <div>Subtotaal: €<span id="subtotal">0.00</span></div>
+        <div>Verpakkingskosten: €<span id="packaging">0.00</span></div>
+        <div id="deliveryRow" style="display:none;">Bezorgkosten: €<span id="deliveryFee">2.50</span></div>
+        <div>Korting: -€<span id="discountAmt">0.00</span></div>
+        <div class="korting-input">
+          <input id="discountValue" type="number" value="0" min="0" step="0.1" list="discountOptions" style="max-width:80px;" />
+          <select id="discountType">
+            <option value="amount">€</option>
+            <option value="percent">%</option>
+          </select>
+          <datalist id="discountOptions">
+            <option value="5"></option>
+            <option value="10"></option>
+            <option value="15"></option>
+            <option value="20"></option>
+          </datalist>
+        </div>
+        <div>BTW (9%): €<span id="vat">0.00</span></div>
+        <div class="total">Totaal: €<span id="total">0.00</span></div>
+        <p style="font-size:0.9rem;">Alle prijzen zijn inclusief BTW</p>
+      </div>
+    </div>
+    <div class="product-list">
+      {% include 'menu.html' %}
+    </div>
+  </div>
 </div>
 <audio id="notifySound" src="/sound/beep.mp3" preload="auto"></audio>
 
@@ -448,16 +453,15 @@ const PACKAGING_RATE = 0.25; // verpakkingskosten per item
 const DELIVERY_FEE = 2.5;
 const VAT_RATE = 0.09;
 
-function parseDiscount(val, base){
-  if(!val) return 0;
-  val = val.toString().trim();
-  if(val.endsWith('%')){
-    const p = parseFloat(val.slice(0,-1));
-    if(isNaN(p)) return 0;
-    return base * p / 100;
+function getDiscount(base){
+  const type=document.getElementById('discountType').value;
+  let val=parseFloat(document.getElementById('discountValue').value);
+  if(isNaN(val)||val<0) val=0;
+  if(type==='percent'){
+    if(val>100) val=100;
+    return base*val/100;
   }
-  const num = parseFloat(val);
-  return isNaN(num) ? 0 : num;
+  return Math.min(val, base);
 }
 
 function changeBubbleQty(delta){
@@ -511,11 +515,12 @@ function updateCart(){
     if(item.qty>0){ subtotal+=lineTotal; itemQty+=item.qty; }
   });
   const packaging=itemQty*PACKAGING_RATE;
-
-
-  document.getElementById('subtotal').textContent=subtotal.toFixed(2);
+  const discountVal=getDiscount(subtotal);
+  const base=Math.max(0, subtotal + packaging + delivery - discountVal);
+  const total=base+vat;
   document.getElementById('packaging').textContent=packaging.toFixed(2);
   document.getElementById('deliveryFee').textContent=delivery.toFixed(2);
+  document.getElementById('discountAmt').textContent=discountVal.toFixed(2);
   document.getElementById('vat').textContent=vat.toFixed(2);
   document.getElementById('total').textContent=total.toFixed(2);
 }
@@ -572,7 +577,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('street').addEventListener('blur',updateQRCode);
   document.getElementById('city').addEventListener('blur',updateQRCode);
   document.getElementById('submitOrder').addEventListener('click',submitOrder);
-  document.getElementById('discount').addEventListener('input',updateCart);
+  document.getElementById('discountValue').addEventListener('input',updateCart);
+  document.getElementById('discountType').addEventListener('change',updateCart);
   updateCart();
   toggleAddress();
   // 🔊 解锁 AudioContext
@@ -658,7 +664,7 @@ function clearForm(){
     if(el) el.value=el.options[0].value;
   });
   document.getElementById('remark').value='';
-  document.getElementById('discount').value='0';
+  document.getElementById('discountValue').value='0';
   document.querySelectorAll('.product-list select').forEach(sel=>{sel.value=0;});
   for(const k in cart) delete cart[k];
   updateCart();
