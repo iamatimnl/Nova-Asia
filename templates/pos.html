@@ -345,34 +345,6 @@
       </div>
     </div>
   </div>
-  <div class="center-area">
-    <div class="cart-area">
-      <h2>Overzicht</h2>
-      <ul id="cart"></ul>
-      <div class="supply-row">
-        <label for="chopstickCount">Aantal stokjes</label>
-        <select id="chopstickCount" class="supply-select"></select>
-      </div>
-      <div class="supply-row">
-        <label for="soyCount">Aantal sojasaus flesjes</label>
-        <select id="soyCount" class="supply-select"></select>
-      </div>
-      <div class="supply-row">
-        <label for="gemberCount">Aantal gember porties</label>
-        <select id="gemberCount" class="supply-select"></select>
-      </div>
-      <div class="supply-row">
-        <label for="wasabiCount">Aantal wasabi flesjes</label>
-        <select id="wasabiCount" class="supply-select"></select>
-      </div>
-      <label for="remark" style="display:block;margin-top:10px;">Opmerking:</label>
-      <textarea id="remark" rows="2" placeholder="Bijv. geen komkomer, extra mayo"></textarea>
-      <div class="total">Totaal: €<span id="total">0.00</span></div>
-    </div>
-    <div class="product-list">
-      {% include 'menu.html' %}
-    </div>
-  </div>
   <div class="checkout-panel">
     <section id="customer-info">
       <div class="delivery-options">
@@ -424,6 +396,55 @@
     </section>
     <button id="submitOrder">Submit Order</button>
   </div>
+  <div class="center-area">
+    <div class="cart-area">
+      <h2>Overzicht</h2>
+      <ul id="cart"></ul>
+      <div class="supply-row">
+        <label for="chopstickCount">Aantal stokjes</label>
+        <select id="chopstickCount" class="supply-select"></select>
+      </div>
+      <div class="supply-row">
+        <label for="soyCount">Aantal sojasaus flesjes</label>
+        <select id="soyCount" class="supply-select"></select>
+      </div>
+      <div class="supply-row">
+        <label for="gemberCount">Aantal gember porties</label>
+        <select id="gemberCount" class="supply-select"></select>
+      </div>
+      <div class="supply-row">
+        <label for="wasabiCount">Aantal wasabi flesjes</label>
+        <select id="wasabiCount" class="supply-select"></select>
+      </div>
+      <label for="remark" style="display:block;margin-top:10px;">Opmerking:</label>
+      <textarea id="remark" rows="2" placeholder="Bijv. geen komkomer, extra mayo"></textarea>
+      <div class="totals">
+        <div>Subtotaal: €<span id="subtotal">0.00</span></div>
+        <div>Verpakkingskosten: €<span id="packaging">0.00</span></div>
+        <div id="deliveryRow" style="display:none;">Bezorgkosten: €<span id="deliveryFee">2.50</span></div>
+        <div>Korting: -€<span id="discountAmt">0.00</span></div>
+        <div class="korting-input">
+          <input id="discountValue" type="number" value="0" min="0" step="0.1" list="discountOptions" style="max-width:80px;" />
+          <select id="discountType">
+            <option value="amount">€</option>
+            <option value="percent">%</option>
+          </select>
+          <datalist id="discountOptions">
+            <option value="5"></option>
+            <option value="10"></option>
+            <option value="15"></option>
+            <option value="20"></option>
+          </datalist>
+        </div>
+        <div>BTW (9%): €<span id="vat">0.00</span></div>
+        <div class="total">Totaal: €<span id="total">0.00</span></div>
+        <p style="font-size:0.9rem;">Alle prijzen zijn inclusief BTW</p>
+      </div>
+    </div>
+    <div class="product-list">
+      {% include 'menu.html' %}
+    </div>
+  </div>
 </div>
 <audio id="notifySound" src="/sound/beep.mp3" preload="auto"></audio>
 
@@ -435,6 +456,21 @@ const extras = {
   gemberCount: { label: 'Gember', price: 0 },
   wasabiCount: { label: 'Wasabi', price: 0 }
 };
+
+const PACKAGING_RATE = 0.25; // verpakkingskosten per item
+const DELIVERY_FEE = 2.5;
+const VAT_RATE = 0.09;
+
+function getDiscount(base){
+  const type=document.getElementById('discountType').value;
+  let val=parseFloat(document.getElementById('discountValue').value);
+  if(isNaN(val)||val<0) val=0;
+  if(type==='percent'){
+    if(val>100) val=100;
+    return base*val/100;
+  }
+  return Math.min(val, base);
+}
 
 function changeBubbleQty(delta){
   const sel=document.getElementById('bubbleTeaQty');
@@ -475,16 +511,31 @@ function setQty(name,price,qty){ if(qty===0){ delete cart[name]; } else { cart[n
 function updateCart(){
   const list=document.getElementById('cart');
   list.innerHTML='';
-  let total=0;
+  let subtotal=0;
+  let itemQty=0;
   Object.entries(cart).forEach(([name,item])=>{
     const li=document.createElement('li');
     const sel=createSelect(item.qty,val=>{ document.querySelector(`[data-name="${name}"] select`).value=val; setQty(name,item.price,val); });
-    const subtotal=item.qty*item.price;
-    li.textContent=`${name} = €${subtotal.toFixed(2)} `;
+    const lineTotal=item.qty*item.price;
+    li.textContent=`${name} = €${lineTotal.toFixed(2)} `;
     li.appendChild(sel);
     list.appendChild(li);
-    if(item.qty>0) total+=subtotal;
+    if(item.qty>0){ subtotal+=lineTotal; itemQty+=item.qty; }
   });
+  const packaging=itemQty*PACKAGING_RATE;
+  const deliverySelected=document.getElementById('typeDelivery').checked;
+  const delivery=deliverySelected?DELIVERY_FEE:0;
+  document.getElementById('deliveryRow').style.display=deliverySelected?'block':'none';
+  const discountVal=getDiscount(subtotal);
+  const base=Math.max(0, subtotal + packaging + delivery - discountVal);
+  const vat=base*VAT_RATE;
+  const total=base+vat;
+
+  document.getElementById('subtotal').textContent=subtotal.toFixed(2);
+  document.getElementById('packaging').textContent=packaging.toFixed(2);
+  document.getElementById('deliveryFee').textContent=delivery.toFixed(2);
+  document.getElementById('discountAmt').textContent=discountVal.toFixed(2);
+  document.getElementById('vat').textContent=vat.toFixed(2);
   document.getElementById('total').textContent=total.toFixed(2);
 }
 
@@ -540,6 +591,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('street').addEventListener('blur',updateQRCode);
   document.getElementById('city').addEventListener('blur',updateQRCode);
   document.getElementById('submitOrder').addEventListener('click',submitOrder);
+  document.getElementById('discountValue').addEventListener('input',updateCart);
+  document.getElementById('discountType').addEventListener('change',updateCart);
   updateCart();
   toggleAddress();
   // 🔊 解锁 AudioContext
@@ -575,6 +628,7 @@ function toggleAddress(){
   } else {
     updateQRCode();
   }
+  updateCart();
 }
 async function fetchAddress(){
   const pc=document.getElementById('postcode').value.trim();
@@ -624,6 +678,7 @@ function clearForm(){
     if(el) el.value=el.options[0].value;
   });
   document.getElementById('remark').value='';
+  document.getElementById('discountValue').value='0';
   document.querySelectorAll('.product-list select').forEach(sel=>{sel.value=0;});
   for(const k in cart) delete cart[k];
   updateCart();
