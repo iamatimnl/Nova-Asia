@@ -345,6 +345,7 @@
       </div>
     </div>
   </div>
+
   <div class="checkout-panel">
     <section id="customer-info">
       <div class="delivery-options">
@@ -461,15 +462,7 @@ const PACKAGING_RATE = 0.25; // verpakkingskosten per item
 const DELIVERY_FEE = 2.5;
 const VAT_RATE = 0.09;
 
-function getDiscount(base){
-  const type=document.getElementById('discountType').value;
-  let val=parseFloat(document.getElementById('discountValue').value);
-  if(isNaN(val)||val<0) val=0;
-  if(type==='percent'){
-    if(val>100) val=100;
-    return base*val/100;
-  }
-  return Math.min(val, base);
+
 }
 
 function changeBubbleQty(delta){
@@ -523,18 +516,12 @@ function updateCart(){
     if(item.qty>0){ subtotal+=lineTotal; itemQty+=item.qty; }
   });
   const packaging=itemQty*PACKAGING_RATE;
-  const deliverySelected=document.getElementById('typeDelivery').checked;
-  const delivery=deliverySelected?DELIVERY_FEE:0;
-  document.getElementById('deliveryRow').style.display=deliverySelected?'block':'none';
-  const discountVal=getDiscount(subtotal);
-  const base=Math.max(0, subtotal + packaging + delivery - discountVal);
-  const vat=base*VAT_RATE;
-  const total=base+vat;
+
 
   document.getElementById('subtotal').textContent=subtotal.toFixed(2);
   document.getElementById('packaging').textContent=packaging.toFixed(2);
   document.getElementById('deliveryFee').textContent=delivery.toFixed(2);
-  document.getElementById('discountAmt').textContent=discountVal.toFixed(2);
+
   document.getElementById('vat').textContent=vat.toFixed(2);
   document.getElementById('total').textContent=total.toFixed(2);
 }
@@ -591,8 +578,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('street').addEventListener('blur',updateQRCode);
   document.getElementById('city').addEventListener('blur',updateQRCode);
   document.getElementById('submitOrder').addEventListener('click',submitOrder);
-  document.getElementById('discountValue').addEventListener('input',updateCart);
-  document.getElementById('discountType').addEventListener('change',updateCart);
+
   updateCart();
   toggleAddress();
   // 🔊 解锁 AudioContext
@@ -678,7 +664,7 @@ function clearForm(){
     if(el) el.value=el.options[0].value;
   });
   document.getElementById('remark').value='';
-  document.getElementById('discountValue').value='0';
+
   document.querySelectorAll('.product-list select').forEach(sel=>{sel.value=0;});
   for(const k in cart) delete cart[k];
   updateCart();

@@ -386,7 +386,7 @@
 #back-to-top-logo {
   position: fixed;
   bottom: 86px; /* cart button bottom + height + spacing */
-  right: 18px;
+  right: 16px;
   width: 66px;
   height: 66px;
   border-radius: 16px;
@@ -809,7 +809,7 @@ input:focus, select:focus, textarea:focus {
   <div class="totals">
     <div>Subtotaal: €<span id="subtotal">0.00</span></div>
     <div>Verpakkingskosten: €<span id="packaging">0.00</span></div>
-    <div id="deliveryRow" style="display:none;">Bezorgkosten: €<span id="deliveryFee">2.50</span></div>
+
     <div>BTW (9%): €<span id="vat">0.00</span></div>
     <div class="total">Totaal: €<span id="total">0.00</span></div>
     <p style="font-size:0.9rem;">Alle prijzen zijn inclusief BTW</p>
@@ -1660,12 +1660,7 @@ function updateCart() {
   });
 
   const packaging = itemQty * PACKAGING_RATE;
-  const deliverySelected = document.getElementById('bezorgen').checked;
-  const delivery = deliverySelected ? DELIVERY_FEE : 0;
-  document.getElementById('deliveryRow').style.display = deliverySelected ? 'block' : 'none';
-  const base = subtotal + packaging + delivery;
-  const vat = base * VAT_RATE;
-  const total = base + vat;
+
 
   document.getElementById('subtotal').textContent = subtotal.toFixed(2);
   document.getElementById('packaging').textContent = packaging.toFixed(2);
