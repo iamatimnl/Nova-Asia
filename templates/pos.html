@@ -299,22 +299,85 @@
   }
   .cart-area button:hover { background:#a3c8ff; }
   .hidden { display:none; }
- .pos-layout {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 20px;
+@media (min-width: 768px) {
+  .pos-layout {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .center-area {
+    flex: 3;
+    margin-right: 20px;
+  }
+  .checkout-panel {
+    flex: 1.2;
+    max-width: 340px;
+  }
 }
 
-.center-area {
-  flex: 3; /* 从 flex:1 改为 flex:3，加宽菜单展示 */
-  margin-right: 20px;
-}
-
-.checkout-panel {
-  flex: 1.2; /* 稍微占位即可，避免右侧过宽 */
-  max-width: 340px;
-}
+/* Floating cart and checkout panel */
+  .cart-panel {
+    position: sticky;
+    top: 80px;
+    align-self: flex-start;
+    flex: 1.2;
+    max-width: 340px;
+  }
+  .close-btn { display:none; }
+  .cart-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: none;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    font-size: 1.4rem;
+    cursor: pointer;
+    z-index: 1100;
+    display: none;
+  }
+  .cart-toggle .badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #ff3b30;
+    color: #fff;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.75rem;
+  }
+  #closeCartPanel {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #e5e5ea;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
+  @media (max-width: 768px) {
+    .cart-toggle { display: block; }
+    .cart-panel {
+      position: fixed;
+      inset: 0;
+      overflow-y: auto;
+      background: rgba(255,255,255,0.95);
+      padding: 20px;
+      z-index: 1050;
+      display: none;
+    }
+    .cart-panel.open { display: block; }
+    .close-btn { display: block; }
+    .cart-panel .cart-area { position: static; top: auto; }
+    .pos-layout { flex-direction: column; align-items: center; }
+    .center-area { width:100%; margin-right:0; }
+  }
 
   
 </style>
@@ -346,6 +409,12 @@
     </div>
   </div>
   <div class="center-area">
+    <div class="product-list">
+      {% include 'menu.html' %}
+    </div>
+  </div>
+  <div id="cartPanel" class="cart-panel">
+    <button id="closeCartPanel" class="close-btn">×</button>
     <div class="cart-area">
       <h2>Overzicht</h2>
       <ul id="cart"></ul>
@@ -369,14 +438,10 @@
       <textarea id="remark" rows="2" placeholder="Bijv. geen komkomer, extra mayo"></textarea>
       <div class="total">Totaal: €<span id="total">0.00</span></div>
     </div>
-    <div class="product-list">
-      {% include 'menu.html' %}
-    </div>
-  </div>
-  <div class="checkout-panel">
-    <section id="customer-info">
-      <div class="delivery-options">
-        <h2>Klantgegevens</h2>
+    <div class="checkout-panel">
+      <section id="customer-info">
+        <div class="delivery-options">
+          <h2>Klantgegevens</h2>
         <label for="custName">Naam*</label>
         <input id="custName" type="text" placeholder="Naam" required />
         <label for="custPhone">Telefoonnummer*</label>
@@ -420,11 +485,13 @@
           <img id="qrCodePreview" src="" alt="QR Code" />
           <div id="mapsLinkContainer" style="margin-top:4px;"></div>
         </div>
-      </div>
-    </section>
-    <button id="submitOrder">Submit Order</button>
+        </div>
+      </section>
+      <button id="submitOrder">Submit Order</button>
+    </div>
   </div>
 </div>
+<button id="cartToggle" class="cart-toggle">🛒<span id="cartCount" class="badge">0</span></button>
 <audio id="notifySound" src="/sound/beep.mp3" preload="auto"></audio>
 
 <script>
@@ -476,6 +543,7 @@ function updateCart(){
   const list=document.getElementById('cart');
   list.innerHTML='';
   let total=0;
+  let count=0;
   Object.entries(cart).forEach(([name,item])=>{
     const li=document.createElement('li');
     const sel=createSelect(item.qty,val=>{ document.querySelector(`[data-name="${name}"] select`).value=val; setQty(name,item.price,val); });
@@ -484,8 +552,11 @@ function updateCart(){
     li.appendChild(sel);
     list.appendChild(li);
     if(item.qty>0) total+=subtotal;
+    count+=item.qty;
   });
   document.getElementById('total').textContent=total.toFixed(2);
+  const badge=document.getElementById('cartCount');
+  if(badge) badge.textContent=count;
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
@@ -540,6 +611,22 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('street').addEventListener('blur',updateQRCode);
   document.getElementById('city').addEventListener('blur',updateQRCode);
   document.getElementById('submitOrder').addEventListener('click',submitOrder);
+  const cartToggle=document.getElementById('cartToggle');
+  const cartPanel=document.getElementById('cartPanel');
+  const closeCart=document.getElementById('closeCartPanel');
+  if(cartToggle){
+    cartToggle.addEventListener('click',()=>{
+      cartPanel.classList.toggle('open');
+    });
+  }
+  if(closeCart){
+    closeCart.addEventListener('click',()=>cartPanel.classList.remove('open'));
+  }
+  if(cartPanel){
+    cartPanel.addEventListener('click',e=>{
+      if(e.target===cartPanel) cartPanel.classList.remove('open');
+    });
+  }
   updateCart();
   toggleAddress();
   // 🔊 解锁 AudioContext
