@@ -298,6 +298,13 @@
     transition: background 0.3s ease;
   }
   .cart-area button:hover { background:#a3c8ff; }
+  .checkout-summary div {
+    display:flex;
+    justify-content:space-between;
+    margin-top:4px;
+  }
+  .discount-row { align-items:center; gap:4px; }
+  .total-row { font-weight:bold; margin-top:6px; display:flex; justify-content:space-between; }
   .hidden { display:none; }
 @media (min-width: 768px) {
   .pos-layout {
@@ -436,7 +443,24 @@
       </div>
       <label for="remark" style="display:block;margin-top:10px;">Opmerking:</label>
       <textarea id="remark" rows="2" placeholder="Bijv. geen komkomer, extra mayo"></textarea>
-      <div class="total">Totaal: €<span id="total">0.00</span></div>
+      <div class="checkout-summary">
+        <div><span>Subtotaal:</span> <span id="summarySubtotal">€0,00</span></div>
+        <div><span>Verpakkingskosten:</span> <span id="summaryPackaging">€0,00</span></div>
+        <div id="summaryDeliveryRow" class="hidden"><span>Bezorgkosten:</span> <span id="summaryDelivery">€0,00</span></div>
+        <div class="discount-row">
+          <label for="discountType">Korting:</label>
+          <select id="discountType" style="margin-left:4px;">
+            <option value="none">Geen</option>
+            <option value="amount">Bedrag (€)</option>
+            <option value="percent">Percentage (%)</option>
+          </select>
+          <input id="discountValue" type="number" value="0" min="0" style="width:60px;margin-left:4px;" />
+          <span id="summaryDiscount" style="margin-left:4px;">€0,00</span>
+        </div>
+        <div><span>BTW (9%):</span> <span id="summaryBtw">€0,00</span></div>
+        <div class="total-row"><strong>Totaal:</strong> <span id="total">€0,00</span></div>
+        <p style="font-size:0.9rem;margin-top:4px;">Alle prijzen zijn inclusief BTW</p>
+      </div>
     </div>
     <div class="checkout-panel">
       <section id="customer-info">
@@ -513,7 +537,8 @@ function changeBubbleQty(delta){
   const topping=document.getElementById('bubbleTopping').value;
   if(!type||!flavor||!topping) return;
   const name=`Bubble Tea (${type}, ${flavor}, ${topping})`;
-  setQty(name,5,val);
+  const pack=parseFloat(document.querySelector('[data-name="Bubble Tea"]').dataset.packaging||0);
+  setQty(name,5,val,pack);
 }
 
 function changeXbentoQty(delta){
@@ -528,7 +553,8 @@ function changeXbentoQty(delta){
   let price=14;
   if(rice.includes('Fried rice')) price+=5;
   const name=`Xbento (${main}, ${side}, ${rice})`;
-  setQty(name,price,val);
+  const pack=parseFloat(document.querySelector('[data-name="Xbento"]').dataset.packaging||0);
+  setQty(name,price,val,pack);
 }
 function populateSelect(sel){
   for(let i=0;i<=20;i++){ const opt=document.createElement('option'); opt.value=i; opt.textContent=i; sel.appendChild(opt); }
@@ -538,23 +564,50 @@ function createSelect(current,onChange){
   for(let i=0;i<=20;i++){ const opt=document.createElement('option'); opt.value=i; opt.textContent=i; if(i===current) opt.selected=true; sel.appendChild(opt); }
   sel.addEventListener('change',()=>onChange(parseInt(sel.value))); return sel;
 }
-function setQty(name,price,qty){ if(qty===0){ delete cart[name]; } else { cart[name]={price,qty}; } updateCart(); }
+function setQty(name,price,qty,packaging=0){
+  if(qty===0){
+    delete cart[name];
+  } else {
+    cart[name]={price,qty,packaging};
+  }
+  updateCart();
+}
 function updateCart(){
   const list=document.getElementById('cart');
   list.innerHTML='';
-  let total=0;
+  let subtotal=0;
+  let packagingTotal=0;
   let count=0;
   Object.entries(cart).forEach(([name,item])=>{
     const li=document.createElement('li');
-    const sel=createSelect(item.qty,val=>{ document.querySelector(`[data-name="${name}"] select`).value=val; setQty(name,item.price,val); });
-    const subtotal=item.qty*item.price;
-    li.textContent=`${name} = €${subtotal.toFixed(2)} `;
+    const sel=createSelect(item.qty,val=>{ document.querySelector(`[data-name="${name}"] select`).value=val; setQty(name,item.price,val,item.packaging); });
+    const rowTotal=item.qty*item.price;
+    li.textContent=`${name} = €${rowTotal.toFixed(2)} `;
     li.appendChild(sel);
     list.appendChild(li);
-    if(item.qty>0) total+=subtotal;
+    if(item.qty>0){
+      subtotal+=rowTotal;
+      packagingTotal+= (item.packaging||0)*item.qty;
+    }
     count+=item.qty;
   });
-  document.getElementById('total').textContent=total.toFixed(2);
+  const delivery=document.getElementById('typeDelivery').checked ? 2.5 : 0;
+  const discountType=document.getElementById('discountType').value;
+  let discountVal=parseFloat(document.getElementById('discountValue').value)||0;
+  let discount=0;
+  if(discountType==='amount'){ discount=Math.min(discountVal,subtotal); }
+  else if(discountType==='percent'){ discount=Math.min(discountVal,100)/100*subtotal; }
+  if(discount<0||isNaN(discount)) discount=0;
+  const btw=((subtotal-discount)+packagingTotal)*0.09;
+  const total=subtotal-discount+packagingTotal+delivery+btw;
+  const fmt=n=>`€${n.toFixed(2).replace('.',',')}`;
+  document.getElementById('summarySubtotal').textContent=fmt(subtotal);
+  document.getElementById('summaryPackaging').textContent=fmt(packagingTotal);
+  document.getElementById('summaryDelivery').textContent=fmt(delivery);
+  document.getElementById('summaryDeliveryRow').classList.toggle('hidden',!delivery);
+  document.getElementById('summaryDiscount').textContent=discount?`- ${fmt(discount)}`:'€0,00';
+  document.getElementById('summaryBtw').textContent=fmt(btw);
+  document.getElementById('total').textContent=fmt(total);
   const badge=document.getElementById('cartCount');
   if(badge) badge.textContent=count;
 }
@@ -567,7 +620,8 @@ document.addEventListener('DOMContentLoaded',()=>{
       const parent=sel.closest('.menu-item');
       const name=parent.dataset.name;
       const price=parseFloat(parent.dataset.price);
-      sel.addEventListener('change',()=>{ setQty(name,price,parseInt(sel.value)); });
+      const pack=parseFloat(parent.dataset.packaging||0);
+      sel.addEventListener('change',()=>{ setQty(name,price,parseInt(sel.value),pack); });
     }
   });
 
@@ -590,11 +644,11 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   document.querySelectorAll('.qty-plus').forEach(btn=>{
     if(['bubbleTeaQty','xBentoQty'].includes(btn.dataset.target)) return;
-    btn.addEventListener('click',()=>{ const sel=document.getElementById(btn.dataset.target); let val=parseInt(sel.value); if(val<20) val++; sel.value=val; const parent=sel.closest('.menu-item'); setQty(parent.dataset.name,parseFloat(parent.dataset.price),val); });
+    btn.addEventListener('click',()=>{ const sel=document.getElementById(btn.dataset.target); let val=parseInt(sel.value); if(val<20) val++; sel.value=val; const parent=sel.closest('.menu-item'); setQty(parent.dataset.name,parseFloat(parent.dataset.price),val,parseFloat(parent.dataset.packaging||0)); });
   });
   document.querySelectorAll('.qty-minus').forEach(btn=>{
     if(['bubbleTeaQty','xBentoQty'].includes(btn.dataset.target)) return;
-    btn.addEventListener('click',()=>{ const sel=document.getElementById(btn.dataset.target); let val=parseInt(sel.value); if(val>0) val--; sel.value=val; const parent=sel.closest('.menu-item'); setQty(parent.dataset.name,parseFloat(parent.dataset.price),val); });
+    btn.addEventListener('click',()=>{ const sel=document.getElementById(btn.dataset.target); let val=parseInt(sel.value); if(val>0) val--; sel.value=val; const parent=sel.closest('.menu-item'); setQty(parent.dataset.name,parseFloat(parent.dataset.price),val,parseFloat(parent.dataset.packaging||0)); });
   });
   ['chopstickCount','soyCount','gemberCount','wasabiCount'].forEach(id=>{
     populateSelect(document.getElementById(id));
@@ -610,6 +664,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('houseNumber').addEventListener('blur',updateQRCode);
   document.getElementById('street').addEventListener('blur',updateQRCode);
   document.getElementById('city').addEventListener('blur',updateQRCode);
+  document.getElementById('discountType').addEventListener('change',updateCart);
+  document.getElementById('discountValue').addEventListener('input',updateCart);
   document.getElementById('submitOrder').addEventListener('click',submitOrder);
   const cartToggle=document.getElementById('cartToggle');
   const cartPanel=document.getElementById('cartPanel');
@@ -662,6 +718,7 @@ function toggleAddress(){
   } else {
     updateQRCode();
   }
+  updateCart();
 }
 async function fetchAddress(){
   const pc=document.getElementById('postcode').value.trim();
