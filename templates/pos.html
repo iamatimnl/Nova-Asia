@@ -370,9 +370,7 @@
       <div class="totals">
         <div>Subtotaal: €<span id="subtotal">0.00</span></div>
         <div>Verpakkingskosten: €<span id="packaging">0.00</span></div>
-        <div>Bezorgkosten: €<span id="deliveryFee">2.50</span></div>
-        <div>
-          Korting: <input id="discount" type="text" value="0" style="max-width:80px;" />
+
         </div>
         <div>BTW (9%): €<span id="vat">0.00</span></div>
         <div class="total">Totaal: €<span id="total">0.00</span></div>
@@ -513,11 +511,7 @@ function updateCart(){
     if(item.qty>0){ subtotal+=lineTotal; itemQty+=item.qty; }
   });
   const packaging=itemQty*PACKAGING_RATE;
-  const delivery=DELIVERY_FEE;
-  const discountVal=parseDiscount(document.getElementById('discount').value, subtotal);
-  const preTax=Math.max(0, subtotal-discountVal)+packaging+delivery;
-  const vat=preTax*VAT_RATE;
-  const total=preTax+vat;
+
 
   document.getElementById('subtotal').textContent=subtotal.toFixed(2);
   document.getElementById('packaging').textContent=packaging.toFixed(2);
@@ -614,6 +608,7 @@ function toggleAddress(){
   } else {
     updateQRCode();
   }
+  updateCart();
 }
 async function fetchAddress(){
   const pc=document.getElementById('postcode').value.trim();

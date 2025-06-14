@@ -809,7 +809,7 @@ input:focus, select:focus, textarea:focus {
   <div class="totals">
     <div>Subtotaal: €<span id="subtotal">0.00</span></div>
     <div>Verpakkingskosten: €<span id="packaging">0.00</span></div>
-    <div>Bezorgkosten: €<span id="deliveryFee">2.50</span></div>
+
     <div>BTW (9%): €<span id="vat">0.00</span></div>
     <div class="total">Totaal: €<span id="total">0.00</span></div>
     <p style="font-size:0.9rem;">Alle prijzen zijn inclusief BTW</p>
@@ -1660,10 +1660,7 @@ function updateCart() {
   });
 
   const packaging = itemQty * PACKAGING_RATE;
-  const delivery = DELIVERY_FEE;
-  const preTax = subtotal + packaging + delivery;
-  const vat = preTax * VAT_RATE;
-  const total = preTax + vat;
+
 
   document.getElementById('subtotal').textContent = subtotal.toFixed(2);
   document.getElementById('packaging').textContent = packaging.toFixed(2);
@@ -1941,10 +1938,11 @@ function checkout() {
       bezorgenFields.classList.add('hidden');
     } else {
       infoBox.textContent = 'Wij bezorgen in de volgende postcodegebieden:\n2341, 2342, 2343, 2333, 2334, 2231, 2232, 2361, 2235';
-      
+
       bezorgenFields.classList.remove('hidden');
       afhalenFields.classList.add('hidden');
     }
+    updateCart();
   }
 
   // 初始化执行一次
