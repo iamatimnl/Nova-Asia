@@ -169,7 +169,8 @@
   top: 80px; /* 与导航栏保持一定距离 */
   align-self: flex-start;
   flex: 1.2;
-  max-width: 340px;
+  max-width: 380px;
+  width: 100%;
   backdrop-filter: blur(8px);
   border-radius: 16px;
   padding: 20px;
@@ -318,7 +319,8 @@
   }
   .checkout-panel {
     flex: 1.2;
-    max-width: 340px;
+    max-width: 380px;
+    width: 100%;
   }
 }
 
@@ -328,7 +330,14 @@
     top: 80px;
     align-self: flex-start;
     flex: 1.2;
-    max-width: 340px;
+    max-width: 380px;
+    width: 100%;
+  }
+
+  @media (min-width: 768px) {
+    .cart-panel { display: flex; gap: 20px; }
+    .cart-panel .cart-area,
+    .cart-panel .checkout-panel { flex: 1; }
   }
   .close-btn { display:none; }
   .cart-toggle {
@@ -598,8 +607,8 @@ function updateCart(){
   if(discountType==='amount'){ discount=Math.min(discountVal,subtotal); }
   else if(discountType==='percent'){ discount=Math.min(discountVal,100)/100*subtotal; }
   if(discount<0||isNaN(discount)) discount=0;
-  const btw=((subtotal-discount)+packagingTotal)*0.09;
-  const total=subtotal-discount+packagingTotal+delivery+btw;
+  const total=subtotal + packagingTotal + delivery - discount;
+  const btw=Math.round(total*9)/100;
   const fmt=n=>`€${n.toFixed(2).replace('.',',')}`;
   document.getElementById('summarySubtotal').textContent=fmt(subtotal);
   document.getElementById('summaryPackaging').textContent=fmt(packagingTotal);
