@@ -905,8 +905,8 @@ if (remark) orderText += `, Opmerking: ${remark}`;
     const items = Object.entries(order.items || {}).map(([n, i]) => `<li>${n} x ${i.qty}</li>`).join('');
     const total = Object.values(order.items || {}).reduce((s, i) => s + (parseFloat(i.price || 0) * parseInt(i.qty || 0)), 0);
     const remark = order.opmerking || order.remark || '';
-    const pickup = order.pickupTime;
-    const delivery = order.deliveryTime;
+    const pickup = order.pickupTime || order.pickup_time;
+    const delivery = order.deliveryTime || order.delivery_time;
 
     tr.innerHTML = `
       <td>${order.created_date || ''}</td>

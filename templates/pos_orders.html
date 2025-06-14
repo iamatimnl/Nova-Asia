@@ -91,8 +91,8 @@
       const items = Object.entries(order.items || {}).map(([n,i]) => `<li>${n} x ${i.qty}</li>`).join('');
       const total = Object.values(order.items || {}).reduce((s,i)=>s + (parseFloat(i.price||0)*parseInt(i.qty||0)),0);
       const remark = order.opmerking || order.remark || '';
-      const pickup = order.pickup_time;
-      const delivery = order.delivery_time;
+      const pickup = order.pickup_time || order.pickupTime;
+      const delivery = order.delivery_time || order.deliveryTime;
       tr.innerHTML = `
         <td>${order.created_date || ''}</td>
         <td>${order.created_at || ''}</td>
