@@ -705,8 +705,8 @@ input:focus, select:focus, textarea:focus {
       <input id="pickup_time" type="time" />
       <label>Betaalmethode:</label>
       <select id="pickupPayment">
-        <option value="winkel">In de winkel</option>
-        <option value="online">Online betaling</option>
+        <option value="contant">Contant</option>
+        <option value="pin">Pin</option>
       </select>
     </div>
 
@@ -733,6 +733,7 @@ input:focus, select:focus, textarea:focus {
       <select id="deliveryPayment">
         <option value="contant">Contant</option>
         <option value="online">Online betaling</option>
+        <option value="oprekening">Op rekening</option>
       </select>
     </div>
   </div>
@@ -1705,6 +1706,16 @@ function beep(){
 }
 document.body.addEventListener('click',()=>{if(audioCtx.state==='suspended') audioCtx.resume();},{once:true});
 
+function scrollToField(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.focus();
+    el.style.borderColor = 'red';
+    setTimeout(() => { el.style.borderColor = ''; }, 2000);
+  }
+}
+
 function checkout() {
   const paidItems = Object.values(cart).filter(item => item.price > 0 && item.qty > 0);
   if (paidItems.length === 0) {
@@ -1741,6 +1752,9 @@ function checkout() {
 
     if (!name || !phone || !time) {
       alert("Vul alstublieft alle afhaalvelden in: naam, telefoon en tijd.");
+      if (!name) scrollToField('pickupName');
+      else if (!phone) scrollToField('pickupPhone');
+      else scrollToField('pickup_time');
       return;
     }
 
@@ -1764,6 +1778,13 @@ function checkout() {
 
     if (!name || !phone || !address || !houseNumber || !postcodeRaw || !area || !time) {
       alert("Vul alstublieft alle bezorgvelden in: naam, telefoon, adres, huisnummer, postcode, gebied en tijd.");
+      if (!name) scrollToField('deliveryName');
+      else if (!phone) scrollToField('deliveryPhone');
+      else if (!address) scrollToField('deliveryAddress');
+      else if (!houseNumber) scrollToField('deliveryHouseNumber');
+      else if (!postcodeRaw) scrollToField('deliveryPostcode');
+      else if (!area) scrollToField('deliveryArea');
+      else scrollToField('delivery_time');
       return;
     }
 
