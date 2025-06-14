@@ -381,6 +381,25 @@
   z-index: 999;
 }
 
+/* logo floating above the cart button */
+#back-to-top-logo {
+  position: fixed;
+  bottom: 86px; /* cart button bottom + height + spacing */
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  z-index: 998;
+  cursor: pointer;
+  display: none; /* default hidden, shown on mobile */
+}
+
+@media (max-width: 768px) {
+  #back-to-top-logo {
+    display: block;
+  }
+}
+
 
 @media (min-width: 768px) {
   #cart-toggle {
@@ -802,7 +821,9 @@ input:focus, select:focus, textarea:focus {
       line-height: 1;">0</span>
 </button>
 
- 
+<img id="back-to-top-logo" src="{{ url_for('static', filename='images/Logo.png') }}" alt="Back to top" />
+
+
 <section id="bubble">
   <div class="menu-group">
    <h2 style="margin-top: -8px; font-size: 1.5rem; color: #333; text-align: center; font-weight: bold;">
@@ -2003,6 +2024,13 @@ function showMobileCartButtonIfNeeded() {
 showMobileCartButtonIfNeeded();
 
 window.addEventListener('resize', showMobileCartButtonIfNeeded);
+</script>
+
+<script>
+const backTopLogo = document.getElementById('back-to-top-logo');
+backTopLogo.addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
 </script>
 
 
