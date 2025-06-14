@@ -367,7 +367,17 @@
       </div>
       <label for="remark" style="display:block;margin-top:10px;">Opmerking:</label>
       <textarea id="remark" rows="2" placeholder="Bijv. geen komkomer, extra mayo"></textarea>
-      <div class="total">Totaal: €<span id="total">0.00</span></div>
+      <div class="totals">
+        <div>Subtotaal: €<span id="subtotal">0.00</span></div>
+        <div>Verpakkingskosten: €<span id="packaging">0.00</span></div>
+        <div>Bezorgkosten: €<span id="deliveryFee">2.50</span></div>
+        <div>
+          Korting: <input id="discount" type="text" value="0" style="max-width:80px;" />
+        </div>
+        <div>BTW (9%): €<span id="vat">0.00</span></div>
+        <div class="total">Totaal: €<span id="total">0.00</span></div>
+        <p style="font-size:0.9rem;">Alle prijzen zijn inclusief BTW</p>
+      </div>
     </div>
     <div class="product-list">
       {% include 'menu.html' %}
@@ -436,6 +446,22 @@ const extras = {
   wasabiCount: { label: 'Wasabi', price: 0 }
 };
 
+const PACKAGING_RATE = 0.25; // verpakkingskosten per item
+const DELIVERY_FEE = 2.5;
+const VAT_RATE = 0.09;
+
+function parseDiscount(val, base){
+  if(!val) return 0;
+  val = val.toString().trim();
+  if(val.endsWith('%')){
+    const p = parseFloat(val.slice(0,-1));
+    if(isNaN(p)) return 0;
+    return base * p / 100;
+  }
+  const num = parseFloat(val);
+  return isNaN(num) ? 0 : num;
+}
+
 function changeBubbleQty(delta){
   const sel=document.getElementById('bubbleTeaQty');
   let val=parseInt(sel.value||0);
@@ -475,16 +501,28 @@ function setQty(name,price,qty){ if(qty===0){ delete cart[name]; } else { cart[n
 function updateCart(){
   const list=document.getElementById('cart');
   list.innerHTML='';
-  let total=0;
+  let subtotal=0;
+  let itemQty=0;
   Object.entries(cart).forEach(([name,item])=>{
     const li=document.createElement('li');
     const sel=createSelect(item.qty,val=>{ document.querySelector(`[data-name="${name}"] select`).value=val; setQty(name,item.price,val); });
-    const subtotal=item.qty*item.price;
-    li.textContent=`${name} = €${subtotal.toFixed(2)} `;
+    const lineTotal=item.qty*item.price;
+    li.textContent=`${name} = €${lineTotal.toFixed(2)} `;
     li.appendChild(sel);
     list.appendChild(li);
-    if(item.qty>0) total+=subtotal;
+    if(item.qty>0){ subtotal+=lineTotal; itemQty+=item.qty; }
   });
+  const packaging=itemQty*PACKAGING_RATE;
+  const delivery=DELIVERY_FEE;
+  const discountVal=parseDiscount(document.getElementById('discount').value, subtotal);
+  const preTax=Math.max(0, subtotal-discountVal)+packaging+delivery;
+  const vat=preTax*VAT_RATE;
+  const total=preTax+vat;
+
+  document.getElementById('subtotal').textContent=subtotal.toFixed(2);
+  document.getElementById('packaging').textContent=packaging.toFixed(2);
+  document.getElementById('deliveryFee').textContent=delivery.toFixed(2);
+  document.getElementById('vat').textContent=vat.toFixed(2);
   document.getElementById('total').textContent=total.toFixed(2);
 }
 
@@ -540,6 +578,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('street').addEventListener('blur',updateQRCode);
   document.getElementById('city').addEventListener('blur',updateQRCode);
   document.getElementById('submitOrder').addEventListener('click',submitOrder);
+  document.getElementById('discount').addEventListener('input',updateCart);
   updateCart();
   toggleAddress();
   // 🔊 解锁 AudioContext
@@ -624,6 +663,7 @@ function clearForm(){
     if(el) el.value=el.options[0].value;
   });
   document.getElementById('remark').value='';
+  document.getElementById('discount').value='0';
   document.querySelectorAll('.product-list select').forEach(sel=>{sel.value=0;});
   for(const k in cart) delete cart[k];
   updateCart();

@@ -806,7 +806,14 @@ input:focus, select:focus, textarea:focus {
   <ul id="cart"></ul>
   <label for="remark" style="display:block;margin-top:10px;">Opmerking:</label>
   <textarea id="remark" rows="2" placeholder="Bijv. geen komkomer, extra mayo"></textarea>
-  <div class="total">Totaal: €<span id="total">0.00</span></div>
+  <div class="totals">
+    <div>Subtotaal: €<span id="subtotal">0.00</span></div>
+    <div>Verpakkingskosten: €<span id="packaging">0.00</span></div>
+    <div>Bezorgkosten: €<span id="deliveryFee">2.50</span></div>
+    <div>BTW (9%): €<span id="vat">0.00</span></div>
+    <div class="total">Totaal: €<span id="total">0.00</span></div>
+    <p style="font-size:0.9rem;">Alle prijzen zijn inclusief BTW</p>
+  </div>
   <button class="checkout-btn" onclick="checkout()">Afrekenen &amp; Betalen</button>
 
 </div>
@@ -1432,6 +1439,10 @@ const extras = {
   gemberCount: { label: 'Gember', price: 0 }
 };
 
+const PACKAGING_RATE = 0.25; // verpakkingskosten per item
+const DELIVERY_FEE = 2.5;
+const VAT_RATE = 0.09;
+
 
 function changeBubbleQty(delta) {
   const qtySel = document.getElementById('bubbleTeaQty');
@@ -1597,7 +1608,8 @@ function setQty(name, price, qty) {
 function updateCart() {
   const list = document.getElementById('cart');
   list.innerHTML = '';
-  let total = 0;
+  let subtotal = 0;
+  let itemQty = 0;
 
   Object.entries(cart).forEach(([name, item]) => {
     const li = document.createElement('li');
@@ -1620,11 +1632,14 @@ function updateCart() {
       }
       setQty(name, item.price, val);
     });
-    const subtotal = item.qty * item.price;
-    li.textContent = `${name} = €${subtotal.toFixed(2)} `;
+    const lineTotal = item.qty * item.price;
+    li.textContent = `${name} = €${lineTotal.toFixed(2)} `;
     li.appendChild(sel);
     list.appendChild(li);
-    if (item.qty > 0) total += subtotal;
+    if (item.qty > 0) {
+      subtotal += lineTotal;
+      itemQty += item.qty;
+    }
   });
 
   const title = document.createElement('li');
@@ -1644,9 +1659,19 @@ function updateCart() {
     list.appendChild(li);
   });
 
+  const packaging = itemQty * PACKAGING_RATE;
+  const delivery = DELIVERY_FEE;
+  const preTax = subtotal + packaging + delivery;
+  const vat = preTax * VAT_RATE;
+  const total = preTax + vat;
+
+  document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+  document.getElementById('packaging').textContent = packaging.toFixed(2);
+  document.getElementById('deliveryFee').textContent = delivery.toFixed(2);
+  document.getElementById('vat').textContent = vat.toFixed(2);
   document.getElementById('total').textContent = total.toFixed(2);
 
-  const totalQty = Object.values(cart).reduce((s, it) => s + it.qty, 0) +
+  const totalQty = itemQty +
     Object.keys(extras).reduce((s, id) => s + parseInt(document.getElementById(id).value || 0), 0);
 
   const badge = document.getElementById('cart-count');
