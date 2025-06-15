@@ -578,19 +578,24 @@ function updateCart(){
   let subtotal=0;
   let packagingTotal=0;
   let count=0;
+
   Object.entries(cart).forEach(([name,item])=>{
     const li=document.createElement('li');
-    const sel=createSelect(item.qty,val=>{ document.querySelector(`[data-name="${name}"] select`).value=val; setQty(name,item.price,val,item.packaging); });
+    const sel=createSelect(item.qty,val=>{
+      document.querySelector(`[data-name="${name}"] select`).value=val;
+      setQty(name,item.price,val,item.packaging);
+    });
     const rowTotal=item.qty*item.price;
     li.textContent=`${name} = €${rowTotal.toFixed(2)} `;
     li.appendChild(sel);
     list.appendChild(li);
     if(item.qty>0){
       subtotal+=rowTotal;
-      packagingTotal+= (item.packaging||0)*item.qty;
+      packagingTotal+=(item.packaging||0)*item.qty;
     }
     count+=item.qty;
   });
+
   const delivery=document.getElementById('typeDelivery').checked ? 2.5 : 0;
   const discountType=document.getElementById('discountType').value;
   let discountVal=parseFloat(document.getElementById('discountValue').value)||0;
@@ -599,99 +604,106 @@ function updateCart(){
   else if(discountType==='percent'){ discount=Math.min(discountVal,100)/100*subtotal; }
   if(discount<0||isNaN(discount)) discount=0;
 
+  const total = subtotal + packagingTotal + delivery - discount;
+  const btwBase = delivery ? total - delivery : total;
+  const btw = btwBase * 0.09;
+
   const fmt=n=>`€${n.toFixed(2).replace('.',',')}`;
   document.getElementById('summarySubtotal').textContent=fmt(subtotal);
   document.getElementById('summaryPackaging').textContent=fmt(packagingTotal);
   document.getElementById('summaryDelivery').textContent=fmt(delivery);
   document.getElementById('summaryDeliveryRow').classList.toggle('hidden',!delivery);
-  document.getElementById('summaryDiscount').textContent=discount?`- ${fmt(discount)}`:'€0,00';
+  document.getElementById('summaryDiscount').textContent=discount ? `- ${fmt(discount)}` : '€0,00';
   document.getElementById('summaryBtw').textContent=fmt(btw);
   document.getElementById('total').textContent=fmt(total);
+
   const badge=document.getElementById('cartCount');
   if(badge) badge.textContent=count;
 }
 
-document.addEventListener('DOMContentLoaded',()=>{
-  const skip=['bubbleTeaQty','bubbleType','bubbleFlavor','bubbleTopping','xBentoMain','xBentoSide','xBentoRice'];
-  document.querySelectorAll('.menu-item select').forEach(sel=>{
-    if(!skip.includes(sel.id)){
+
+document.addEventListener('DOMContentLoaded', () => {
+  const skip = ['bubbleTeaQty', 'bubbleType', 'bubbleFlavor', 'bubbleTopping', 'xBentoMain', 'xBentoSide', 'xBentoRice'];
+
+  document.querySelectorAll('.menu-item select').forEach(sel => {
+    if (!skip.includes(sel.id)) {
       populateSelect(sel);
-      const parent=sel.closest('.menu-item');
-      const name=parent.dataset.name;
-      const price=parseFloat(parent.dataset.price);
-      const pack=parseFloat(parent.dataset.packaging||0);
-      sel.addEventListener('change',()=>{ setQty(name,price,parseInt(sel.value),pack); });
+      const parent = sel.closest('.menu-item');
+      const name = parent.dataset.name;
+      const price = parseFloat(parent.dataset.price);
+      const pack = parseFloat(parent.dataset.packaging || 0);
+      sel.addEventListener('change', () => {
+        setQty(name, price, parseInt(sel.value), pack);
+      });
     }
   });
 
-  ['bubbleTeaQty','xBentoQty'].forEach(id=>{
-    const s=document.getElementById(id);
-    for(let i=0;i<=20;i++){const opt=document.createElement('option');opt.value=i;opt.text=i;s.appendChild(opt);} s.value=0;
+  ['bubbleTeaQty', 'xBentoQty'].forEach(id => {
+    const s = document.getElementById(id);
+    for (let i = 0; i <= 20; i++) {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.text = i;
+      s.appendChild(opt);
+    }
+    s.value = 0;
   });
 
-  document.querySelector('.qty-plus[data-target="bubbleTeaQty"]').addEventListener('click',()=>{
-    if(!document.getElementById('bubbleType').value||!document.getElementById('bubbleFlavor').value||!document.getElementById('bubbleTopping').value){alert('🧋 Kies eerst type, smaak en topping voor je bubble tea.');return;}changeBubbleQty(1);});
-  document.querySelector('.qty-minus[data-target="bubbleTeaQty"]').addEventListener('click',()=>{
-    if(!document.getElementById('bubbleType').value||!document.getElementById('bubbleFlavor').value||!document.getElementById('bubbleTopping').value){alert('🧋 Kies eerst type, smaak en topping voor je bubble tea.');return;}changeBubbleQty(-1);});
-  document.getElementById('bubbleTeaQty').addEventListener('change',()=>{if(!document.getElementById('bubbleType').value||!document.getElementById('bubbleFlavor').value||!document.getElementById('bubbleTopping').value){alert('🧋 Kies eerst type, smaak en topping voor je bubble tea.');document.getElementById('bubbleTeaQty').value=0;return;}changeBubbleQty(0);});
-
-  document.querySelector('.qty-plus[data-target="xBentoQty"]').addEventListener('click',()=>{
-    if(!document.getElementById('xBentoMain').value||!document.getElementById('xBentoSide').value||!document.getElementById('xBentoRice').value){alert('🍱 Kies eerst hoofdgerecht, bijgerecht en rijstsoort voor je Xbento.');return;}changeXbentoQty(1);});
-  document.querySelector('.qty-minus[data-target="xBentoQty"]').addEventListener('click',()=>{
-    if(!document.getElementById('xBentoMain').value||!document.getElementById('xBentoSide').value||!document.getElementById('xBentoRice').value){alert('🍱 Kies eerst hoofdgerecht, bijgerecht en rijstsoort voor je Xbento.');return;}changeXbentoQty(-1);});
-  document.getElementById('xBentoQty').addEventListener('change',()=>{if(!document.getElementById('xBentoMain').value||!document.getElementById('xBentoSide').value||!document.getElementById('xBentoRice').value){alert('🍱 Kies eerst hoofdgerecht, bijgerecht en rijstsoort voor je Xbento.');document.getElementById('xBentoQty').value=0;return;}changeXbentoQty(0);});
-
-  document.querySelectorAll('.qty-plus').forEach(btn=>{
-    if(['bubbleTeaQty','xBentoQty'].includes(btn.dataset.target)) return;
-    btn.addEventListener('click',()=>{ const sel=document.getElementById(btn.dataset.target); let val=parseInt(sel.value); if(val<20) val++; sel.value=val; const parent=sel.closest('.menu-item'); setQty(parent.dataset.name,parseFloat(parent.dataset.price),val,parseFloat(parent.dataset.packaging||0)); });
+  document.querySelectorAll('.qty-plus').forEach(btn => {
+    if (['bubbleTeaQty', 'xBentoQty'].includes(btn.dataset.target)) return;
+    btn.addEventListener('click', () => {
+      const sel = document.getElementById(btn.dataset.target);
+      let val = parseInt(sel.value);
+      if (val < 20) val++;
+      sel.value = val;
+      const parent = sel.closest('.menu-item');
+      setQty(parent.dataset.name, parseFloat(parent.dataset.price), val, parseFloat(parent.dataset.packaging || 0));
+    });
   });
-  document.querySelectorAll('.qty-minus').forEach(btn=>{
-    if(['bubbleTeaQty','xBentoQty'].includes(btn.dataset.target)) return;
-    btn.addEventListener('click',()=>{ const sel=document.getElementById(btn.dataset.target); let val=parseInt(sel.value); if(val>0) val--; sel.value=val; const parent=sel.closest('.menu-item'); setQty(parent.dataset.name,parseFloat(parent.dataset.price),val,parseFloat(parent.dataset.packaging||0)); });
+
+  document.querySelectorAll('.qty-minus').forEach(btn => {
+    if (['bubbleTeaQty', 'xBentoQty'].includes(btn.dataset.target)) return;
+    btn.addEventListener('click', () => {
+      const sel = document.getElementById(btn.dataset.target);
+      let val = parseInt(sel.value);
+      if (val > 0) val--;
+      sel.value = val;
+      const parent = sel.closest('.menu-item');
+      setQty(parent.dataset.name, parseFloat(parent.dataset.price), val, parseFloat(parent.dataset.packaging || 0));
+    });
   });
-  ['chopstickCount','soyCount','gemberCount','wasabiCount'].forEach(id=>{
+
+  ['chopstickCount', 'soyCount', 'gemberCount', 'wasabiCount'].forEach(id => {
     populateSelect(document.getElementById(id));
-    document.getElementById(id).addEventListener('change',updateCart);
+    document.getElementById(id).addEventListener('change', updateCart);
   });
-  document.getElementById('toggleToday').addEventListener('click',toggleToday);
-  document.getElementById('closeToday').addEventListener('click',toggleToday);
-  document.getElementById('typePickup').addEventListener('change',toggleAddress);
-  document.getElementById('typeDelivery').addEventListener('change',toggleAddress);
-  document.getElementById('postcode').addEventListener('blur',fetchAddress);
-  document.getElementById('houseNumber').addEventListener('blur',fetchAddress);
-  document.getElementById('postcode').addEventListener('blur',updateQRCode);
-  document.getElementById('houseNumber').addEventListener('blur',updateQRCode);
-  document.getElementById('street').addEventListener('blur',updateQRCode);
-  document.getElementById('city').addEventListener('blur',updateQRCode);
-  document.getElementById('discountType').addEventListener('change',updateCart);
-  document.getElementById('discountValue').addEventListener('input',updateCart);
-  document.getElementById('submitOrder').addEventListener('click',submitOrder);
-  const cartToggle=document.getElementById('cartToggle');
-  const cartPanel=document.getElementById('cartPanel');
-  const closeCart=document.getElementById('closeCartPanel');
-  if(cartToggle){
-    cartToggle.addEventListener('click',()=>{
+
+  document.getElementById('typePickup').addEventListener('change', toggleAddress);
+  document.getElementById('typeDelivery').addEventListener('change', toggleAddress);
+  document.getElementById('discountType').addEventListener('change', updateCart);
+  document.getElementById('discountValue').addEventListener('input', updateCart);
+
+  const cartToggle = document.getElementById('cartToggle');
+  const cartPanel = document.getElementById('cartPanel');
+  const closeCart = document.getElementById('closeCartPanel');
+  if (cartToggle) {
+    cartToggle.addEventListener('click', () => {
       cartPanel.classList.toggle('open');
     });
   }
-  if(closeCart){
-    closeCart.addEventListener('click',()=>cartPanel.classList.remove('open'));
+  if (closeCart) {
+    closeCart.addEventListener('click', () => cartPanel.classList.remove('open'));
   }
-  if(cartPanel){
-    cartPanel.addEventListener('click',e=>{
-      if(e.target===cartPanel) cartPanel.classList.remove('open');
+  if (cartPanel) {
+    cartPanel.addEventListener('click', e => {
+      if (e.target === cartPanel) cartPanel.classList.remove('open');
     });
   }
-  updateCart();
-  toggleAddress();
-  // 🔊 解锁 AudioContext
-  document.body.addEventListener('click', () => {
-    if (audioCtx.state === 'suspended') {
-      audioCtx.resume();
-    }
-  }, { once: true });
 
+  updateCart();      // 初始化购物车
+  toggleAddress();   // 设置显示配送或自取表单
 });
+
 
 function toggleToday(){
   const panel=document.getElementById('todayOrders');
