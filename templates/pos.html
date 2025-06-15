@@ -397,6 +397,56 @@
     max-width: 50%;
   }
 }
+@media (min-width: 768px) {
+  .cart-panel {
+    display: flex;
+    flex-wrap: nowrap;         /* 不允许换行 */
+    gap: 20px;
+    align-items: flex-start;
+    overflow-x: auto;          /* 宽度不够时可横向滚动 */
+  }
+
+  .cart-area {
+    flex: 1;                   /* 主内容区域占据剩余空间 */
+    min-width: 0;              /* 防止撑爆容器 */
+    overflow: auto;            /* 若内容过多则出现滚动条 */
+  }
+
+  .checkout-panel {
+    width: 350px;              /* 推荐宽度 */
+    flex-shrink: 0;            /* 不被压缩 */
+    max-width: 100%;
+    overflow: auto;            /* 防止内容裁剪 */
+  }
+}
+@media (min-width: 768px) {
+  .cart-panel {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 20px;
+    align-items: flex-start;
+    overflow-x: auto;
+    max-height: 100vh;
+  }
+
+  .cart-area {
+    flex: 1;
+    min-width: 0;
+    overflow: auto;
+    max-height: 100vh;
+    position: sticky;
+    top: 0;
+  }
+
+  .checkout-panel {
+    width: 350px;
+    flex-shrink: 0;
+    overflow: auto;
+    max-height: 100vh;
+    position: sticky;
+    top: 0;
+  }
+}
 
   
 </style>
