@@ -837,32 +837,56 @@ function submitOrder() {
     return;
   }
 
-  // 🧾 自动生成订单文字（message）
-  // ✏️ 备注信息（remark）
-const remark = document.getElementById('remark').value.trim();
+  const remark = document.getElementById('remark').value.trim();
 
-// 🧾 自动生成订单文字（message）
-let orderText = Object.entries(cart).map(([name, item]) => {
-  return `${name} x ${item.qty} (€${(item.qty * item.price).toFixed(2)})`;
-}).join(', ');
-Object.keys(extras).forEach(id => {
-  const qty = parseInt(document.getElementById(id).value || 0);
-  if (qty > 0) orderText += `, ${extras[id].label} x ${qty}`;
-});
-if (remark) orderText += `, Opmerking: ${remark}`;
+  let orderText = Object.entries(cart).map(([name, item]) => {
+    return `${name} x ${item.qty} (€${(item.qty * item.price).toFixed(2)})`;
+  }).join(', ');
+  Object.keys(extras).forEach(id => {
+    const qty = parseInt(document.getElementById(id).value || 0);
+    if (qty > 0) orderText += `, ${extras[id].label} x ${qty}`;
+  });
+  if (remark) orderText += `, Opmerking: ${remark}`;
 
-  // 🧾 请求体
   const itemsToSend = { ...cart };
   Object.keys(extras).forEach(id => {
     const qty = parseInt(document.getElementById(id).value || 0);
     if (qty > 0) itemsToSend[extras[id].label] = { price: 0, qty };
   });
 
+  // ✅ 获取结账明细数据
+  const subtotal = Object.values(cart).reduce((sum, item) => sum + item.price * item.qty, 0);
+  const packagingTotal = Object.values(cart).reduce((sum, item) => sum + (item.packaging || 0) * item.qty, 0);
+  const deliveryCost = delivery ? 2.5 : 0;
+  const discountType = document.getElementById('discountType').value;
+  const discountVal = parseFloat(document.getElementById('discountValue').value) || 0;
+  let discount = 0;
+  if (discountType === 'amount') {
+    discount = Math.min(discountVal, subtotal);
+  } else if (discountType === 'percent') {
+    discount = Math.min(100, discountVal) / 100 * subtotal;
+  }
+  const totalBeforeBtw = subtotal + packagingTotal + deliveryCost - discount;
+  const btwBase = delivery ? totalBeforeBtw - deliveryCost : totalBeforeBtw;
+  const btw = btwBase * 0.09;
+  const total = totalBeforeBtw;
+
+  const summary = {
+    subtotal: parseFloat(subtotal.toFixed(2)),
+    packaging: parseFloat(packagingTotal.toFixed(2)),
+    delivery: parseFloat(deliveryCost.toFixed(2)),
+    discountType,
+    discountValue: parseFloat(discountVal.toFixed(2)),
+    discountAmount: parseFloat(discount.toFixed(2)),
+    btw: parseFloat(btw.toFixed(2)),
+    total: parseFloat(total.toFixed(2))
+  };
+
   const orderType = delivery ? 'bezorgen' : 'afhalen';
   const payload = {
-    orderType: orderType,
-    name: name,
-    phone: phone,
+    orderType,
+    name,
+    phone,
     email: '',
     customerEmail: '',
     pickup_time: !delivery ? document.getElementById('pickupTime').value : '',
@@ -876,12 +900,11 @@ if (remark) orderText += `, Opmerking: ${remark}`;
     city: delivery ? document.getElementById('city').value.trim() : '',
     items: itemsToSend,
     message: orderText,
-    opmerking: remark
+    opmerking: remark,
+    summary  // ✅ 加入结账明细
   };
 
-
-
-  // ✅ 提交到远程 Flask Render 后端
+  // ✅ 提交到后端
   fetch('https://flask-order-api.onrender.com/submit_order', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -899,6 +922,11 @@ if (remark) orderText += `, Opmerking: ${remark}`;
     })
     .catch(() => alert('Verzendfout – server niet bereikbaar.'));
 }
+
+
+
+
+  // ✅ 提交到远程 Flask Render 后端
 
 
 </script>
