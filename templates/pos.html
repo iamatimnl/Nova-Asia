@@ -168,6 +168,8 @@
   position: sticky;
   top: 80px; /* 与导航栏保持一定距离 */
   align-self: flex-start;
+  flex: 1.2;
+  max-width: 380px;
   width: 100%;
   backdrop-filter: blur(8px);
   border-radius: 16px;
@@ -322,7 +324,11 @@
 
 /* Floating cart and checkout panel */
   .cart-panel {
+    align-self: flex-start;
+    flex: 1.2;
+    max-width: 380px;
     width: 100%;
+
   }
   .close-btn { display:none; }
   .cart-toggle {
@@ -379,45 +385,6 @@
     .pos-layout { flex-direction: column; align-items: center; }
     .center-area { width:100%; margin-right:0; }
   }
-
-@media (min-width: 768px) {
-  .cart-panel {
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
-    width: 100%;
-  }
-
-  .cart-area {
-    flex: 1;
-    min-width: 0;
-    position: sticky;
-    top: 80px;
-    align-self: flex-start;
-    background: linear-gradient(to bottom right, #fdfaf6, #f0e6d7);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    border-radius: 16px;
-    padding: 20px;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    box-sizing: border-box;
-  }
-
-  .checkout-panel {
-    width: 500px;
-    max-width: 100%;
-    flex-shrink: 0;
-    position: sticky;
-    top: 80px;
-    align-self: flex-start;
-    background: linear-gradient(to bottom, #fdfaf6, #f0e6d7);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    border-radius: 16px;
-    padding: 20px;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    box-sizing: border-box;
-  }
-}
-
 
   
 </style>
