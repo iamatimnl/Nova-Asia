@@ -25,6 +25,16 @@
     --sakura: #f6d4dc;
     --gold: #c5a253;
   }
+
+  /* Generic button interaction feedback */
+  button {
+    transition: transform 0.05s, box-shadow 0.05s;
+  }
+
+  button:active {
+    transform: scale(0.95);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+  }
     /* Hide horizontal scroll bar in all modern browsers */
   .navbar-container::-webkit-scrollbar {
     display: none;
@@ -2159,6 +2169,17 @@ function toggleMobileCart() {
 
   window.addEventListener("scroll", updateActiveLink);
   window.addEventListener("load", updateActiveLink);
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll("button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (navigator.vibrate) {
+          navigator.vibrate(30);
+        }
+      });
+    });
+  });
 </script>
 
 
