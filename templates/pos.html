@@ -389,25 +389,41 @@
 @media (min-width: 768px) {
   .cart-panel {
     display: flex;
-        display: flex;     
     gap: 20px;
     align-items: flex-start;
-
+    width: 100%;
   }
 
   .cart-area {
-    flex: 1;                   /* 主内容区域占据剩余空间 */
-    min-width: 0;              /* 防止撑爆容器 */
-           /* 若内容过多则出现滚动条 */
+    flex: 1;
+    min-width: 0;
+    position: sticky;
+    top: 80px;
+    align-self: flex-start;
+    background: linear-gradient(to bottom right, #fdfaf6, #f0e6d7);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-sizing: border-box;
   }
 
   .checkout-panel {
-    width: 550px;              /* 推荐宽度 */
-    flex-shrink: 0;            /* 不被压缩 */
+    width: 500px;
     max-width: 100%;
-    overflow: auto;            /* 防止内容裁剪 */
+    flex-shrink: 0;
+    position: sticky;
+    top: 80px;
+    align-self: flex-start;
+    background: linear-gradient(to bottom, #fdfaf6, #f0e6d7);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-sizing: border-box;
   }
 }
+
 
   
 </style>
