@@ -166,7 +166,7 @@
   .center-area { flex:1; }
   .checkout-panel {
   position: sticky;
-  top: 60px; /* 与导航栏保持一定距离 */
+  top: 80px; /* 与导航栏保持一定距离 */
   align-self: flex-start;
   flex: 1.2;
   max-width: 340px;
@@ -298,13 +298,6 @@
     transition: background 0.3s ease;
   }
   .cart-area button:hover { background:#a3c8ff; }
-  .checkout-summary div {
-    display:flex;
-    justify-content:space-between;
-    margin-top:4px;
-  }
-  .discount-row { align-items:center; gap:4px; }
-  .total-row { font-weight:bold; margin-top:6px; display:flex; justify-content:space-between; }
   .hidden { display:none; }
 @media (min-width: 768px) {
   .pos-layout {
@@ -325,7 +318,7 @@
 /* Floating cart and checkout panel */
   .cart-panel {
     position: sticky;
-
+    top: 80px;
     align-self: flex-start;
     flex: 1.2;
     max-width: 340px;
@@ -443,24 +436,7 @@
       </div>
       <label for="remark" style="display:block;margin-top:10px;">Opmerking:</label>
       <textarea id="remark" rows="2" placeholder="Bijv. geen komkomer, extra mayo"></textarea>
-      <div class="checkout-summary">
-        <div><span>Subtotaal:</span> <span id="summarySubtotal">€0,00</span></div>
-        <div><span>Verpakkingskosten:</span> <span id="summaryPackaging">€0,00</span></div>
-        <div id="summaryDeliveryRow" class="hidden"><span>Bezorgkosten:</span> <span id="summaryDelivery">€0,00</span></div>
-        <div class="discount-row">
-          <label for="discountType">Korting:</label>
-          <select id="discountType" style="margin-left:4px;">
-            <option value="none">Geen</option>
-            <option value="amount">Bedrag (€)</option>
-            <option value="percent">Percentage (%)</option>
-          </select>
-          <input id="discountValue" type="number" value="0" min="0" style="width:60px;margin-left:4px;" />
-          <span id="summaryDiscount" style="margin-left:4px;">€0,00</span>
-        </div>
-        <div><span>BTW (9%):</span> <span id="summaryBtw">€0,00</span></div>
-        <div class="total-row"><strong>Totaal:</strong> <span id="total">€0,00</span></div>
-        <p style="font-size:0.9rem;margin-top:4px;">Alle prijzen zijn inclusief BTW</p>
-      </div>
+      <div class="total">Totaal: €<span id="total">0.00</span></div>
     </div>
     <div class="checkout-panel">
       <section id="customer-info">
@@ -537,8 +513,7 @@ function changeBubbleQty(delta){
   const topping=document.getElementById('bubbleTopping').value;
   if(!type||!flavor||!topping) return;
   const name=`Bubble Tea (${type}, ${flavor}, ${topping})`;
-  const pack=parseFloat(document.querySelector('[data-name="Bubble Tea"]').dataset.packaging||0);
-  setQty(name,5,val,pack);
+  setQty(name,5,val);
 }
 
 function changeXbentoQty(delta){
@@ -553,8 +528,7 @@ function changeXbentoQty(delta){
   let price=14;
   if(rice.includes('Fried rice')) price+=5;
   const name=`Xbento (${main}, ${side}, ${rice})`;
-  const pack=parseFloat(document.querySelector('[data-name="Xbento"]').dataset.packaging||0);
-  setQty(name,price,val,pack);
+  setQty(name,price,val);
 }
 function populateSelect(sel){
   for(let i=0;i<=20;i++){ const opt=document.createElement('option'); opt.value=i; opt.textContent=i; sel.appendChild(opt); }
@@ -564,14 +538,7 @@ function createSelect(current,onChange){
   for(let i=0;i<=20;i++){ const opt=document.createElement('option'); opt.value=i; opt.textContent=i; if(i===current) opt.selected=true; sel.appendChild(opt); }
   sel.addEventListener('change',()=>onChange(parseInt(sel.value))); return sel;
 }
-function setQty(name,price,qty,packaging=0){
-  if(qty===0){
-    delete cart[name];
-  } else {
-    cart[name]={price,qty,packaging};
-  }
-  updateCart();
-}
+function setQty(name,price,qty){ if(qty===0){ delete cart[name]; } else { cart[name]={price,qty}; } updateCart(); }
 function updateCart(){
   const list=document.getElementById('cart');
   list.innerHTML='';
@@ -622,7 +589,7 @@ function updateCart(){
 }
 
 
-(() => {
+document.addEventListener('DOMContentLoaded', () => {
   const skip = ['bubbleTeaQty', 'bubbleType', 'bubbleFlavor', 'bubbleTopping', 'xBentoMain', 'xBentoSide', 'xBentoRice'];
 
   document.querySelectorAll('.menu-item select').forEach(sel => {
@@ -702,12 +669,12 @@ function updateCart(){
 
   const todayBtn = document.getElementById('toggleToday');
   if (todayBtn) todayBtn.addEventListener('click', toggleToday);
-
   const submitBtn = document.getElementById('submitOrder');
   if (submitBtn) submitBtn.addEventListener('click', submitOrder);
 
   updateCart();      // 初始化购物车
   toggleAddress();   // 设置显示配送或自取表单
+});
 
 function toggleToday(){
   const panel=document.getElementById('todayOrders');
@@ -733,7 +700,6 @@ function toggleAddress(){
   } else {
     updateQRCode();
   }
-  updateCart();
 }
 async function fetchAddress(){
   const pc=document.getElementById('postcode').value.trim();
