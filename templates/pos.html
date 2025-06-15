@@ -166,7 +166,7 @@
   .center-area { flex:1; }
   .checkout-panel {
   position: sticky;
-  top: 80px; /* 与导航栏保持一定距离 */
+  top: 60px; /* 与导航栏保持一定距离 */
   align-self: flex-start;
   flex: 1.2;
   max-width: 340px;
@@ -325,7 +325,7 @@
 /* Floating cart and checkout panel */
   .cart-panel {
     position: sticky;
-    top: 80px;
+
     align-self: flex-start;
     flex: 1.2;
     max-width: 340px;
@@ -622,7 +622,7 @@ function updateCart(){
 }
 
 
-document.addEventListener('DOMContentLoaded', () => {
+(() => {
   const skip = ['bubbleTeaQty', 'bubbleType', 'bubbleFlavor', 'bubbleTopping', 'xBentoMain', 'xBentoSide', 'xBentoRice'];
 
   document.querySelectorAll('.menu-item select').forEach(sel => {
@@ -702,12 +702,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const todayBtn = document.getElementById('toggleToday');
   if (todayBtn) todayBtn.addEventListener('click', toggleToday);
+
   const submitBtn = document.getElementById('submitOrder');
   if (submitBtn) submitBtn.addEventListener('click', submitOrder);
 
   updateCart();      // 初始化购物车
   toggleAddress();   // 设置显示配送或自取表单
-});
+
 function toggleToday(){
   const panel=document.getElementById('todayOrders');
   panel.classList.toggle('visible');
