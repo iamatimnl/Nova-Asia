@@ -168,8 +168,8 @@
   position: sticky;
   top: 80px; /* 与导航栏保持一定距离 */
   align-self: flex-start;
-  flex: 1.2;
-  max-width: 340px;
+  flex: 1.4;
+  max-width: 420px;
   backdrop-filter: blur(8px);
   border-radius: 16px;
   padding: 20px;
@@ -194,11 +194,31 @@
   cursor: pointer;
 }
   
-.checkout-panel button:hover {
-  background: linear-gradient(to bottom, #b2eadd, #86dcc3);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2),
+  .checkout-panel button:hover {
+    background: linear-gradient(to bottom, #b2eadd, #86dcc3);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2),
               inset 0 1px 0 rgba(255, 255, 255, 0.5);
-}
+  }
+
+  .order-type-switch {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .order-btn input {
+    display: none;
+  }
+  .order-btn span {
+    display: block;
+    padding: 8px 16px;
+    border: 1px solid var(--accent-color);
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .order-btn input:checked + span {
+    background: var(--accent-color);
+    color: #fff;
+  }
 
   @media (max-width: 600px) {
     .checkout-panel { width:100%; }
@@ -309,10 +329,10 @@
     flex: 3;
     margin-right: 20px;
   }
-  .checkout-panel {
-    flex: 1.2;
-    max-width: 340px;
-  }
+    .checkout-panel {
+      flex: 1.4;
+      max-width: 420px;
+    }
 }
 
 /* Floating cart and checkout panel */
@@ -320,8 +340,8 @@
     position: sticky;
     top: 80px;
     align-self: flex-start;
-    flex: 1.2;
-    max-width: 340px;
+    flex: 1.4;
+    max-width: 420px;
   }
   .close-btn { display:none; }
   .cart-toggle {
@@ -459,11 +479,15 @@
         <input id="custName" type="text" placeholder="Naam" required />
         <label for="custPhone">Telefoonnummer*</label>
         <input id="custPhone" type="tel" placeholder="Telefoonnummer" required />
-        <div style="margin-top:10px;">
-          <input type="radio" id="typePickup" name="orderType" value="pickup" checked />
-          <label for="typePickup">Pickup</label>
-          <input type="radio" id="typeDelivery" name="orderType" value="delivery" style="margin-left:20px;" />
-          <label for="typeDelivery">Delivery</label>
+        <div class="order-type-switch">
+          <label class="order-btn">
+            <input type="radio" id="typePickup" name="orderType" value="pickup" checked />
+            <span>Afhalen</span>
+          </label>
+          <label class="order-btn">
+            <input type="radio" id="typeDelivery" name="orderType" value="delivery" />
+            <span>Bezorging</span>
+          </label>
         </div>
         <div id="pickupFields" style="margin-top:10px;">
           <label for="pickupTime">Pickup Tijd*</label>
@@ -727,6 +751,7 @@ function toggleAddress(){
   } else {
     updateQRCode();
   }
+  updateCart();
 }
 async function fetchAddress(){
   const pc=document.getElementById('postcode').value.trim();
