@@ -328,12 +328,7 @@
     flex: 1.2;
     max-width: 380px;
     width: 100%;
-  }
 
-  @media (min-width: 768px) {
-    .cart-panel { display: flex; gap: 20px; }
-    .cart-panel .cart-area,
-    .cart-panel .checkout-panel { flex: 1; }
   }
   .close-btn { display:none; }
   .cart-toggle {
@@ -603,9 +598,7 @@ function updateCart(){
   if(discountType==='amount'){ discount=Math.min(discountVal,subtotal); }
   else if(discountType==='percent'){ discount=Math.min(discountVal,100)/100*subtotal; }
   if(discount<0||isNaN(discount)) discount=0;
-  const taxable=subtotal + packagingTotal - discount;
-  const total=taxable + delivery;
-  const btw=Math.round(taxable * 0.09 * 100) / 100;
+
   const fmt=n=>`€${n.toFixed(2).replace('.',',')}`;
   document.getElementById('summarySubtotal').textContent=fmt(subtotal);
   document.getElementById('summaryPackaging').textContent=fmt(packagingTotal);
