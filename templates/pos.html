@@ -166,11 +166,10 @@
   .center-area { flex:1; }
   .checkout-panel {
   position: sticky;
-  top: 60px; /* 与导航栏保持一定距离 */
+  top: 80px; /* 与导航栏保持一定距离 */
   align-self: flex-start;
   flex: 1.2;
-  max-width: 380px;
-  width: 100%;
+  max-width: 340px;
   backdrop-filter: blur(8px);
   border-radius: 16px;
   padding: 20px;
@@ -264,6 +263,8 @@
     border-radius: 16px;
     padding: 20px;
     margin-bottom:20px;
+    position: sticky;
+    top: 70px;
   }
   .supply-row {
     display:flex;
@@ -317,20 +318,17 @@
   }
   .checkout-panel {
     flex: 1.2;
-    max-width: 380px;
-    width: 100%;
+    max-width: 340px;
   }
 }
 
 /* Floating cart and checkout panel */
   .cart-panel {
     position: sticky;
-    top: 60px;
+    top: 80px;
     align-self: flex-start;
     flex: 1.2;
-    max-width: 380px;
-    width: 100%;
-
+    max-width: 340px;
   }
   .close-btn { display:none; }
   .cart-toggle {
@@ -584,7 +582,7 @@ function updateCart(){
   Object.entries(cart).forEach(([name,item])=>{
     const li=document.createElement('li');
     const sel=createSelect(item.qty,val=>{
-      document.querySelector(`[data-name="${name}"] select`).value=val;
+      document.querySelector([data-name="${name}"] select).value=val;
       setQty(name,item.price,val,item.packaging);
     });
     const rowTotal=item.qty*item.price;
@@ -610,12 +608,12 @@ function updateCart(){
   const btwBase = delivery ? total - delivery : total;
   const btw = btwBase * 0.09;
 
-  const fmt=n=>`€${n.toFixed(2).replace('.',',')}`;
+  const fmt=n=>€${n.toFixed(2).replace('.',',')};
   document.getElementById('summarySubtotal').textContent=fmt(subtotal);
   document.getElementById('summaryPackaging').textContent=fmt(packagingTotal);
   document.getElementById('summaryDelivery').textContent=fmt(delivery);
   document.getElementById('summaryDeliveryRow').classList.toggle('hidden',!delivery);
-  document.getElementById('summaryDiscount').textContent=discount ? `- ${fmt(discount)}` : '€0,00';
+  document.getElementById('summaryDiscount').textContent=discount ? - ${fmt(discount)} : '€0,00';
   document.getElementById('summaryBtw').textContent=fmt(btw);
   document.getElementById('total').textContent=fmt(total);
 
@@ -710,8 +708,6 @@ document.addEventListener('DOMContentLoaded', () => {
   updateCart();      // 初始化购物车
   toggleAddress();   // 设置显示配送或自取表单
 });
-
-
 function toggleToday(){
   const panel=document.getElementById('todayOrders');
   panel.classList.toggle('visible');
@@ -923,8 +919,8 @@ if (remark) orderText += `, Opmerking: ${remark}`;
     const items = Object.entries(order.items || {}).map(([n, i]) => `<li>${n} x ${i.qty}</li>`).join('');
     const total = Object.values(order.items || {}).reduce((s, i) => s + (parseFloat(i.price || 0) * parseInt(i.qty || 0)), 0);
     const remark = order.opmerking || order.remark || '';
-    const pickup = order.pickupTime || order.pickup_time;
-    const delivery = order.deliveryTime || order.delivery_time;
+    const pickup = order.pickupTime;
+    const delivery = order.deliveryTime;
 
     tr.innerHTML = `
       <td>${order.created_date || ''}</td>
