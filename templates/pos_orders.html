@@ -84,6 +84,14 @@
   <script>
     const socket = io({transports:['websocket']});
     let pollTimer;
+
+    function parseEuro(val){
+      if(val===undefined||val===null) return NaN;
+      if(typeof val==='string'){
+        val = val.replace(/[^0-9,.-]/g,'').replace(',','.');
+      }
+      return parseFloat(val);
+    }
     window.addEventListener('beforeunload',()=>socket.disconnect());
     socket.on('connect_error',()=>{setTimeout(()=>socket.connect(),1000);});
     socket.on('disconnect', startPolling);
@@ -93,11 +101,14 @@
       const tr = document.createElement('tr');
       const isDelivery = ['delivery','bezorgen'].includes(order.order_type);
       const items = Object.entries(order.items || {}).map(([n,i]) => `<li>${n} x ${i.qty}</li>`).join('');
-      let subtotal = parseFloat(order.subtotal);
+      let subtotal = parseEuro(order.subtotal);
       if(isNaN(subtotal)){
-        subtotal = Object.values(order.items || {}).reduce((s,i)=>s + (parseFloat(i.price||0)*parseInt(i.qty||0)),0);
+        subtotal = Object.values(order.items || {}).reduce((s,i)=>s + (parseEuro(i.price)*parseInt(i.qty||0)),0);
       }
-      let total = parseFloat(order.totaal);
+      let total = parseEuro(order.totaal);
+      if(isNaN(total)){
+        total = parseEuro(order.total);
+      }
       if(isNaN(total)){
         total = subtotal;
       }
