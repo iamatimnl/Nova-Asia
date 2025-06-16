@@ -964,8 +964,11 @@ function submitOrder() {
     if (order.id) tr.dataset.id = order.id;
     const isDelivery = ['delivery', 'bezorgen'].includes(order.order_type);
     const items = Object.entries(order.items || {}).map(([n, i]) => `<li>${n} x ${i.qty}</li>`).join('');
-    let total = order.totaal;
-    if (total === undefined) {
+    let total = parseFloat(order.totaal);
+    if (isNaN(total)) {
+      total = parseFloat(order.total);
+    }
+    if (isNaN(total)) {
       total = Object.values(order.items || {}).reduce((s, i) => s + (parseFloat(i.price || 0) * parseInt(i.qty || 0)), 0);
     }
     const remark = order.opmerking || order.remark || '';
