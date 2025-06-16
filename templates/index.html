@@ -1778,13 +1778,19 @@ document.addEventListener('DOMContentLoaded', () => {
     sel.addEventListener('change', updateCart);
   });
 
-  const tipSel = document.getElementById('tipSelect');
-  for (let i = 0; i <= 20; i++) {
-    const opt = document.createElement('option');
-    opt.value = i;
-    opt.textContent = formatEuro(i);
-    tipSel.appendChild(opt);
-  }
+ function formatEuro(value) {
+  value = parseFloat(value);
+  return '€' + (value % 1 === 0 ? value.toFixed(0) : value.toFixed(2)).replace('.', ',');
+}
+
+const tipSel = document.getElementById('tipSelect');
+for (let i = 0; i <= 20; i++) {
+  const opt = document.createElement('option');
+  opt.value = i;
+  opt.textContent = formatEuro(i);  // ✅ 正确设置显示文本
+  tipSel.appendChild(opt);
+}
+
   tipSel.value = 0;
   tipSel.addEventListener('change', () => updatePriceBreakdown(currentSubtotal, currentPackaging));
 
