@@ -10,6 +10,7 @@
         <th>Email</th>
         <th>Items</th>
         <th>Opmerking</th>
+        <th>Subtotaal (&euro;)</th>
         <th>Totaal (&euro;)</th>
         <th>Adres</th>
         <th>Tijdslot</th>
@@ -34,7 +35,9 @@
           </ul>
         </td>
         <td>{{ order.opmerking or '-' }}</td>
-        {% set tot_val = order.totaal if order.totaal is defined else order.total %}
+        {% set sub_val = order.subtotal if order.subtotal is defined else order.total %}
+        <td>{{ '%.2f' % sub_val }}</td>
+        {% set tot_val = order.totaal if order.totaal is defined else sub_val %}
         <td>{{ '%.2f' % tot_val }}</td>
         <td>
           {% if is_delivery %}
