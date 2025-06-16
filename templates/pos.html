@@ -156,6 +156,17 @@
   .add-button:hover { background:#a3c8ff; }
   .remove-button { background:#ffd6d6; color:#333; }
   .remove-button:hover { background:#ffc2c2; }
+  /* Generic button press feedback */
+  button {
+    transition: transform 0.1s ease, filter 0.1s ease, box-shadow 0.1s ease;
+    touch-action: manipulation;
+  }
+
+  button:active {
+    transform: scale(0.94);
+    filter: brightness(0.85);
+    box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.35);
+  }
   @media (max-width: 600px) {
     .menu-item button { width:1.8rem; height:1.8rem; font-size:0.9rem; }
     .menu-item img { max-width:80px; }
@@ -1039,6 +1050,16 @@ function submitOrder() {
 
   window.addEventListener('beforeunload', () => socket.disconnect());
   window.addEventListener('focus', () => { newOrderCount = 0; updateTabTitle(); });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const buttons = document.querySelectorAll('button');
+    const vibrate = () => { if (navigator.vibrate) navigator.vibrate(50); };
+    buttons.forEach(btn => {
+      btn.addEventListener('mousedown', vibrate);
+      btn.addEventListener('touchstart', vibrate, { passive: true });
+    });
+  });
 </script>
 
 

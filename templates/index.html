@@ -263,6 +263,18 @@
   background: #e8bfc9;
 }
 
+/* Generic button press feedback */
+button {
+  transition: transform 0.1s ease, filter 0.1s ease, box-shadow 0.1s ease;
+  touch-action: manipulation;
+}
+
+button:active {
+  transform: scale(0.94);
+  filter: brightness(0.85);
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.35);
+}
+
 /* 手机端同样保持一致大小 */
 @media (max-width: 600px) {
   .menu-item button {
@@ -2160,9 +2172,16 @@ function toggleMobileCart() {
   window.addEventListener("scroll", updateActiveLink);
   window.addEventListener("load", updateActiveLink);
 </script>
-
-
-
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const buttons = document.querySelectorAll("button");
+    const vibrate = () => { if (navigator.vibrate) navigator.vibrate(50); };
+    buttons.forEach(btn => {
+      btn.addEventListener("mousedown", vibrate);
+      btn.addEventListener("touchstart", vibrate, { passive: true });
+    });
+  });
+</script>
 
 </body>
 </html>
