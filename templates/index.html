@@ -844,7 +844,7 @@ input:focus, select:focus, textarea:focus {
   <textarea id="remark" rows="2" placeholder="Bijv. geen komkomer, extra mayo"></textarea>
   <div class="price-details">
     <div class="price-row"><span>Subtotaal:</span> <span id="subtotalDisplay">€0,00</span></div>
-    <div class="price-row"><span>Verpakkingskosten:</span> <span id="packagingDisplay">€0,20</span></div>
+    <div class="price-row"><span>Verpakkingskosten:</span> <span id="packagingDisplay">€0,00</span></div>
     <div class="price-row" id="deliveryRow"><span>Bezorgkosten:</span> <span id="deliveryDisplay">€2,50</span></div>
     <div class="price-row"><label for="tipSelect">Fooi:</label> <select id="tipSelect"></select></div>
     <div class="price-row"><span>BTW (9%):</span> <span id="btwDisplay">€0,00</span></div>
@@ -878,7 +878,7 @@ input:focus, select:focus, textarea:focus {
 </h2>
 
 
-    <div class="menu-row menu-item" data-name="Bubble Tea" data-price="5">
+    <div class="menu-row menu-item" data-packaging="0.2" data-name="Bubble Tea" data-price="5">
       <div class="menu-img">
        <img src="{{ url_for('static', filename='images/bubble-tea-main.jpg') }}" alt="Bubble Tea">
 
@@ -941,7 +941,7 @@ input:focus, select:focus, textarea:focus {
 
 
     <!-- Chicken Bento -->
-    <div class="menu-row menu-item" data-name="Chicken Bento" data-price="12">
+    <div class="menu-row menu-item" data-packaging="0.2" data-name="Chicken Bento" data-price="12">
       <div class="menu-img">
         <img src="{{ url_for('static', filename='images/chicken-bento.jpg') }}" alt="Chicken Bento">
       </div>
@@ -962,7 +962,7 @@ input:focus, select:focus, textarea:focus {
 
     <!-- Meatlover Bento -->
 <!-- Meatlover Bento -->
-<div class="menu-row menu-item" data-name="Meatlover Bento" data-price="14">
+<div class="menu-row menu-item" data-packaging="0.2" data-name="Meatlover Bento" data-price="14">
   <div class="menu-img">
     <img src="{{ url_for('static', filename='images/Meatlove bento.png') }}" alt="Meatlover Bento">
   </div>
@@ -982,7 +982,7 @@ input:focus, select:focus, textarea:focus {
 
 
     <!-- Zalm Lover Bento -->
-    <div class="menu-row menu-item" data-name="Zalm Lover Bento" data-price="13">
+    <div class="menu-row menu-item" data-packaging="0.2" data-name="Zalm Lover Bento" data-price="13">
   <div class="menu-img">
     <img src="{{ url_for('static', filename='images/zalm-lover-bento.jpg') }}" alt="Zalm Lover Bento">
   </div>
@@ -1002,7 +1002,7 @@ input:focus, select:focus, textarea:focus {
 
 
     <!-- Ebi Lover Bento -->
-    <div class="menu-row menu-item" data-name="Ebi Lover Bento" data-price="13">
+    <div class="menu-row menu-item" data-packaging="0.2" data-name="Ebi Lover Bento" data-price="13">
   <div class="menu-img">
     <img src="{{ url_for('static', filename='images/ebi-lover-bento.png') }}" alt="Ebi Lover Bento">
   </div>
@@ -1022,7 +1022,7 @@ input:focus, select:focus, textarea:focus {
 
 
     <!-- Surf & Turf Bento -->
-   <div class="menu-row menu-item" data-name="Surf & Turf Bento" data-price="15">
+   <div class="menu-row menu-item" data-packaging="0.2" data-name="Surf & Turf Bento" data-price="15">
   <div class="menu-img">
     <img src="{{ url_for('static', filename='images/surf-turf-bento.jpg') }}" alt="Surf & Turf Bento">
   </div>
@@ -1042,7 +1042,7 @@ input:focus, select:focus, textarea:focus {
 
 
     <!-- Dimsum Bento -->
-   <div class="menu-row menu-item" data-name="Dimsum Bento" data-price="11">
+   <div class="menu-row menu-item" data-packaging="0.2" data-name="Dimsum Bento" data-price="11">
   <div class="menu-img">
     <img src="{{ url_for('static', filename='images/dimsum-bento.png') }}" alt="Dimsum Bento">
   </div>
@@ -1062,7 +1062,7 @@ input:focus, select:focus, textarea:focus {
 
 
     <!-- Lamskotelet Bento -->
-    <div class="menu-row menu-item" data-name="Lamskotelet Bento" data-price="14">
+    <div class="menu-row menu-item" data-packaging="0.2" data-name="Lamskotelet Bento" data-price="14">
   <div class="menu-img">
     <img src="{{ url_for('static', filename='images/lamskotelet-bento.jpg') }}" alt="Lamskotelet Bento">
   </div>
@@ -1082,7 +1082,7 @@ input:focus, select:focus, textarea:focus {
 
 
     <!-- Veggie Bento -->
-   <div class="menu-row menu-item" data-name="Veggie Bento" data-price="10">
+   <div class="menu-row menu-item" data-packaging="0.2" data-name="Veggie Bento" data-price="10">
   <div class="menu-img">
     <img src="{{ url_for('static', filename='images/veggie-bento.png') }}" alt="Veggie Bento">
   </div>
@@ -1101,7 +1101,7 @@ input:focus, select:focus, textarea:focus {
 </div>
 
 
-  <div class="menu-row menu-item" data-name="Sushi Bento" data-price="14">
+  <div class="menu-row menu-item" data-packaging="0.2" data-name="Sushi Bento" data-price="14">
   <div class="menu-img">
     <img src="{{ url_for('static', filename='images/sushi-bento.jpg') }}" alt="Sushi Bento">
   </div>
@@ -1121,7 +1121,7 @@ input:focus, select:focus, textarea:focus {
 
     <!-- Xbento - Stel je eigen bento samen -->
 <!-- Xbento - Stel je eigen bento samen -->
-<div class="menu-row menu-item" data-name="Xbento" data-price="14">
+<div class="menu-row menu-item" data-packaging="0.2" data-name="Xbento" data-price="14">
   <div class="menu-img">
     <img src="{{ url_for('static', filename='images/xbento.png') }}" alt="Xbento">
   </div>
@@ -1178,7 +1178,7 @@ input:focus, select:focus, textarea:focus {
   <h2>Ramen</h2>
   <div class="menu-section">
     <!-- 示例商品，可替换或添加更多 -->
-    <div class="menu-row menu-item" data-name="Tonkotsu Ramen" data-price="13">
+    <div class="menu-row menu-item" data-packaging="0.2" data-name="Tonkotsu Ramen" data-price="13">
       <div class="menu-img">
         <img src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}" alt="Tonkotsu Ramen">
       </div>
@@ -1201,7 +1201,7 @@ input:focus, select:focus, textarea:focus {
   <h2>Pokebowl</h2>
   <div class="menu-section">
     <!-- 示例商品，可替换或添加更多 -->
-    <div class="menu-row menu-item" data-name="Zalm Pokebowl" data-price="12">
+    <div class="menu-row menu-item" data-packaging="0.2" data-name="Zalm Pokebowl" data-price="12">
       <div class="menu-img">
         <img src="{{ url_for('static', filename='images/zalm-pokebowl.png') }}" alt="Zalm Pokebowl">
       </div>
@@ -1228,7 +1228,7 @@ input:focus, select:focus, textarea:focus {
 </h2>
 
 
-<div class="menu-row menu-item" data-name="Green Dragon Roll" data-price="13.5">
+<div class="menu-row menu-item" data-packaging="0.2" data-name="Green Dragon Roll" data-price="13.5">
   <div class="menu-img">
     <img src="{{ url_for('static', filename='images/green-dragon-roll.png') }}" alt="Green Dragon Roll">
   </div>
@@ -1246,7 +1246,7 @@ input:focus, select:focus, textarea:focus {
   </div>
 </div>
 
-<div class="menu-row menu-item" data-name="Angry Dragon Roll" data-price="13.5">
+<div class="menu-row menu-item" data-packaging="0.2" data-name="Angry Dragon Roll" data-price="13.5">
   <div class="menu-img">
     <img src="{{ url_for('static', filename='images/angry-dragon.png') }}" alt="Angry Dragon Roll">
   </div>
@@ -1275,7 +1275,7 @@ input:focus, select:focus, textarea:focus {
     </h2>
 
     <!-- Zalm -->
-    <div class="menu-row menu-item" data-name="Zalm crispy rice sandwich" data-price="7">
+    <div class="menu-row menu-item" data-packaging="0.2" data-name="Zalm crispy rice sandwich" data-price="7">
       <div class="menu-img">
         <img src="{{ url_for('static', filename='images/zalm.png') }}" alt="Zalm crispy rice sandwich">
       </div>
@@ -1297,7 +1297,7 @@ input:focus, select:focus, textarea:focus {
 
     <!-- Ebi -->
     <!-- Ebi Crispy Rice Sandwich -->
-<div class="menu-row menu-item" data-name="Ebi crispy rice sandwich" data-price="7">
+<div class="menu-row menu-item" data-packaging="0.2" data-name="Ebi crispy rice sandwich" data-price="7">
   <div class="menu-img">
     <img src="{{ url_for('static', filename='images/Ebi.png') }}" alt="Ebi Crispy Rice Sandwich">
   </div>
@@ -1317,7 +1317,7 @@ input:focus, select:focus, textarea:focus {
 
 
   <!-- Beef Crispy Rice Sandwich -->
-<div class="menu-row menu-item" data-name="Beef crispy rice sandwich" data-price="7.5">
+<div class="menu-row menu-item" data-packaging="0.2" data-name="Beef crispy rice sandwich" data-price="7.5">
   <div class="menu-img">
     <img src="{{ url_for('static', filename='images/beef-crispy.png') }}" alt="Beef Crispy Rice Sandwich">
   </div>
@@ -1334,7 +1334,7 @@ input:focus, select:focus, textarea:focus {
   </div>
 </div>
 <!-- California Crispy Rice Sandwich -->
-<div class="menu-row menu-item" data-name="California crispy rice sandwich" data-price="7.5">
+<div class="menu-row menu-item" data-packaging="0.2" data-name="California crispy rice sandwich" data-price="7.5">
   <div class="menu-img">
     <img src="{{ url_for('static', filename='images/california-crispy.png') }}" alt="California Crispy Rice Sandwich">
   </div>
@@ -1352,7 +1352,7 @@ input:focus, select:focus, textarea:focus {
 </div>
 
 <!-- Chicken Crispy Rice Sandwich -->
-<div class="menu-row menu-item" data-name="Chicken crispy rice sandwich" data-price="7">
+<div class="menu-row menu-item" data-packaging="0.2" data-name="Chicken crispy rice sandwich" data-price="7">
   <div class="menu-img">
     <img src="{{ url_for('static', filename='images/chicken-crispy.png') }}" alt="Chicken Crispy Rice Sandwich">
   </div>
@@ -1377,7 +1377,7 @@ input:focus, select:focus, textarea:focus {
 </h2>
 
 
-    <div class="menu-row menu-item" data-name="Karaage" data-price="6.5">
+    <div class="menu-row menu-item" data-packaging="0.2" data-name="Karaage" data-price="6.5">
       <img src="{{ url_for('static', filename='images/karaage.png') }}" alt="Karaage" class="menu-img" loading="lazy" />
       <div class="menu-content">
         <h3>Karaage (Japanse gefrituurde kip)</h3>
@@ -1396,7 +1396,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-group">
 
     <!-- Mango -->
-    <div class="menu-row menu-item" data-name="Mochi Mango" data-price="4">
+    <div class="menu-row menu-item" data-packaging="0.2" data-name="Mochi Mango" data-price="4">
       <div class="menu-img">
         <img src="{{ url_for('static', filename='images/mochi-mango.png') }}" alt="Mochi Mango" loading="lazy" />
       </div>
@@ -1413,7 +1413,7 @@ input:focus, select:focus, textarea:focus {
     </div>
 
     <!-- Aardbei -->
-    <div class="menu-row menu-item" data-name="Mochi Aardbei" data-price="4">
+    <div class="menu-row menu-item" data-packaging="0.2" data-name="Mochi Aardbei" data-price="4">
       <div class="menu-img">
         <img src="{{ url_for('static', filename='images/mochi-aardbei.png') }}" alt="Mochi Aardbei" loading="lazy" />
       </div>
@@ -1430,7 +1430,7 @@ input:focus, select:focus, textarea:focus {
     </div>
 
     <!-- Matcha -->
-    <div class="menu-row menu-item" data-name="Mochi Matcha" data-price="4">
+    <div class="menu-row menu-item" data-packaging="0.2" data-name="Mochi Matcha" data-price="4">
       <div class="menu-img">
         <img src="{{ url_for('static', filename='images/mochi-matcha.png') }}" alt="Mochi Matcha" loading="lazy" />
       </div>
@@ -1447,7 +1447,7 @@ input:focus, select:focus, textarea:focus {
     </div>
 
     <!-- Pistachio -->
-    <div class="menu-row menu-item" data-name="Mochi Pistachio" data-price="4">
+    <div class="menu-row menu-item" data-packaging="0.2" data-name="Mochi Pistachio" data-price="4">
       <div class="menu-img">
         <img src="{{ url_for('static', filename='images/mochi-pistachio.png') }}" alt="Mochi Pistachio" loading="lazy" />
       </div>
@@ -1476,8 +1476,9 @@ const extras = {
   gemberCount: { label: 'Gember', price: 0 }
 };
 
-const PACKAGING_FEE = 0.20;
+const DEFAULT_PACKAGING_FEE = 0.20;
 const DELIVERY_FEE = 2.50;
+let currentPackaging = 0;
 let currentSubtotal = 0;
 let finalTotal = 0;
 
@@ -1485,15 +1486,16 @@ function formatEuro(val) {
   return `€${val.toFixed(2).replace('.', ',')}`;
 }
 
-function updatePriceBreakdown(subtotal) {
+function updatePriceBreakdown(subtotal, packaging) {
   currentSubtotal = subtotal;
+  currentPackaging = packaging;
   const tip = parseFloat(document.getElementById('tipSelect').value || '0');
   const orderType = document.querySelector('input[name="orderType"]:checked').value;
   const deliveryFee = orderType === 'bezorgen' ? DELIVERY_FEE : 0;
-  const btw = (subtotal + PACKAGING_FEE) * 0.09;
-  finalTotal = subtotal + PACKAGING_FEE + deliveryFee + tip + btw;
+  const btw = (subtotal + packaging) * 9 / 109;
+  finalTotal = subtotal + packaging + deliveryFee + tip;
   document.getElementById('subtotalDisplay').textContent = formatEuro(subtotal);
-  document.getElementById('packagingDisplay').textContent = formatEuro(PACKAGING_FEE);
+  document.getElementById('packagingDisplay').textContent = formatEuro(packaging);
   document.getElementById('deliveryDisplay').textContent = formatEuro(deliveryFee);
   document.getElementById('btwDisplay').textContent = formatEuro(btw);
   document.getElementById('totalDisplay').textContent = formatEuro(finalTotal);
@@ -1513,7 +1515,7 @@ function changeBubbleQty(delta) {
   if (!type || !flavor || !topping) return;
 
   const fullName = `Bubble Tea (${type}, ${flavor}, ${topping})`;
-  setQty(fullName, 5, val);
+  setQty(fullName, 5, val, DEFAULT_PACKAGING_FEE);
 }
 
 function changeXbentoQty(delta) {
@@ -1536,7 +1538,7 @@ function changeXbentoQty(delta) {
   }
 
   const fullName = `Xbento (${main}, ${side}, ${rice})`;
-  setQty(fullName, basePrice, val);
+  setQty(fullName, basePrice, val, DEFAULT_PACKAGING_FEE);
 }
 
 
@@ -1652,11 +1654,11 @@ function createSelect(current, onChange) {
   return select;
 }
 
-function setQty(name, price, qty) {
+function setQty(name, price, qty, packaging = DEFAULT_PACKAGING_FEE) {
   if (qty === 0) {
     delete cart[name];
   } else {
-    cart[name] = { price, qty };
+    cart[name] = { price, qty, packaging };
   }
   updateCart();
 }
@@ -1665,6 +1667,7 @@ function updateCart() {
   const list = document.getElementById('cart');
   list.innerHTML = '';
   let total = 0;
+  let packagingTotal = 0;
 
   Object.entries(cart).forEach(([name, item]) => {
     const li = document.createElement('li');
@@ -1685,13 +1688,16 @@ function updateCart() {
           }
         }
       }
-      setQty(name, item.price, val);
+      setQty(name, item.price, val, item.packaging);
     });
     const subtotal = item.qty * item.price;
     li.textContent = `${name} = €${subtotal.toFixed(2)} `;
     li.appendChild(sel);
     list.appendChild(li);
-    if (item.qty > 0) total += subtotal;
+    if (item.qty > 0) {
+      total += subtotal;
+      packagingTotal += (item.packaging || 0) * item.qty;
+    }
   });
 
   const title = document.createElement('li');
@@ -1711,7 +1717,7 @@ function updateCart() {
     list.appendChild(li);
   });
 
-  updatePriceBreakdown(total);
+  updatePriceBreakdown(total, packagingTotal);
 
   const totalQty = Object.values(cart).reduce((s, it) => s + it.qty, 0) +
     Object.keys(extras).reduce((s, id) => s + parseInt(document.getElementById(id).value || 0), 0);
@@ -1734,8 +1740,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const parent = sel.closest('.menu-item');
     const name = parent.dataset.name;
     const price = parseFloat(parent.dataset.price);
+    const pack = parseFloat(parent.dataset.packaging || DEFAULT_PACKAGING_FEE);
     sel.addEventListener('change', () => {
-      setQty(name, price, parseInt(sel.value));
+      setQty(name, price, parseInt(sel.value), pack);
     });
   });
 
@@ -1747,7 +1754,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (val < 20) val++;
       sel.value = val;
       const parent = sel.closest('.menu-item');
-      setQty(parent.dataset.name, parseFloat(parent.dataset.price), val);
+      const pack = parseFloat(parent.dataset.packaging || DEFAULT_PACKAGING_FEE);
+      setQty(parent.dataset.name, parseFloat(parent.dataset.price), val, pack);
     });
   });
 
@@ -1759,7 +1767,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (val > 0) val--;
       sel.value = val;
       const parent = sel.closest('.menu-item');
-      setQty(parent.dataset.name, parseFloat(parent.dataset.price), val);
+      const pack = parseFloat(parent.dataset.packaging || DEFAULT_PACKAGING_FEE);
+      setQty(parent.dataset.name, parseFloat(parent.dataset.price), val, pack);
     });
   });
 
@@ -1777,7 +1786,7 @@ document.addEventListener('DOMContentLoaded', () => {
     tipSel.appendChild(opt);
   }
   tipSel.value = 0;
-  tipSel.addEventListener('change', () => updatePriceBreakdown(currentSubtotal));
+  tipSel.addEventListener('change', () => updatePriceBreakdown(currentSubtotal, currentPackaging));
 
   updateCart();
 });
@@ -1906,10 +1915,10 @@ function checkout() {
 
   const tip = parseFloat(document.getElementById('tipSelect').value);
   const subtotal = currentSubtotal;
-  const packagingFee = 0.20;
+  const packagingFee = Object.values(cart).reduce((s, it) => s + (it.packaging || 0) * it.qty, 0);
   const deliveryFee = orderType === 'bezorgen' ? 2.50 : 0;
-  const btw = (subtotal + packagingFee) * 0.09;
-  const total = subtotal + packagingFee + deliveryFee + tip + btw;
+  const btw = (subtotal + packagingFee) * 9 / 109;
+  const total = subtotal + packagingFee + deliveryFee + tip;
   const totalPrice = total.toFixed(2);
   const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}\nTotaal: €${totalPrice}`;
 
@@ -2009,7 +2018,7 @@ function checkout() {
       bezorgenFields.classList.remove('hidden');
       afhalenFields.classList.add('hidden');
     }
-    updatePriceBreakdown(currentSubtotal);
+    updatePriceBreakdown(currentSubtotal, currentPackaging);
   }
 
   // 初始化执行一次
