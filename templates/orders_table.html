@@ -34,7 +34,8 @@
           </ul>
         </td>
         <td>{{ order.opmerking or '-' }}</td>
-        <td>{{ '%.2f' % order.total }}</td>
+        {% set tot_val = order.totaal if order.totaal is defined else order.total %}
+        <td>{{ '%.2f' % tot_val }}</td>
         <td>
           {% if is_delivery %}
             {{ order.street }} {{ order.house_number }} {{ order.postcode }} {{ order.city }}
