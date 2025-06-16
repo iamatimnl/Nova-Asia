@@ -54,7 +54,8 @@
           </ul>
         </td>
         <td>{{ order.opmerking or '-' }}</td>
-        <td>{{ '%.2f' % order.total }}</td>
+        {% set tot_val = order.totaal if order.totaal is defined else order.total %}
+        <td>{{ '%.2f' % tot_val }}</td>
         <td>
           {% if is_delivery %}
             {{ order.street }} {{ order.house_number }} {{ order.postcode }} {{ order.city }}
@@ -89,7 +90,10 @@
       const tr = document.createElement('tr');
       const isDelivery = ['delivery','bezorgen'].includes(order.order_type);
       const items = Object.entries(order.items || {}).map(([n,i]) => `<li>${n} x ${i.qty}</li>`).join('');
-      const total = Object.values(order.items || {}).reduce((s,i)=>s + (parseFloat(i.price||0)*parseInt(i.qty||0)),0);
+      let total = order.totaal;
+      if(total === undefined){
+        total = Object.values(order.items || {}).reduce((s,i)=>s + (parseFloat(i.price||0)*parseInt(i.qty||0)),0);
+      }
       const remark = order.opmerking || order.remark || '';
       const pickup = order.pickup_time || order.pickupTime;
       const delivery = order.delivery_time || order.deliveryTime;
