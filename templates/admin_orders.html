@@ -94,7 +94,7 @@
                 <td>{{ info.order.opmerking or '-' }}</td>
                 <td>{{ info.order.payment_method }}</td>
                 <td>{{ info.order.created_at_local.strftime('%Y-%m-%d %H:%M') }}</td>
-                {% set tot_val = info.total %}
+                {% set tot_val = info.order.totaal if info.order.totaal is defined else info.total %}
                 <td>{{ '%.2f' % tot_val }}</td>
             </tr>
         {% endfor %}
