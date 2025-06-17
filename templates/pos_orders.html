@@ -99,6 +99,9 @@
       }
       let total = parseFloat(order.totaal);
       if(isNaN(total)){
+        if(!('totaal' in order)){
+          console.warn('⚠️ totaal 字段缺失，请联系后端');
+        }
         total = subtotal;
       }
       const remark = order.opmerking || order.remark || '';
@@ -114,13 +117,19 @@
         <td><ul>${items}</ul></td>
         <td>${remark || '-'}</td>
         <td>${subtotal.toFixed(2)}</td>
-        <td>${total.toFixed(2)}</td>
+        <td>€${total.toFixed(2)}</td>
         <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
         <td>${isDelivery ? (delivery || '-') : (pickup || '-')}</td>
         <td>${order.payment_method || ''}</td>`;
       tbody.prepend(tr);
     }
-    socket.on('new_order', addRow);
+    socket.on('new_order', order => {
+      console.log(order);
+      if(!('totaal' in order)){
+        console.warn('⚠️ totaal 字段缺失，请联系后端');
+      }
+      addRow(order);
+    });
 
     function fetchOrders(){
       fetch('/pos/orders_today?json=1').then(r=>r.json()).then(data=>{
