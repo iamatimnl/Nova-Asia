@@ -87,6 +87,11 @@
     socket.on('connect_error',()=>{setTimeout(()=>socket.connect(),1000);});
     socket.on('disconnect', startPolling);
     socket.on('connect', stopPolling);
+    function formatCurrency(value){
+      const num = parseFloat(value);
+      return isNaN(num) ? "€0.00" : `€${num.toFixed(2)}`;
+    }
+
     function addRow(order){
       const tbody = document.querySelector('table tbody');
       const tr = document.createElement('tr');
@@ -111,8 +116,8 @@
         <td>${order.email || '-'}</td>
         <td><ul>${items}</ul></td>
         <td>${remark || '-'}</td>
-        <td>${subtotal.toFixed(2)}</td>
-        <td>€${parseFloat(order.totaal).toFixed(2)}</td>
+        <td>${formatCurrency(subtotal)}</td>
+        <td>${formatCurrency(order.totaal)}</td>
         <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
         <td>${isDelivery ? (delivery || '-') : (pickup || '-')}</td>
         <td>${order.payment_method || ''}</td>`;
