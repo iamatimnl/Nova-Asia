@@ -816,7 +816,7 @@ input:focus, select:focus, textarea:focus {
       z-index: 999;
     }
 
- .slider-track {
+  .slider-track {
   width: 80%;
   height: 68px;
   background: rgba(255, 255, 255, 0.15);  /* 更亮，更有对比 */
@@ -870,8 +870,8 @@ input:focus, select:focus, textarea:focus {
   transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 1;
-  color: #262626; /* 灰白色 */
-  font-size: 16px;
+  color: #f2f2f2; /* 灰白色 */
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -2400,65 +2400,72 @@ function toggleMobileCart() {
   });
 </script>
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  const sliderButton = document.getElementById('sliderButton');
-  const sliderTrack = document.getElementById('sliderTrack');
-  const sliderText = document.querySelector('.slider-text');
+const sliderButton = document.getElementById('sliderButton');
+const sliderTrack = document.getElementById('sliderTrack');
+let isDragging = false;
+let startX = 0;
+let initialLeft = 0;
 
-  let isSliding = false;
-  let startX = 0;
-  let currentX = 0;
+// 获取轨道的左右 padding 值
+function getHorizontalPadding(el) {
+  const style = window.getComputedStyle(el);
+  const left = parseInt(style.paddingLeft) || 0;
+  const right = parseInt(style.paddingRight) || 0;
+  return { left, right };
+}
 
-  // 获取左右 padding
-  function getHorizontalPadding(el) {
-    const style = window.getComputedStyle(el);
-    const left = parseInt(style.paddingLeft) || 0;
-    const right = parseInt(style.paddingRight) || 0;
-    return { left, right };
-  }
+// 模拟解锁成功后的行为（你可以替换为任何动作）
+function checkout() {
+  console.log("✔ 解锁成功");
+  // 例如：跳转、弹窗、提交表单等
+}
 
-  if (sliderButton && sliderTrack) {
-    sliderButton.addEventListener('touchstart', (e) => {
-      isSliding = true;
-      startX = e.touches[0].clientX;
-    });
+sliderButton.addEventListener('touchstart', (e) => {
+  isDragging = true;
+  startX = e.touches[0].clientX;
+  const left = sliderButton.style.left || "0px";
+  initialLeft = parseInt(left); // 记录当前left（如0）
+});
 
-    sliderTrack.addEventListener('touchmove', (e) => {
-      if (!isSliding) return;
+sliderTrack.addEventListener('touchmove', (e) => {
+  if (!isDragging) return;
 
-      const padding = getHorizontalPadding(sliderTrack);
-      const trackWidth = sliderTrack.offsetWidth;
-      const buttonWidth = sliderButton.offsetWidth;
-      const maxX = trackWidth - buttonWidth - padding.left - padding.right;
+  const padding = getHorizontalPadding(sliderTrack);
+  const trackWidth = sliderTrack.offsetWidth;
+  const buttonWidth = sliderButton.offsetWidth;
+  const maxX = trackWidth - buttonWidth - padding.left - padding.right;
 
-      currentX = e.touches[0].clientX - startX;
-      const moveX = Math.max(0, Math.min(currentX, maxX));
-      sliderButton.style.left = `${padding.left + moveX}px`;
-    });
+  // 当前触摸位置与起始位置的差
+  const deltaX = e.touches[0].clientX - startX;
+  // 目标位置 = 初始位置 + 移动差
+  let targetX = initialLeft + deltaX;
+  targetX = Math.max(padding.left, Math.min(padding.left + maxX, targetX));
 
-    sliderTrack.addEventListener('touchend', () => {
-      isSliding = false;
+  sliderButton.style.left = `${targetX}px`;
+});
 
-      const padding = getHorizontalPadding(sliderTrack);
-      const trackWidth = sliderTrack.offsetWidth;
-      const buttonWidth = sliderButton.offsetWidth;
-      const maxX = trackWidth - buttonWidth - padding.left - padding.right;
-      const currentLeft = parseInt(sliderButton.style.left || '0') - padding.left;
-      const movedRatio = currentLeft / maxX;
+sliderTrack.addEventListener('touchend', () => {
+  isDragging = false;
 
-      if (movedRatio >= 0.9) {
-        // 成功滑动，触发结账
-        checkout();
-        sliderButton.style.left = `${trackWidth - buttonWidth - padding.right}px`;
-      } else {
-        // 重置
-        sliderButton.style.left = `${padding.left}px`;
-      }
-    });
+  const padding = getHorizontalPadding(sliderTrack);
+  const trackWidth = sliderTrack.offsetWidth;
+  const buttonWidth = sliderButton.offsetWidth;
+  const maxX = trackWidth - buttonWidth - padding.left - padding.right;
+
+  // 当前left值（去掉单位 px）
+  const currentLeft = parseInt(sliderButton.style.left) - padding.left;
+  const movedRatio = currentLeft / maxX;
+
+  if (movedRatio > 0.6) {
+    // 解锁成功
+    sliderButton.style.left = `${trackWidth - buttonWidth - padding.right}px`;
+    checkout();
+  } else {
+    // 回弹
+    sliderButton.style.left = `${padding.left}px`;
   }
 });
 </script>
-
 
 
 
