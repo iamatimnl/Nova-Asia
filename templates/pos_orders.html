@@ -57,8 +57,7 @@
         <td>{{ order.opmerking or '-' }}</td>
         {% set sub_val = order.subtotal if order.subtotal is defined else order.total %}
         <td>{{ '%.2f' % sub_val }}</td>
-        {% set tot_val = order.totaal if order.totaal is defined else sub_val %}
-        <td>{{ '%.2f' % tot_val }}</td>
+        <td>{{ '%.2f' % order.totaal }}</td>
         <td>
           {% if is_delivery %}
             {{ order.street }} {{ order.house_number }} {{ order.postcode }} {{ order.city }}
@@ -97,9 +96,8 @@
       if(isNaN(subtotal)){
         subtotal = Object.values(order.items || {}).reduce((s,i)=>s + (parseFloat(i.price||0)*parseInt(i.qty||0)),0);
       }
-      let total = parseFloat(order.totaal);
-      if(isNaN(total)){
-        total = subtotal;
+      if(!('totaal' in order)){
+        console.warn('⚠️ totaal 字段缺失，请联系后端');
       }
       const remark = order.opmerking || order.remark || '';
       const pickup = order.pickup_time || order.pickupTime;
@@ -114,13 +112,19 @@
         <td><ul>${items}</ul></td>
         <td>${remark || '-'}</td>
         <td>${subtotal.toFixed(2)}</td>
-        <td>${total.toFixed(2)}</td>
+        <td>€${parseFloat(order.totaal).toFixed(2)}</td>
         <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
         <td>${isDelivery ? (delivery || '-') : (pickup || '-')}</td>
         <td>${order.payment_method || ''}</td>`;
       tbody.prepend(tr);
     }
-    socket.on('new_order', addRow);
+    socket.on('new_order', order => {
+      console.log(order);
+      if(!('totaal' in order)){
+        console.warn('⚠️ totaal 字段缺失，请联系后端');
+      }
+      addRow(order);
+    });
 
     function fetchOrders(){
       fetch('/pos/orders_today?json=1').then(r=>r.json()).then(data=>{
