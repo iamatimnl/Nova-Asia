@@ -165,6 +165,11 @@ def pos():
 
         # Notify POS clients
         try:
+             items_dict = json.loads(order.items or "{}")
+            total = sum(
+                float(i.get("price", 0)) * int(i.get("qty", 0))
+                for i in items_dict.values()
+            )  
             payload = {
                 "id": order.id,
                 "order_type": order.order_type,
@@ -184,7 +189,8 @@ def pos():
                 "opmerking": order.opmerking,
                 "created_date": to_nl(order.created_at).strftime("%Y-%m-%d"),
                 "created_at": to_nl(order.created_at).strftime("%H:%M"),
-                "items": json.loads(order.items or "{}"),
+                "items": items_dict,
+                "totaal": total,
             }
             socketio.emit("new_order", payload, broadcast=True)
         except Exception as e:
@@ -212,7 +218,11 @@ def pos():
                 print(f"❌ JSON解析失败: {e}")
                 o.items_dict = {}
 
-        o.total = sum(float(i.get("price", 0)) * int(i.get("qty", 0)) for i in o.items_dict.values())
+               o.total = sum(
+            float(i.get("price", 0)) * int(i.get("qty", 0))
+            for i in o.items_dict.values()
+        )
+        o.totaal = o.total
         o.created_at_local = to_nl(o.created_at)
         o.maps_link = build_maps_link(o.street, o.house_number, o.postcode, o.city)
     return render_template("pos.html", orders=orders)
@@ -245,6 +255,11 @@ def api_orders():
 
         # Broadcast new order to connected POS clients
         try:
+             items_dict = json.loads(order.items or "{}")
+            total = sum(
+                float(i.get("price", 0)) * int(i.get("qty", 0))
+                for i in items_dict.values()
+            )
             order_payload = {
                 "id": order.id,
                 "order_type": order.order_type,
@@ -264,7 +279,8 @@ def api_orders():
                 "opmerking": order.opmerking,
                 "created_date": to_nl(order.created_at).strftime("%Y-%m-%d"),
                 "created_at": to_nl(order.created_at).strftime("%H:%M"),
-                "items": json.loads(order.items or "{}"),
+                 "items": items_dict,
+                "totaal": total,
             }
             socketio.emit("new_order", order_payload, broadcast=True)
         except Exception as e:
@@ -377,7 +393,12 @@ def pos_orders_today():
                 print(f"❌ JSON解析失败: {e}")
                 o.items_dict = {}
 
-        total = sum(float(i.get("price", 0)) * int(i.get("qty", 0)) for i in o.items_dict.values())
+        total = sum(
+            float(i.get("price", 0)) * int(i.get("qty", 0))
+            for i in o.items_dict.values()
+        )
+        o.total = total
+        o.totaal = total
         o.total = total
         o.created_at_local = to_nl(o.created_at)
         summary = "\n".join(f"{name} x {item['qty']}" for name, item in o.items_dict.items())
@@ -422,6 +443,7 @@ def pos_orders_today():
             "created_date": to_nl(o.created_at).strftime("%Y-%m-%d"),
             "created_at": to_nl(o.created_at).strftime("%H:%M"),
             "items": o.items_dict,
+            "totaal": total,
             "total": total,
         })
 
