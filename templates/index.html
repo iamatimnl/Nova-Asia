@@ -807,10 +807,9 @@ input:focus, select:focus, textarea:focus {
 .slider-container {
   position: fixed;
   bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%); /* 容器居中 */
-  width: 300px;               /* 与 slider-track 宽度保持一致 */
-  height: 64px;               /* 更厚一点 */
+  left: 60px;    /* 原来是 50px，更窄 */
+  right: 60px;   /* 同样缩窄右边距 */
+  height: 64px;  /* 更厚一点 */
   display: flex;
   align-items: center;
   background: rgba(28,28,30,0.60);
