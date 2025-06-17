@@ -985,7 +985,7 @@ function submitOrder() {
       <td><ul>${items}</ul></td>
       <td>${remark || '-'}</td>
       <td>${subtotal.toFixed(2)}</td>
-      <td>€${parseFloat(order.totaal).toFixed(2)}</td>
+      <td>€${parseFloat(order.total).toFixed(2)}</td>
       <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
       <td>${isDelivery ? (delivery || '-') : (pickup || '-')}</td>
       <td>${order.payment_method || ''}</td>`;
@@ -996,8 +996,8 @@ function submitOrder() {
   // Socket 监听新订单
   socket.on('new_order', order => {
     console.log('🆕 Nieuwe bestelling:', order);
-    if(!('totaal' in order)){
-      console.warn('⚠️ totaal 字段缺失，请联系后端');
+   if(!('total' in order)){
+      console.warn('⚠️ total 字段缺失，请联系后端');
     }
     beep();
     alert('Nieuwe bestelling ontvangen!');
