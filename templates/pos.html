@@ -968,8 +968,8 @@ function submitOrder() {
     if (isNaN(subtotal)) {
       subtotal = Object.values(order.items || {}).reduce((s, i) => s + (parseFloat(i.price || 0) * parseInt(i.qty || 0)), 0);
     }
-    if(!('totaal' in order)){
-      console.warn('⚠️ totaal 字段缺失，请联系后端');
+    if(!('total' in order)){
+      console.warn('⚠️ total 字段缺失，请联系后端');
     }
     const remark = order.opmerking || order.remark || '';
     const pickup = order.pickup_time || order.pickupTime;
