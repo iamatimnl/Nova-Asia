@@ -2011,7 +2011,8 @@ function checkout() {
   const deliveryFee = orderType === 'bezorgen' ? 2.50 : 0;
   const btw = (subtotal + packagingFee) * 9 / 109;
   const total = subtotal + packagingFee + deliveryFee + tip;
-  const totalPrice = total.toFixed(2);
+  const totalPrice = !isNaN(total) ? total.toFixed(2) : "0.00";
+
   const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}\nTotaal: €${totalPrice}`;
 
   const itemsToSend = { ...cart };
@@ -2059,7 +2060,7 @@ function checkout() {
       packaging_fee: packagingFee.toFixed(2),
       delivery_fee: deliveryFee.toFixed(2),
       btw: btw.toFixed(2),
-      totaal: total.toFixed(2),
+      totaal: isNaN(total) ? "0.00" : total.toFixed(2),
       message, email // ✅ 仍然推送到 Telegram
     })
   })
