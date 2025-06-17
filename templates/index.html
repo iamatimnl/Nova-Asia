@@ -805,61 +805,55 @@ input:focus, select:focus, textarea:focus {
 }
 
 .slider-container {
-      position: fixed;
-      bottom: 40px;
-      left: 55px;
-      right: 28px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      pointer-events: none;
-      z-index: 999;
-    }
-
-  .slider-track {
-  width: 80%;
-  height: 68px;
-  background: rgba(255, 255, 255, 0.15);  /* 更亮，更有对比 */
-  border-radius: 34px;
+  position: fixed;
+  bottom: 24px;
+  left: 60px;    /* 原来是 50px，更窄 */
+  right: 60px;   /* 同样缩窄右边距 */
+  height: 64px;  /* 更厚一点 */
+  display: flex;
+  align-items: center;
+  background: rgba(28,28,30,0.60);
+  backdrop-filter: blur(12px);
+  border-radius: 28px; /* 更厚时适当增加圆角以匹配圆滑感 */
   padding: 0 16px;
-  box-shadow:
-    0 8px 20px rgba(0, 0, 0, 0.3),        /* 更强的投影增强浮层感 */
-    inset 0 1px 1px rgba(255, 255, 255, 0.1); /* 内亮边 */
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.25);  /* iOS 风格边框 */
-  position: relative;
-  pointer-events: auto;
-  overflow: hidden;
+  z-index: 999;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
 
-  .slider-button {
-  width: 64px;
-  height: 64px;
-  background: rgba(255, 255, 255, 0.2);       /* 半透明白 */
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+
+
+.slider-button {
+  width: 53px;
+  height: 53px;
+  background-color: #ffffff;
   border-radius: 50%;
   position: absolute;
+  left: 2px;
   top: 50%;
-  left: 12px;
   transform: translateY(-50%);
   z-index: 10;
-  box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.25),           /* 底部阴影 */
-    inset 0 1px 2px rgba(255, 255, 255, 0.6);  /* 内部高光 */
+  transition: left 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ff3b30;         /* iOS 红色主色，可改为白色或绿色 ✔ */
-  font-size: 28px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.4); /* 微边框 */
+  color: #ffffff;
+  font-size: 24px;
 }
 
+
+.slider-track {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border-radius: 28px;
+  padding: 0 2px;
+  background-color: rgba(255, 255, 255, 0.1); /* 可调整 */
+}
 
 
 
@@ -871,7 +865,7 @@ input:focus, select:focus, textarea:focus {
   pointer-events: none;
   z-index: 1;
   color: #f2f2f2; /* 灰白色 */
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 600;
 }
 
@@ -2404,9 +2398,9 @@ const sliderButton = document.getElementById('sliderButton');
 const sliderTrack = document.getElementById('sliderTrack');
 let isDragging = false;
 let startX = 0;
-let initialLeft = 0;
+let currentX = 0;
 
-// 获取轨道的左右 padding 值
+// 获取轨道的左右 padding
 function getHorizontalPadding(el) {
   const style = window.getComputedStyle(el);
   const left = parseInt(style.paddingLeft) || 0;
@@ -2414,57 +2408,79 @@ function getHorizontalPadding(el) {
   return { left, right };
 }
 
-// 模拟解锁成功后的行为（你可以替换为任何动作）
-function checkout() {
-  console.log("✔ 解锁成功");
-  // 例如：跳转、弹窗、提交表单等
-}
-
 sliderButton.addEventListener('touchstart', (e) => {
   isDragging = true;
   startX = e.touches[0].clientX;
-  const left = sliderButton.style.left || "0px";
-  initialLeft = parseInt(left); // 记录当前left（如0）
 });
 
 sliderTrack.addEventListener('touchmove', (e) => {
   if (!isDragging) return;
-
   const padding = getHorizontalPadding(sliderTrack);
   const trackWidth = sliderTrack.offsetWidth;
   const buttonWidth = sliderButton.offsetWidth;
   const maxX = trackWidth - buttonWidth - padding.left - padding.right;
 
-  // 当前触摸位置与起始位置的差
-  const deltaX = e.touches[0].clientX - startX;
-  // 目标位置 = 初始位置 + 移动差
-  let targetX = initialLeft + deltaX;
-  targetX = Math.max(padding.left, Math.min(padding.left + maxX, targetX));
-
-  sliderButton.style.left = `${targetX}px`;
+  currentX = e.touches[0].clientX - startX;
+  const moveX = Math.max(0, Math.min(currentX, maxX));
+  sliderButton.style.left = `${padding.left + moveX}px`;
 });
 
 sliderTrack.addEventListener('touchend', () => {
   isDragging = false;
-
   const padding = getHorizontalPadding(sliderTrack);
   const trackWidth = sliderTrack.offsetWidth;
   const buttonWidth = sliderButton.offsetWidth;
   const maxX = trackWidth - buttonWidth - padding.left - padding.right;
-
-  // 当前left值（去掉单位 px）
   const currentLeft = parseInt(sliderButton.style.left) - padding.left;
   const movedRatio = currentLeft / maxX;
 
   if (movedRatio > 0.6) {
-    // 解锁成功
     sliderButton.style.left = `${trackWidth - buttonWidth - padding.right}px`;
     checkout();
   } else {
-    // 回弹
     sliderButton.style.left = `${padding.left}px`;
   }
 });
+</script>
+
+<script>
+let isSliding = false;
+let startX = 0;
+
+const sliderButton = document.getElementById('sliderButton');
+const sliderTrack = document.getElementById('sliderTrack');
+const sliderText = document.querySelector('.slider-text');
+
+if (sliderButton && sliderTrack) {
+  sliderButton.addEventListener('touchstart', (e) => {
+    isSliding = true;
+    startX = e.touches[0].clientX;
+  });
+
+  sliderButton.addEventListener('touchmove', (e) => {
+    if (!isSliding) return;
+    const currentX = e.touches[0].clientX;
+    let delta = currentX - startX;
+    const maxSlide = sliderTrack.offsetWidth - sliderButton.offsetWidth - 4;
+
+    delta = Math.max(0, Math.min(delta, maxSlide));
+    sliderButton.style.left = `${delta}px`;
+  });
+
+  sliderButton.addEventListener('touchend', () => {
+    const currentLeft = parseInt(sliderButton.style.left || '0');
+    const maxSlide = sliderTrack.offsetWidth - sliderButton.offsetWidth - 4;
+
+    if (currentLeft >= maxSlide * 0.9) {
+      // ✅ 成功滑动到结尾，触发结账
+      checkout();
+    }
+
+    // 重置滑块
+    sliderButton.style.left = '2px';
+    isSliding = false;
+  });
+}
 </script>
 
 
