@@ -333,19 +333,26 @@ button:active {
   }
 
   .cart-section.mobile-visible {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 90%;
-  height: 100%;
-  background: var(--off-white);
-  border-radius: 16px 0 0 16px;
-  padding: 20px;
-  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.2);
-  overflow-y: auto;
-  transition: right 0.3s ease-in-out;
-  z-index: 1000;
-  } 
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100vh;
+    background: var(--off-white);
+    border-radius: 16px 0 0 16px;
+    padding: 20px;
+    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: right 0.3s ease-in-out;
+    z-index: 1000;
+  }
+
+  #mobileCart #cart {
+    flex: 1 1 auto;
+    overflow-y: auto;
+  }
 
 
 }
@@ -760,7 +767,7 @@ input:focus, select:focus, textarea:focus {
       <label>Email (optioneel):</label>
       <input id="pickupEmail" type="email" />
       <label>Tijd van afhalen:</label>
-      <input id="pickup_time" type="time" />
+      <select id="pickup_time"></select>
       <label>Betaalmethode:</label>
       <select id="pickupPayment">
         <option value="contant">Contant</option>
@@ -786,7 +793,7 @@ input:focus, select:focus, textarea:focus {
       <input id="deliveryArea" type="text" />
       <div id="mapLinkContainer" style="margin-top: 4px;"></div>
       <label>Bezorgtijd:</label>
-      <input id="delivery_time" type="time" />
+      <select id="delivery_time"></select>
       <label>Betaalmethode:</label>
       <select id="deliveryPayment">
         <option value="contant">Contant</option>
@@ -2003,6 +2010,37 @@ function checkout() {
 
 </script>
 <script>
+  function pad(num) {
+    return num.toString().padStart(2, '0');
+  }
+
+  function populateTimeOptions(selectId, offsetMinutes) {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    select.innerHTML = '';
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + offsetMinutes);
+
+    const open = new Date();
+    open.setHours(12, 0, 0, 0);
+    const close = new Date();
+    close.setHours(20, 30, 0, 0);
+
+    let start = now > open ? now : open;
+    start = new Date(start);
+    start.setMinutes(Math.ceil(start.getMinutes() / 15) * 15, 0, 0);
+
+    for (let t = start; t <= close; t.setMinutes(t.getMinutes() + 15)) {
+      const hh = pad(t.getHours());
+      const mm = pad(t.getMinutes());
+      const timeStr = `${hh}:${mm}`;
+      const opt = document.createElement('option');
+      opt.value = timeStr;
+      opt.textContent = timeStr;
+      select.appendChild(opt);
+    }
+  }
+
   function toggleOrderType() {
     const afhalen = document.getElementById('afhalen');
     const infoBox = document.getElementById('locationInfo');
@@ -2018,11 +2056,13 @@ function checkout() {
 
       afhalenFields.classList.remove('hidden');
       bezorgenFields.classList.add('hidden');
+      populateTimeOptions('pickup_time', 30);
     } else {
       infoBox.textContent = 'Wij bezorgen in de volgende postcodegebieden:\n2341, 2342, 2343, 2333, 2334, 2231, 2232, 2361, 2235';
 
       bezorgenFields.classList.remove('hidden');
       afhalenFields.classList.add('hidden');
+      populateTimeOptions('delivery_time', 45);
     }
     updatePriceBreakdown(currentSubtotal, currentPackaging);
   }
