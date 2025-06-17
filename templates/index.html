@@ -806,48 +806,55 @@ input:focus, select:focus, textarea:focus {
 
 .slider-container {
   position: fixed;
-  bottom: 24px;
-  left: 70px;
-  right: 100px;
+  top: 80px;  /* 调整位置到更高的位置，贴近图片中的位置 */
+  left: 0;
+  right: 0;
   height: 62px;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 999;
-  pointer-events: none; /* 不阻挡点击事件，可选 */
+  pointer-events: none; /* 保持交互穿透性（可选） */
 }
+
 
 .slider-track {
   width: 80%;
-  height: 100%;
-  position: relative;
+  height: 64px;
   display: flex;
   align-items: center;
-  background: rgba(28,28,30,0.40);
+  justify-content: flex-start;
+  background: #3a3a3c;  /* 深灰色背景，更贴近 iOS 风格 */
+  border-radius: 32px;
+  padding-left: 16px;
+  padding-right: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(12px);
-  border-radius: 28px;
-  padding: 0 16px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  position: relative;
   pointer-events: auto;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
 }
 
+
 .slider-button {
-  width: 53px;
-  height: 53px;
+  width: 64px;
+  height: 64px;
   background-color: #ffffff;
   border-radius: 50%;
   position: absolute;
-  left: 10px;  /* 与 track 的 padding 左对齐 */
+  left: 0; /* 紧贴父容器左边 */
   top: 50%;
-  transform: translateY(-50%);
+  transform: translate(-50%, -50%); /* 向左移动一半自身宽度 */
   z-index: 10;
-  transition: left 0.3s ease;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #1c1c1e;
-  font-size: 24px;
+  color: #ff3b30;
+  font-size: 30px;
+  font-weight: bold;
 }
 
 
