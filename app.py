@@ -237,6 +237,7 @@ def api_orders():
     try:
         data = request.get_json() or {}
 
+        # 1. 构造订单对象
         order = Order(
             order_type=data.get("orderType") or data.get("order_type"),
             customer_name=data.get("name") or data.get("customer_name"),
@@ -253,17 +254,19 @@ def api_orders():
             items=json.dumps(data.get("items", {})),
         )
 
-        db.session.add(order)
-        db.session.commit()
-
-        # Parse order items and compute total
+        # 2. 计算 totaal
         items = json.loads(order.items or "{}")
         total = sum(
             float(i.get("price", 0)) * int(i.get("qty", 0))
             for i in items.values()
         )
+        order.totaal = total  # ✅ 写入字段
 
-        # Broadcast new order to connected POS clients
+        # 3. 保存订单到数据库
+        db.session.add(order)
+        db.session.commit()
+
+        # 4. 向 POS 广播
         try:
             order_payload = {
                 "id": order.id,
@@ -292,15 +295,13 @@ def api_orders():
         except Exception as e:
             print(f"Socket emit failed: {e}")
 
-        # Optional notifications
+        # 5. 通知和支付链接
         if data.get("message"):
             send_telegram(data.get("message"))
             if order.email:
                 send_email(order.email, "Order Confirmation", data.get("message"))
 
-        print("✅ 接收到订单:", data)  # 可选日志
-
-        # Include payment link when using online method
+        print("✅ 接收到订单:", data)
         resp = {"status": "ok"}
         if str(order.payment_method).lower() == "online":
             pay_url = os.getenv("TIKKIE_URL")
@@ -313,7 +314,6 @@ def api_orders():
         import traceback
         traceback.print_exc()
         return jsonify({"status": "fail", "error": str(e)}), 500
-        
 @app.route('/submit_order', methods=["POST"])
 def submit_order():
     # 兼容旧接口，转发数据到现有逻辑
