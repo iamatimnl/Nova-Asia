@@ -124,7 +124,7 @@ class Order(db.Model):
     opmerking = db.Column(db.Text)
     items = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    totaal = db.Column(db.Float)  # 👈 添加这一行
+
 
 class User(UserMixin):
     def __init__(self, user_id: str):
@@ -366,7 +366,8 @@ def admin_orders():
                 items = {}
         total = sum(float(i.get("price", 0)) * int(i.get("qty", 0)) for i in items.values())
         o.created_at_local = to_nl(o.created_at)
-        order_data.append({"order": o, "total": total})
+        order_data.append({"order": o, "total": total,
+    "totaal": total,})
     return render_template("admin_orders.html", order_data=order_data)
 
 @app.route('/pos/orders_today')
@@ -463,6 +464,10 @@ def logout():
 # 启动
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000)
+
+
+
+
 
 
 
