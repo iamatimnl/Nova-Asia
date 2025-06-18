@@ -370,43 +370,30 @@
     font-size: 0.75rem;
   }
   .today-toggle {
-  position: fixed;
-  bottom: 90px;
-  right: 20px;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  font-size: 1.4rem;
-  z-index: 1100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  border: none;
-}
-
-.emoji-wrapper {
-  position: relative;  /* ✅ 必须有这行 */
-  display: inline-block;
-}
-
-.badge {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  background: #ff3b30;
-  color: #fff;
-  border-radius: 50%;
-  padding: 2px 6px;
-  font-size: 0.7rem;
-  line-height: 1;
-  font-weight: bold;
-  pointer-events: none;
-}
-
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: none;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    font-size: 1.4rem;
+    cursor: pointer;
+    z-index: 1100;
+    display: none;
+  }
+  .today-toggle .badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #ff3b30;
+    color: #fff;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.75rem;
+  }
   #closeCartPanel {
     position: absolute;
     top: 10px;
@@ -458,7 +445,7 @@
     <div class="indicator" id="indicator"></div>
   </nav>
 </div>
-<h1>Menu</h1>
+<h1>Bestelling</h1>
 <div class="pos-layout">
   <div class="side-tools">
     <div id="todayOrders" class="orders-slide">
@@ -569,13 +556,7 @@
   </div>
 </div>
 <button id="cartToggle" class="cart-toggle">🛒<span id="cartCount" class="badge">0</span></button>
-<button id="todayToggleMobile" class="today-toggle">
-  <span class="emoji-wrapper">
-    📋
-    <span id="todayBadge" class="badge">3</span>
-  </span>
-</button>
-
+<button id="todayToggleMobile" class="today-toggle">📅<span id="todayBadge" class="badge">0</span></button>
 <audio id="notifySound" src="/sound/beep.mp3" preload="auto"></audio>
 
 <script>
