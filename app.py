@@ -398,6 +398,7 @@ def pos_orders_today():
 
         total = sum(float(i.get("price", 0)) * int(i.get("qty", 0)) for i in o.items_dict.values())
         o.total = total
+        o.totaal = total
         o.created_at_local = to_nl(o.created_at)
         summary = "\n".join(f"{name} x {item['qty']}" for name, item in o.items_dict.items())
 
