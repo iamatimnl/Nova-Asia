@@ -36,13 +36,16 @@
         </td>
        <td>{{ order.opmerking or '-' }}</td>
 
-{# 小计：优先使用 subtotal，否则 fallback 到 total #}
-{% set sub_val = order.subtotal if order.subtotal is defined else order.total %}
-<td>€{{ '%.2f' % sub_val }}</td>
 
-{# 总额：直接使用数据库字段 totaal，如果没有则 fallback 到 sub_val #}
-{% set tot_val = order.totaal if order.totaal is defined and order.totaal is not none else sub_val %}
-<td>€{{ '%.2f' % tot_val }}</td>
+
+{% if order.totaal is defined and order.totaal is not none %}
+    {% set tot_val = order.totaal %}
+  {% elif order.total is defined and order.total is not none %}
+    {% set tot_val = order.total %}
+  {% else %}
+    {% set tot_val = 0 %}
+  {% endif %}
+  <td>€{{ '%.2f' % tot_val }}</td>
 
         <td>
           {% if is_delivery %}
