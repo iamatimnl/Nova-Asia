@@ -256,11 +256,15 @@ def api_orders():
 
         # 2. 计算 totaal
         items = json.loads(order.items or "{}")
-        total = sum(
-            float(i.get("price", 0)) * int(i.get("qty", 0))
-            for i in items.values()
+        subtotal = sum(
+        float(i.get("price", 0)) * int(i.get("qty", 0))
+        for i in items.values()
         )
-        order.totaal = float(data.get("totaal") or total) # ✅ 写入字段
+        order.subtotaal = subtotal  # 你可以在模型中增加这个字段
+
+# 如果你前端已经计算好总价了，使用它；否则就暂时 fallback subtotal
+order.totaal = float(data.get("totaal") or subtotal)
+
 
         # 3. 保存订单到数据库
         db.session.add(order)
