@@ -366,6 +366,7 @@ def admin():
 def admin_orders():
     orders = Order.query.order_by(Order.created_at.desc()).all()
     order_data = []
+
     for o in orders:
         try:
             items = json.loads(o.items or "{}")
@@ -375,21 +376,27 @@ def admin_orders():
                 items = ast.literal_eval(o.items)
             except Exception:
                 items = {}
-        total = sum(float(i.get("price", 0)) * int(i.get("qty", 0)) for i in items.values())
-        o.created_at_local = to_nl(o.created_at)
-        o.totaal = total
-        order_data.append({"order": o, "total": total,
-    "totaal": total,})
-    return render_template("admin_orders.html", order_data=order_data)
 
+        o.created_at_local = to_nl(o.created_at)
+        # 不再重新计算 o.totaal，而是使用数据库字段的原值
+        order_data.append({
+            "order": o,
+            "items": items,
+            "total": o.totaal or 0,  # 显示数据库值，如果为空则为0
+            "totaal": o.totaal or 0,
+        })
+
+    return render_template("admin_orders.html", order_data=order_data)
 @app.route('/pos/orders_today')
 @login_required
 def pos_orders_today():
     today = datetime.now(NL_TZ).date()
     start_local = datetime.combine(today, datetime.min.time(), tzinfo=NL_TZ)
     start = start_local.astimezone(UTC).replace(tzinfo=None)
+
     orders = Order.query.filter(Order.created_at >= start).order_by(Order.created_at.desc()).all()
     order_dicts = []
+
     for o in orders:
         try:
             o.items_dict = json.loads(o.items or "{}")
@@ -401,9 +408,9 @@ def pos_orders_today():
                 print(f"❌ JSON解析失败: {e}")
                 o.items_dict = {}
 
-        total = sum(float(i.get("price", 0)) * int(i.get("qty", 0)) for i in o.items_dict.values())
-        o.total = total
-        o.totaal = total
+        # ✅ 正确使用数据库中的 totaal
+        totaal = o.totaal or 0
+
         o.created_at_local = to_nl(o.created_at)
         summary = "\n".join(f"{name} x {item['qty']}" for name, item in o.items_dict.items())
 
@@ -424,7 +431,7 @@ def pos_orders_today():
             )
 
         o.formatted = (
-            f"📦 Nieuwe bestelling bij *Nova Asia*:\n\n{summary}\n{details}\nTotaal: €{total:.2f}"
+            f"📦 Nieuwe bestelling bij *Nova Asia*:\n\n{summary}\n{details}\nTotaal: €{totaal:.2f}"
         )
 
         order_dicts.append({
@@ -447,15 +454,14 @@ def pos_orders_today():
             "created_date": to_nl(o.created_at).strftime("%Y-%m-%d"),
             "created_at": to_nl(o.created_at).strftime("%H:%M"),
             "items": o.items_dict,
-            "total": total,
-            "totaal": total,
+            "total": totaal,   # ✅ 关键是这里：使用数据库中的 totaal
+            "totaal": totaal,
         })
 
     if request.args.get("json"):
         return jsonify(order_dicts)
 
     return render_template("pos_orders.html", orders=orders)
-# 登录
 @app.route('/login', methods=["GET", "POST"])
 def login():
     if request.method == "POST":
