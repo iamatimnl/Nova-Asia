@@ -38,14 +38,7 @@
 
 
 
-{% if order.totaal is defined and order.totaal is not none %}
-    {% set tot_val = order.totaal %}
-  {% elif order.total is defined and order.total is not none %}
-    {% set tot_val = order.total %}
-  {% else %}
-    {% set tot_val = 0 %}
-  {% endif %}
-  <td>€{{ '%.2f' % tot_val }}</td>
+      <td>€{{ '%.2f' % (order.totaal or 0) }}</td>
 
         <td>
           {% if is_delivery %}
