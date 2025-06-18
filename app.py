@@ -17,7 +17,7 @@ import os
 import json
 import requests
 import smtplib
-from urllib.parse import quote
+from ufrom flask_migrate import Migraterllib.parse import quote
 
 # 初始化 Flask
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -28,6 +28,7 @@ print(repr(os.getenv("DATABASE_URL")))
 
 
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 with app.app_context():
     db.create_all()
     try:
