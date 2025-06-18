@@ -874,7 +874,6 @@ input:focus, select:focus, textarea:focus {
 
 .slider-text {
   position: absolute;
-  left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
   pointer-events: none;
@@ -894,8 +893,10 @@ input:focus, select:focus, textarea:focus {
   -webkit-background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
-  animation: shine 4s linear infinite;
+  animation: shi 1.5s linear infinite;
+  transition: left 0.3s ease; /* ✅ 添加平滑过渡 */
 }
+
 
 .spinner {
   display: block;
@@ -2506,11 +2507,16 @@ sliderTrack.addEventListener('touchend', () => {
   const movedRatio = currentLeft / maxSlide;
 
   if (movedRatio > 0.6) {
+    // 👉 已推过 60%，执行下单
+    sliderText.style.left = '25%'; // ✅ 移动文字到左边
     triggerCheckout();
   } else {
+    // 👉 未推过 60%，复位
     sliderButton.style.left = `${padding.left}px`;
+    sliderText.style.left = '55%'; // ✅ 恢复文字位置到中间偏右
   }
 });
+
 </script>
 
 
