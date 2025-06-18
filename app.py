@@ -260,7 +260,7 @@ def api_orders():
             float(i.get("price", 0)) * int(i.get("qty", 0))
             for i in items.values()
         )
-        order.totaal = total  # ✅ 写入字段
+        order.totaal = float(data.get("totaal") or total) # ✅ 写入字段
 
         # 3. 保存订单到数据库
         db.session.add(order)
