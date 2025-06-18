@@ -369,6 +369,16 @@
     padding: 2px 6px;
     font-size: 0.75rem;
   }
+  .today-btn .badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #ff3b30;
+    color: #fff;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.75rem;
+  }
   #closeCartPanel {
     position: absolute;
     top: 10px;
@@ -414,7 +424,7 @@
       <a href="#snack">Snack</a>
       <a href="#vegan">Vegan</a>
     </div>
-    <button id="toggleToday" class="today-btn">Bestellingen Vandaag</button>
+    <button id="toggleToday" class="today-btn">Bestellingen Vandaag<span id="todayBadge" class="badge">0</span></button>
     <div class="indicator" id="indicator"></div>
   </nav>
 </div>
@@ -718,6 +728,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
   updateCart();
   toggleAddress();
+  fetchOrders();
   // 🔊 解锁 AudioContext
   document.body.addEventListener('click', () => {
     if (audioCtx.state === 'suspended') {
@@ -735,6 +746,7 @@ function toggleToday(){
     newOrderCount = 0;
     updateTabTitle();
   }
+  updateTodayBadge();
 }
 
 function toggleAddress(){
@@ -949,8 +961,15 @@ function formatCurrency(value){
   let pollTimer;
   const baseTitle = document.title;
   let newOrderCount = 0;
+  let todayOrderCount = 0;
   function updateTabTitle(){
     document.title = newOrderCount ? `${baseTitle} (${newOrderCount})` : baseTitle;
+  }
+  function updateTodayBadge(){
+    const badge=document.getElementById('todayBadge');
+    if(badge){
+      badge.textContent = todayOrderCount;
+    }
   }
 
   // 音效播放
@@ -1014,8 +1033,15 @@ function formatCurrency(value){
     beep();
     alert('Nieuwe bestelling ontvangen!');
     addRow(order);
-    newOrderCount++;
+    todayOrderCount++;
+    const panel=document.getElementById('todayOrders');
+    if(panel && panel.classList.contains('visible')){
+      newOrderCount = 0;
+    }else{
+      newOrderCount++;
+    }
     updateTabTitle();
+    updateTodayBadge();
   });
 
   // 断线后启用轮询
@@ -1042,6 +1068,8 @@ function formatCurrency(value){
       if (!tbody) return;
       tbody.innerHTML = '';
       data.reverse().forEach(addRow); // 让最新订单在最上面
+      todayOrderCount = data.length;
+      updateTodayBadge();
     }).catch(() => {});
  }
 
@@ -1060,7 +1088,7 @@ function formatCurrency(value){
   }
 
   window.addEventListener('beforeunload', () => socket.disconnect());
-  window.addEventListener('focus', () => { newOrderCount = 0; updateTabTitle(); });
+  window.addEventListener('focus', () => { newOrderCount = 0; updateTabTitle(); updateTodayBadge(); });
 </script>
 
 
