@@ -369,6 +369,47 @@
     padding: 2px 6px;
     font-size: 0.75rem;
   }
+  .today-toggle {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  font-size: 1.4rem;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  border: none;
+}
+
+.emoji-wrapper {
+  position: relative;  /* ✅ 必须有这行 */
+  display: inline-block;
+}
+
+.badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  color: #ff3b30;
+  font-size: 0.9rem;
+  font-weight: 700;
+  background: none;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  line-height: 1;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  pointer-events: none;
+}
+
+
   #closeCartPanel {
     position: absolute;
     top: 10px;
@@ -383,6 +424,8 @@
   }
   @media (max-width: 768px) {
     .cart-toggle { display: block; }
+    .today-toggle { display: block; }
+    .today-btn { display: none; }
     .cart-panel {
       position: fixed;
       inset: 0;
@@ -418,7 +461,7 @@
     <div class="indicator" id="indicator"></div>
   </nav>
 </div>
-<h1>Bestelling</h1>
+<h1>Menu</h1>
 <div class="pos-layout">
   <div class="side-tools">
     <div id="todayOrders" class="orders-slide">
@@ -529,6 +572,13 @@
   </div>
 </div>
 <button id="cartToggle" class="cart-toggle">🛒<span id="cartCount" class="badge">0</span></button>
+<button id="todayToggleMobile" class="today-toggle">
+  <span class="emoji-wrapper">
+    📋
+    <span id="todayBadge" class="badge">3</span>
+  </span>
+</button>
+
 <audio id="notifySound" src="/sound/beep.mp3" preload="auto"></audio>
 
 <script>
@@ -690,6 +740,10 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('discountType').addEventListener('change',updateCart);
   document.getElementById('discountValue').addEventListener('input',updateCart);
   document.getElementById('toggleToday').addEventListener('click',toggleToday);
+  const todayToggleMobile=document.getElementById('todayToggleMobile');
+  if(todayToggleMobile){
+    todayToggleMobile.addEventListener('click',toggleToday);
+  }
   document.getElementById('closeToday').addEventListener('click',toggleToday);
   document.getElementById('typePickup').addEventListener('change',toggleAddress);
   document.getElementById('typeDelivery').addEventListener('change',toggleAddress);
@@ -718,6 +772,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
   updateCart();
   toggleAddress();
+  updateTodayBadge();
   // 🔊 解锁 AudioContext
   document.body.addEventListener('click', () => {
     if (audioCtx.state === 'suspended') {
@@ -735,6 +790,7 @@ function toggleToday(){
     newOrderCount = 0;
     updateTabTitle();
   }
+  updateTodayBadge();
 }
 
 function toggleAddress(){
@@ -952,6 +1008,12 @@ function formatCurrency(value){
   function updateTabTitle(){
     document.title = newOrderCount ? `${baseTitle} (${newOrderCount})` : baseTitle;
   }
+  function updateTodayBadge(){
+    const badge=document.getElementById('todayBadge');
+    if(badge){
+      badge.textContent = newOrderCount > 0 ? newOrderCount : '';
+    }
+  }
 
   // 音效播放
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1014,8 +1076,14 @@ function formatCurrency(value){
     beep();
     alert('Nieuwe bestelling ontvangen!');
     addRow(order);
-    newOrderCount++;
+    const panel=document.getElementById('todayOrders');
+    if(panel && panel.classList.contains('visible')){
+      newOrderCount = 0;
+    }else{
+      newOrderCount++;
+    }
     updateTabTitle();
+    updateTodayBadge();
   });
 
   // 断线后启用轮询
@@ -1060,7 +1128,7 @@ function formatCurrency(value){
   }
 
   window.addEventListener('beforeunload', () => socket.disconnect());
-  window.addEventListener('focus', () => { newOrderCount = 0; updateTabTitle(); });
+  window.addEventListener('focus', () => { newOrderCount = 0; updateTabTitle(); updateTodayBadge(); });
 </script>
 
 
