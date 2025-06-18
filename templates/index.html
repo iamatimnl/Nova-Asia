@@ -2423,18 +2423,11 @@ function toggleMobileCart() {
   });
 </script>
 <script>
-window.addEventListener('DOMContentLoaded', () => {
-const padding = getHorizontalPadding(sliderTrack);
-sliderButton.style.left = `${padding.left}px`;
-});
-
 const sliderButton = document.getElementById('sliderButton');
 const sliderTrack = document.getElementById('sliderTrack');
-const sliderText = document.querySelector('.slider-text');
-
-let isSliding = false;
+let isDragging = false;
 let startX = 0;
-let initialLeft = 0;
+let currentX = 0;
 
 // 获取轨道的左右 padding
 function getHorizontalPadding(el) {
@@ -2444,59 +2437,79 @@ function getHorizontalPadding(el) {
   return { left, right };
 }
 
-// 获取滑动最大距离
-function getMaxSlide() {
+sliderButton.addEventListener('touchstart', (e) => {
+  isDragging = true;
+  startX = e.touches[0].clientX;
+});
+
+sliderTrack.addEventListener('touchmove', (e) => {
+  if (!isDragging) return;
   const padding = getHorizontalPadding(sliderTrack);
   const trackWidth = sliderTrack.offsetWidth;
   const buttonWidth = sliderButton.offsetWidth;
-  return trackWidth - buttonWidth - padding.left - padding.right;
-}
+  const maxX = trackWidth - buttonWidth - padding.left - padding.right;
 
-// ✅ checkout 函数：在这里自定义结账逻辑
-function checkout() {
-  alert("✅ 超过60%滑动，结账触发！");
-  // 示例：跳转页面或发送请求
-  // window.location.href = "/checkout";
-}
-
-// 触摸开始
-sliderButton.addEventListener('touchstart', (e) => {
-  isSliding = true;
-  startX = e.touches[0].clientX;
-  initialLeft = parseInt(sliderButton.style.left) || getHorizontalPadding(sliderTrack).left;
+  currentX = e.touches[0].clientX - startX;
+  const moveX = Math.max(0, Math.min(currentX, maxX));
+  sliderButton.style.left = ${padding.left + moveX}px;
 });
 
-// 触摸移动
-sliderTrack.addEventListener('touchmove', (e) => {
-  if (!isSliding) return;
-
-  const padding = getHorizontalPadding(sliderTrack);
-  const maxSlide = getMaxSlide();
-
-  const delta = e.touches[0].clientX - startX;
-  const moveX = Math.max(0, Math.min(initialLeft + delta - padding.left, maxSlide));
-
-  sliderButton.style.left = `${padding.left + moveX}px`;
-});
-
-// 触摸结束
 sliderTrack.addEventListener('touchend', () => {
-  isSliding = false;
+  isDragging = false;
   const padding = getHorizontalPadding(sliderTrack);
-  const maxSlide = getMaxSlide();
-
-  const currentLeft = parseInt(sliderButton.style.left || '0') - padding.left;
-  const movedRatio = currentLeft / maxSlide;
+  const trackWidth = sliderTrack.offsetWidth;
+  const buttonWidth = sliderButton.offsetWidth;
+  const maxX = trackWidth - buttonWidth - padding.left - padding.right;
+  const currentLeft = parseInt(sliderButton.style.left) - padding.left;
+  const movedRatio = currentLeft / maxX;
 
   if (movedRatio > 0.6) {
-    // ✅ 超过60%，触发 checkout
-    sliderButton.style.left = `${padding.left + maxSlide}px`;
+    sliderButton.style.left = ${trackWidth - buttonWidth - padding.right}px;
     checkout();
   } else {
-    // ❌ 未超过60%，复位
-    sliderButton.style.left = `${padding.left}px`;
+    sliderButton.style.left = ${padding.left}px;
   }
 });
+</script>
+
+<script>
+let isSliding = false;
+let startX = 0;
+
+const sliderButton = document.getElementById('sliderButton');
+const sliderTrack = document.getElementById('sliderTrack');
+const sliderText = document.querySelector('.slider-text');
+
+if (sliderButton && sliderTrack) {
+  sliderButton.addEventListener('touchstart', (e) => {
+    isSliding = true;
+    startX = e.touches[0].clientX;
+  });
+
+  sliderButton.addEventListener('touchmove', (e) => {
+    if (!isSliding) return;
+    const currentX = e.touches[0].clientX;
+    let delta = currentX - startX;
+    const maxSlide = sliderTrack.offsetWidth - sliderButton.offsetWidth - 4;
+
+    delta = Math.max(0, Math.min(delta, maxSlide));
+    sliderButton.style.left = ${delta}px;
+  });
+
+  sliderButton.addEventListener('touchend', () => {
+    const currentLeft = parseInt(sliderButton.style.left || '0');
+    const maxSlide = sliderTrack.offsetWidth - sliderButton.offsetWidth - 4;
+
+    if (currentLeft >= maxSlide * 0.9) {
+      // ✅ 成功滑动到结尾，触发结账
+      checkout();
+    }
+
+    // 重置滑块
+    sliderButton.style.left = '2px';
+    isSliding = false;
+  });
+}
 </script>
 
 
