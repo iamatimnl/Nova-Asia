@@ -252,6 +252,13 @@ def api_orders():
         db.session.add(order)
         db.session.commit()
 
+        # Parse order items and compute total
+        items = json.loads(order.items or "{}")
+        total = sum(
+            float(i.get("price", 0)) * int(i.get("qty", 0))
+            for i in items.values()
+        )
+
         # Broadcast new order to connected POS clients
         try:
             order_payload = {
@@ -273,9 +280,9 @@ def api_orders():
                 "opmerking": order.opmerking,
                 "created_date": to_nl(order.created_at).strftime("%Y-%m-%d"),
                 "created_at": to_nl(order.created_at).strftime("%H:%M"),
-                "items": json.loads(order.items or "{}"),
+                "items": items,
                 "total": total,
-                "totaal": total, 
+                "totaal": total,
             }
             socketio.emit("new_order", order_payload, broadcast=True)
         except Exception as e:
