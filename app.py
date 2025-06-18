@@ -165,6 +165,9 @@ def pos():
 
         # Notify POS clients
         try:
+            items = json.loads(order.items or "{}")
+            total = sum(float(i.get("price", 0)) * int(i.get("qty", 0)) for i in items.values())
+
             payload = {
                 "id": order.id,
                 "order_type": order.order_type,
@@ -184,8 +187,9 @@ def pos():
                 "opmerking": order.opmerking,
                 "created_date": to_nl(order.created_at).strftime("%Y-%m-%d"),
                 "created_at": to_nl(order.created_at).strftime("%H:%M"),
-                "items": json.loads(order.items or "{}") total = sum(float(i.get("price", 0)) * int(i.get("qty", 0)) for i in items.values()),
-                
+                "items": items,
+                "total": total,
+                "totaal": total,
             }
             socketio.emit("new_order", payload, broadcast=True)
         except Exception as e:
@@ -198,9 +202,12 @@ def pos():
                 resp["paymentLink"] = url
 
         return jsonify(resp)
+
+    # GET 请求：加载今日订单展示到 POS 界面
     today = datetime.now(NL_TZ).date()
     start_local = datetime.combine(today, datetime.min.time(), tzinfo=NL_TZ)
     start = start_local.astimezone(UTC).replace(tzinfo=None)
+
     orders = Order.query.filter(Order.created_at >= start).order_by(Order.created_at.desc()).all()
     for o in orders:
         try:
@@ -216,6 +223,7 @@ def pos():
         o.total = sum(float(i.get("price", 0)) * int(i.get("qty", 0)) for i in o.items_dict.values())
         o.created_at_local = to_nl(o.created_at)
         o.maps_link = build_maps_link(o.street, o.house_number, o.postcode, o.city)
+
     return render_template("pos.html", orders=orders)
 
 
