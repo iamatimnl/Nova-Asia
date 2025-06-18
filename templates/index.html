@@ -2463,7 +2463,13 @@ function triggerCheckout() {
 
   // ⏳ 显示处理中
   sliderText.innerText = 'Bezig met verwerken…';
-  sliderButton.innerHTML = '⏳';
+  sliderButton.innerHTML = `
+<svg class="spinner" width="24" height="24" viewBox="0 0 44 44" fill="none" stroke="white">
+  <circle cx="22" cy="22" r="20" stroke-width="4" stroke-linecap="round" stroke-dasharray="125" stroke-dashoffset="0">
+    <animateTransform attributeName="transform" type="rotate" from="0 22 22" to="360 22 22" dur="1s" repeatCount="indefinite" />
+  </circle>
+</svg>`;
+
   sliderTrack.style.pointerEvents = 'none';
 
   checkout(); // ⬅️ 触发逻辑
