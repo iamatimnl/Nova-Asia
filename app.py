@@ -184,7 +184,8 @@ def pos():
                 "opmerking": order.opmerking,
                 "created_date": to_nl(order.created_at).strftime("%Y-%m-%d"),
                 "created_at": to_nl(order.created_at).strftime("%H:%M"),
-                "items": json.loads(order.items or "{}"),
+                "items": json.loads(order.items or "{}") total = sum(float(i.get("price", 0)) * int(i.get("qty", 0)) for i in items.values()),
+                
             }
             socketio.emit("new_order", payload, broadcast=True)
         except Exception as e:
@@ -265,6 +266,8 @@ def api_orders():
                 "created_date": to_nl(order.created_at).strftime("%Y-%m-%d"),
                 "created_at": to_nl(order.created_at).strftime("%H:%M"),
                 "items": json.loads(order.items or "{}"),
+                "total": total,
+                "totaal": total, 
             }
             socketio.emit("new_order", order_payload, broadcast=True)
         except Exception as e:
@@ -423,6 +426,7 @@ def pos_orders_today():
             "created_at": to_nl(o.created_at).strftime("%H:%M"),
             "items": o.items_dict,
             "total": total,
+            "totaal": total,
         })
 
     if request.args.get("json"):
