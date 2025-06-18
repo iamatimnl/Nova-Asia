@@ -373,6 +373,7 @@ def admin_orders():
                 items = {}
         total = sum(float(i.get("price", 0)) * int(i.get("qty", 0)) for i in items.values())
         o.created_at_local = to_nl(o.created_at)
+        o.totaal = total
         order_data.append({"order": o, "total": total,
     "totaal": total,})
     return render_template("admin_orders.html", order_data=order_data)
