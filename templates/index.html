@@ -2172,7 +2172,7 @@ function checkout() {
     const open = new Date();
     open.setHours(12, 0, 0, 0);
     const close = new Date();
-    close.setHours(00, 30, 0, 0);
+    close.setHours(23, 59, 0, 0);
 
     let start = now > open ? now : open;
     start = new Date(start);
