@@ -237,7 +237,7 @@ def api_orders():
     try:
         data = request.get_json() or {}
 
-        # 1. 构造订单对象
+        # 1. 构造订单对象（初始字段）
         order = Order(
             order_type=data.get("orderType") or data.get("order_type"),
             customer_name=data.get("name") or data.get("customer_name"),
@@ -251,26 +251,27 @@ def api_orders():
             street=data.get("street"),
             city=data.get("city"),
             opmerking=data.get("opmerking") or data.get("remark"),
-            items=json.dumps(data.get("items", {})),
+            items=json.dumps(data.get("items", {})),  # 将 items 存为 JSON 字符串
         )
 
-        # 2. 计算 totaal
+        # 2. 计算 subtotal / totaal
         items = json.loads(order.items or "{}")
         subtotal = sum(
-        float(i.get("price", 0)) * int(i.get("qty", 0))
-        for i in items.values()
+            float(i.get("price", 0)) * int(i.get("qty", 0))
+            for i in items.values()
         )
-        order.subtotaal = subtotal  # 你可以在模型中增加这个字段
 
-# 如果你前端已经计算好总价了，使用它；否则就暂时 fallback subtotal
-order.totaal = float(data.get("totaal") or subtotal)
+        # 写入 order.totaal，优先使用前端传来的值
+        order.totaal = float(data.get("totaal") or subtotal)
 
+        # 如果你希望记录 subtotaal 也可以：
+        # order.subtotaal = subtotal  # 需在模型中添加此字段
 
         # 3. 保存订单到数据库
         db.session.add(order)
         db.session.commit()
 
-        # 4. 向 POS 广播
+        # 4. 推送给 POS
         try:
             order_payload = {
                 "id": order.id,
@@ -292,20 +293,22 @@ order.totaal = float(data.get("totaal") or subtotal)
                 "created_date": to_nl(order.created_at).strftime("%Y-%m-%d"),
                 "created_at": to_nl(order.created_at).strftime("%H:%M"),
                 "items": items,
-                "total": total,
-                "totaal": total,
+                "total": subtotal,           # 原始小计
+                "totaal": order.totaal       # 实际支付金额，含包装费等
             }
             socketio.emit("new_order", order_payload, broadcast=True)
         except Exception as e:
-            print(f"Socket emit failed: {e}")
+            print(f"❌ Socket emit failed: {e}")
 
-        # 5. 通知和支付链接
+        # 5. Telegram + Email 通知
         if data.get("message"):
             send_telegram(data.get("message"))
             if order.email:
                 send_email(order.email, "Order Confirmation", data.get("message"))
 
         print("✅ 接收到订单:", data)
+
+        # 6. 返回成功响应，包含支付链接（如果是 online）
         resp = {"status": "ok"}
         if str(order.payment_method).lower() == "online":
             pay_url = os.getenv("TIKKIE_URL")
@@ -318,6 +321,7 @@ order.totaal = float(data.get("totaal") or subtotal)
         import traceback
         traceback.print_exc()
         return jsonify({"status": "fail", "error": str(e)}), 500
+
 @app.route('/submit_order', methods=["POST"])
 def submit_order():
     # 兼容旧接口，转发数据到现有逻辑
@@ -487,6 +491,14 @@ def logout():
 # 启动
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000)
+
+
+
+
+
+
+
+
 
 
 
