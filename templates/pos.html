@@ -930,6 +930,18 @@ function submitOrder() {
 
 
 </script>
+
+<script>
+function formatCurrency(value){
+  if (typeof value === 'string') {
+    value = value.replace('€', '').replace(',', '.').trim();
+  }
+  const num = parseFloat(value);
+  return isNaN(num) ? "€0.00" : `€${num.toFixed(2)}`;
+}
+</script>
+
+  
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script>
   const socket = io('https://flask-order-api.onrender.com', { transports: ['websocket'] });
