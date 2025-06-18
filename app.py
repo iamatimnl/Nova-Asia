@@ -17,7 +17,8 @@ import os
 import json
 import requests
 import smtplib
-from ufrom flask_migrate import Migraterllib.parse import quote
+from flask_migrate import Migrate
+import Migraterllib.parse import quote
 
 # 初始化 Flask
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
