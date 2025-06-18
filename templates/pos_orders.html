@@ -91,7 +91,9 @@
     function formatCurrency(value){
       const num = parseFloat(value);
       return isNaN(num) ? "€0.00" : `€${num.toFixed(2)}`;
-    }
+     }
+     
+
 
     function addRow(order){
       const tbody = document.querySelector('table tbody');
