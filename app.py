@@ -124,7 +124,7 @@ class Order(db.Model):
     opmerking = db.Column(db.Text)
     items = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    totaal = db.Column(db.Float) 
+    
 
 class User(UserMixin):
     def __init__(self, user_id: str):
