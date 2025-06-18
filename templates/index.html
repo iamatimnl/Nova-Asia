@@ -803,38 +803,52 @@ input:focus, select:focus, textarea:focus {
     display: block !important;
   }
 }
-
 .slider-container {
   position: fixed;
   bottom: 24px;
-  left: 60px;    /* 原来是 50px，更窄 */
-  right: 60px;   /* 同样缩窄右边距 */
-  height: 64px;  /* 更厚一点 */
-  display: flex;
-  align-items: center;
-  background: rgba(28,28,30,0.60);
+  left: 50%;
+  transform: translateX(-50%); /* ✅ 居中整个胶囊 */
+  width: 80%; /* 或者用 max-width 限制最大宽度 */
+  max-width: 500px;
+  height: 64px;
+  background: linear-gradient(to right, rgba(48,209,88,0.35), rgba(255,255,255,0.08));
   backdrop-filter: blur(12px);
-  border-radius: 28px; /* 更厚时适当增加圆角以匹配圆滑感 */
-  padding: 0 16px;
+  border-radius: 32px;
+  padding: 0;
   z-index: 999;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-
-
+.slider-track {
+  position: relative;
+  width: 100%;
+  margin-left: -20px;
+  height: 100%;
+  border-radius: 32px;
+  background-color:linear-gradient(to right, rgba(48,209,88,0.15), rgba(255,255,255,0.05));
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .slider-button {
-  width: 53px;
-  height: 53px;
-  background-color: #ffffff;
+  width: 58px;
+  height: 58px;
+  background-color:rgb(52, 199, 89);
   border-radius: 50%;
   position: absolute;
-  left: 2px;
+  left: 0px; /* 初始值，JS会覆盖 */
   top: 50%;
   transform: translateY(-50%);
   z-index: 10;
   transition: left 0.3s ease;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 12px rgba(36, 138, 61, 0.4);
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -843,17 +857,18 @@ input:focus, select:focus, textarea:focus {
 }
 
 
-.slider-track {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  border-radius: 28px;
-  padding: 0 2px;
-  background-color: rgba(255, 255, 255, 0.1); /* 可调整 */
+@keyframes shine {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 100% 0;
+  }
 }
+
+
+
+
 
 
 
@@ -864,10 +879,24 @@ input:focus, select:focus, textarea:focus {
   transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 1;
-  color: #f2f2f2; /* 灰白色 */
   font-size: 16px;
   font-weight: 600;
+
+  background: linear-gradient(
+    90deg,
+    rgba(142, 142, 147, 0.4) 0%,
+    rgba(255, 255, 255, 0.99) 50%,
+    rgba(142, 142, 147, 0.4) 100%
+  );
+  background-size: 200% auto;
+  background-position: -100% 0;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite;
 }
+
 
 
 /* 响应式控制 */
@@ -2394,11 +2423,18 @@ function toggleMobileCart() {
   });
 </script>
 <script>
+window.addEventListener('DOMContentLoaded', () => {
+const padding = getHorizontalPadding(sliderTrack);
+sliderButton.style.left = `${padding.left}px`;
+});
+
 const sliderButton = document.getElementById('sliderButton');
 const sliderTrack = document.getElementById('sliderTrack');
-let isDragging = false;
+const sliderText = document.querySelector('.slider-text');
+
+let isSliding = false;
 let startX = 0;
-let currentX = 0;
+let initialLeft = 0;
 
 // 获取轨道的左右 padding
 function getHorizontalPadding(el) {
@@ -2408,79 +2444,59 @@ function getHorizontalPadding(el) {
   return { left, right };
 }
 
-sliderButton.addEventListener('touchstart', (e) => {
-  isDragging = true;
-  startX = e.touches[0].clientX;
-});
-
-sliderTrack.addEventListener('touchmove', (e) => {
-  if (!isDragging) return;
+// 获取滑动最大距离
+function getMaxSlide() {
   const padding = getHorizontalPadding(sliderTrack);
   const trackWidth = sliderTrack.offsetWidth;
   const buttonWidth = sliderButton.offsetWidth;
-  const maxX = trackWidth - buttonWidth - padding.left - padding.right;
+  return trackWidth - buttonWidth - padding.left - padding.right;
+}
 
-  currentX = e.touches[0].clientX - startX;
-  const moveX = Math.max(0, Math.min(currentX, maxX));
+// ✅ checkout 函数：在这里自定义结账逻辑
+function checkout() {
+  alert("✅ 超过60%滑动，结账触发！");
+  // 示例：跳转页面或发送请求
+  // window.location.href = "/checkout";
+}
+
+// 触摸开始
+sliderButton.addEventListener('touchstart', (e) => {
+  isSliding = true;
+  startX = e.touches[0].clientX;
+  initialLeft = parseInt(sliderButton.style.left) || getHorizontalPadding(sliderTrack).left;
+});
+
+// 触摸移动
+sliderTrack.addEventListener('touchmove', (e) => {
+  if (!isSliding) return;
+
+  const padding = getHorizontalPadding(sliderTrack);
+  const maxSlide = getMaxSlide();
+
+  const delta = e.touches[0].clientX - startX;
+  const moveX = Math.max(0, Math.min(initialLeft + delta - padding.left, maxSlide));
+
   sliderButton.style.left = `${padding.left + moveX}px`;
 });
 
+// 触摸结束
 sliderTrack.addEventListener('touchend', () => {
-  isDragging = false;
+  isSliding = false;
   const padding = getHorizontalPadding(sliderTrack);
-  const trackWidth = sliderTrack.offsetWidth;
-  const buttonWidth = sliderButton.offsetWidth;
-  const maxX = trackWidth - buttonWidth - padding.left - padding.right;
-  const currentLeft = parseInt(sliderButton.style.left) - padding.left;
-  const movedRatio = currentLeft / maxX;
+  const maxSlide = getMaxSlide();
+
+  const currentLeft = parseInt(sliderButton.style.left || '0') - padding.left;
+  const movedRatio = currentLeft / maxSlide;
 
   if (movedRatio > 0.6) {
-    sliderButton.style.left = `${trackWidth - buttonWidth - padding.right}px`;
+    // ✅ 超过60%，触发 checkout
+    sliderButton.style.left = `${padding.left + maxSlide}px`;
     checkout();
   } else {
+    // ❌ 未超过60%，复位
     sliderButton.style.left = `${padding.left}px`;
   }
 });
-</script>
-
-<script>
-let isSliding = false;
-let startX = 0;
-
-const sliderButton = document.getElementById('sliderButton');
-const sliderTrack = document.getElementById('sliderTrack');
-const sliderText = document.querySelector('.slider-text');
-
-if (sliderButton && sliderTrack) {
-  sliderButton.addEventListener('touchstart', (e) => {
-    isSliding = true;
-    startX = e.touches[0].clientX;
-  });
-
-  sliderButton.addEventListener('touchmove', (e) => {
-    if (!isSliding) return;
-    const currentX = e.touches[0].clientX;
-    let delta = currentX - startX;
-    const maxSlide = sliderTrack.offsetWidth - sliderButton.offsetWidth - 4;
-
-    delta = Math.max(0, Math.min(delta, maxSlide));
-    sliderButton.style.left = `${delta}px`;
-  });
-
-  sliderButton.addEventListener('touchend', () => {
-    const currentLeft = parseInt(sliderButton.style.left || '0');
-    const maxSlide = sliderTrack.offsetWidth - sliderButton.offsetWidth - 4;
-
-    if (currentLeft >= maxSlide * 0.9) {
-      // ✅ 成功滑动到结尾，触发结账
-      checkout();
-    }
-
-    // 重置滑块
-    sliderButton.style.left = '2px';
-    isSliding = false;
-  });
-}
 </script>
 
 
