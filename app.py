@@ -89,7 +89,6 @@ def to_nl(dt: datetime) -> datetime:
     df.to_excel(output, index=False, engine='xlsxwriter')
     output.seek(0)
     return output
-   
 
 
 
