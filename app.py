@@ -417,7 +417,7 @@ def api_orders():
                 "created_at": to_nl(order.created_at).strftime("%H:%M"),
                 "items": items,
                 "total": subtotal,           # 原始小计
-                "totaal": order.totaal 
+                "totaal": order.totaal,
                 "order_number": order.order_number,
             }
             socketio.emit("new_order", order_payload, broadcast=True)
