@@ -369,46 +369,6 @@
     padding: 2px 6px;
     font-size: 0.75rem;
   }
-  .today-toggle {
-  position: fixed;
-  bottom: 90px;
-  right: 20px;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  font-size: 1.4rem;
-  z-index: 1100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  border: none;
-}
-
-.emoji-wrapper {
-  position: relative;  /* ✅ 必须有这行 */
-  display: inline-block;
-}
-
-.badge-text-only {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: red; /* 纯红色字体 */
-  background: none;
-  padding: 0;
-  line-height: 1;
-  pointer-events: none;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
-
-
   #closeCartPanel {
     position: absolute;
     top: 10px;
@@ -456,7 +416,7 @@
       <a href="#snack">Snack</a>
       <a href="#vegan">Vegan</a>
     </div>
-    <button id="toggleToday" class="today-btn">Bestellingen Vandaag</button>
+    <button id="toggleToday" class="today-btn">Bestellingen Vandaag<span id="todayBadge" class="badge">0</span></button>
     <div class="indicator" id="indicator"></div>
   </nav>
 </div>
@@ -773,7 +733,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
   updateCart();
   toggleAddress();
-  updateTodayBadge();
+
   // 🔊 解锁 AudioContext
   document.body.addEventListener('click', () => {
     if (audioCtx.state === 'suspended') {
@@ -1008,13 +968,14 @@ function formatCurrency(value){
   let pollTimer;
   const baseTitle = document.title;
   let newOrderCount = 0;
+  let todayOrderCount = 0;
   function updateTabTitle(){
     document.title = newOrderCount ? `${baseTitle} (${newOrderCount})` : baseTitle;
   }
   function updateTodayBadge(){
     const badge=document.getElementById('todayBadge');
     if(badge){
-      badge.textContent = newOrderCount > 0 ? newOrderCount : '';
+
     }
   }
 
@@ -1079,6 +1040,7 @@ function formatCurrency(value){
     beep();
     alert('Nieuwe bestelling ontvangen!');
     addRow(order);
+
     const panel=document.getElementById('todayOrders');
     if(panel && panel.classList.contains('visible')){
       newOrderCount = 0;
@@ -1113,6 +1075,8 @@ function formatCurrency(value){
       if (!tbody) return;
       tbody.innerHTML = '';
       data.reverse().forEach(addRow); // 让最新订单在最上面
+      todayOrderCount = data.length;
+      updateTodayBadge();
     }).catch(() => {});
  }
 
