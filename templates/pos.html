@@ -1089,6 +1089,7 @@ function formatCurrency(value){
     tr.innerHTML = `
       <td>${order.created_date || ''}</td>
       <td>${order.created_at || ''}</td>
+      <td>${order.order_number || '-'}</td>
       <td>${isDelivery ? 'Bezorgen' : 'Afhalen'}</td>
       <td>${order.customer_name || ''}</td>
       <td>${order.phone || ''}</td>
