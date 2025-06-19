@@ -532,8 +532,8 @@
           </label>
         </div>
         <div id="pickupFields" style="margin-top:10px;">
-          <label for="pickupTime">Pickup Tijd*</label>
-          <input id="pickupTime" type="time" />
+          <label for="pickup_time">Pickup Tijd*</label>
+          <select id="pickup_time"></select>
           <label for="pickupPayment">Betaalmethode*</label>
           <select id="pickupPayment">
             <option value="pin">Pin</option>
@@ -550,8 +550,8 @@
           <input id="street" type="text" placeholder="Straat" />
           <label for="city">Plaats*</label>
           <input id="city" type="text" placeholder="Plaats" />
-          <label for="deliveryTime">Bezorgtijd (optioneel)</label>
-          <input id="deliveryTime" type="time" />
+          <label for="delivery_time">Bezorgtijd (optioneel)</label>
+          <select id="delivery_time"></select>
           <label for="deliveryPayment">Betaalmethode*</label>
           <select id="deliveryPayment">
             <option value="pin">Pin</option>
@@ -798,14 +798,16 @@ function toggleAddress(){
   const delivery=document.getElementById('typeDelivery').checked;
   document.getElementById('pickupFields').classList.toggle('hidden',delivery);
   document.getElementById('deliveryFields').classList.toggle('hidden',!delivery);
-  document.getElementById('pickupTime').required=!delivery?true:false;
+  document.getElementById('pickup_time').required=!delivery?true:false;
   document.getElementById('pickupPayment').required=!delivery?true:false;
   document.getElementById('postcode').required=delivery;
   document.getElementById('houseNumber').required=delivery;
   document.getElementById('deliveryPayment').required=delivery;
   if(!delivery){
+    populateTimeOptions('pickup_time',30);
     document.getElementById('qrCodeContainer').classList.add('hidden');
   } else {
+    populateTimeOptions('delivery_time',45);
     updateQRCode();
   }
   updateCart();
@@ -849,7 +851,7 @@ function updateQRCode(){
 }
 
 function clearForm(){
-  ['custName','custPhone','pickupTime','deliveryTime','postcode','houseNumber','street','city'].forEach(id=>{
+  ['custName','custPhone','pickup_time','delivery_time','postcode','houseNumber','street','city'].forEach(id=>{
     const el=document.getElementById(id);
     if(el) el.value='';
   });
@@ -861,6 +863,7 @@ function clearForm(){
   document.querySelectorAll('.product-list select').forEach(sel=>{sel.value=0;});
   for(const k in cart) delete cart[k];
   updateCart();
+  toggleAddress();
 }
 function submitOrder() {
   const name = document.getElementById('custName').value.trim();
@@ -873,7 +876,7 @@ function submitOrder() {
   const delivery = document.getElementById('typeDelivery').checked;
 
   if (!delivery) {
-    if (!document.getElementById('pickupTime').value) {
+    if (!document.getElementById('pickup_time').value) {
       alert('Pickup tijd is verplicht.');
       return;
     }
@@ -946,8 +949,8 @@ function submitOrder() {
     phone,
     email: '',
     customerEmail: '',
-    pickup_time: !delivery ? document.getElementById('pickupTime').value : '',
-    delivery_time: delivery ? document.getElementById('deliveryTime').value : '',
+    pickup_time: !delivery ? document.getElementById('pickup_time').value : '',
+    delivery_time: delivery ? document.getElementById('delivery_time').value : '',
     paymentMethod: delivery
       ? document.getElementById('deliveryPayment').value
       : document.getElementById('pickupPayment').value,
@@ -986,6 +989,37 @@ function submitOrder() {
 
 
   // ✅ 提交到远程 Flask Render 后端
+
+  function pad(num){
+    return num.toString().padStart(2,'0');
+  }
+
+  function populateTimeOptions(selectId,offsetMinutes){
+    const select=document.getElementById(selectId);
+    if(!select) return;
+    select.innerHTML='';
+    const now=new Date();
+    now.setMinutes(now.getMinutes()+offsetMinutes);
+
+    const open=new Date();
+    open.setHours(12,0,0,0);
+    const close=new Date();
+    close.setHours(23,59,0,0);
+
+    let start=now>open?now:open;
+    start=new Date(start);
+    start.setMinutes(Math.ceil(start.getMinutes()/15)*15,0,0);
+
+    for(let t=start;t<=close;t.setMinutes(t.getMinutes()+15)){
+      const hh=pad(t.getHours());
+      const mm=pad(t.getMinutes());
+      const timeStr=`${hh}:${mm}`;
+      const opt=document.createElement('option');
+      opt.value=timeStr;
+      opt.textContent=timeStr;
+      select.appendChild(opt);
+    }
+  }
 
 
 </script>
