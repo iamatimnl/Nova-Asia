@@ -1,111 +1,157 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Orders</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            padding: 20px;
-            max-width: 1200px;
-            margin: auto;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        @media (max-width: 600px) {
-            table, thead, tbody, th, td, tr {
-                display: block;
-            }
-            thead tr {
-                display: none;
-            }
-            tr {
-                margin-bottom: 15px;
-                border: 1px solid #ddd;
-                padding: 10px;
-            }
-            td {
-                border: none;
-                position: relative;
-                padding-left: 50%;
-            }
-            td:before {
-                position: absolute;
-                left: 10px;
-                top: 0;
-                width: 45%;
-                white-space: nowrap;
-                font-weight: bold;
-            }
-            td:nth-of-type(1):before { content: "ID"; }
-            td:nth-of-type(2):before { content: "Type"; }
-            td:nth-of-type(3):before { content: "Customer"; }
-            td:nth-of-type(4):before { content: "Phone"; }
-            td:nth-of-type(5):before { content: "Address"; }
-            td:nth-of-type(6):before { content: "Remark"; }
-            td:nth-of-type(7):before { content: "Payment"; }
-            td:nth-of-type(8):before { content: "Created"; }
-            td:nth-of-type(9):before { content: "Total"; }
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dagelijkse Bestellingen</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      padding: 20px;
+      max-width: 1200px;
+      margin: auto;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; vertical-align: top; }
+    th { background-color: #f2f2f2; }
+    ul { margin: 0; padding-left: 20px; }
+    #totals { margin-top: 20px; }
+    #totals table { width: auto; margin-top: 10px; }
+  </style>
 </head>
 <body>
-    <h1>Alle Bestellingen</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Type</th>
-                <th>Klant</th>
-                <th>Telefoon</th>
-                <th>Adres</th>
-                <th>Opmerking</th>
-                <th>Betaalmethode</th>
-                <th>Aangemaakt</th>
-                <th>Totaal (€)</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for info in order_data %}
-            <tr>
-                <td>{{ info.order.id }}</td>
-                {% set is_delivery = info.order.order_type in ['delivery', 'bezorgen'] %}
-                <td>{{ 'Delivery' if is_delivery else 'Pickup' }}</td>
-                <td>{{ info.order.customer_name }}</td>
-                <td>{{ info.order.phone }}</td>
-                <td>
-                    {% if is_delivery %}
-                        {{ info.order.street }} {{ info.order.house_number }} {{ info.order.postcode }} {{ info.order.city }}
-                        {% set addr = info.order.street ~ ' ' ~ info.order.house_number ~ ', ' ~ info.order.postcode ~ ' ' ~ info.order.city %}
-                        <a href="https://www.google.com/maps?q={{ addr | urlencode }}" target="_blank">📍Maps</a>
-                    {% else %}-{% endif %}
-                </td>
-                <td>{{ info.order.opmerking or '-' }}</td>
-                <td>{{ info.order.payment_method }}</td>
-                <td>{{ info.order.created_at_local.strftime('%Y-%m-%d %H:%M') }}</td>
-                {% if info.order.totaal is defined and info.order.totaal is not none %}
-  {% set tot_val = info.order.totaal %}
-{% elif info.total is defined and info.total is not none %}
-  {% set tot_val = info.total %}
-{% else %}
-  {% set tot_val = 0 %}
-{% endif %}
-<td>€{{ '%.2f' % tot_val }}</td>
-
-            </tr>
-        {% endfor %}
-        </tbody>
+  <h1 id="dayHeading">Vandaag</h1>
+  <div id="ordersContainer">
+    <p id="noOrders" style="display:none;">Geen bestellingen vandaag.</p>
+    <table id="ordersTable" style="display:none;">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Datum</th>
+          <th>Tijd</th>
+          <th>Type</th>
+          <th>Klant</th>
+          <th>Telefoon</th>
+          <th>Email</th>
+          <th>Items</th>
+          <th>Opmerking</th>
+          <th>Subtotaal (&euro;)</th>
+          <th>Totaal (&euro;)</th>
+          <th>Adres</th>
+          <th>Tijdslot</th>
+          <th>Betaling</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
     </table>
+  </div>
+
+  <div id="totals" style="display:none;">
+    <h2>Dagoverzicht</h2>
+    <table>
+      <tr><td>Totale omzet</td><td id="totalOmzet">&euro;0,00</td></tr>
+      <tr><td>Pin betaling</td><td id="totalPin">&euro;0,00</td></tr>
+      <tr><td>Online betaling</td><td id="totalOnline">&euro;0,00</td></tr>
+      <tr><td>Contant</td><td id="totalContant">&euro;0,00</td></tr>
+      <tr><td>Op rekening</td><td id="totalCredit">&euro;0,00</td></tr>
+    </table>
+  </div>
+
+<script>
+function formatCurrency(value) {
+  if (typeof value === 'string') {
+    value = value.replace(/[^\d,.-]/g, '').replace(',', '.').trim();
+  }
+  const num = parseFloat(value);
+  return isNaN(num) ? '€0,00' : '€' + num.toFixed(2).replace('.', ',');
+}
+
+function fetchOrders() {
+  fetch('/pos/orders_today?json=1')
+    .then(r => r.json())
+    .then(data => {
+      const tbody = document.querySelector('#ordersTable tbody');
+      const table = document.getElementById('ordersTable');
+      const msg = document.getElementById('noOrders');
+      tbody.innerHTML = '';
+      let total = 0, pin = 0, online = 0, contant = 0, credit = 0;
+
+      data.sort((a, b) => {
+        const t1 = (a.created_at || '').split(':');
+        const t2 = (b.created_at || '').split(':');
+        return (parseInt(t1[0]) * 60 + parseInt(t1[1])) - (parseInt(t2[0]) * 60 + parseInt(t2[1]));
+      });
+
+      if (data.length) {
+        table.style.display = '';
+        msg.style.display = 'none';
+      } else {
+        table.style.display = 'none';
+        msg.style.display = 'block';
+      }
+
+      const heading = document.getElementById('dayHeading');
+      if (data.length) {
+        const d = data[0].created_date.split('-');
+        heading.textContent = `Vandaag – ${d[2]}-${d[1]}-${d[0]}`;
+      } else {
+        const now = new Date();
+        const dd = String(now.getDate()).padStart(2, '0');
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const yy = now.getFullYear();
+        heading.textContent = `Vandaag – ${dd}-${mm}-${yy}`;
+      }
+
+      data.forEach(order => {
+        const tr = document.createElement('tr');
+        const isDelivery = ['delivery', 'bezorgen'].includes((order.order_type || '').toLowerCase());
+        const items = Object.entries(order.items || {}).map(([n, i]) => `<li>${n} x ${i.qty}</li>`).join('');
+        let subtotal = parseFloat(order.subtotal);
+        if (isNaN(subtotal)) {
+          subtotal = Object.values(order.items || {}).reduce((s, i) => s + (parseFloat(i.price || 0) * parseInt(i.qty || 0)), 0);
+        }
+        let tot = order.totaal ?? order.total ?? subtotal;
+        if (typeof tot === 'string') {
+          tot = parseFloat(tot.replace(/[^\d,.-]/g, '').replace(',', '.'));
+        }
+
+        total += tot;
+        const method = String(order.payment_method || '').toLowerCase();
+        if (method.includes('pin')) pin += tot;
+        else if (method.includes('online')) online += tot;
+        else if (method.includes('contant')) contant += tot;
+        else if (method.includes('rekening')) credit += tot;
+
+        tr.innerHTML = `
+          <td>${order.id || ''}</td>
+          <td>${order.created_date || ''}</td>
+          <td>${order.created_at || ''}</td>
+          <td>${isDelivery ? 'Bezorgen' : 'Afhalen'}</td>
+          <td>${order.customer_name || ''}</td>
+          <td>${order.phone || ''}</td>
+          <td>${order.email || '-'}</td>
+          <td><ul>${items}</ul></td>
+          <td>${order.opmerking || order.remark || '-'}</td>
+          <td>${formatCurrency(subtotal)}</td>
+          <td>${formatCurrency(tot)}</td>
+          <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
+          <td>${isDelivery ? (order.delivery_time || order.deliveryTime || '-') : (order.pickup_time || order.pickupTime || '-')}</td>
+          <td>${order.payment_method || ''}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('totals').style.display = data.length ? '' : 'none';
+      document.getElementById('totalOmzet').textContent = formatCurrency(total);
+      document.getElementById('totalPin').textContent = formatCurrency(pin);
+      document.getElementById('totalOnline').textContent = formatCurrency(online);
+      document.getElementById('totalContant').textContent = formatCurrency(contant);
+      document.getElementById('totalCredit').textContent = formatCurrency(credit);
+    })
+    .catch(() => {});
+}
+
+document.addEventListener('DOMContentLoaded', fetchOrders);
+</script>
 </body>
 </html>
