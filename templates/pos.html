@@ -369,16 +369,6 @@
     padding: 2px 6px;
     font-size: 0.75rem;
   }
-  .today-btn .badge {
-    position: absolute;
-    top: -4px;
-    right: -4px;
-    background: #ff3b30;
-    color: #fff;
-    border-radius: 50%;
-    padding: 2px 6px;
-    font-size: 0.75rem;
-  }
   #closeCartPanel {
     position: absolute;
     top: 10px;
@@ -393,6 +383,8 @@
   }
   @media (max-width: 768px) {
     .cart-toggle { display: block; }
+    .today-toggle { display: block; }
+    .today-btn { display: none; }
     .cart-panel {
       position: fixed;
       inset: 0;
@@ -428,7 +420,7 @@
     <div class="indicator" id="indicator"></div>
   </nav>
 </div>
-<h1>Bestelling</h1>
+<h1>Menu</h1>
 <div class="pos-layout">
   <div class="side-tools">
     <div id="todayOrders" class="orders-slide">
@@ -539,6 +531,15 @@
   </div>
 </div>
 <button id="cartToggle" class="cart-toggle">🛒<span id="cartCount" class="badge">0</span></button>
+<<button id="todayToggleMobile" class="today-toggle">
+  <span class="emoji-wrapper">
+    📋
+    <span id="todayBadge" class="badge-text-only">3</span>
+  </span>
+</button>
+
+
+
 <audio id="notifySound" src="/sound/beep.mp3" preload="auto"></audio>
 
 <script>
@@ -700,6 +701,10 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('discountType').addEventListener('change',updateCart);
   document.getElementById('discountValue').addEventListener('input',updateCart);
   document.getElementById('toggleToday').addEventListener('click',toggleToday);
+  const todayToggleMobile=document.getElementById('todayToggleMobile');
+  if(todayToggleMobile){
+    todayToggleMobile.addEventListener('click',toggleToday);
+  }
   document.getElementById('closeToday').addEventListener('click',toggleToday);
   document.getElementById('typePickup').addEventListener('change',toggleAddress);
   document.getElementById('typeDelivery').addEventListener('change',toggleAddress);
@@ -728,7 +733,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
   updateCart();
   toggleAddress();
-  fetchOrders();
+
   // 🔊 解锁 AudioContext
   document.body.addEventListener('click', () => {
     if (audioCtx.state === 'suspended') {
@@ -913,6 +918,8 @@ function submitOrder() {
     items: itemsToSend,
     message: orderText,
     opmerking: remark,
+    totaal: total.toFixed(2),
+
     summary  // ✅ 加入结账明细
   };
 
@@ -968,7 +975,7 @@ function formatCurrency(value){
   function updateTodayBadge(){
     const badge=document.getElementById('todayBadge');
     if(badge){
-      badge.textContent = todayOrderCount;
+
     }
   }
 
@@ -1033,7 +1040,7 @@ function formatCurrency(value){
     beep();
     alert('Nieuwe bestelling ontvangen!');
     addRow(order);
-    todayOrderCount++;
+
     const panel=document.getElementById('todayOrders');
     if(panel && panel.classList.contains('visible')){
       newOrderCount = 0;
