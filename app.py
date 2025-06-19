@@ -58,7 +58,7 @@ def to_nl(dt: datetime) -> datetime:
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=UTC)
     return dt.astimezone(NL_TZ)
- def generate_excel_today():
+def generate_excel_today():
     today = datetime.now(NL_TZ).date()
     start_local = datetime.combine(today, datetime.min.time(), tzinfo=NL_TZ)
     start = start_local.astimezone(UTC).replace(tzinfo=None)
