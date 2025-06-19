@@ -2200,8 +2200,21 @@ function checkout() {
     const infoBox = document.getElementById('locationInfo');
     const afhalenFields = document.getElementById('afhalenFields');
     const bezorgenFields = document.getElementById('bezorgenFields');
+    const transferValues = (fromBox, toBox) => {
+      const inputs = fromBox.querySelectorAll('input, select, textarea');
+      inputs.forEach(src => {
+        const key = src.id || src.name;
+        if (!key) return;
+        const target = toBox.querySelector(`#${CSS.escape(key)}`) ||
+                       toBox.querySelector(`[name="${key}"]`);
+        if (target && !target.value) {
+          target.value = src.value;
+        }
+      });
+    };
 
     if (afhalen.checked) {
+      transferValues(bezorgenFields, afhalenFields);
       infoBox.innerHTML = `Adres voor afhalen:
   <a href="https://www.google.com/maps?q=Sjoukje+Dijkstralaan+83,+2134+CN+Hoofddorp" target="_blank" style="color: var(--accent-color); text-decoration: underline;">
     Sjoukje Dijkstralaan 83, 2134 CN Hoofddorp
@@ -2212,6 +2225,7 @@ function checkout() {
       bezorgenFields.classList.add('hidden');
       populateTimeOptions('pickup_time', 30);
     } else {
+      transferValues(afhalenFields, bezorgenFields);
       infoBox.textContent = 'Wij bezorgen in de volgende postcodegebieden:\n2341, 2342, 2343, 2333, 2334, 2231, 2232, 2361, 2235';
 
       bezorgenFields.classList.remove('hidden');
