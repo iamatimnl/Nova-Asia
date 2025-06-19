@@ -2166,6 +2166,7 @@ function checkout() {
   function populateTimeOptions(selectId, offsetMinutes) {
     const select = document.getElementById(selectId);
     if (!select) return;
+    const prev = select.value; // keep current selection
     select.innerHTML = '';
     const now = new Date();
     now.setMinutes(now.getMinutes() + offsetMinutes);
@@ -2187,6 +2188,10 @@ function checkout() {
       opt.value = timeStr;
       opt.textContent = timeStr;
       select.appendChild(opt);
+    }
+    if (prev) {
+      const option = Array.from(select.options).find(o => o.value === prev);
+      if (option) select.value = prev;
     }
   }
 
