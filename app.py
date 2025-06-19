@@ -24,7 +24,7 @@ from io import BytesIO
 import pandas as pd
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
-from your_module import Order, db, to_nl  # 替换为你的实际导入路径（如果不是 app.py 内部）
+
 
 
 # 初始化 Flask
