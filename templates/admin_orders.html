@@ -82,12 +82,13 @@
     }
 
     function downloadExcel() {
-      window.open("https://flask-order-api.onrender.com/export_today_excel", "_blank");
-    }
+      window.open("/admin/orders/download/excel", "_blank");
+     }
 
-    function downloadPDF() {
-      window.open("https://flask-order-api.onrender.com/export_today_pdf", "_blank");
-    }
+   function downloadPDF() {
+   window.open("/admin/orders/download/pdf", "_blank");
+       }
+
 
     function fetchOrders() {
       fetch('/pos/orders_today?json=1')
