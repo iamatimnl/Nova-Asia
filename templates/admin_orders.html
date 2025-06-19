@@ -72,7 +72,11 @@
     </table>
   </div>
 
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script>
+    const socket = io({transports:['websocket']});
+    let pollTimer;
+
     function formatCurrency(value) {
       if (typeof value === 'string') {
         value = value.replace(/[^\d,.-]/g, '').replace(',', '.').trim();
@@ -85,9 +89,9 @@
       window.open("/admin/orders/download/excel", "_blank");
      }
 
-   function downloadPDF() {
-   window.open("/admin/orders/download/pdf", "_blank");
-       }
+    function downloadPDF() {
+      window.open("/admin/orders/download/pdf", "_blank");
+    }
 
 
     function fetchOrders() {
@@ -175,7 +179,30 @@
         .catch(() => {});
     }
 
+    function startPolling(){
+      if(pollTimer) return;
+      fetchOrders();
+      pollTimer = setInterval(fetchOrders,10000);
+    }
+
+    function stopPolling(){
+      if(pollTimer){
+        clearInterval(pollTimer);
+        pollTimer = null;
+      }
+    }
+
+    socket.on('connect_error', () => { setTimeout(() => socket.connect(), 1000); });
+    socket.on('disconnect', startPolling);
+    socket.on('connect', () => {
+      stopPolling();
+      fetchOrders();
+    });
+    socket.on('reconnect', fetchOrders);
+    socket.on('new_order', fetchOrders);
+
     document.addEventListener('DOMContentLoaded', fetchOrders);
+    window.addEventListener('beforeunload',()=>socket.disconnect());
   </script>
 </body>
 </html>
