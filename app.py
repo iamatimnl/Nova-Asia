@@ -568,8 +568,11 @@ def pos_orders_today():
             )
 
         o.formatted = (
-            f"📦 Nieuwe bestelling bij *Nova Asia*:\n\n{summary}\n{details}\nTotaal: €{totaal:.2f}"
+            f"📦 Nieuwe bestelling bij *Nova Asia*:\n\n"
+            f"Bestelnummer: {o.order_number}\n"  # ✅ 插入编号
+            f"{summary}\n{details}\nTotaal: €{total:.2f}"
         )
+
 
         order_dicts.append({
             "id": o.id,
@@ -593,7 +596,7 @@ def pos_orders_today():
             "items": o.items_dict,
             "total": totaal,   # ✅ 关键是这里：使用数据库中的 totaal
             "totaal": totaal,
-            "order_number": order.order_number,
+            "order_number": o.order_number  # ✅ 加上这行
         })
 
     if request.args.get("json"):
