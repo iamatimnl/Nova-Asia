@@ -369,6 +369,36 @@
     padding: 2px 6px;
     font-size: 0.75rem;
   }
+  .today-btn .badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #ff3b30;
+    color: #fff;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.75rem;
+  }
+  .today-btn .label { margin-right: 4px; }
+
+  @media (max-width: 768px) {
+    .today-btn {
+      position: fixed;
+      bottom: 86px;
+      right: 20px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      z-index: 1100;
+    }
+    .today-btn .label { display: none; }
+  }
   #closeCartPanel {
     position: absolute;
     top: 10px;
@@ -416,7 +446,7 @@
       <a href="#snack">Snack</a>
       <a href="#vegan">Vegan</a>
     </div>
-    <button id="toggleToday" class="today-btn">Bestellingen Vandaag<span id="todayBadge" class="badge">0</span></button>
+<
     <div class="indicator" id="indicator"></div>
   </nav>
 </div>
