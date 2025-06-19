@@ -24,7 +24,7 @@ from io import BytesIO
 import pandas as pd
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
-
+from your_module import Order, db, to_nl  # 替换为你的实际导入路径（如果不是 app.py 内部）
 
 
 # 初始化 Flask
@@ -92,50 +92,50 @@ def to_nl(dt: datetime) -> datetime:
 
 
 
-from your_module import Order, db, to_nl  # 替换为你的实际导入路径（如果不是 app.py 内部）
+
 
 def generate_pdf_today():
+    today = datetime.now(NL_TZ).date()
+    start_local = datetime.combine(today, datetime.min.time(), tzinfo=NL_TZ)
+    start = start_local.astimezone(UTC).replace(tzinfo=None)
+
+    orders = Order.query.filter(Order.created_at >= start).order_by(Order.created_at.desc()).all()
+
     buffer = BytesIO()
-    p = canvas.Canvas(buffer, pagesize=A4)
-    width, height = A4
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    elements = []
 
-    # 设置字体
-    p.setFont("Helvetica", 12)
-
-    # 获取今天的订单
-    today = datetime.now().date()
-    orders = Order.query.filter(Order.created_at >= today).order_by(Order.created_at.asc()).all()
-
-    y = height - 40  # 初始 Y 位置
-    for idx, o in enumerate(orders):
+    data = [["Datum", "Tijd", "Naam", "Totaal", "Items"]]
+    for o in orders:
         try:
             items = json.loads(o.items or "{}")
         except Exception:
-            try:
-                import ast
-                items = ast.literal_eval(o.items)
-            except Exception:
-                items = {}
+            items = {}
 
-        p.drawString(40, y, f"Bestelling {idx + 1}: {o.customer_name} | {to_nl(o.created_at).strftime('%H:%M')}")
-        y -= 20
-        for name, item in items.items():
-            qty = item.get("qty", 0)
-            p.drawString(60, y, f"- {name} x {qty}")
-            y -= 15
+        summary = ", ".join(f"{k} x {v.get('qty')}" for k, v in items.items())
+        data.append([
+            to_nl(o.created_at).strftime("%Y-%m-%d"),
+            to_nl(o.created_at).strftime("%H:%M"),
+            o.customer_name,
+            f"€{o.totaal:.2f}",
+            summary
+        ])
 
-        totaal = f"{o.totaal:.2f}" if o.totaal else "0.00"
-        p.drawString(60, y, f"Totaal: €{totaal}")
-        y -= 30
-
-        if y < 100:
-            p.showPage()
-            p.setFont("Helvetica", 12)
-            y = height - 40
-
-    p.save()
+    table = Table(data, repeatRows=1)
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.lightblue),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+    ]))
+    elements.append(table)
+    doc.build(elements)
     buffer.seek(0)
     return buffer
+
 @app.route("/admin/orders/download/pdf")
 @login_required
 def download_pdf():
