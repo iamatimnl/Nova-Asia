@@ -228,6 +228,7 @@ login_manager.login_view = "login"
 class Order(db.Model):
     __tablename__ = 'orders'  # ✅ 避免使用 SQL 保留字
     id = db.Column(db.Integer, primary_key=True)
+    order_number = db.Column(db.String(20))
     order_type = db.Column(db.String(20))
     customer_name = db.Column(db.String(100))
     phone = db.Column(db.String(20))
@@ -263,6 +264,8 @@ def home():
 @login_required
 def pos():
     if request.method == "POST":
+        order_number = generate_order_number()
+
         data = request.get_json() or {}
         order = Order(
             order_type=data.get("order_type") or data.get("orderType"),
@@ -310,6 +313,8 @@ def pos():
                 "items": items,
                 "total": total,
                 "totaal": total,
+                "order_number": order.order_number
+                
             }
             socketio.emit("new_order", payload, broadcast=True)
         except Exception as e:
@@ -352,6 +357,7 @@ def pos():
 def api_orders():
     try:
         data = request.get_json() or {}
+        order_number = generate_order_number()
 
         # 1. 构造订单对象（初始字段）
         order = Order(
@@ -411,7 +417,8 @@ def api_orders():
                 "created_at": to_nl(order.created_at).strftime("%H:%M"),
                 "items": items,
                 "total": subtotal,           # 原始小计
-                "totaal": order.totaal       # 实际支付金额，含包装费等
+                "totaal": order.totaal 
+                "order_number": order.order_number,
             }
             socketio.emit("new_order", order_payload, broadcast=True)
         except Exception as e:
@@ -419,9 +426,14 @@ def api_orders():
 
         # 5. Telegram + Email 通知
         if data.get("message"):
-            send_telegram(data.get("message"))
+            order_number_line = f"🧾 Bestelnummer: {order.order_number}\n"
+            full_message = order_number_line + data["message"]
+
+            send_telegram(full_message)
+
             if order.email:
-                send_email(order.email, "Order Confirmation", data.get("message"))
+                send_email(order.email, "Orderbevestiging", full_message)
+
 
         print("✅ 接收到订单:", data)
 
@@ -581,6 +593,7 @@ def pos_orders_today():
             "items": o.items_dict,
             "total": totaal,   # ✅ 关键是这里：使用数据库中的 totaal
             "totaal": totaal,
+            "order_number": order.order_number,
         })
 
     if request.args.get("json"):
