@@ -2127,9 +2127,10 @@ function checkout() {
         showFeedback('Bestelling succesvol verzonden!');
         for (const k in cart) delete cart[k];
         updateCart();
-        sliderText.innerText = 'Schuif om te betalen';
-        sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
-        sliderTrack.style.pointerEvents = 'auto';
+
+        sliderText.innerText = 'Bestelling verzonden';
+        sliderButton.style.display = 'none';
+        sliderTrack.style.pointerEvents = 'none';
 
         if (paymentMethod === 'online' && data.paymentLink) {
           window.location.href = data.paymentLink;
@@ -2141,6 +2142,7 @@ function checkout() {
       }
         sliderText.innerText = 'Schuif om te betalen';
         sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
+        sliderButton.style.display = 'flex';
         sliderTrack.style.pointerEvents = 'auto';
     })
     .catch(err => {
@@ -2148,6 +2150,7 @@ function checkout() {
       showFeedback('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.', true);
        sliderText.innerText = 'Schuif om te betalen';
        sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
+       sliderButton.style.display = 'flex';
        sliderTrack.style.pointerEvents = 'auto';
 
 
