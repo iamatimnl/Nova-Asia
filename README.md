@@ -34,6 +34,7 @@ Create a new Web Service on Render, link this repository, and it will deploy usi
 - `DATABASE_URL` - database connection URI.
 - `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` - optional Telegram notification settings.
 - `SMTP_SERVER`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `FROM_EMAIL` - optional SMTP settings.
+- `ADMIN_EMAIL` - address to receive order notifications.
 - `TIKKIE_URL` - URL to redirect customers for online payments.
 
 For local development copy `.env.example` to `.env` and fill in the values.
