@@ -33,7 +33,7 @@ import string
 from email.mime.text import MIMEText
 from dotenv import load_dotenv
 import os
-
+from utils import send_telegram_message  # 确保你有这个函
 load_dotenv()
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -108,24 +108,13 @@ def generate_excel_today():
 def generate_order_number(length=8):
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
 
-@app.route("/api/test_telegram", methods=["POST"])
+@app.route('/test-telegram')
 def test_telegram():
-    message = request.json.get("message", "📢 这是来自 App A 的 Telegram 测试消息")
-    bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
-    chat_id = os.getenv("TELEGRAM_CHAT_ID")
-
-    if not bot_token or not chat_id:
-        return jsonify({"error": "Telegram credentials not set"}), 500
-
     try:
-        response = requests.post(
-            f"https://api.telegram.org/bot{bot_token}/sendMessage",
-            json={"chat_id": chat_id, "text": message},
-            timeout=5
-        )
-        return jsonify({"status": "sent", "telegram_response": response.json()})
+        send_telegram_message("✅ Telegram notificatie werkt!")
+        return jsonify(status="ok", message="Telegram test sent")
     except Exception as e:
-        return jsonify({"status": "failed", "error": str(e)}), 500
+        return jsonify(status="fail", error=str(e)), 500
 
 def generate_pdf_today():
     today = datetime.now(NL_TZ).date()
