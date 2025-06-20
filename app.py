@@ -30,8 +30,7 @@ from reportlab.platypus import Table, TableStyle
 from reportlab.lib import colors
 import random
 import string
-from dotenv import load_dotenv
-load_dotenv()
+
 
 
 
