@@ -24,7 +24,6 @@
     <tr>
       <th>Datum</th>
       <th>Tijd</th>
-      <th>Bestelnummer</th>
       <th>Type</th>
       <th>Klant</th>
       <th>Telefoon</th>
@@ -35,6 +34,7 @@
       <th>Adres</th>
       <th>Tijdslot</th>
       <th>Betaling</th>
+      <th>Bestelnummer</th>
     </tr>
   </thead>
   <tbody>
@@ -132,21 +132,22 @@
   const delivery = order.delivery_time || order.deliveryTime;
 
   tr.innerHTML = `
-    <td>${order.created_date || ''}</td>
-    <td>${order.created_at || ''}</td>
-    <td>${order.order_number || ''}</td>
-    <td>${isDelivery ? 'Bezorgen' : 'Afhalen'}</td>
-    <td>${order.customer_name || ''}</td>
-    <td>${order.phone || ''}</td>
-    <td>${order.email || '-'}</td>
-    <td><ul>${items}</ul></td>
-    <td>${remark || '-'}</td>
-    <td>${formatCurrency(subtotal)}</td>
-    <td>${formatCurrency(totaalVal)}</td>
-    <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
-    <td>${isDelivery ? (delivery || '-') : (pickup || '-')}</td>
-    <td>${order.payment_method || ''}</td>
-  `;
+  <td>${order.created_date || ''}</td>
+  <td>${order.created_at || ''}</td>
+  <td>${isDelivery ? 'Bezorgen' : 'Afhalen'}</td>
+  <td>${order.customer_name || ''}</td>
+  <td>${order.phone || ''}</td>
+  <td>${order.email || '-'}</td>
+  <td><ul>${items}</ul></td>
+  <td>${remark || '-'}</td>
+  <td>${formatCurrency(totaalVal)}</td>
+  <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
+  <td>${isDelivery ? (delivery || '-') : (pickup || '-')}</td>
+  <td>${order.payment_method || '-'}</td>
+  <td>${order.order_number || ''}</td>
+`;
+
+
 
   tbody.prepend(tr);
 }
