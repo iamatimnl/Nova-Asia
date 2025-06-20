@@ -1103,8 +1103,8 @@ function formatCurrency(value){
         <td>€${parseFloat(order.totaal).toFixed(2)}</td>
         <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
         <td>${isDelivery ? (delivery || '-') : (pickup || '-')}</td>
-        <td>${order.payment_method || ''}</td>`;
-    
+        <td>${order.payment_method || ''}</td>
+        <td>${order.order_number || '-'}</td>`;
       
     tbody.prepend(tr);
   }
