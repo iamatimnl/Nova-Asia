@@ -220,38 +220,6 @@ def send_email(to_email: str, subject: str, body: str):
     except Exception as e:
         print(f"Email send error: {e}")
 
-
-def format_notification(order: "Order") -> str:
-    """Return a unified notification text for Telegram and email."""
-    try:
-        items = json.loads(order.items or "{}")
-    except Exception:
-        items = {}
-
-    summary = "\n".join(f"{name} x {item.get('qty')}" for name, item in items.items())
-
-    if order.order_type in ["afhalen", "pickup"]:
-        details = f"[Afhalen]\nNaam: {order.customer_name}\nTelefoon: {order.phone}"
-        if order.email:
-            details += f"\nEmail: {order.email}"
-        details += f"\nAfhaaltijd: {order.pickup_time}\nBetaalwijze: {order.payment_method}"
-    else:
-        details = f"[Bezorgen]\nNaam: {order.customer_name}\nTelefoon: {order.phone}"
-        if order.email:
-            details += f"\nEmail: {order.email}"
-        details += (
-            f"\nAdres: {order.street} {order.house_number}"\
-            f"\nPostcode: {order.postcode}\nBezorgtijd: {order.delivery_time}"\
-            f"\nBetaalwijze: {order.payment_method}"
-        )
-
-    totaal = order.totaal or 0
-    return (
-        "📦 Nieuwe bestelling bij *Nova Asia*:\n\n"
-        f"Bestelnummer: {order.order_number}\n"
-        f"{summary}\n{details}\nTotaal: €{totaal:.2f}"
-    )
-
 # 设置登录管理
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
@@ -451,26 +419,50 @@ def api_orders():
         except Exception as e:
             print(f"❌ Socket emit failed: {e}")
 
-        
+        # 4.5 向 App B 推送订单
+        try:
+            notifier_url = os.getenv("ORDER_FORWARD_URL")
+            if notifier_url:
+                forward_payload = {
+                    "order_number": order.order_number,
+                    "customer_name": order.customer_name,
+                    "email": order.email,
+                    "phone": order.phone,
+                    "items": items,
+                    "totaal": order.totaal,
+                    "pickup_time": order.pickup_time,
+                    "delivery_time": order.delivery_time,
+                    "order_type": order.order_type,
+                    "remark": order.opmerking,
+                }
+                forward_headers = {
+                    "Authorization": f"Bearer {os.getenv('ORDER_FORWARD_TOKEN', '')}"
+                }
+                response = requests.post(
+                    notifier_url,
+                    json=forward_payload,
+                    headers=forward_headers,
+                    timeout=5
+                )
+                print(f"✅ Order forwarded to notifier: {response.status_code}")
+            else:
+                print("⚠️ No notifier URL configured.")
+        except Exception as e:
+            print(f"❌ Failed to forward order: {e}")
 
-        # 5. Telegram / Email 通知（统一格式）
-        notify_text = format_notification(order)
-        send_telegram(notify_text)
+        # 5. Telegram / Email 通知（保留原逻辑）
+        if data.get("message"):
+            order_number_line = f"🧾 Bestelnummer: {order.order_number}\n"
+            full_message = order_number_line + data["message"]
 
-        admin_email = os.getenv("ADMIN_EMAIL") or os.getenv("FROM_EMAIL")
-        if admin_email:
-            send_email(admin_email, "Nova Asia - Nieuwe bestelling", notify_text)
-        if order.email:
-            send_email(order.email, "Nova Asia - Bevestiging van je bestelling", notify_text)
+            send_telegram(full_message)
+            if order.email:
+                send_email(order.email, "Orderbevestiging", full_message)
 
         print("✅ 接收到订单:", data)
 
         # 6. 返回响应
-        resp = {
-            "status": "ok",
-            "order_number": order.order_number
-        }
-
+        resp = {"status": "ok"}
         if str(order.payment_method).lower() == "online":
             pay_url = os.getenv("TIKKIE_URL")
             if pay_url:
@@ -658,6 +650,27 @@ def logout():
 # 启动
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
