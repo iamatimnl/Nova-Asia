@@ -30,6 +30,8 @@ from reportlab.platypus import Table, TableStyle
 from reportlab.lib import colors
 import random
 import string
+from email.mime.text import MIMEText
+import os
 
 
 
@@ -100,7 +102,24 @@ def generate_excel_today():
 def generate_order_number(length=8):
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
 
+@app.route("/api/test_telegram", methods=["POST"])
+def test_telegram():
+    message = request.json.get("message", "📢 这是来自 App A 的 Telegram 测试消息")
+    bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
+    chat_id = os.getenv("TELEGRAM_CHAT_ID")
 
+    if not bot_token or not chat_id:
+        return jsonify({"error": "Telegram credentials not set"}), 500
+
+    try:
+        response = requests.post(
+            f"https://api.telegram.org/bot{bot_token}/sendMessage",
+            json={"chat_id": chat_id, "text": message},
+            timeout=5
+        )
+        return jsonify({"status": "sent", "telegram_response": response.json()})
+    except Exception as e:
+        return jsonify({"status": "failed", "error": str(e)}), 500
 
 def generate_pdf_today():
     today = datetime.now(NL_TZ).date()
@@ -415,7 +434,7 @@ def api_orders():
                 "totaal": order.totaal,
                 "order_number": order.order_number,
             }
-            socketio.emit("new_order", order_payload, broadcast=True)
+            socketio.emit("new_order", order_payload)
         except Exception as e:
             print(f"❌ Socket emit failed: {e}")
 
