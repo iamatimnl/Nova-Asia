@@ -570,7 +570,8 @@ def pos_orders_today():
         o.formatted = (
             f"📦 Nieuwe bestelling bij *Nova Asia*:\n\n"
             f"Bestelnummer: {o.order_number}\n"  # ✅ 插入编号
-            f"{summary}\n{details}\nTotaal: €{total:.2f}"
+            f"{summary}\n{details}\nTotaal: €{totaal:.2f}"
+
         )
 
 
