@@ -28,5 +28,12 @@ services:
         value: qianchennl@gmail.com
       - key: TIKKIE_URL
         value: https://tikkie.me/pay/example
-
+ services:
+   - type: web
+     name: flask-order-api
+     env: python
+     plan: free
+     buildCommand: pip install -r requirements.txt
+     startCommand: gunicorn --worker-class eventlet -w 1 app:app
+     autoDeploy: true
 
