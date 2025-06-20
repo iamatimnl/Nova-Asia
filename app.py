@@ -391,7 +391,7 @@ def api_orders():
         data = request.get_json() or {}
         order_number = generate_order_number()
 
-        # 1. 构造订单对象
+        # 1. 构造订单对象（初始字段）
         order = Order(
             order_type=data.get("orderType") or data.get("order_type"),
             customer_name=data.get("name") or data.get("customer_name"),
@@ -409,7 +409,7 @@ def api_orders():
             order_number=order_number
         )
 
-        # 2. 计算 totaal（小计）
+        # 2. 计算 subtotal / totaal
         items = json.loads(order.items or "{}")
         subtotal = sum(
             float(i.get("price", 0)) * int(i.get("qty", 0))
@@ -417,11 +417,11 @@ def api_orders():
         )
         order.totaal = float(data.get("totaal") or subtotal)
 
-        # 3. 保存到数据库
+        # 3. 保存订单到数据库
         db.session.add(order)
         db.session.commit()
 
-        # 4. 推送到 POS via Socket.IO
+        # 4. 推送给 POS via SocketIO
         try:
             order_payload = {
                 "id": order.id,
@@ -451,34 +451,17 @@ def api_orders():
         except Exception as e:
             print(f"❌ Socket emit failed: {e}")
 
-        # 5. 使用统一格式生成通知内容
-        data["order_number"] = order.order_number
-        data["totaal"] = order.totaal
-        data["payment_method"] = order.payment_method
-        data["delivery_time"] = order.delivery_time
-        data["pickup_time"] = order.pickup_time
-        data["email"] = order.email
-        data["phone"] = order.phone
-        data["street"] = order.street
-        data["house_number"] = order.house_number
-        data["postcode"] = order.postcode
-        data["city"] = order.city
-        data["name"] = order.customer_name
-        data["orderType"] = order.order_type
-        data["opmerking"] = order.opmerking
-        data["summary"] = {
-            "subtotal": order.totaal,
-            "total": order.totaal
-        }
+        
 
-        formatted = format_order_notification(data)
-        send_telegram(formatted)
+        # 5. Telegram / Email 通知（统一格式）
+        notify_text = format_notification(order)
+        send_telegram(notify_text)
 
         admin_email = os.getenv("ADMIN_EMAIL") or os.getenv("FROM_EMAIL")
         if admin_email:
-            send_email(admin_email, "Nova Asia - Nieuwe bestelling", formatted)
+            send_email(admin_email, "Nova Asia - Nieuwe bestelling", notify_text)
         if order.email:
-            send_email(order.email, "Nova Asia - Bevestiging van je bestelling", formatted)
+            send_email(order.email, "Nova Asia - Bevestiging van je bestelling", notify_text)
 
         print("✅ 接收到订单:", data)
 
@@ -499,7 +482,6 @@ def api_orders():
         import traceback
         traceback.print_exc()
         return jsonify({"status": "fail", "error": str(e)}), 500
-
 
 
 @app.route('/submit_order', methods=["POST"])
@@ -676,6 +658,19 @@ def logout():
 # 启动
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
