@@ -30,14 +30,6 @@ from reportlab.platypus import Table, TableStyle
 from reportlab.lib import colors
 import random
 import string
-from email.mime.text import MIMEText
-from dotenv import load_dotenv
-import os
-from utils import send_telegram_message  # 确保你有这个函
-load_dotenv()
-
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 
 
@@ -108,13 +100,7 @@ def generate_excel_today():
 def generate_order_number(length=8):
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
 
-@app.route('/test-telegram')
-def test_telegram():
-    try:
-        send_telegram_message("✅ Telegram notificatie werkt!")
-        return jsonify(status="ok", message="Telegram test sent")
-    except Exception as e:
-        return jsonify(status="fail", error=str(e)), 500
+
 
 def generate_pdf_today():
     today = datetime.now(NL_TZ).date()
@@ -429,7 +415,7 @@ def api_orders():
                 "totaal": order.totaal,
                 "order_number": order.order_number,
             }
-            socketio.emit("new_order", order_payload)
+            socketio.emit("new_order", order_payload, broadcast=True)
         except Exception as e:
             print(f"❌ Socket emit failed: {e}")
 
@@ -664,6 +650,57 @@ def logout():
 # 启动
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
