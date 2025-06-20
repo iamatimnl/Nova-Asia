@@ -434,6 +434,7 @@ def api_orders():
                     "delivery_time": order.delivery_time,
                     "order_type": order.order_type,
                     "remark": order.opmerking,
+                    "order_number": order.order_number,
                 }
                 forward_headers = {
                     "Authorization": f"Bearer {os.getenv('ORDER_FORWARD_TOKEN', '')}"
