@@ -30,9 +30,6 @@ from reportlab.platypus import Table, TableStyle
 from reportlab.lib import colors
 import random
 import string
-from dotenv import load_dotenv
-load_dotenv()
-
 
 
 
@@ -437,7 +434,6 @@ def api_orders():
                     "delivery_time": order.delivery_time,
                     "order_type": order.order_type,
                     "remark": order.opmerking,
-                    "order_number": order.order_number,
                 }
                 forward_headers = {
                     "Authorization": f"Bearer {os.getenv('ORDER_FORWARD_TOKEN', '')}"
@@ -654,7 +650,6 @@ def logout():
 # 启动
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000)
-
 
 
 
