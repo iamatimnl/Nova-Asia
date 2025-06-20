@@ -30,7 +30,7 @@ from reportlab.platypus import Table, TableStyle
 from reportlab.lib import colors
 import random
 import string
-
+import traceback
 
 
 
@@ -488,61 +488,36 @@ def submit_order():
 def send_notification():
     try:
         data = request.get_json()
-        if not data or 'message' not in data:
-            return jsonify({"error": "No message provided"}), 400
+        message = data.get('message', '📩 Nieuwe melding')
 
-        message = data['message']
+        if not message:
+            return jsonify({'error': 'Message is required'}), 400
 
-        # 发送 Telegram 消息
-        bot_token = os.environ.get("TELEGRAM_BOT_TOKEN")
-        chat_id = os.environ.get("TELEGRAM_CHAT_ID")
-        if bot_token and chat_id:
-            telegram_url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
-            telegram_data = {
-                "chat_id": chat_id,
-                "text": message,
-                "parse_mode": "HTML"
-            }
-            telegram_response = requests.post(telegram_url, json=telegram_data)
-            telegram_response.raise_for_status()  # 如失败则抛异常
+        # Telegram 通知
+        if TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID:
+            telegram_url = f'https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage'
+            telegram_payload = {'chat_id': TELEGRAM_CHAT_ID, 'text': message}
+            response = requests.post(telegram_url, json=telegram_payload)
+            response.raise_for_status()
 
-        # 发送 Email 通知（可选）
-        smtp_user = os.environ.get("SMTP_USERNAME")
-        smtp_pass = os.environ.get("SMTP_PASSWORD")
-        smtp_host = os.environ.get("SMTP_SERVER")
-        smtp_port = int(os.environ.get("SMTP_PORT", 587))
-        from_email = os.environ.get("FROM_EMAIL")
-        to_email = os.environ.get("FROM_EMAIL")  # 自己收信
+        # 邮件通知（可注释先不测）
+        if SMTP_SERVER and SMTP_USERNAME and SMTP_PASSWORD and FROM_EMAIL:
+            msg = MIMEText(message)
+            msg['Subject'] = 'Nieuwe bestelling'
+            msg['From'] = FROM_EMAIL
+            msg['To'] = FROM_EMAIL
 
-        if smtp_user and smtp_pass and smtp_host and from_email:
-            msg = MIMEMultipart()
-            msg['From'] = from_email
-            msg['To'] = to_email
-            msg['Subject'] = "📨 Nieuwe melding van Nova Asia"
-            msg.attach(MIMEText(message, 'plain'))
-
-            with smtplib.SMTP(smtp_host, smtp_port) as server:
+            with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
                 server.starttls()
-                server.login(smtp_user, smtp_pass)
+                server.login(SMTP_USERNAME, SMTP_PASSWORD)
                 server.send_message(msg)
 
-        return jsonify({"status": "OK"}), 200
+        return jsonify({'status': 'ok'}), 200
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/create_db')
-def create_db():
-    try:
-        inspector = db.inspect(db.engine)
-        cols = {c["name"] for c in inspector.get_columns("orders")}
-        if "opmerking" not in cols:
-            with db.engine.begin() as conn:
-                conn.execute(db.text("ALTER TABLE orders ADD COLUMN opmerking TEXT"))
-        db.create_all()
-        return "✅ Database tables created!"
-    except Exception as e:
-        return f"❌ Error: {e}"
+        print("❌ Fout in /api/send:", str(e))
+        traceback.print_exc()  # 打印完整错误信息到 Render Logs
+        return jsonify({'error': str(e)}), 500
 
 
 
