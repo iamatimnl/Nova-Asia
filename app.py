@@ -419,36 +419,7 @@ def api_orders():
         except Exception as e:
             print(f"❌ Socket emit failed: {e}")
 
-        # 4.5 向 App B 推送订单
-        try:
-            notifier_url = os.getenv("ORDER_FORWARD_URL")
-            if notifier_url:
-                forward_payload = {
-                    "order_number": order.order_number,
-                    "customer_name": order.customer_name,
-                    "email": order.email,
-                    "phone": order.phone,
-                    "items": items,
-                    "totaal": order.totaal,
-                    "pickup_time": order.pickup_time,
-                    "delivery_time": order.delivery_time,
-                    "order_type": order.order_type,
-                    "remark": order.opmerking,
-                }
-                forward_headers = {
-                    "Authorization": f"Bearer {os.getenv('ORDER_FORWARD_TOKEN', '')}"
-                }
-                response = requests.post(
-                    notifier_url,
-                    json=forward_payload,
-                    headers=forward_headers,
-                    timeout=5
-                )
-                print(f"✅ Order forwarded to notifier: {response.status_code}")
-            else:
-                print("⚠️ No notifier URL configured.")
-        except Exception as e:
-            print(f"❌ Failed to forward order: {e}")
+        
 
         # 5. Telegram / Email 通知（保留原逻辑）
         if data.get("message"):
@@ -462,7 +433,11 @@ def api_orders():
         print("✅ 接收到订单:", data)
 
         # 6. 返回响应
-        resp = {"status": "ok"}
+        resp = {
+            "status": "ok",
+            "order_number": order.order_number
+        }
+
         if str(order.payment_method).lower() == "online":
             pay_url = os.getenv("TIKKIE_URL")
             if pay_url:
