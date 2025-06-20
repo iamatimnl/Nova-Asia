@@ -484,23 +484,52 @@ def submit_order():
 
 
 # Telegram 通知接口
-@app.route('/api/send', methods=["POST"])
-def api_send():
-    data = request.get_json() or {}
-    message = data.get("message", "")
-    token = os.getenv("TELEGRAM_BOT_TOKEN")
-    chat_id = os.getenv("TELEGRAM_CHAT_ID")
-    if token and chat_id and message:
-        try:
-            resp = requests.post(
-                f"https://api.telegram.org/bot{token}/sendMessage",
-                json={"chat_id": chat_id, "text": message},
-                timeout=5,
-            )
-            resp.raise_for_status()
-        except Exception as e:
-            return jsonify({"status": "error", "error": str(e)}), 500
-    return jsonify({"status": "ok"})
+@app.route('/api/send', methods=['POST'])
+def send_notification():
+    try:
+        data = request.get_json()
+        if not data or 'message' not in data:
+            return jsonify({"error": "No message provided"}), 400
+
+        message = data['message']
+
+        # 发送 Telegram 消息
+        bot_token = os.environ.get("TELEGRAM_BOT_TOKEN")
+        chat_id = os.environ.get("TELEGRAM_CHAT_ID")
+        if bot_token and chat_id:
+            telegram_url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+            telegram_data = {
+                "chat_id": chat_id,
+                "text": message,
+                "parse_mode": "HTML"
+            }
+            telegram_response = requests.post(telegram_url, json=telegram_data)
+            telegram_response.raise_for_status()  # 如失败则抛异常
+
+        # 发送 Email 通知（可选）
+        smtp_user = os.environ.get("SMTP_USERNAME")
+        smtp_pass = os.environ.get("SMTP_PASSWORD")
+        smtp_host = os.environ.get("SMTP_SERVER")
+        smtp_port = int(os.environ.get("SMTP_PORT", 587))
+        from_email = os.environ.get("FROM_EMAIL")
+        to_email = os.environ.get("FROM_EMAIL")  # 自己收信
+
+        if smtp_user and smtp_pass and smtp_host and from_email:
+            msg = MIMEMultipart()
+            msg['From'] = from_email
+            msg['To'] = to_email
+            msg['Subject'] = "📨 Nieuwe melding van Nova Asia"
+            msg.attach(MIMEText(message, 'plain'))
+
+            with smtplib.SMTP(smtp_host, smtp_port) as server:
+                server.starttls()
+                server.login(smtp_user, smtp_pass)
+                server.send_message(msg)
+
+        return jsonify({"status": "OK"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/create_db')
 def create_db():
