@@ -373,7 +373,7 @@ def api_orders():
             street=data.get("street"),
             city=data.get("city"),
             opmerking=data.get("opmerking") or data.get("remark"),
-            items=json.dumps(data.get("items", {})),  # 将 items 存为 JSON 字符串
+            items=json.dumps(data.get("items", {})),
             order_number=order_number
         )
 
@@ -383,18 +383,13 @@ def api_orders():
             float(i.get("price", 0)) * int(i.get("qty", 0))
             for i in items.values()
         )
-
-        # 写入 order.totaal，优先使用前端传来的值
         order.totaal = float(data.get("totaal") or subtotal)
-
-        # 如果你希望记录 subtotaal 也可以：
-        # order.subtotaal = subtotal  # 需在模型中添加此字段
 
         # 3. 保存订单到数据库
         db.session.add(order)
         db.session.commit()
 
-        # 4. 推送给 POS
+        # 4. 推送给 POS via SocketIO
         try:
             order_payload = {
                 "id": order.id,
@@ -416,7 +411,7 @@ def api_orders():
                 "created_date": to_nl(order.created_at).strftime("%Y-%m-%d"),
                 "created_at": to_nl(order.created_at).strftime("%H:%M"),
                 "items": items,
-                "total": subtotal,           # 原始小计
+                "total": subtotal,
                 "totaal": order.totaal,
                 "order_number": order.order_number,
             }
@@ -424,20 +419,49 @@ def api_orders():
         except Exception as e:
             print(f"❌ Socket emit failed: {e}")
 
-        # 5. Telegram + Email 通知
+        # 4.5 向 App B 推送订单
+        try:
+            notifier_url = os.getenv("ORDER_FORWARD_URL")
+            if notifier_url:
+                forward_payload = {
+                    "order_number": order.order_number,
+                    "customer_name": order.customer_name,
+                    "email": order.email,
+                    "phone": order.phone,
+                    "items": items,
+                    "totaal": order.totaal,
+                    "pickup_time": order.pickup_time,
+                    "delivery_time": order.delivery_time,
+                    "order_type": order.order_type,
+                    "remark": order.opmerking,
+                }
+                forward_headers = {
+                    "Authorization": f"Bearer {os.getenv('ORDER_FORWARD_TOKEN', '')}"
+                }
+                response = requests.post(
+                    notifier_url,
+                    json=forward_payload,
+                    headers=forward_headers,
+                    timeout=5
+                )
+                print(f"✅ Order forwarded to notifier: {response.status_code}")
+            else:
+                print("⚠️ No notifier URL configured.")
+        except Exception as e:
+            print(f"❌ Failed to forward order: {e}")
+
+        # 5. Telegram / Email 通知（保留原逻辑）
         if data.get("message"):
             order_number_line = f"🧾 Bestelnummer: {order.order_number}\n"
             full_message = order_number_line + data["message"]
 
             send_telegram(full_message)
-
             if order.email:
                 send_email(order.email, "Orderbevestiging", full_message)
 
-
         print("✅ 接收到订单:", data)
 
-        # 6. 返回成功响应，包含支付链接（如果是 online）
+        # 6. 返回响应
         resp = {"status": "ok"}
         if str(order.payment_method).lower() == "online":
             pay_url = os.getenv("TIKKIE_URL")
@@ -450,6 +474,7 @@ def api_orders():
         import traceback
         traceback.print_exc()
         return jsonify({"status": "fail", "error": str(e)}), 500
+
 
 @app.route('/submit_order', methods=["POST"])
 def submit_order():
