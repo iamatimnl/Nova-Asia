@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -971,8 +972,7 @@ function submitOrder() {
   };
 
   // ✅ 提交到后端
-  // Gebruik de eigen backend voor orderverwerking
-  fetch('/submit_order', {
+  fetch('https://flask-order-api.onrender.com/submit_order', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
@@ -1042,8 +1042,7 @@ function formatCurrency(value){
   
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script>
-  // Verbind met de SocketIO-server van dezelfde host
-  const socket = io();
+  const socket = io('https://flask-order-api.onrender.com', { transports: ['websocket'] });
 
   let pollTimer;
   const baseTitle = document.title;
