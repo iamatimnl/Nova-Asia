@@ -31,16 +31,12 @@ from reportlab.lib import colors
 import random
 import string
 import traceback
-from flask_socketio import SocketIO
-
 
 
 
 # 初始化 Flask
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app = Flask(__name__, template_folder="templates", static_folder="static")
-socketio = SocketIO(app, cors_allowed_origins="*")
-
 app.config["SECRET_KEY"] = "replace-this"
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
 print(repr(os.getenv("DATABASE_URL")))
@@ -104,10 +100,6 @@ def generate_excel_today():
 
 def generate_order_number(length=8):
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
-@app.route("/test_socket")
-def test_socket():
-    socketio.emit("new_order", {"test": True, "msg": "Test socket push from server"}, broadcast=True)
-    return "Test push sent"
 
 
 
@@ -190,53 +182,44 @@ def build_maps_link(street: str, house_number: str, postcode: str, city: str) ->
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
 
-
-
-
-
-
-def format_order_notification(data: dict) -> str:
-    """Create a standardized notification text for an order."""
-    try:
-        items = data.get("items", {})
-        if isinstance(items, str):
-            try:
-                items = json.loads(items)
-            except Exception:
-                import ast
-                items = ast.literal_eval(items)
-    except Exception:
-        items = {}
-
-    summary = "\n".join(f"{name} x {item.get('qty')}" for name, item in items.items())
-
-    is_pickup = str(data.get("order_type", "")).lower() in ["afhalen", "pickup"]
-    if is_pickup:
-        details = f"[Afhalen]\nNaam: {data.get('customer_name')}\nTelefoon: {data.get('phone')}"
-        if data.get("email"):
-            details += f"\nEmail: {data.get('email')}"
-        details += f"\nAfhaaltijd: {data.get('pickup_time')}\nBetaalwijze: {data.get('payment_method')}"
+def send_telegram(message: str):
+    """Send a Telegram message if tokens are configured."""
+    token = os.getenv("TELEGRAM_BOT_TOKEN")
+    chat_id = os.getenv("TELEGRAM_CHAT_ID")
+    if token and chat_id and message:
+        try:
+            resp = requests.post(
+                f"https://api.telegram.org/bot{token}/sendMessage",
+                json={"chat_id": chat_id, "text": message},
+                timeout=5,
+            )
+            resp.raise_for_status()
+            print("Telegram message sent")
+        except Exception as e:
+            print(f"Telegram send error: {e}")
     else:
-        details = f"[Bezorgen]\nNaam: {data.get('customer_name')}\nTelefoon: {data.get('phone')}"
-        if data.get("email"):
-            details += f"\nEmail: {data.get('email')}"
-        details += (
-            f"\nAdres: {data.get('street')} {data.get('house_number')}"
-            f"\nPostcode: {data.get('postcode')}\nBezorgtijd: {data.get('delivery_time')}"
-            f"\nBetaalwijze: {data.get('payment_method')}"
-        )
+        print("Telegram configuration missing or empty message")
 
-    remark = data.get("remark") or data.get("opmerking")
-    if remark:
-        summary += f"\nOpmerking: {remark}"
 
-    total = float(data.get("totaal") or data.get("total") or 0)
-
-    return (
-        "📦 Nieuwe bestelling bij *Nova Asia*:\n\n"
-        f"Bestelnummer: {data.get('order_number')}\n"
-        f"{summary}\n{details}\nTotaal: €{total:.2f}"
-    )
+def send_email(to_email: str, subject: str, body: str):
+    """Send a confirmation email if SMTP settings are provided."""
+    server = os.getenv("SMTP_SERVER")
+    username = os.getenv("SMTP_USERNAME")
+    password = os.getenv("SMTP_PASSWORD")
+    from_email = os.getenv("FROM_EMAIL", username)
+    port = int(os.getenv("SMTP_PORT", "587"))
+    if not (server and username and password and to_email):
+        print("Email configuration missing; skipping send")
+        return
+    try:
+        with smtplib.SMTP(server, port) as smtp:
+            smtp.starttls()
+            smtp.login(username, password)
+            msg = f"Subject: {subject}\n\n{body}"
+            smtp.sendmail(from_email, to_email, msg)
+        print("Email sent")
+    except Exception as e:
+        print(f"Email send error: {e}")
 
 # 设置登录管理
 login_manager = LoginManager(app)
@@ -371,10 +354,8 @@ def pos():
 
 
 # 接收前端订单提交
-@app.route('/submit_order', methods=["POST"])
 @app.route('/api/orders', methods=["POST"])
 def api_orders():
-
     try:
         data = request.get_json() or {}
         order_number = generate_order_number()
@@ -439,9 +420,47 @@ def api_orders():
         except Exception as e:
             print(f"❌ Socket emit failed: {e}")
 
-       
+        # 4.5 向 App B 推送订单
+        try:
+            notifier_url = os.getenv("ORDER_FORWARD_URL")
+            if notifier_url:
+                forward_payload = {
+                    "order_number": order.order_number,
+                    "customer_name": order.customer_name,
+                    "email": order.email,
+                    "phone": order.phone,
+                    "items": items,
+                    "totaal": order.totaal,
+                    "pickup_time": order.pickup_time,
+                    "delivery_time": order.delivery_time,
+                    "order_type": order.order_type,
+                    "remark": order.opmerking,
+                }
+                forward_headers = {
+                    "Authorization": f"Bearer {os.getenv('ORDER_FORWARD_TOKEN', '')}"
+                }
+                response = requests.post(
+                    notifier_url,
+                    json=forward_payload,
+                    headers=forward_headers,
+                    timeout=5
+                )
+                print(f"✅ Order forwarded to notifier: {response.status_code}")
+            else:
+                print("⚠️ No notifier URL configured.")
+        except Exception as e:
+            print(f"❌ Failed to forward order: {e}")
 
-       
+        # 5. Telegram / Email 通知（保留原逻辑）
+        if data.get("message"):
+            order_number_line = f"🧾 Bestelnummer: {order.order_number}\n"
+            full_message = order_number_line + data["message"]
+
+            send_telegram(full_message)
+            if order.email:
+                send_email(order.email, "Orderbevestiging", full_message)
+
+        print("✅ 接收到订单:", data)
 
         # 6. 返回响应
         resp = {"status": "ok"}
@@ -464,6 +483,54 @@ def submit_order():
     return api_orders()
 
 
+# Telegram 通知接口
+@app.route('/api/send', methods=['POST'])
+def send_notification():
+    try:
+        # 获取 Telegram 和邮件环境变量
+        TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+        TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+        SMTP_USERNAME = os.getenv("SMTP_USERNAME")
+        SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
+        SMTP_SERVER = os.getenv("SMTP_SERVER")
+        SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
+        FROM_EMAIL = os.getenv("FROM_EMAIL")
+
+        # 读取 JSON 内容
+        data = request.get_json(force=True)  # 加 force=True 可以绕过 content-type 检查
+        message = data.get('message', '📩 Nieuwe melding')
+
+        if not message:
+            return jsonify({'error': 'Message is required'}), 400
+
+        # 发送 Telegram 通知
+        if TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID:
+            telegram_url = f'https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage'
+            payload = {
+                'chat_id': TELEGRAM_CHAT_ID,
+                'text': message
+            }
+            res = requests.post(telegram_url, json=payload)
+            res.raise_for_status()
+
+        # 发送邮件通知
+        if SMTP_SERVER and SMTP_USERNAME and SMTP_PASSWORD and FROM_EMAIL:
+            msg = MIMEText(message)
+            msg['Subject'] = 'Nieuwe bestelling'
+            msg['From'] = FROM_EMAIL
+            msg['To'] = FROM_EMAIL
+
+            with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+                server.starttls()
+                server.login(SMTP_USERNAME, SMTP_PASSWORD)
+                server.send_message(msg)
+
+        return jsonify({'status': '通知已发送'}), 200
+
+    except Exception as e:
+        print("❌ Fout in /api/send:", str(e))
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
 
 
 
@@ -601,6 +668,254 @@ def logout():
 # 启动
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
