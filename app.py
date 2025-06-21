@@ -499,6 +499,10 @@ def send_notification():
         # 读取 JSON 内容
         data = request.get_json(force=True)  # 加 force=True 可以绕过 content-type 检查
         message = data.get('message', '📩 Nieuwe melding')
+        order_no = data.get('order_number') or data.get('orderNumber')
+        if order_no:
+            prefix = f"🧾 Bestelnummer #{order_no}\n"
+            message = prefix + message
 
         if not message:
             return jsonify({'error': 'Message is required'}), 400
