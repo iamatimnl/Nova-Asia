@@ -221,6 +221,50 @@ def send_email(to_email: str, subject: str, body: str):
     except Exception as e:
         print(f"Email send error: {e}")
 
+
+def format_order_notification(data: dict) -> str:
+    """Create a standardized notification text for an order."""
+    try:
+        items = data.get("items", {})
+        if isinstance(items, str):
+            try:
+                items = json.loads(items)
+            except Exception:
+                import ast
+                items = ast.literal_eval(items)
+    except Exception:
+        items = {}
+
+    summary = "\n".join(f"{name} x {item.get('qty')}" for name, item in items.items())
+
+    is_pickup = str(data.get("order_type", "")).lower() in ["afhalen", "pickup"]
+    if is_pickup:
+        details = f"[Afhalen]\nNaam: {data.get('customer_name')}\nTelefoon: {data.get('phone')}"
+        if data.get("email"):
+            details += f"\nEmail: {data.get('email')}"
+        details += f"\nAfhaaltijd: {data.get('pickup_time')}\nBetaalwijze: {data.get('payment_method')}"
+    else:
+        details = f"[Bezorgen]\nNaam: {data.get('customer_name')}\nTelefoon: {data.get('phone')}"
+        if data.get("email"):
+            details += f"\nEmail: {data.get('email')}"
+        details += (
+            f"\nAdres: {data.get('street')} {data.get('house_number')}"
+            f"\nPostcode: {data.get('postcode')}\nBezorgtijd: {data.get('delivery_time')}"
+            f"\nBetaalwijze: {data.get('payment_method')}"
+        )
+
+    remark = data.get("remark") or data.get("opmerking")
+    if remark:
+        summary += f"\nOpmerking: {remark}"
+
+    total = float(data.get("totaal") or data.get("total") or 0)
+
+    return (
+        "📦 Nieuwe bestelling bij *Nova Asia*:\n\n"
+        f"Bestelnummer: {data.get('order_number')}\n"
+        f"{summary}\n{details}\nTotaal: €{total:.2f}"
+    )
+
 # 设置登录管理
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
@@ -423,6 +467,23 @@ def api_orders():
         # 4.5 向 App B 推送订单
         try:
             notifier_url = os.getenv("ORDER_FORWARD_URL")
+            notification_text = format_order_notification({
+                "order_type": order.order_type,
+                "customer_name": order.customer_name,
+                "phone": order.phone,
+                "email": order.email,
+                "pickup_time": order.pickup_time,
+                "delivery_time": order.delivery_time,
+                "payment_method": order.payment_method,
+                "items": items,
+                "totaal": order.totaal,
+                "remark": order.opmerking,
+                "street": order.street,
+                "house_number": order.house_number,
+                "postcode": order.postcode,
+                "order_number": order.order_number,
+            })
+
             if notifier_url:
                 forward_payload = {
                     "order_number": order.order_number,
@@ -435,6 +496,7 @@ def api_orders():
                     "delivery_time": order.delivery_time,
                     "order_type": order.order_type,
                     "remark": order.opmerking,
+                    "message": notification_text,
                 }
                 forward_headers = {
                     "Authorization": f"Bearer {os.getenv('ORDER_FORWARD_TOKEN', '')}"
@@ -451,14 +513,10 @@ def api_orders():
         except Exception as e:
             print(f"❌ Failed to forward order: {e}")
 
-        # 5. Telegram / Email 通知（保留原逻辑）
-        if data.get("message"):
-            order_number_line = f"🧾 Bestelnummer: {order.order_number}\n"
-            full_message = order_number_line + data["message"]
-
-            send_telegram(full_message)
-            if order.email:
-                send_email(order.email, "Orderbevestiging", full_message)
+        # 5. Telegram / Email 通知（使用统一格式）
+        send_telegram(notification_text)
+        if order.email:
+            send_email(order.email, "Orderbevestiging", notification_text)
 
         print("✅ 接收到订单:", data)
 
