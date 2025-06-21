@@ -429,54 +429,7 @@ def api_orders():
         except Exception as e:
             print(f"❌ Socket emit failed: {e}")
 
-        # 4.5 向 App B 推送订单
-        try:
-            notifier_url = os.getenv("ORDER_FORWARD_URL")
-            notification_text = format_order_notification({
-                "order_type": order.order_type,
-                "customer_name": order.customer_name,
-                "phone": order.phone,
-                "email": order.email,
-                "pickup_time": order.pickup_time,
-                "delivery_time": order.delivery_time,
-                "payment_method": order.payment_method,
-                "items": items,
-                "totaal": order.totaal,
-                "remark": order.opmerking,
-                "street": order.street,
-                "house_number": order.house_number,
-                "postcode": order.postcode,
-                "order_number": order.order_number,
-            })
-
-            if notifier_url:
-                forward_payload = {
-                    "order_number": order.order_number,
-                    "customer_name": order.customer_name,
-                    "email": order.email,
-                    "phone": order.phone,
-                    "items": items,
-                    "totaal": order.totaal,
-                    "pickup_time": order.pickup_time,
-                    "delivery_time": order.delivery_time,
-                    "order_type": order.order_type,
-                    "remark": order.opmerking,
-                    "message": notification_text,
-                }
-                forward_headers = {
-                    "Authorization": f"Bearer {os.getenv('ORDER_FORWARD_TOKEN', '')}"
-                }
-                response = requests.post(
-                    notifier_url,
-                    json=forward_payload,
-                    headers=forward_headers,
-                    timeout=5
-                )
-                print(f"✅ Order forwarded to notifier: {response.status_code}")
-            else:
-                print("⚠️ No notifier URL configured.")
-        except Exception as e:
-            print(f"❌ Failed to forward order: {e}")
+       
 
        
 
