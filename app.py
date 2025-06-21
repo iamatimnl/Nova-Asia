@@ -30,6 +30,7 @@ from reportlab.platypus import Table, TableStyle
 from reportlab.lib import colors
 import random
 import string
+import traceback
 
 
 
@@ -483,36 +484,53 @@ def submit_order():
 
 
 # Telegram 通知接口
-@app.route('/api/send', methods=["POST"])
-def api_send():
-    data = request.get_json() or {}
-    message = data.get("message", "")
-    token = os.getenv("TELEGRAM_BOT_TOKEN")
-    chat_id = os.getenv("TELEGRAM_CHAT_ID")
-    if token and chat_id and message:
-        try:
-            resp = requests.post(
-                f"https://api.telegram.org/bot{token}/sendMessage",
-                json={"chat_id": chat_id, "text": message},
-                timeout=5,
-            )
-            resp.raise_for_status()
-        except Exception as e:
-            return jsonify({"status": "error", "error": str(e)}), 500
-    return jsonify({"status": "ok"})
-
-@app.route('/create_db')
-def create_db():
+@app.route('/api/send', methods=['POST'])
+def send_notification():
     try:
-        inspector = db.inspect(db.engine)
-        cols = {c["name"] for c in inspector.get_columns("orders")}
-        if "opmerking" not in cols:
-            with db.engine.begin() as conn:
-                conn.execute(db.text("ALTER TABLE orders ADD COLUMN opmerking TEXT"))
-        db.create_all()
-        return "✅ Database tables created!"
+        # 获取 Telegram 和邮件环境变量
+        TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+        TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+        SMTP_USERNAME = os.getenv("SMTP_USERNAME")
+        SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
+        SMTP_SERVER = os.getenv("SMTP_SERVER")
+        SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
+        FROM_EMAIL = os.getenv("FROM_EMAIL")
+
+        # 读取 JSON 内容
+        data = request.get_json(force=True)  # 加 force=True 可以绕过 content-type 检查
+        message = data.get('message', '📩 Nieuwe melding')
+
+        if not message:
+            return jsonify({'error': 'Message is required'}), 400
+
+        # 发送 Telegram 通知
+        if TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID:
+            telegram_url = f'https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage'
+            payload = {
+                'chat_id': TELEGRAM_CHAT_ID,
+                'text': message
+            }
+            res = requests.post(telegram_url, json=payload)
+            res.raise_for_status()
+
+        # 发送邮件通知
+        if SMTP_SERVER and SMTP_USERNAME and SMTP_PASSWORD and FROM_EMAIL:
+            msg = MIMEText(message)
+            msg['Subject'] = 'Nieuwe bestelling'
+            msg['From'] = FROM_EMAIL
+            msg['To'] = FROM_EMAIL
+
+            with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+                server.starttls()
+                server.login(SMTP_USERNAME, SMTP_PASSWORD)
+                server.send_message(msg)
+
+        return jsonify({'status': '通知已发送'}), 200
+
     except Exception as e:
-        return f"❌ Error: {e}"
+        print("❌ Fout in /api/send:", str(e))
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
 
 
 
@@ -650,6 +668,109 @@ def logout():
 # 启动
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
