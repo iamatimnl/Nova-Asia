@@ -182,44 +182,9 @@ def build_maps_link(street: str, house_number: str, postcode: str, city: str) ->
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
 
-def send_telegram(message: str):
-    """Send a Telegram message if tokens are configured."""
-    token = os.getenv("TELEGRAM_BOT_TOKEN")
-    chat_id = os.getenv("TELEGRAM_CHAT_ID")
-    if token and chat_id and message:
-        try:
-            resp = requests.post(
-                f"https://api.telegram.org/bot{token}/sendMessage",
-                json={"chat_id": chat_id, "text": message},
-                timeout=5,
-            )
-            resp.raise_for_status()
-            print("Telegram message sent")
-        except Exception as e:
-            print(f"Telegram send error: {e}")
-    else:
-        print("Telegram configuration missing or empty message")
 
 
-def send_email(to_email: str, subject: str, body: str):
-    """Send a confirmation email if SMTP settings are provided."""
-    server = os.getenv("SMTP_SERVER")
-    username = os.getenv("SMTP_USERNAME")
-    password = os.getenv("SMTP_PASSWORD")
-    from_email = os.getenv("FROM_EMAIL", username)
-    port = int(os.getenv("SMTP_PORT", "587"))
-    if not (server and username and password and to_email):
-        print("Email configuration missing; skipping send")
-        return
-    try:
-        with smtplib.SMTP(server, port) as smtp:
-            smtp.starttls()
-            smtp.login(username, password)
-            msg = f"Subject: {subject}\n\n{body}"
-            smtp.sendmail(from_email, to_email, msg)
-        print("Email sent")
-    except Exception as e:
-        print(f"Email send error: {e}")
+
 
 
 def format_order_notification(data: dict) -> str:
@@ -541,58 +506,6 @@ def submit_order():
     return api_orders()
 
 
-# Telegram 通知接口
-@app.route('/api/send', methods=['POST'])
-def send_notification():
-    try:
-        # 获取 Telegram 和邮件环境变量
-        TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-        TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
-        SMTP_USERNAME = os.getenv("SMTP_USERNAME")
-        SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
-        SMTP_SERVER = os.getenv("SMTP_SERVER")
-        SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
-        FROM_EMAIL = os.getenv("FROM_EMAIL")
-
-        # 读取 JSON 内容
-        data = request.get_json(force=True)  # 加 force=True 可以绕过 content-type 检查
-        message = data.get('message', '📩 Nieuwe melding')
-        order_no = data.get('order_number') or data.get('orderNumber')
-        if order_no:
-            prefix = f"🧾 Bestelnummer #{order_no}\n"
-            message = prefix + message
-
-        if not message:
-            return jsonify({'error': 'Message is required'}), 400
-
-        # 发送 Telegram 通知
-        if TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID:
-            telegram_url = f'https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage'
-            payload = {
-                'chat_id': TELEGRAM_CHAT_ID,
-                'text': message
-            }
-            res = requests.post(telegram_url, json=payload)
-            res.raise_for_status()
-
-        # 发送邮件通知
-        if SMTP_SERVER and SMTP_USERNAME and SMTP_PASSWORD and FROM_EMAIL:
-            msg = MIMEText(message)
-            msg['Subject'] = 'Nieuwe bestelling'
-            msg['From'] = FROM_EMAIL
-            msg['To'] = FROM_EMAIL
-
-            with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
-                server.starttls()
-                server.login(SMTP_USERNAME, SMTP_PASSWORD)
-                server.send_message(msg)
-
-        return jsonify({'status': '通知已发送'}), 200
-
-    except Exception as e:
-        print("❌ Fout in /api/send:", str(e))
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
 
 
 
