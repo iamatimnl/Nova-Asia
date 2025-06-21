@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -585,7 +584,7 @@
 
 
 
-<audio id="beepSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_c1f25e.mp3" preload="auto"></audio>
+<audio id="notifySound" src="/sound/beep.mp3" preload="auto"></audio>
 
 <script>
 const cart = {};
@@ -972,7 +971,7 @@ function submitOrder() {
   };
 
   // ✅ 提交到后端
-  fetch('https://nova-asia.onrender.com/submit_order', {
+  fetch('https://flask-order-api.onrender.com/submit_order', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
