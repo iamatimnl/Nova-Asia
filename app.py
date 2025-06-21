@@ -420,26 +420,10 @@ def api_orders():
         except Exception as e:
             print(f"❌ Socket emit failed: {e}")
 
-        # 4.5 向 App B 推送订单 + 构建带 bestelnummer 的完整 message
+        # 4.5 向 App B 推送订单
         try:
             notifier_url = os.getenv("ORDER_FORWARD_URL")
             if notifier_url:
-                # 格式化通知文字（包含 Bestelnummer）
-                order_text = format_order_notification({
-                    "order_type": order.order_type,
-                    "customer_name": order.customer_name,
-                    "phone": order.phone,
-                    "email": order.email,
-                    "pickup_time": order.pickup_time,
-                    "delivery_time": order.delivery_time,
-                    "payment_method": order.payment_method,
-                    "items": items,
-                    "totaal": order.totaal,
-                    "remark": order.opmerking,
-                })
-
-                full_message = f"🧾 Bestelnummer: {order.order_number}\n\n{order_text}"
-
                 forward_payload = {
                     "order_number": order.order_number,
                     "customer_name": order.customer_name,
@@ -451,7 +435,6 @@ def api_orders():
                     "delivery_time": order.delivery_time,
                     "order_type": order.order_type,
                     "remark": order.opmerking,
-                    "message": full_message  # ✅ 最关键字段
                 }
                 forward_headers = {
                     "Authorization": f"Bearer {os.getenv('ORDER_FORWARD_TOKEN', '')}"
@@ -468,13 +451,14 @@ def api_orders():
         except Exception as e:
             print(f"❌ Failed to forward order: {e}")
 
-        # 5. 可选：保留旧的 Telegram/Email 通知（不推荐重复用）
-        # if data.get("message"):
-        #     order_number_line = f"🧾 Bestelnummer: {order.order_number}\n"
-        #     full_message = order_number_line + data["message"]
-        #     send_telegram(full_message)
-        #     if order.email:
-        #         send_email(order.email, "Orderbevestiging", full_message)
+        # 5. Telegram / Email 通知（保留原逻辑）
+        if data.get("message"):
+            order_number_line = f"🧾 Bestelnummer: {order.order_number}\n"
+            full_message = order_number_line + data["message"]
+
+            send_telegram(full_message)
+            if order.email:
+                send_email(order.email, "Orderbevestiging", full_message)
 
         print("✅ 接收到订单:", data)
 
@@ -684,7 +668,6 @@ def logout():
 # 启动
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000)
-
 
 
 
