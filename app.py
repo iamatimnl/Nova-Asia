@@ -347,6 +347,7 @@ def pos():
                 o.items_dict = {}
 
         o.total = sum(float(i.get("price", 0)) * int(i.get("qty", 0)) for i in o.items_dict.values())
+        o.totaal = o.total
         o.created_at_local = to_nl(o.created_at)
         o.maps_link = build_maps_link(o.street, o.house_number, o.postcode, o.city)
 
