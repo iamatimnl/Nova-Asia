@@ -478,12 +478,7 @@ def api_orders():
         except Exception as e:
             print(f"❌ Failed to forward order: {e}")
 
-        # 5. Telegram / Email 通知（使用统一格式）
-        send_telegram(notification_text)
-        if order.email:
-            send_email(order.email, "Orderbevestiging", notification_text)
-
-        print("✅ 接收到订单:", data)
+       
 
         # 6. 返回响应
         resp = {"status": "ok"}
