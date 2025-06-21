@@ -104,6 +104,10 @@ def generate_excel_today():
 
 def generate_order_number(length=8):
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
+@app.route("/test_socket")
+def test_socket():
+    socketio.emit("new_order", {"test": True, "msg": "Test socket push from server"}, broadcast=True)
+    return "Test push sent"
 
 
 
