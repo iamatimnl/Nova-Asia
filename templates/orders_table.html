@@ -4,6 +4,38 @@
     max-width: 100%;
   }
 
+.orders-wrapper {
+    overflow-x: auto;
+    display: block;
+    width: 100%;
+    max-width: 100vw;
+  }
+
+  table.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1200px;
+  }
+
+  .orders-table th, .orders-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    white-space: nowrap;
+    text-align: left;
+  }
+
+  .orders-table thead {
+    background-color: #f9f9f9;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+
+  td:last-child,
+  th:last-child {
+    padding-right: 20px;
+  }
+  
   table.orders-table {
     width: 100%;
     border-collapse: collapse;
