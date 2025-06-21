@@ -2078,8 +2078,7 @@ function checkout() {
     if (qty > 0) itemsToSend[extras[id].label] = { price: 0, qty };
   });
 
-   // Verstuur bestelling altijd naar eigen backend (App A)
-   fetch('/submit_order', {
+   fetch('https://flask-order-api.onrender.com/submit_order', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
@@ -2563,4 +2562,5 @@ sliderTrack.addEventListener('touchend', () => {
 
 </body>
 </html>
+
 
