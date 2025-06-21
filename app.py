@@ -367,8 +367,10 @@ def pos():
 
 
 # 接收前端订单提交
+@app.route('/submit_order', methods=["POST"])
 @app.route('/api/orders', methods=["POST"])
 def api_orders():
+
     try:
         data = request.get_json() or {}
         order_number = generate_order_number()
