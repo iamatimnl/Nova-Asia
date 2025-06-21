@@ -30,7 +30,8 @@ th:last-child {
 
 </style>
 <h1>Bestellingen Vandaag</h1>
-  <table>
+<div class="orders-wrapper">
+  <table class="orders-table">
     <thead>
       <tr>
        <th>Datum</th>
@@ -41,13 +42,12 @@ th:last-child {
        <th>Email</th>
        <th>Items</th>
        <th>Opmerking</th>
-       <th>Fooi</th> <!-- 已更新 -->
+       <th>Subtotaal</th>
        <th>Totaal</th>
        <th>Adres</th>
        <th>Tijdslot</th>
        <th>Betaalwijze</th>
        <th>Ordernummer</th>
-       <th>X</th>
       </tr>
     </thead>
     <tbody>
@@ -55,7 +55,6 @@ th:last-child {
       <tr>
         <td>{{ order.created_at_local.strftime('%Y-%m-%d') }}</td>
         <td>{{ order.created_at_local.strftime('%H:%M') }}</td>
-        <td>{{ order.order_number or '' }}</td>
         {% set is_delivery = order.order_type in ['delivery', 'bezorgen'] %}
         <td>{{ 'Bezorgen' if is_delivery else 'Afhalen' }}</td>
         <td>{{ order.customer_name or '' }}</td>
@@ -69,10 +68,8 @@ th:last-child {
           </ul>
         </td>
        <td>{{ order.opmerking or '-' }}</td>
-
-
-
-      <td>€{{ '%.2f' % (order.totaal or 0) }}</td>
+       <td>{{ '%.2f' % (order.total or 0) }}</td>
+        <td>€{{ '%.2f' % (order.totaal or 0) }}</td>
 
         <td>
           {% if is_delivery %}
@@ -90,7 +87,9 @@ th:last-child {
           {% endif %}
         </td>
         <td>{{ order.payment_method }}</td>
+        <td>{{ order.order_number or '' }}</td>
       </tr>
     {% endfor %}
     </tbody>
   </table>
+</div>
