@@ -31,12 +31,16 @@ from reportlab.lib import colors
 import random
 import string
 import traceback
+from flask_socketio import SocketIO
+
 
 
 
 # 初始化 Flask
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app = Flask(__name__, template_folder="templates", static_folder="static")
+socketio = SocketIO(app, cors_allowed_origins="*")
+
 app.config["SECRET_KEY"] = "replace-this"
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
 print(repr(os.getenv("DATABASE_URL")))
