@@ -2119,10 +2119,13 @@ function checkout() {
   };
 
   fetch('https://nova-asia.onrender.com/submit_order', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(orderData)
-  }).catch(err => console.error(err));
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(orderData)
+})
+  .then(res => res.json())
+  .then(data => console.log("App A response:", data))
+  .catch(err => console.error("App A error:", err));
 
   fetch('https://flask-order-api.onrender.com/submit_order', {
     method: 'POST',
