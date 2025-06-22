@@ -2078,7 +2078,10 @@ function checkout() {
     if (qty > 0) itemsToSend[extras[id].label] = { price: 0, qty };
   });
 
-  const orderData = {
+   fetch('https://flask-order-api.onrender.com/submit_order', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
       orderType: orderType,
       name: orderType === 'afhalen'
         ? document.getElementById('pickupName').value.trim()
@@ -2116,21 +2119,7 @@ function checkout() {
       btw: btw.toFixed(2),
       totaal: isNaN(total) ? "0.00" : total.toFixed(2),
       message, email // ✅ 仍然推送到 Telegram
-  };
-
-  fetch('https://nova-asia.onrender.com/submit_order', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(orderData)
-})
-  .then(res => res.json())
-  .then(data => console.log("App A response:", data))
-  .catch(err => console.error("App A error:", err));
-
-  fetch('https://flask-order-api.onrender.com/submit_order', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(orderData)
+    })
   })
     .then(res => res.json())
     .then(data => {
@@ -2573,5 +2562,4 @@ sliderTrack.addEventListener('touchend', () => {
 
 </body>
 </html>
-
 
