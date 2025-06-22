@@ -1090,9 +1090,19 @@ function formatCurrency(value){
     const pickup = order.pickup_time || order.pickupTime;
     const delivery = order.delivery_time || order.deliveryTime;
 
+    let time = order.created_at || '';
+    if (time && time.length > 5) {
+      if (time.includes('T')) {
+        const d = new Date(time);
+        if (!isNaN(d)) time = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      } else if (time.includes(' ')) {
+        time = time.split(' ')[1].slice(0,5);
+      }
+    }
+
       tr.innerHTML = `
         <td>${order.created_date || ''}</td>
-        <td>${order.created_at || ''}</td>
+        <td>${time}</td>
         <td>${isDelivery ? 'Bezorgen' : 'Afhalen'}</td>
         <td>${order.customer_name || ''}</td>
         <td>${order.phone || ''}</td>
