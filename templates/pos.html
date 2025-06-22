@@ -1091,9 +1091,9 @@ function formatCurrency(value){
     if (order.id) tr.dataset.id = order.id;
     const isDelivery = ['delivery', 'bezorgen'].includes(order.order_type);
     const items = Object.entries(order.items || {}).map(([n, i]) => `<li>${n} x ${i.qty}</li>`).join('');
-      let subtotal = parseFloat(order.subtotal);
-    if (isNaN(subtotal)) {
-      subtotal = Object.values(order.items || {}).reduce((s, i) => s + (parseFloat(i.price || 0) * parseInt(i.qty || 0)), 0);
+    let fooi = parseFloat(order.fooi);
+    if (isNaN(fooi)) {
+      fooi = 0;
     }
     if(!('totaal' in order)){
       console.warn('⚠️ totaal 字段缺失，请联系后端');
@@ -1121,7 +1121,7 @@ function formatCurrency(value){
         <td>${order.email || '-'}</td>
         <td><ul>${items}</ul></td>
         <td>${remark || '-'}</td>
-        <td>${subtotal.toFixed(2)}</td>
+        <td>${fooi.toFixed(2)}</td>
         <td>€${parseFloat(order.totaal).toFixed(2)}</td>
         <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
         <td>${isDelivery ? (delivery || '-') : (pickup || '-')}</td>

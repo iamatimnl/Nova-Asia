@@ -74,7 +74,7 @@ th:last-child {
        <th>Email</th>
        <th>Items</th>
        <th>Opmerking</th>
-       <th>Subtotaal</th>
+       <th>Fooi</th>
        <th>Totaal</th>
        <th>Adres</th>
        <th>Tijdslot</th>
@@ -100,8 +100,8 @@ th:last-child {
           </ul>
         </td>
        <td>{{ order.opmerking or '-' }}</td>
-       <td>€{{ '%.2f' % (order.total or 0) }}</td>
-        <td>€{{ '%.2f' % (order.totaal or 0) }}</td>
+       <td>€{{ '%.2f' % (order.fooi or 0) }}</td>
+       <td>€{{ '%.2f' % (order.totaal or 0) }}</td>
 
         <td>
           {% if is_delivery %}

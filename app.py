@@ -201,6 +201,7 @@ class Order(db.Model):
     items = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     totaal = db.Column(db.Float)
+    fooi = db.Column(db.Float, default=0.0)
 
 
 class User(UserMixin):
@@ -331,7 +332,8 @@ def api_orders():
             city=data.get("city"),
             opmerking=data.get("opmerking") or data.get("remark"),
             items=json.dumps(data.get("items", {})),
-            order_number=order_number
+            order_number=order_number,
+            fooi=float(data.get("tip") or data.get("fooi") or 0)
         )
 
         # 2. 计算 subtotal / totaal
@@ -370,6 +372,7 @@ def api_orders():
                 "items": items,
                 "total": subtotal,
                 "totaal": order.totaal,
+                "fooi": order.fooi,
                 "order_number": order.order_number,
             }
             socketio.emit("new_order", order_payload, broadcast=True)
@@ -505,6 +508,7 @@ def pos_orders_today():
             "items": o.items_dict,
             "total": totaal,   # ✅ 关键是这里：使用数据库中的 totaal
             "totaal": totaal,
+            "fooi": o.fooi or 0,
             "order_number": o.order_number  # ✅ 加上这行
         })
 
