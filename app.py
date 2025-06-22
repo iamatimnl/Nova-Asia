@@ -1,486 +1,818 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import (
+    LoginManager,
+    UserMixin,
+    login_user,
+    logout_user,
+    login_required,
+)
 from flask_socketio import SocketIO
-import requests
-import smtplib
-from email.mime.text import MIMEText
-from email.header import Header
-from email.utils import formataddr
-from datetime import datetime
+from sqlalchemy import text
+import eventlet
+eventlet.monkey_patch()
+from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
-from urllib.parse import quote_plus
+import os
+import json
 
-TZ = ZoneInfo("Europe/Amsterdam")
+from flask_migrate import Migrate
+from urllib.parse import quote
+from flask import send_file
+from io import BytesIO
+import pandas as pd
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import Table, TableStyle
+from reportlab.lib import colors
+
+import traceback
 
 
 
+# 初始化 Flask
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+app = Flask(__name__, template_folder="templates", static_folder="static")
+app.config["SECRET_KEY"] = "replace-this"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+print(repr(os.getenv("DATABASE_URL")))
 
 
-
-POS_API_URL = "https://nova-asia.onrender.com/api/orders"
-
-app = Flask(__name__)
-CORS(app)
-socketio = SocketIO(app, cors_allowed_origins="*")
-
-# === Telegram 配置 ===
-BOT_TOKEN = '7509433067:AAGoLc1NVWqmgKGcrRVb3DwMh1o5_v5Fyio'
-CHAT_ID = '8047420957'
-
-# === Gmail 配置 ===
-SENDER_EMAIL = "qianchennl@gmail.com"
-SENDER_PASSWORD = "wtuyxljsjwftyzfm"
-RECEIVER_EMAIL = "qianchennl@gmail.com"
-
-# === POS 配置 ===
-# Endpoint for forwarding orders to the POS system. Replace with the actual URL.
-POS_API_URL = "https://nova-asia.onrender.com/api/orders"
-
-TIKKIE_PAYMENT_LINK = "https://tikkie.me/pay/example"
-
-# In-memory log of orders for today's overview
-ORDERS = []
-
-def build_google_maps_link(data):
-    """Return a Google Maps search link for the order address."""
-    street = data.get("street", "").strip()
-    house_number = data.get("houseNumber") or data.get("house_number", "")
-    postcode = data.get("postcode", "").strip()
-    city = data.get("city", "").strip()
-
-    if street:
-        first_part = f"{street} {house_number}".strip()
-    else:
-        first_part = house_number
-
-    second_part = " ".join(part for part in [postcode, city] if part).strip()
-
-    address_parts = [part for part in [first_part, second_part] if part]
-    if not address_parts:
-        return None
-
-    address = ", ".join(address_parts)
-    query = quote_plus(address)
-    return f"https://www.google.com/maps/search/?api=1&query={query}"
-
-def send_telegram_message(order_text):
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-    data = {
-        'chat_id': CHAT_ID,
-        'text': order_text
-    }
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+with app.app_context():
+    db.create_all()
     try:
-        response = requests.post(url, json=data)
-        print("✅ Telegram bericht verzonden!")
-        return response.status_code == 200
+        inspector = db.inspect(db.engine)
+        cols = {c["name"] for c in inspector.get_columns("orders")}
+        if "opmerking" not in cols:
+            with db.engine.begin() as conn:
+                conn.execute(text("ALTER TABLE orders ADD COLUMN opmerking TEXT"))
     except Exception as e:
-        print(f"❌ Telegram-fout: {e}")
-        return False
+        print(f"DB init error: {e}")
 
-def send_email_notification(order_text):
-    subject = "Nova Asia - Nieuwe bestelling"
-    msg = MIMEText(order_text, "plain", "utf-8")
-    msg["Subject"] = Header(subject, "utf-8")
-    msg["From"] = formataddr(("NovaAsia", SENDER_EMAIL))
-    msg["To"] = RECEIVER_EMAIL
+UTC = timezone.utc
+NL_TZ = ZoneInfo("Europe/Amsterdam")
 
-    try:
-        with smtplib.SMTP("smtp.gmail.com", 587) as server:
-            server.starttls()
-            server.login(SENDER_EMAIL, SENDER_PASSWORD)
-            server.sendmail(SENDER_EMAIL, [RECEIVER_EMAIL], msg.as_string())
-        print("✅ E-mail verzonden!")
-        return True
-    except Exception as e:
-        print(f"❌ Verzendfout: {e}")
-        return False
+def to_nl(dt: datetime) -> datetime:
+    """Convert naive UTC datetime to Europe/Amsterdam timezone."""
+    if dt is None:
+        return dt
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=UTC)
+    return dt.astimezone(NL_TZ)
+def generate_excel_today():
+    today = datetime.now(NL_TZ).date()
+    start_local = datetime.combine(today, datetime.min.time(), tzinfo=NL_TZ)
+    start = start_local.astimezone(UTC).replace(tzinfo=None)
 
-def send_confirmation_email(order_text, customer_email):
-    """Send order confirmation to the customer. Errors are only logged."""
-    subject = "Nova Asia - Bevestiging van je bestelling"
-    html_body = (
-        "Bedankt voor je bestelling bij Nova Asia!<br><br>"
-        + order_text.replace("\n", "<br>")
-        + "<br><br>Met vriendelijke groet,<br>Nova Asia"
-    )
-    msg = MIMEText(html_body, "html", "utf-8")
-    msg["Subject"] = Header(subject, "utf-8")
-    msg["From"] = formataddr(("NovaAsia", SENDER_EMAIL))
-    msg["To"] = customer_email
-
-    try:
-        with smtplib.SMTP("smtp.gmail.com", 587) as server:
-            server.starttls()
-            server.login(SENDER_EMAIL, SENDER_PASSWORD)
-            server.sendmail(SENDER_EMAIL, [customer_email], msg.as_string())
-        print("✅ Klantbevestiging verzonden!")
-    except Exception as e:
-        # Failure should not affect order processing
-        print(f"❌ Klantbevestiging-fout: {e}")
-
-def send_pos_order(order_data):
-    """Forward the order data to the POS system."""
-    try:
-        response = requests.post(POS_API_URL, json=order_data)
-        if response.status_code == 200:
-            print("✅ POS-bestelling verzonden!")
-            return True, None
-        print(f"❌ POS-response: {response.status_code} {response.text}")
-        return False, f"status {response.status_code}"
-    except Exception as e:
-        print(f"❌ POS-fout: {e}")
-        return False, str(e)
-
-
-def record_order(order_data, pos_ok):
-    """Store a simplified snapshot of the order for today's overview."""
-    pickup_time = order_data.get("pickup_time") or order_data.get("pickupTime")
-    delivery_time = order_data.get("delivery_time") or order_data.get("deliveryTime")
-    if not pickup_time and not delivery_time:
-        tijdslot = order_data.get("tijdslot")
-        if tijdslot:
-            if order_data.get("orderType") == "bezorgen":
-                delivery_time = tijdslot
-            else:
-                pickup_time = tijdslot
-
-    ORDERS.append({
-        "timestamp": datetime.now(TZ).isoformat(timespec="seconds"),
-        "name": order_data.get("name"),
-        "items": order_data.get("items"),
-        "paymentMethod": order_data.get("paymentMethod"),
-        "orderType": order_data.get("orderType"),
-        "opmerking": order_data.get("opmerking") or order_data.get("remark"),
-        # Use snake_case for time fields when storing orders
-        "pickup_time": pickup_time,
-        "delivery_time": delivery_time,
-        "pos_ok": pos_ok,
-        "totaal": order_data.get("totaal") or (order_data.get("summary") or {}).get("total")  # ✅ 添加这行
-    })
-
-
-def format_order_notification(data):
-    """Create a readable notification message from the order payload."""
-    lines = []
-    name = data.get("name")
-    if name:
-        lines.append(f"Naam: {name}")
-    phone = data.get("phone")
-    if phone:
-        lines.append(f"Tel: {phone}")
-    email = data.get("email") or data.get("customerEmail")
-    if email:
-        lines.append(f"Email: {email}")
-
-    order_type = data.get("orderType")
-    if order_type:
-        lines.append(f"Type: {order_type}")
-
-    if order_type == "bezorgen":
-        # Accept both snake_case and camelCase field names for address parts
-        addr_parts = [
-            data.get("street"),
-            data.get("house_number") or data.get("houseNumber"),
-            data.get("postcode"),
-            data.get("city"),
-        ]
-        addr = " ".join(str(p) for p in addr_parts if p)
-        if addr:
-            lines.append(f"Adres: {addr}")
-
-    payment_method = data.get("payment_method") or data.get("paymentMethod")
-    if payment_method:
-        lines.append(f"Betaling: {payment_method}")
-
-    # Support both snake_case and camelCase keys for time values
-    delivery_time = data.get("delivery_time") or data.get("deliveryTime")
-    pickup_time = data.get("pickup_time") or data.get("pickupTime")
-    tijdslot = data.get("tijdslot")
-
-    if tijdslot and not delivery_time and not pickup_time:
-        if order_type == "bezorgen":
-            lines.append(f"Bezorgtijd: {tijdslot}")
-        else:
-            lines.append(f"Afhaaltijd: {tijdslot}")
-    else:
-        if delivery_time:
-            lines.append(f"Bezorgtijd: {delivery_time}")
-        if pickup_time:
-            lines.append(f"Afhaaltijd: {pickup_time}")
-
-    
-
-    remark = data.get("opmerking") or data.get("remark")
-    if remark:
-        lines.append(f"Opmerking: {remark}")
-
-    summary = data.get("summary") or {}
-
-    def fmt(value):
+    orders = Order.query.filter(Order.created_at >= start).order_by(Order.created_at.desc()).all()
+    data = []
+    for o in orders:
         try:
-            return f"€{float(value):.2f}"
-        except (TypeError, ValueError):
-            return str(value)
-
-    # Support new top-level price fields with legacy summary fallbacks
-    subtotal = data.get("subtotal")
-    if subtotal is None:
-        subtotal = summary.get("subtotal")
-    if subtotal is not None:
-        lines.append(f"Subtotaal: {fmt(subtotal)}")
-
-    packaging_fee = data.get("packaging_fee")
-    if packaging_fee is None:
-        packaging_fee = summary.get("packaging")
-    if packaging_fee:
-        lines.append(f"Verpakkingskosten: {fmt(packaging_fee)}")
-
-    delivery_fee = data.get("delivery_fee")
-    if delivery_fee is None:
-        delivery_fee = summary.get("delivery")
-    if delivery_fee:
-        lines.append(f"Bezorgkosten: {fmt(delivery_fee)}")
-
-    tip = data.get("tip")
-    if tip:
-        lines.append(f"Fooi: {fmt(tip)}")
-
-    discount_amount = summary.get("discountAmount")
-    if discount_amount:
-        lines.append(f"Korting: -{fmt(discount_amount)}")
-
-    btw_amount = data.get("btw")
-    if btw_amount is None:
-        btw_amount = summary.get("btw")
-    if btw_amount is not None:
-        lines.append(f"BTW: {fmt(btw_amount)}")
-
-    total = data.get("totaal")
-    if total is None:
-        total = summary.get("total")
-    if total is not None:
-        lines.append(f"Totaal: {fmt(total)}")
-
-    return "\n".join(lines)
-
-
-
-def _orders_overview():
-    """Return a simplified overview of today's orders."""
-    today = datetime.now(TZ).date()
-    overview = []
-    for entry in ORDERS:
-        try:
-            ts = datetime.fromisoformat(entry.get("timestamp", ""))
+            items = json.loads(o.items or "{}")
         except Exception:
-            # Skip malformed timestamps instead of failing
-            continue
-        if ts.date() == today:
-            overview.append({
-                "time": ts.strftime("%H:%M"),
-                "customerName": entry.get("name"),
-                "items": entry.get("items"),
-                "paymentMethod": entry.get("paymentMethod"),
-                "orderType": entry.get("orderType"),
-                "opmerking": entry.get("opmerking") or entry.get("remark"),
-                "pos_ok": entry.get("pos_ok"),
-                "totaal": entry.get("totaal"),
-                "pickup_time": entry.get("pickup_time") or entry.get("pickupTime"),
-                "delivery_time": entry.get("delivery_time") or entry.get("deliveryTime"),
-            })
-    return overview
+            items = {}
+
+        summary = ", ".join(f"{k} x {v.get('qty')}" for k, v in items.items())
+        data.append({
+            "Datum": to_nl(o.created_at).strftime("%Y-%m-%d"),
+            "Tijd": to_nl(o.created_at).strftime("%H:%M"),
+            "Naam": o.customer_name,
+            "Telefoon": o.phone,
+            "Email": o.email,
+            "Adres": f"{o.street} {o.house_number}, {o.postcode} {o.city}",
+            "Betaalwijze": o.payment_method,
+            "Totaal": f"€{o.totaal:.2f}",
+            "Items": summary,
+        })
+
+    df = pd.DataFrame(data)
+    output = BytesIO()
+    df.to_excel(output, index=False, engine='xlsxwriter')
+    output.seek(0)
+    return output
 
 
-@app.route("/api/orders/today", methods=["GET"])
-@app.route("/api/orders", methods=["GET"])
-def get_orders_today():
-    return jsonify(_orders_overview())
+def generate_pdf_today():
+    today = datetime.now(NL_TZ).date()
+    start_local = datetime.combine(today, datetime.min.time(), tzinfo=NL_TZ)
+    start = start_local.astimezone(UTC).replace(tzinfo=None)
 
-@app.route("/api/send", methods=["POST"])
-def api_send_order():
-    data = request.get_json()
-    message = data.get("message", "")
-    remark = data.get("opmerking") or data.get("remark", "")
-    data["opmerking"] = remark
-    customer_email = data.get("customerEmail") or data.get("email")
-    payment_method = data.get("paymentMethod", "").lower()
+    orders = Order.query.filter(Order.created_at >= start).order_by(Order.created_at.desc()).all()
 
-    order_text = data.get("message") or format_order_notification(data)
-    maps_link = build_google_maps_link(data)
-    if maps_link:
-        order_text += f"\n📍 Google Maps: {maps_link}"
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    elements = []
 
-    now = datetime.now(TZ)
-    created_at = now.strftime('%Y-%m-%d %H:%M:%S')
-    created_date = now.strftime('%Y-%m-%d')
-    created_time = now.strftime('%H:%M')
-    data["total"] = data.get("totaal") or (data.get("summary") or {}).get("total")
-    data["created_at"] = created_at
+    data = [["Datum", "Tijd", "Naam", "Totaal", "Items"]]
+    for o in orders:
+        try:
+            items = json.loads(o.items or "{}")
+        except Exception:
+            items = {}
 
-    telegram_ok = send_telegram_message(order_text)
-    email_ok = send_email_notification(order_text)
-    pos_ok, pos_error = send_pos_order(data)
-    record_order(data, pos_ok)
+        summary = ", ".join(f"{k} x {v.get('qty')}" for k, v in items.items())
+        data.append([
+            to_nl(o.created_at).strftime("%Y-%m-%d"),
+            to_nl(o.created_at).strftime("%H:%M"),
+            o.customer_name,
+            f"€{o.totaal:.2f}",
+            summary
+        ])
 
-    payment_link = None
-    if payment_method and payment_method != "cash":
-        payment_link = TIKKIE_PAYMENT_LINK
+    table = Table(data, repeatRows=1)
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.lightblue),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+    ]))
+    elements.append(table)
+    doc.build(elements)
+    buffer.seek(0)
+    return buffer
 
-    if customer_email:
-        send_confirmation_email(order_text, customer_email)
+@app.route("/admin/orders/download/pdf")
+@login_required
+def download_pdf():
+    output = generate_pdf_today()
+    return send_file(
+        output,
+        mimetype='application/pdf',
+        as_attachment=True,
+        download_name='bestellingen_vandaag.pdf'
+    )
+@app.route("/admin/orders/download/excel")
+@login_required
+def download_excel():
+    output = generate_excel_today()
+    return send_file(
+        output,
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        as_attachment=True,
+        download_name='bestellingen_vandaag.xlsx'
+    )
 
-    delivery_time = data.get("delivery_time") or data.get("deliveryTime", "")
-    pickup_time = data.get("pickup_time") or data.get("pickupTime", "")
-    tijdslot = data.get("tijdslot") or delivery_time or pickup_time
 
-    if tijdslot:
-        if not delivery_time and not pickup_time:
-            if data.get("orderType") == "bezorgen":
-                delivery_time = tijdslot
-            else:
-                pickup_time = tijdslot
 
-    socket_order = {
-        "message": message,
-        "opmerking": remark,
-        "customer_name": data.get("name", ""),
-        "order_type": data.get("orderType", ""),
-        "created_at": data["created_at"],
-        "created_date": created_date,
-        "time": created_time,
-        "phone": data.get("phone", ""),
-        "email": data.get("email", ""),
-        "payment_method": payment_method,
-        "items": data.get("items", {}),
-        "street": data.get("street", ""),
-        "house_number": data.get("houseNumber", ""),
-        "postcode": data.get("postcode", ""),
-        "city": data.get("city", ""),
-        "maps_link": maps_link,
-        "google_maps_link": maps_link,
-        "delivery_time": delivery_time,
-        "pickup_time": pickup_time,
-        "tijdslot": tijdslot,
-        "subtotal": data.get("subtotal") or (data.get("summary") or {}).get("subtotal"),
-        "packaging_fee": data.get("packaging_fee") or (data.get("summary") or {}).get("packaging"),
-        "delivery_fee": data.get("delivery_fee") or (data.get("summary") or {}).get("delivery"),
-        "tip": data.get("tip"),
-        "btw": data.get("btw") or (data.get("summary") or {}).get("btw"),
-        "totaal": data.get("totaal") or (data.get("summary") or {}).get("total"),
-        "discount_amount": (data.get("summary") or {}).get("discountAmount"),
-    }
-    socketio.emit("new_order", socket_order)
 
-    if telegram_ok and email_ok and pos_ok:
+
+def build_maps_link(street: str, house_number: str, postcode: str, city: str) -> str | None:
+    """Create a Google Maps search URL for the given address."""
+    if not all([street, house_number, postcode, city]):
+        return None
+    address = f"{street} {house_number}, {postcode} {city}"
+    return f"https://www.google.com/maps?q={quote(address)}"
+
+
+# Socket.IO for real-time updates
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
+
+
+
+
+# 设置登录管理
+login_manager = LoginManager(app)
+login_manager.login_view = "login"
+
+# 数据模型
+class Order(db.Model):
+    __tablename__ = 'orders'  # ✅ 避免使用 SQL 保留字
+    id = db.Column(db.Integer, primary_key=True)
+    order_number = db.Column(db.String(20))
+    order_type = db.Column(db.String(20))
+    customer_name = db.Column(db.String(100))
+    phone = db.Column(db.String(20))
+    email = db.Column(db.String(120))
+    pickup_time = db.Column(db.String(20))
+    delivery_time = db.Column(db.String(20))
+    payment_method = db.Column(db.String(20))
+    postcode = db.Column(db.String(10))
+    house_number = db.Column(db.String(10))
+    street = db.Column(db.String(100))
+    city = db.Column(db.String(100))
+    opmerking = db.Column(db.Text)
+    items = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    totaal = db.Column(db.Float)
+
+
+class User(UserMixin):
+    def __init__(self, user_id: str):
+        self.id = user_id
+
+@login_manager.user_loader
+def load_user(user_id: str):
+    return User("admin") if user_id == "admin" else None
+
+# 首页
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+# POS
+@app.route('/pos', methods=["GET", "POST"])
+@login_required
+def pos():
+    if request.method == "POST":
+        data = request.get_json() or {}
+        order_number = data.get("order_number") or data.get("orderNumber")
+
+        order = Order(
+            order_type=data.get("order_type") or data.get("orderType"),
+            customer_name=data.get("customer_name") or data.get("name"),
+            phone=data.get("phone"),
+            email=data.get("email") or data.get("customerEmail"),
+            pickup_time=data.get("pickup_time") or data.get("pickupTime"),
+            delivery_time=data.get("delivery_time") or data.get("deliveryTime"),
+            payment_method=data.get("payment_method") or data.get("paymentMethod"),
+            postcode=data.get("postcode"),
+            house_number=data.get("house_number"),
+            street=data.get("street"),
+            city=data.get("city"),
+            opmerking=data.get("opmerking") or data.get("remark"),
+            items=json.dumps(data.get("items", {})),
+            order_number=order_number
+        )   
+        db.session.add(order)
+        db.session.commit()
+
+        # Notify POS clients
+        try:
+            items = json.loads(order.items or "{}")
+            total = sum(float(i.get("price", 0)) * int(i.get("qty", 0)) for i in items.values())
+
+            payload = {
+                "id": order.id,
+                "order_type": order.order_type,
+                "customer_name": order.customer_name,
+                "phone": order.phone,
+                "email": order.email,
+                "payment_method": order.payment_method,
+                "pickup_time": order.pickup_time,
+                "delivery_time": order.delivery_time,
+                "pickupTime": order.pickup_time,
+                "deliveryTime": order.delivery_time,
+                "postcode": order.postcode,
+                "house_number": order.house_number,
+                "street": order.street,
+                "city": order.city,
+                "maps_link": build_maps_link(order.street, order.house_number, order.postcode, order.city),
+                "opmerking": order.opmerking,
+                "created_date": to_nl(order.created_at).strftime("%Y-%m-%d"),
+                "created_at": to_nl(order.created_at).strftime("%H:%M"),
+                "items": items,
+                "total": total,
+                "totaal": total,
+                "order_number": order.order_number
+                
+            }
+            socketio.emit("new_order", payload, broadcast=True)
+        except Exception as e:
+            print(f"Socket emit failed: {e}")
+
+        resp = {"success": True}
+        if str(order.payment_method).lower() == "online":
+            url = os.getenv("TIKKIE_URL")
+            if url:
+                resp["paymentLink"] = url
+
+        return jsonify(resp)
+
+    # GET 请求：加载今日订单展示到 POS 界面
+    today = datetime.now(NL_TZ).date()
+    start_local = datetime.combine(today, datetime.min.time(), tzinfo=NL_TZ)
+    start = start_local.astimezone(UTC).replace(tzinfo=None)
+
+    orders = Order.query.filter(Order.created_at >= start).order_by(Order.created_at.desc()).all()
+    for o in orders:
+        try:
+            o.items_dict = json.loads(o.items or "{}")
+        except Exception:
+            try:
+                import ast
+                o.items_dict = ast.literal_eval(o.items)
+            except Exception as e:
+                print(f"❌ JSON解析失败: {e}")
+                o.items_dict = {}
+
+        o.total = sum(float(i.get("price", 0)) * int(i.get("qty", 0)) for i in o.items_dict.values())
+        o.created_at_local = to_nl(o.created_at)
+        o.maps_link = build_maps_link(o.street, o.house_number, o.postcode, o.city)
+
+    return render_template("pos.html", orders=orders)
+
+
+# 接收前端订单提交
+@app.route('/api/orders', methods=["POST"])
+def api_orders():
+    try:
+        data = request.get_json() or {}
+        order_number = data.get("order_number") or data.get("orderNumber")
+
+        # 1. 构造订单对象（初始字段）
+        order = Order(
+            order_type=data.get("orderType") or data.get("order_type"),
+            customer_name=data.get("name") or data.get("customer_name"),
+            phone=data.get("phone"),
+            email=data.get("customerEmail") or data.get("email"),
+            pickup_time=data.get("pickup_time") or data.get("pickupTime"),
+            delivery_time=data.get("delivery_time") or data.get("deliveryTime"),
+            payment_method=data.get("paymentMethod") or data.get("payment_method"),
+            postcode=data.get("postcode"),
+            house_number=data.get("house_number"),
+            street=data.get("street"),
+            city=data.get("city"),
+            opmerking=data.get("opmerking") or data.get("remark"),
+            items=json.dumps(data.get("items", {})),
+            order_number=order_number
+        )
+
+        # 2. 计算 subtotal / totaal
+        items = json.loads(order.items or "{}")
+        subtotal = sum(
+            float(i.get("price", 0)) * int(i.get("qty", 0))
+            for i in items.values()
+        )
+        order.totaal = float(data.get("totaal") or subtotal)
+
+        # 3. 保存订单到数据库
+        db.session.add(order)
+        db.session.commit()
+
+        # 4. 推送给 POS via SocketIO
+        try:
+            order_payload = {
+                "id": order.id,
+                "order_type": order.order_type,
+                "customer_name": order.customer_name,
+                "phone": order.phone,
+                "email": order.email,
+                "payment_method": order.payment_method,
+                "pickup_time": order.pickup_time,
+                "delivery_time": order.delivery_time,
+                "pickupTime": order.pickup_time,
+                "deliveryTime": order.delivery_time,
+                "postcode": order.postcode,
+                "house_number": order.house_number,
+                "street": order.street,
+                "city": order.city,
+                "maps_link": build_maps_link(order.street, order.house_number, order.postcode, order.city),
+                "opmerking": order.opmerking,
+                "created_date": to_nl(order.created_at).strftime("%Y-%m-%d"),
+                "created_at": to_nl(order.created_at).strftime("%H:%M"),
+                "items": items,
+                "total": subtotal,
+                "totaal": order.totaal,
+                "order_number": order.order_number,
+            }
+            socketio.emit("new_order", order_payload, broadcast=True)
+        except Exception as e:
+            print(f"❌ Socket emit failed: {e}")
+
+        print("✅ 接收到订单:", data)
+
+        # 6. 返回响应
         resp = {"status": "ok"}
-        if payment_link:
-            resp["paymentLink"] = payment_link
+        if str(order.payment_method).lower() == "online":
+            pay_url = os.getenv("TIKKIE_URL")
+            if pay_url:
+                resp["paymentLink"] = pay_url
+
         return jsonify(resp), 200
 
-    if not telegram_ok:
-        return jsonify({"status": "fail", "error": "Telegram-fout"}), 500
-    if not email_ok:
-        return jsonify({"status": "fail", "error": "E-mailfout"}), 500
-    if not pos_ok:
-        return jsonify({"status": "fail", "error": f"POS-fout: {pos_error}"}), 500
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"status": "fail", "error": str(e)}), 500
 
-    return jsonify({"status": "fail", "error": "Beide mislukt"}), 500
 
-@app.route("/submit_order", methods=["POST"])
+@app.route('/submit_order', methods=["POST"])
 def submit_order():
-    data = request.get_json()
-    message = data.get("message", "")
-    remark = data.get("opmerking") or data.get("remark", "")
-    data["opmerking"] = remark
-    customer_email = data.get("customerEmail") or data.get("email")
-    payment_method = data.get("paymentMethod", "").lower()
+    # 兼容旧接口，转发数据到现有逻辑
+    return api_orders()
 
-    # ✅ 添加 created_at 时间戳，并加入 data 中
-    now = datetime.now(TZ)
-    created_at = now.strftime('%Y-%m-%d %H:%M:%S')
-    created_date = now.strftime('%Y-%m-%d')
-    created_time = now.strftime('%H:%M')  # ✅ 新增，只包含时间部分
-    # 👇 添加双字段支持
-    data["total"] = data.get("totaal") or (data.get("summary") or {}).get("total")
 
-    data["created_at"] = created_at
 
-    order_text = format_order_notification(data)
-    maps_link = build_google_maps_link(data)
-    if maps_link:
-        order_text += f"\n📍 Google Maps: {maps_link}"
+# 管理页面
+@app.route('/admin')
+@login_required
+def admin():
+    return render_template('admin.html')
 
-    telegram_ok = send_telegram_message(order_text)
-    email_ok = send_email_notification(order_text)
-    pos_ok, pos_error = send_pos_order(data)
-    record_order(data, pos_ok)
+@app.route('/admin/orders')
+@login_required
+def admin_orders():
+    orders = Order.query.order_by(Order.created_at.desc()).all()
+    order_data = []
 
-    payment_link = None
-    if payment_method and payment_method != "cash":
-        payment_link = TIKKIE_PAYMENT_LINK
+    for o in orders:
+        try:
+            items = json.loads(o.items or "{}")
+        except Exception:
+            try:
+                import ast
+                items = ast.literal_eval(o.items)
+            except Exception:
+                items = {}
 
-    if customer_email:
-        send_confirmation_email(order_text, customer_email)
+        o.created_at_local = to_nl(o.created_at)
+        # 不再重新计算 o.totaal，而是使用数据库字段的原值
+        order_data.append({
+            "order": o,
+            "items": items,
+            "total": o.totaal or 0,  # 显示数据库值，如果为空则为0
+            "totaal": o.totaal or 0,
+        })
 
-    # ✅ 实时推送完整订单数据给前端 POS（包含时间、地址、姓名等）
-    delivery_time = data.get("delivery_time") or data.get("deliveryTime", "")
-    pickup_time = data.get("pickup_time") or data.get("pickupTime", "")
-    tijdslot = data.get("tijdslot") or delivery_time or pickup_time
+    return render_template("admin_orders.html", order_data=order_data)
+@app.route('/pos/orders_today')
+@login_required
+def pos_orders_today():
+    today = datetime.now(NL_TZ).date()
+    start_local = datetime.combine(today, datetime.min.time(), tzinfo=NL_TZ)
+    start = start_local.astimezone(UTC).replace(tzinfo=None)
 
-    if tijdslot:
-        if not delivery_time and not pickup_time:
-            if data.get("orderType") == "bezorgen":
-                delivery_time = tijdslot
-            else:
-                pickup_time = tijdslot
+    orders = Order.query.filter(Order.created_at >= start).order_by(Order.created_at.desc()).all()
+    order_dicts = []
 
-    socket_order = {
-        "message": message,
-        "opmerking": remark,
-        "customer_name": data.get("name", ""),
-        "order_type": data.get("orderType", ""),
-        "created_at": data["created_at"],
-        "created_date": created_date,
-        "time": created_time,
-        "phone": data.get("phone", ""),
-        "email": data.get("email", ""),
-        "payment_method": payment_method,
-        "items": data.get("items", {}),
-        "street": data.get("street", ""),
-        "house_number": data.get("houseNumber", ""),
-        "postcode": data.get("postcode", ""),
-        "city": data.get("city", ""),
-        "maps_link": maps_link,                 # ✅ 前端想要的字段名
-        "google_maps_link": maps_link,         # （可选）保留原字段用于后续兼容或调试
-        # Emit snake_case keys for frontend templates
-        "delivery_time": delivery_time,
-        "pickup_time": pickup_time,
-        "tijdslot": tijdslot,
-        # Order pricing fields (new checkout data)
-        "subtotal": data.get("subtotal") or (data.get("summary") or {}).get("subtotal"),
-        "packaging_fee": data.get("packaging_fee") or (data.get("summary") or {}).get("packaging"),
-        "delivery_fee": data.get("delivery_fee") or (data.get("summary") or {}).get("delivery"),
-        "tip": data.get("tip"),
-        "btw": data.get("btw") or (data.get("summary") or {}).get("btw"),
-        "totaal": data.get("totaal") or (data.get("summary") or {}).get("total"),
-        "discount_amount": (data.get("summary") or {}).get("discountAmount"),
-    }
-    socketio.emit("new_order", socket_order)
+    for o in orders:
+        try:
+            o.items_dict = json.loads(o.items or "{}")
+        except Exception:
+            try:
+                import ast
+                o.items_dict = ast.literal_eval(o.items)
+            except Exception as e:
+                print(f"❌ JSON解析失败: {e}")
+                o.items_dict = {}
 
-    if telegram_ok and email_ok and pos_ok:
-        resp = {"status": "ok"}
-        if payment_link:
-            resp["paymentLink"] = payment_link
-        return jsonify(resp), 200
+        # ✅ 正确使用数据库中的 totaal
+        totaal = o.totaal or 0
 
-    if not telegram_ok:
-        return jsonify({"status": "fail", "error": "Telegram-fout"}), 500
-    if not email_ok:
-        return jsonify({"status": "fail", "error": "E-mailfout"}), 500
-    if not pos_ok:
-        return jsonify({"status": "fail", "error": f"POS-fout: {pos_error}"}), 500
+        o.created_at_local = to_nl(o.created_at)
+        summary = "\n".join(f"{name} x {item['qty']}" for name, item in o.items_dict.items())
 
-    return jsonify({"status": "fail", "error": "Beide mislukt"}), 500
+        is_pickup = o.order_type in ["afhalen", "pickup"]
+        if is_pickup:
+            details = f"[Afhalen]\nNaam: {o.customer_name}\nTelefoon: {o.phone}"
+            if o.email:
+                details += f"\nEmail: {o.email}"
+            details += f"\nAfhaaltijd: {o.pickup_time}\nBetaalwijze: {o.payment_method}"
+        else:
+            details = f"[Bezorgen]\nNaam: {o.customer_name}\nTelefoon: {o.phone}"
+            if o.email:
+                details += f"\nEmail: {o.email}"
+            details += (
+                f"\nAdres: {o.street} {o.house_number}"\
+                f"\nPostcode: {o.postcode}\nBezorgtijd: {o.delivery_time}"\
+                f"\nBetaalwijze: {o.payment_method}"
+            )
 
+        o.formatted = (
+            f"📦 Nieuwe bestelling bij *Nova Asia*:\n\n"
+            f"Bestelnummer: {o.order_number}\n"  # ✅ 插入编号
+            f"{summary}\n{details}\nTotaal: €{totaal:.2f}"
+
+        )
+
+
+        order_dicts.append({
+            "id": o.id,
+            "order_type": o.order_type,
+            "customer_name": o.customer_name,
+            "phone": o.phone,
+            "email": o.email,
+            "payment_method": o.payment_method,
+            "pickup_time": o.pickup_time,
+            "delivery_time": o.delivery_time,
+            "pickupTime": o.pickup_time,
+            "deliveryTime": o.delivery_time,
+            "postcode": o.postcode,
+            "house_number": o.house_number,
+            "street": o.street,
+            "city": o.city,
+            "maps_link": build_maps_link(o.street, o.house_number, o.postcode, o.city),
+            "opmerking": o.opmerking,
+            "created_date": to_nl(o.created_at).strftime("%Y-%m-%d"),
+            "created_at": to_nl(o.created_at).strftime("%H:%M"),
+            "items": o.items_dict,
+            "total": totaal,   # ✅ 关键是这里：使用数据库中的 totaal
+            "totaal": totaal,
+            "order_number": o.order_number  # ✅ 加上这行
+        })
+
+    if request.args.get("json"):
+        return jsonify(order_dicts)
+
+    return render_template("pos_orders.html", orders=orders)
+@app.route('/login', methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        if username == "admin" and password == "novaasia3693":
+            login_user(User("admin"))
+            return redirect(url_for("pos"))
+        return render_template("login.html", error=True)
+    return render_template("login.html")
+
+# 登出
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for("login"))
+
+# 启动
 if __name__ == "__main__":
-    socketio.run(app, host="0.0.0.0")
+    socketio.run(app, host="0.0.0.0", port=5000)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
