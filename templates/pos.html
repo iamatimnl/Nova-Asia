@@ -460,7 +460,6 @@
       <a href="#snack">Snack</a>
       <a href="#vegan">Vegan</a>
     </div>
-    <button id="toggleToday" class="today-btn">Bestellingen Vandaag</button>
     <div class="indicator" id="indicator"></div>
   </nav>
 </div>
@@ -744,7 +743,10 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
   document.getElementById('discountType').addEventListener('change',updateCart);
   document.getElementById('discountValue').addEventListener('input',updateCart);
-  document.getElementById('toggleToday').addEventListener('click',toggleToday);
+  const toggleTodayBtn = document.getElementById('toggleToday');
+  if (toggleTodayBtn) {
+    toggleTodayBtn.addEventListener('click', toggleToday);
+  }
   const todayToggleMobile=document.getElementById('todayToggleMobile');
   if(todayToggleMobile){
     todayToggleMobile.addEventListener('click',toggleToday);
