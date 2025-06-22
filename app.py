@@ -372,7 +372,7 @@ def api_orders():
                 "items": items,
                 "total": subtotal,
                 "totaal": order.totaal,
-                "fooi": order.fooi,
+                "fooi": fooi, 
                 "order_number": order.order_number,
             }
             socketio.emit("new_order", order_payload, broadcast=True)
