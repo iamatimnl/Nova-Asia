@@ -2079,7 +2079,12 @@ function checkout() {
 
   const orderNumber = generateOrderNumber();
 
-  const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}\nTotaal: €${totalPrice}`;
+  let tipLine = '';
+  if (tip > 0) {
+    tipLine = `\nFooi: €${tip.toFixed(2)}`;
+  }
+
+  const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}${tipLine}\nTotaal: €${totalPrice}`;
 
   const itemsToSend = { ...cart };
   Object.keys(extras).forEach(id => {
