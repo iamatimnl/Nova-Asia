@@ -1043,7 +1043,8 @@ function formatCurrency(value){
   
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script>
-  const socket = io('https://flask-order-api.onrender.com', { transports: ['websocket'] });
+  // Listen for realtime updates from our own backend (App A)
+  const socket = io('https://nova-asia.onrender.com', { transports: ['websocket'] });
 
   let pollTimer;
   const baseTitle = document.title;
