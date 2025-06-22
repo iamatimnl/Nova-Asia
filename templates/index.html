@@ -2550,10 +2550,10 @@ sliderTrack.addEventListener('touchmove', (e) => {
   sliderButton.style.left = `${padding.left + moveX}px`;
 });
 
-sliderTrack.addEventListener('touchend', () => {
-  isSliding = false;
-  const padding = getHorizontalPadding(sliderTrack);
-  const maxSlide = getMaxSlide();
+  sliderTrack.addEventListener('touchend', () => {
+    isSliding = false;
+    const padding = getHorizontalPadding(sliderTrack);
+    const maxSlide = getMaxSlide();
 
   const currentLeft = parseInt(sliderButton.style.left || '0') - padding.left;
   const movedRatio = currentLeft / maxSlide;
@@ -2564,6 +2564,48 @@ sliderTrack.addEventListener('touchend', () => {
     sliderButton.style.left = `${padding.left}px`;
   }
 });
+</script>
+<script>
+  (function() {
+    const fields = document.querySelectorAll('#afhalenFields input, #afhalenFields select, #bezorgenFields input, #bezorgenFields select');
+    let hideTimer;
+
+    function isMobile() {
+      return window.innerWidth <= 768 || /Mobi|Android/i.test(navigator.userAgent);
+    }
+
+    function requiredFilled() {
+      const type = document.querySelector('input[name="orderType"]:checked').value;
+      if (type === 'afhalen') {
+        return document.getElementById('pickupName').value.trim() &&
+               document.getElementById('pickupPhone').value.trim() &&
+               document.getElementById('pickup_time').value;
+      }
+      return document.getElementById('deliveryName').value.trim() &&
+             document.getElementById('deliveryPhone').value.trim() &&
+             document.getElementById('deliveryAddress').value.trim() &&
+             document.getElementById('deliveryHouseNumber').value.trim() &&
+             document.getElementById('deliveryPostcode').value.trim() &&
+             document.getElementById('deliveryArea').value.trim() &&
+             document.getElementById('delivery_time').value;
+    }
+
+    function scheduleHide() {
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(() => {
+        if (isMobile() && requiredFilled()) {
+          fields.forEach(el => el.blur());
+        }
+      }, 3000);
+    }
+
+    fields.forEach(el => {
+      ['input', 'focus', 'click'].forEach(evt => el.addEventListener(evt, scheduleHide));
+    });
+
+    document.getElementById('afhalen').addEventListener('change', scheduleHide);
+    document.getElementById('bezorgen').addEventListener('change', scheduleHide);
+  })();
 </script>
 
 
