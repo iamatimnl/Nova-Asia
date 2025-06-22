@@ -100,7 +100,8 @@ th:last-child {
           </ul>
         </td>
        <td>{{ order.opmerking or '-' }}</td>
-       <td>€{{ '%.2f' % (order.total or 0) }}</td>
+       <td>€{{ '%.2f' % (order.subtotal or 0) }}</td>   ← 正确显示 Subtotaal
+
         <td>€{{ '%.2f' % (order.totaal or 0) }}</td>
 
         <td>
