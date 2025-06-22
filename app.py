@@ -171,6 +171,8 @@ def build_maps_link(street: str, house_number: str, postcode: str, city: str) ->
     return f"https://www.google.com/maps?q={quote(address)}"
 
 
+# Socket.IO for real-time updates
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
 
 
@@ -242,7 +244,39 @@ def pos():
         db.session.add(order)
         db.session.commit()
 
-      
+        # Notify POS clients
+        try:
+            items = json.loads(order.items or "{}")
+            total = sum(float(i.get("price", 0)) * int(i.get("qty", 0)) for i in items.values())
+
+            payload = {
+                "id": order.id,
+                "order_type": order.order_type,
+                "customer_name": order.customer_name,
+                "phone": order.phone,
+                "email": order.email,
+                "payment_method": order.payment_method,
+                "pickup_time": order.pickup_time,
+                "delivery_time": order.delivery_time,
+                "pickupTime": order.pickup_time,
+                "deliveryTime": order.delivery_time,
+                "postcode": order.postcode,
+                "house_number": order.house_number,
+                "street": order.street,
+                "city": order.city,
+                "maps_link": build_maps_link(order.street, order.house_number, order.postcode, order.city),
+                "opmerking": order.opmerking,
+                "created_date": to_nl(order.created_at).strftime("%Y-%m-%d"),
+                "created_at": to_nl(order.created_at).strftime("%H:%M"),
+                "items": items,
+                "total": total,
+                "totaal": total,
+                "order_number": order.order_number
+                
+            }
+            socketio.emit("new_order", payload, broadcast=True)
+        except Exception as e:
+            print(f"Socket emit failed: {e}")
 
         resp = {"success": True}
         if str(order.payment_method).lower() == "online":
@@ -314,9 +348,38 @@ def api_orders():
         db.session.add(order)
         db.session.commit()
 
-       
+        # 4. 推送给 POS via SocketIO
+        try:
+            order_payload = {
+                "id": order.id,
+                "order_type": order.order_type,
+                "customer_name": order.customer_name,
+                "phone": order.phone,
+                "email": order.email,
+                "payment_method": order.payment_method,
+                "pickup_time": order.pickup_time,
+                "delivery_time": order.delivery_time,
+                "pickupTime": order.pickup_time,
+                "deliveryTime": order.delivery_time,
+                "postcode": order.postcode,
+                "house_number": order.house_number,
+                "street": order.street,
+                "city": order.city,
+                "maps_link": build_maps_link(order.street, order.house_number, order.postcode, order.city),
+                "opmerking": order.opmerking,
+                "created_date": to_nl(order.created_at).strftime("%Y-%m-%d"),
+                "created_at": to_nl(order.created_at).strftime("%H:%M"),
+                "items": items,
+                "total": subtotal,
+                "totaal": order.totaal,
+                "fooi": fooi, 
+                "order_number": order.order_number,
+            }
+            socketio.emit("new_order", order_payload, broadcast=True)
+        except Exception as e:
+            print(f"❌ Socket emit failed: {e}")
 
-      
+        print("✅ 接收到订单:", data)
 
         # 6. 返回响应
         resp = {"status": "ok"}
@@ -474,6 +537,284 @@ def logout():
 # 启动
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
