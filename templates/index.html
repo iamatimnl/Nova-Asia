@@ -1958,6 +1958,13 @@ function scrollToField(id) {
   }
 }
 
+function generateOrderNumber() {
+  const now = new Date();
+  const date = now.toISOString().slice(0, 10).replace(/-/g, '');
+  const rand = Math.random().toString(36).substring(2, 6).toUpperCase();
+  return `NV${date}-${rand}`;
+}
+
 function checkout() {
   const paidItems = Object.values(cart).filter(item => item.price > 0 && item.qty > 0);
   if (paidItems.length === 0) {
@@ -2070,6 +2077,8 @@ function checkout() {
   const total = subtotal + packagingFee + deliveryFee + tip;
   const totalPrice = !isNaN(total) ? total.toFixed(2) : "0.00";
 
+  const orderNumber = generateOrderNumber();
+
   const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}\nTotaal: €${totalPrice}`;
 
   const itemsToSend = { ...cart };
@@ -2110,6 +2119,7 @@ function checkout() {
       city: orderType === 'bezorgen'
         ? document.getElementById('deliveryArea').value.trim()
         : '',
+      order_number: orderNumber,
       items: itemsToSend,
       opmerking: remark,
       tip: tip.toFixed(2),
@@ -2125,7 +2135,7 @@ function checkout() {
     .then(data => {
       if (data.status === 'ok') {
         beep();
-        showFeedback('Bestelling succesvol verzonden!');
+        showFeedback('Bestelling succesvol verzonden! Bestelnummer: ' + orderNumber);
         for (const k in cart) delete cart[k];
         updateCart();
         sliderText.innerText = 'Schuif om te betalen';

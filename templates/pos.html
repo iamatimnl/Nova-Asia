@@ -871,6 +871,13 @@ function clearForm(){
   updateCart();
   toggleAddress();
 }
+
+function generateOrderNumber(){
+  const now = new Date();
+  const date = now.toISOString().slice(0,10).replace(/-/g,'');
+  const rand = Math.random().toString(36).substring(2,6).toUpperCase();
+  return `NV${date}-${rand}`;
+}
 function submitOrder() {
   const name = document.getElementById('custName').value.trim();
   const phone = document.getElementById('custPhone').value.trim();
@@ -920,6 +927,8 @@ function submitOrder() {
     if (qty > 0) itemsToSend[extras[id].label] = { price: 0, qty };
   });
 
+  const orderNumber = generateOrderNumber();
+
   // ✅ 获取结账明细数据
   const subtotal = Object.values(cart).reduce((sum, item) => sum + item.price * item.qty, 0);
   const packagingTotal = Object.values(cart).reduce((sum, item) => sum + (item.packaging || 0) * item.qty, 0);
@@ -964,6 +973,7 @@ function submitOrder() {
     house_number: delivery ? document.getElementById('houseNumber').value.trim() : '',
     street: delivery ? document.getElementById('street').value.trim() : '',
     city: delivery ? document.getElementById('city').value.trim() : '',
+    order_number: orderNumber,
     items: itemsToSend,
     message: orderText,
     opmerking: remark,
@@ -981,7 +991,7 @@ function submitOrder() {
     .then(r => r.json())
     .then(res => {
       if (res.success || res.status === 'ok') {
-        alert('Bestelling succesvol verzonden!');
+        alert('Bestelling succesvol verzonden! Bestelnummer: ' + orderNumber);
         clearForm();
         fetchOrders();
       } else {
