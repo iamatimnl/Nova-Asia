@@ -427,8 +427,7 @@
   }
   @media (max-width: 768px) {
     .cart-toggle { display: block; }
-    .today-toggle { display: block; }
-    .today-btn { display: none; }
+  
     .cart-panel {
       position: fixed;
       inset: 0;
@@ -447,6 +446,22 @@
   .orders-table td, .orders-table th {
   white-space: nowrap;
   padding: 8px;
+}
+/* 默认隐藏圆按钮 */
+.today-toggle {
+  display: none;
+}
+
+/* 手机显示圆按钮，隐藏长按钮 */
+@media (max-width: 768px) {
+  .today-btn { display: none; }
+  .today-toggle { display: flex; }
+}
+
+/* 桌面显示长按钮，确保隐藏圆按钮 */
+@media (min-width: 768px) {
+  .today-btn { display: block; }
+  .today-toggle { display: none; }
 }
 
   
@@ -1140,22 +1155,17 @@ function formatCurrency(value){
 
   // Socket 监听新订单
   socket.on('new_order', order => {
-    console.log('🆕 Nieuwe bestelling:', order);
-    if(!('totaal' in order)){
-      console.warn('⚠️ totaal 字段缺失，请联系后端');
-    }
-    beep();
-    alert('Nieuwe bestelling ontvangen!');
-    addRow(order);
-    const panel=document.getElementById('todayOrders');
-    if(panel && panel.classList.contains('visible')){
-      newOrderCount = 0;
-    }else{
-      newOrderCount++;
-    }
-    updateTabTitle();
-    updateTodayBadge();
-  });
+  console.log('🆕 Nieuwe bestelling ontvangen!', order);
+  beep();
+  alert('Nieuwe bestelling ontvangen!');
+  addRow(order);
+  
+  // ✅ 修改这里，不再重置
+  newOrderCount++;
+
+  updateTabTitle();
+  updateTodayBadge();
+});
 
   // 断线后启用轮询
   socket.on('disconnect', () => {
