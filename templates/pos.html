@@ -1106,54 +1106,52 @@ function formatCurrency(value){
 
   // 添加订单到表格
   function addRow(order) {
-  const tbody = document.querySelector('.orders-panel tbody');
-  if (!tbody) return;
+    const tbody = document.querySelector('.orders-panel tbody');
+    if (!tbody) return;
 
-  const tr = document.createElement('tr');
-  if (order.id) tr.dataset.id = order.id;
-  const isDelivery = ['delivery', 'bezorgen'].includes(order.order_type);
-  const items = Object.entries(order.items || {}).map(([n, i]) => `<li>${n} x ${i.qty}</li>`).join('');
-  let fooi = parseFloat(order.fooi);
-  if (isNaN(fooi)) {
-    fooi = 0;
-  }
-  if (!('totaal' in order)) {
-    console.warn('⚠️ totaal 字段缺失，请联系后端');
-  }
-  const remark = order.opmerking || order.remark || '';
-  const pickup = order.pickup_time || order.pickupTime;
-  const delivery = order.delivery_time || order.deliveryTime;
-
-  let time = order.created_at || '';
-  if (time && time.length > 5) {
-    if (time.includes('T')) {
-      const d = new Date(time);
-      if (!isNaN(d)) time = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
-    } else if (time.includes(' ')) {
-      time = time.split(' ')[1].slice(0, 5);
+    const tr = document.createElement('tr');
+    if (order.id) tr.dataset.id = order.id;
+    const isDelivery = ['delivery', 'bezorgen'].includes(order.order_type);
+    const items = Object.entries(order.items || {}).map(([n, i]) => `<li>${n} x ${i.qty}</li>`).join('');
+    let fooi = parseFloat(order.fooi);
+    if (isNaN(fooi)) {
+      fooi = 0;
     }
+    if(!('totaal' in order)){
+      console.warn('⚠️ totaal 字段缺失，请联系后端');
+    }
+    const remark = order.opmerking || order.remark || '';
+    const pickup = order.pickup_time || order.pickupTime;
+    const delivery = order.delivery_time || order.deliveryTime;
+
+    let time = order.created_at || '';
+    if (time && time.length > 5) {
+      if (time.includes('T')) {
+        const d = new Date(time);
+        if (!isNaN(d)) time = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      } else if (time.includes(' ')) {
+        time = time.split(' ')[1].slice(0,5);
+      }
+    }
+
+      tr.innerHTML = `
+        <td>${order.created_date || ''}</td>
+        <td>${time}</td>
+        <td>${isDelivery ? 'Bezorgen' : 'Afhalen'}</td>
+        <td>${order.customer_name || ''}</td>
+        <td>${order.phone || ''}</td>
+        <td>${order.email || '-'}</td>
+        <td><ul>${items}</ul></td>
+        <td>${remark || '-'}</td>
+        <td>€${parseFloat(fooi).toFixed(2)}</td>
+        <td>€${parseFloat(order.totaal).toFixed(2)}</td>
+        <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
+        <td>${isDelivery ? (delivery || '-') : (pickup || '-')}</td>
+        <td>${order.payment_method || ''}</td>
+        <td>${order.order_number || '-'}</td>`;
+      
+    tbody.prepend(tr);
   }
-
-  tr.innerHTML = `
-    <td>${order.created_date || ''}</td>
-    <td>${time}</td>
-    <td>${isDelivery ? 'Bezorgen' : 'Afhalen'}</td>
-    <td>${order.customer_name || ''}</td>
-    <td>${order.phone || ''}</td>
-    <td>${order.email || '-'}</td>
-    <td><ul>${items}</ul></td>
-    <td>${remark || '-'}</td>
-    <td>${formatCurrency(fooi)}</td>
-    <td>${formatCurrency(order.totaal)}</td>
-    <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
-    <td>${isDelivery ? (delivery || '-') : (pickup || '-')}</td>
-    <td>${order.payment_method || ''}</td>
-    <td>${order.order_number || '-'}</td>
-  `;
-
-  tbody.prepend(tr);
-}
-
 
   // Socket 监听新订单
   socket.on('new_order', order => {
