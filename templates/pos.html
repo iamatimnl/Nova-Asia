@@ -87,6 +87,10 @@
   transition: all 0.2s ease-in-out;
   cursor: pointer;
   font-size: 1rem;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10000;
 }
 .today-btn:hover {
   background: linear-gradient(to bottom, #b2eadd, #86dcc3);
@@ -225,20 +229,20 @@
   }
   .orders-slide {
     position: fixed;
-    left: -95%;
-    top: 60px;
-    height: calc(100vh - 60px);
-    width: 90%;
-    max-width: 1200px;
-    background: rgba(255,255,255,0.7);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.95);
     backdrop-filter: blur(8px);
     overflow: auto;
-    transition: left 0.3s;
-    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+    z-index: 9999;
     padding: 10px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.12);
   }
-  .orders-slide.visible { left: 5%; }
+  .orders-slide.visible { transform: translateX(0); }
   .orders-panel table { width:100%; border-collapse: collapse; }
   @media (max-width: 768px) {
     .orders-panel table { display:block; overflow-x:auto; white-space:nowrap; }
@@ -379,7 +383,7 @@
   background: #fff;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
   font-size: 1.4rem;
-  z-index: 1100;
+  z-index: 10000;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -574,10 +578,14 @@
   </div>
 </div>
 <button id="cartToggle" class="cart-toggle">🛒<span id="cartCount" class="badge">0</span></button>
-<<button id="todayToggleMobile" class="today-toggle">
+<button id="toggleToday" class="today-btn">
+  Bestelling Vandaag
+  <span class="badge-text-only today-badge"></span>
+</button>
+<button id="todayToggleMobile" class="today-toggle">
   <span class="emoji-wrapper">
     📋
-    <span id="todayBadge" class="badge-text-only">3</span>
+    <span class="badge-text-only today-badge"></span>
   </span>
 </button>
 
@@ -1062,10 +1070,9 @@ function formatCurrency(value){
     document.title = newOrderCount ? `${baseTitle} (${newOrderCount})` : baseTitle;
   }
   function updateTodayBadge(){
-    const badge=document.getElementById('todayBadge');
-    if(badge){
+    document.querySelectorAll('.today-badge').forEach(badge => {
       badge.textContent = newOrderCount > 0 ? newOrderCount : '';
-    }
+    });
   }
 
   // 音效播放
