@@ -1958,6 +1958,24 @@ function scrollToField(id) {
   }
 }
 
+function getFirstMissingField() {
+  const type = document.querySelector('input[name="orderType"]:checked').value;
+  if (type === 'afhalen') {
+    if (!document.getElementById('pickupName').value.trim()) return 'pickupName';
+    if (!document.getElementById('pickupPhone').value.trim()) return 'pickupPhone';
+    if (!document.getElementById('pickup_time').value) return 'pickup_time';
+  } else {
+    if (!document.getElementById('deliveryName').value.trim()) return 'deliveryName';
+    if (!document.getElementById('deliveryPhone').value.trim()) return 'deliveryPhone';
+    if (!document.getElementById('deliveryAddress').value.trim()) return 'deliveryAddress';
+    if (!document.getElementById('deliveryHouseNumber').value.trim()) return 'deliveryHouseNumber';
+    if (!document.getElementById('deliveryPostcode').value.trim()) return 'deliveryPostcode';
+    if (!document.getElementById('deliveryArea').value.trim()) return 'deliveryArea';
+    if (!document.getElementById('delivery_time').value) return 'delivery_time';
+  }
+  return null;
+}
+
 function generateOrderNumber() {
   const now = new Date();
   const date = now.toISOString().slice(0, 10).replace(/-/g, '');
@@ -2362,6 +2380,14 @@ backTopLogo.addEventListener('click', () => {
 <script>
 function toggleMobileCart() {
   const cartSection = document.getElementById('mobileCart');
+  if (!cartSection.classList.contains('mobile-visible')) {
+    const missing = getFirstMissingField();
+    if (missing) {
+      showFeedback('Vul eerst uw gegevens in', true);
+      scrollToField(missing);
+      return;
+    }
+  }
   cartSection.classList.toggle('mobile-visible');
 }
 </script>
