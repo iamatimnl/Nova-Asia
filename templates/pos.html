@@ -458,6 +458,16 @@
   .today-toggle { display: flex; }
 }
 
+/* 🔔 新订单闪烁效果 */
+.new-order {
+  animation: highlightBlink 1s ease-in-out;
+  animation-iteration-count: 10;
+}
+@keyframes highlightBlink {
+  0%,100% { background-color: #eaffea; }
+  50% { background-color: #fff; }
+}
+
 /* 桌面显示长按钮，确保隐藏圆按钮 */
 @media (min-width: 768px) {
   .today-btn { display: block; }
@@ -1104,8 +1114,36 @@ function formatCurrency(value){
     osc.stop(audioCtx.currentTime + 0.2);
   }
 
+  function parseTimeToMinutes(str){
+    if(!str) return Infinity;
+    const parts = str.split(':');
+    const h = parseInt(parts[0],10);
+    const m = parseInt(parts[1],10);
+    if(isNaN(h) || isNaN(m)) return Infinity;
+    return h*60+m;
+  }
+
+  function getSortKey(order){
+    const isDelivery = ['delivery','bezorgen'].includes(order.order_type);
+    const t = isDelivery ? (order.delivery_time || order.deliveryTime)
+                         : (order.pickup_time || order.pickupTime);
+    return parseTimeToMinutes(t);
+  }
+
+  function insertSorted(tbody, tr){
+    const val = parseFloat(tr.dataset.sortKey);
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    for(const row of rows){
+      if(parseFloat(row.dataset.sortKey) > val){
+        tbody.insertBefore(tr, row);
+        return;
+      }
+    }
+    tbody.appendChild(tr);
+  }
+
   // 添加订单到表格
-  function addRow(order) {
+  function addRow(order, highlight=false) {
     const tbody = document.querySelector('.orders-panel tbody');
     if (!tbody) return;
 
@@ -1150,7 +1188,12 @@ function formatCurrency(value){
         <td>${order.payment_method || ''}</td>
         <td>${order.order_number || '-'}</td>`;
       
-    tbody.prepend(tr);
+    tr.dataset.sortKey = getSortKey(order);
+    if(highlight){
+      tr.classList.add('new-order');
+      setTimeout(()=>tr.classList.remove('new-order'),10000);
+    }
+    insertSorted(tbody, tr);
   }
 
   // Socket 监听新订单
@@ -1158,7 +1201,7 @@ function formatCurrency(value){
   console.log('🆕 Nieuwe bestelling ontvangen!', order);
   beep();
   alert('Nieuwe bestelling ontvangen!');
-  addRow(order);
+  addRow(order, true);
   
   // ✅ 修改这里，不再重置
   newOrderCount++;
@@ -1190,7 +1233,7 @@ function formatCurrency(value){
       const tbody = document.querySelector('.orders-panel tbody');
       if (!tbody) return;
       tbody.innerHTML = '';
-      data.reverse().forEach(addRow); // 让最新订单在最上面
+      data.sort((a,b)=>getSortKey(a)-getSortKey(b)).forEach(o=>addRow(o));
     }).catch(() => {});
  }
 
