@@ -74,7 +74,7 @@ th:last-child {
        <th>Email</th>
        <th>Items</th>
        <th>Opmerking</th>
-       <th>Subtotaal</th>
+       <th>Fooi</th>
        <th>Totaal</th>
        <th>Adres</th>
        <th>Tijdslot</th>
@@ -100,7 +100,7 @@ th:last-child {
           </ul>
         </td>
        <td>{{ order.opmerking or '-' }}</td>
-       <td>€{{ '%.2f' % (order.subtotal or 0) }}</td>   ← 正确显示 Subtotaal
+       <td>€{{ '%.2f' % (order.fooi or order.tip or 0) }}</td>
 
         <td>€{{ '%.2f' % (order.totaal or 0) }}</td>
 
