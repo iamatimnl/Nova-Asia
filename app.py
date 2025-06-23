@@ -295,22 +295,7 @@ def api_orders():
         db.session.add(order)
         db.session.commit()
 
-        # 4. 推送给 POS via SocketIO
-        socketio.emit('new_order', {
-            'id': order.id,
-            'order_number': order.order_number,
-            'order_type': order.order_type,
-            'customer_name': order.customer_name,
-            'phone': order.phone,
-            'pickup_time': order.pickup_time,
-            'delivery_time': order.delivery_time,
-            'opmerking': order.opmerking,
-            'items': items,
-            'street': order.street,
-            'house_number': order.house_number,
-            'postcode': order.postcode,
-            'status': 'new'
-        }, broadcast=True)
+       
 
         print("✅ 接收到订单:", data)
 
