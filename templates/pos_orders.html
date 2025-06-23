@@ -20,6 +20,9 @@ th:last-child {
   padding-right: 20px;
 }
 
+.type-bezorging { color: red; font-weight: bold; }
+.type-afhalen { color: green; font-weight: bold; }
+
 /* 新订单动画效果 */
 .new-order {
   animation: highlightBlink 1s ease-in-out;
@@ -60,7 +63,7 @@ th:last-child {
       <td>{{ order.order_number or '' }}</td>
       
       {% set is_delivery = order.order_type in ['delivery', 'bezorgen'] %}
-      <td>{{ 'Bezorgen' if is_delivery else 'Afhalen' }}</td>
+      <td><span class="{{ 'type-bezorging' if is_delivery else 'type-afhalen' }}">{{ 'Bezorging' if is_delivery else 'Afhalen' }}</span></td>
 
       <td>{{ order.customer_name or '' }}</td>
       <td>{{ order.phone or '' }}</td>
@@ -224,6 +227,7 @@ function insertSorted(tbody,tr){
     beep();
   }
   insertSorted(tbody, tr);
+  return tr;
 }
 
     socket.on('new_order', order => {
@@ -231,7 +235,10 @@ function insertSorted(tbody,tr){
       if(!('totaal' in order) && !('total' in order)){
         console.warn('⚠️ totaal 字段缺失，请联系后端');
       }
-      addRow(order, true);
+      const row = addRow(order, true);
+      if(confirm('Nieuwe bestelling ontvangen!')){
+        if(row) row.scrollIntoView({behavior:'smooth', block:'center'});
+      }
     });
 
     function fetchOrders(){

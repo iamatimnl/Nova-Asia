@@ -828,9 +828,18 @@ function toggleToday(){
   if(panel.classList.contains('visible')){
     fetchOrders();
     newOrderCount = 0;
+    hasNewOrder = false;
     updateTabTitle();
   }
   updateTodayBadge();
+}
+
+function showTodayOrders(){
+  const panel=document.getElementById('todayOrders');
+  if(!panel.classList.contains('visible')){
+    panel.classList.add('visible');
+    fetchOrders();
+  }
 }
 
 function toggleAddress(){
@@ -1090,13 +1099,19 @@ function formatCurrency(value){
 
   let pollTimer;
   const baseTitle = document.title;
-  let newOrderCount = 0;
+  let newOrderCount = 0; // unseen orders for title
+  let hasNewOrder = false;
   function updateTabTitle(){
     document.title = newOrderCount ? `${baseTitle} (${newOrderCount})` : baseTitle;
   }
+  function getOrderCount(){
+    const tbody = document.querySelector('.orders-panel tbody');
+    return tbody ? tbody.children.length : 0;
+  }
   function updateTodayBadge(){
+    const count = getOrderCount();
     document.querySelectorAll('.today-badge').forEach(badge => {
-      badge.textContent = newOrderCount > 0 ? newOrderCount : '';
+      badge.textContent = hasNewOrder ? 'New' : count;
     });
   }
 
@@ -1194,20 +1209,25 @@ function formatCurrency(value){
       setTimeout(()=>tr.classList.remove('new-order'),10000);
     }
     insertSorted(tbody, tr);
+    updateTodayBadge();
+    return tr;
   }
 
   // Socket 监听新订单
   socket.on('new_order', order => {
   console.log('🆕 Nieuwe bestelling ontvangen!', order);
   beep();
-  alert('Nieuwe bestelling ontvangen!');
-  addRow(order, true);
-  
-  // ✅ 修改这里，不再重置
-  newOrderCount++;
-
-  updateTabTitle();
+  hasNewOrder = true;
+  const row = addRow(order, true);
   updateTodayBadge();
+  newOrderCount++;
+  updateTabTitle();
+  if(confirm('Nieuwe bestelling ontvangen!')){
+    showTodayOrders();
+    if(row) row.scrollIntoView({behavior:'smooth', block:'center'});
+    hasNewOrder = false;
+    updateTodayBadge();
+  }
 });
 
   // 断线后启用轮询
@@ -1234,6 +1254,7 @@ function formatCurrency(value){
       if (!tbody) return;
       tbody.innerHTML = '';
       data.sort((a,b)=>getSortKey(a)-getSortKey(b)).forEach(o=>addRow(o));
+      updateTodayBadge();
     }).catch(() => {});
  }
 
@@ -1252,7 +1273,7 @@ function formatCurrency(value){
   }
 
   window.addEventListener('beforeunload', () => socket.disconnect());
-  window.addEventListener('focus', () => { newOrderCount = 0; updateTabTitle(); updateTodayBadge(); });
+  window.addEventListener('focus', () => { newOrderCount = 0; hasNewOrder = false; updateTabTitle(); updateTodayBadge(); });
 </script>
 
 
