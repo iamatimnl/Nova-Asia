@@ -1958,6 +1958,24 @@ function scrollToField(id) {
   }
 }
 
+function getFirstMissingField() {
+  const type = document.querySelector('input[name="orderType"]:checked').value;
+  if (type === 'afhalen') {
+    if (!document.getElementById('pickupName').value.trim()) return 'pickupName';
+    if (!document.getElementById('pickupPhone').value.trim()) return 'pickupPhone';
+    if (!document.getElementById('pickup_time').value) return 'pickup_time';
+  } else {
+    if (!document.getElementById('deliveryName').value.trim()) return 'deliveryName';
+    if (!document.getElementById('deliveryPhone').value.trim()) return 'deliveryPhone';
+    if (!document.getElementById('deliveryAddress').value.trim()) return 'deliveryAddress';
+    if (!document.getElementById('deliveryHouseNumber').value.trim()) return 'deliveryHouseNumber';
+    if (!document.getElementById('deliveryPostcode').value.trim()) return 'deliveryPostcode';
+    if (!document.getElementById('deliveryArea').value.trim()) return 'deliveryArea';
+    if (!document.getElementById('delivery_time').value) return 'delivery_time';
+  }
+  return null;
+}
+
 function generateOrderNumber() {
   const now = new Date();
   const date = now.toISOString().slice(0, 10).replace(/-/g, '');
@@ -1972,27 +1990,38 @@ function checkout() {
     return;
   }
 
+  const sliderText = document.getElementById('sliderText');
+  const sliderButton = document.getElementById('sliderButton');
+  const sliderTrack = document.getElementById('sliderTrack');
+
+  const missing = getFirstMissingField();
+  if (missing) {
+    showFeedback('Vul eerst uw gegevens in', true);
+    scrollToField(missing);
+    if (sliderText && sliderButton && sliderTrack) {
+      sliderText.innerText = 'Schuif om te bestellen';
+      sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
+      sliderTrack.style.pointerEvents = 'auto';
+    }
+    isSubmitting = false;
+    return;
+  }
+
   const chopstickCount = document.getElementById('chopstickCount').value;
   const soyCount = document.getElementById('soyCount').value;
   const wasabiCount = document.getElementById('wasabiCount').value;
   const gemberCount = document.getElementById('gemberCount').value;
   const remark = document.getElementById('remark').value.trim();
-  // UI反馈：滑动后显示“正在处理…”并禁用按钮
-  const sliderText = document.getElementById('sliderText');
-  const sliderButton = document.getElementById('sliderButton');
-  const sliderTrack = document.getElementById('sliderTrack');
-
   if (sliderText && sliderButton && sliderTrack) {
-  sliderText.innerText = 'Bezig met verwerken…';
-  sliderButton.innerHTML = `
+    sliderText.innerText = 'Bezig met verwerken…';
+    sliderButton.innerHTML = `
 <svg class="spinner" width="24" height="24" viewBox="0 0 44 44" fill="none" stroke="white">
   <circle cx="22" cy="22" r="20" stroke-width="4" stroke-linecap="round" stroke-dasharray="125" stroke-dashoffset="0">
     <animateTransform attributeName="transform" type="rotate" from="0 22 22" to="360 22 22" dur="1s" repeatCount="indefinite" />
   </circle>
 </svg>`;
-
-  sliderTrack.style.pointerEvents = 'none';
-}
+    sliderTrack.style.pointerEvents = 'none';
+  }
 
 
   let orderSummary = Object.entries(cart)
@@ -2016,13 +2045,6 @@ function checkout() {
     const time = document.getElementById('pickup_time').value;
     paymentMethod = document.getElementById('pickupPayment').value;
 
-    if (!name || !phone || !time) {
-      alert("Vul alstublieft alle afhaalvelden in: naam, telefoon en tijd.");
-      if (!name) scrollToField('pickupName');
-      else if (!phone) scrollToField('pickupPhone');
-      else scrollToField('pickup_time');
-      return;
-    }
 
     customerDetails = `\n[Afhalen]\nNaam: ${name}\nTelefoon: ${phone}`;
     if (email) customerDetails += `\nEmail: ${email}`;
@@ -2042,17 +2064,6 @@ function checkout() {
     const postcode = postcodeClean.slice(0, 4);
     const allowedPostcodes = ['2341', '2342', '2343', '2333', '2334', '2231', '2232', '2361', '2235'];
 
-    if (!name || !phone || !address || !houseNumber || !postcodeRaw || !area || !time) {
-      alert("Vul alstublieft alle bezorgvelden in: naam, telefoon, adres, huisnummer, postcode, gebied en tijd.");
-      if (!name) scrollToField('deliveryName');
-      else if (!phone) scrollToField('deliveryPhone');
-      else if (!address) scrollToField('deliveryAddress');
-      else if (!houseNumber) scrollToField('deliveryHouseNumber');
-      else if (!postcodeRaw) scrollToField('deliveryPostcode');
-      else if (!area) scrollToField('deliveryArea');
-      else scrollToField('delivery_time');
-      return;
-    }
 
     if (!allowedPostcodes.includes(postcode)) {
       alert(`🚫 Wij bezorgen helaas niet in dit postcodegebied (${postcode}).`);
@@ -2362,6 +2373,14 @@ backTopLogo.addEventListener('click', () => {
 <script>
 function toggleMobileCart() {
   const cartSection = document.getElementById('mobileCart');
+  if (!cartSection.classList.contains('mobile-visible')) {
+    const missing = getFirstMissingField();
+    if (missing) {
+      showFeedback('Vul eerst uw gegevens in', true);
+      scrollToField(missing);
+      return;
+    }
+  }
   cartSection.classList.toggle('mobile-visible');
 }
 </script>
