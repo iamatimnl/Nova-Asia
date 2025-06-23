@@ -912,6 +912,65 @@ input:focus, select:focus, textarea:focus {
   margin: auto;
 }
 
+/* Order type slider */
+.order-type-slider {
+  margin: 16px auto 20px;
+  width: 90%;
+  max-width: 340px;
+  height: 48px;
+  background: var(--section-alt-bg);
+  border-radius: 32px;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+.order-type-track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 0 8px;
+}
+.order-type-button {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 45%;
+  height: 80%;
+  border-radius: 999px;
+  background-color: var(--accent-color);
+  color: #fff;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: left 0.3s ease;
+  user-select: none;
+}
+.order-type-text {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  background: linear-gradient(
+    90deg,
+    rgba(100, 100, 105, 0.85) 0%,
+    rgba(255, 255, 255, 0.99) 50%,
+    rgba(100, 100, 105, 0.85) 100%
+  );
+  background-size: 200% auto;
+  background-position: -100% 0;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -963,7 +1022,13 @@ input:focus, select:focus, textarea:focus {
 <section id="delivery-options">
 <div class="delivery-options">
 <h2>Kies uw bestelmethode</h2>
-<div class="segmented-control">
+<div class="order-type-slider mobile-only">
+  <div class="order-type-track" id="typeSliderTrack">
+    <div class="order-type-button" id="typeSliderButton">Pick Up</div>
+    <span class="order-type-text" id="typeSliderText">Slide to Deliver</span>
+  </div>
+</div>
+<div class="segmented-control desktop-only">
 <input checked="" id="afhalen" name="orderType" onchange="toggleOrderType()" type="radio" value="afhalen"/>
 <label for="afhalen">Afhalen</label>
 <input id="bezorgen" name="orderType" onchange="toggleOrderType()" type="radio" value="bezorgen"/>
@@ -2502,6 +2567,78 @@ function toggleMobileCart() {
       btn.addEventListener("touchstart", vibrate, { passive: true });
     });
   });
+</script>
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+  const track = document.getElementById('typeSliderTrack');
+  const button = document.getElementById('typeSliderButton');
+  const text = document.getElementById('typeSliderText');
+  const afhalen = document.getElementById('afhalen');
+  const bezorgen = document.getElementById('bezorgen');
+  if (!track || !button || !text) return;
+
+  const getPad = (el) => {
+    const s = window.getComputedStyle(el);
+    return {
+      left: parseInt(s.paddingLeft) || 0,
+      right: parseInt(s.paddingRight) || 0,
+    };
+  };
+  const getMax = () => {
+    const p = getPad(track);
+    return track.offsetWidth - button.offsetWidth - p.left - p.right;
+  };
+  const refresh = () => {
+    const p = getPad(track);
+    const max = getMax();
+    if (bezorgen.checked) {
+      button.style.left = `${p.left + max}px`;
+      button.textContent = 'Deliver';
+      text.textContent = 'Slide to Pick Up';
+    } else {
+      button.style.left = `${p.left}px`;
+      button.textContent = 'Pick Up';
+      text.textContent = 'Slide to Deliver';
+    }
+  };
+
+  refresh();
+  afhalen.addEventListener('change', refresh);
+  bezorgen.addEventListener('change', refresh);
+
+  let sliding = false;
+  let startX = 0;
+  let initialLeft = 0;
+
+  button.addEventListener('touchstart', (e) => {
+    sliding = true;
+    startX = e.touches[0].clientX;
+    initialLeft = parseInt(button.style.left) || getPad(track).left;
+  });
+
+  track.addEventListener('touchmove', (e) => {
+    if (!sliding) return;
+    const p = getPad(track);
+    const max = getMax();
+    const delta = e.touches[0].clientX - startX;
+    const moveX = Math.max(0, Math.min(initialLeft + delta - p.left, max));
+    button.style.left = `${p.left + moveX}px`;
+  });
+
+  track.addEventListener('touchend', () => {
+    sliding = false;
+    const p = getPad(track);
+    const max = getMax();
+    const currentLeft = parseInt(button.style.left || '0') - p.left;
+    if (currentLeft > max / 2) {
+      bezorgen.checked = true;
+    } else {
+      afhalen.checked = true;
+    }
+    refresh();
+    toggleOrderType();
+  });
+});
 </script>
 <script>
 window.addEventListener('DOMContentLoaded', () => {
