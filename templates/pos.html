@@ -1113,7 +1113,7 @@ function formatCurrency(value){
     if (order.id) tr.dataset.id = order.id;
     const isDelivery = ['delivery', 'bezorgen'].includes(order.order_type);
     const items = Object.entries(order.items || {}).map(([n, i]) => `<li>${n} x ${i.qty}</li>`).join('');
-    let fooi = parseFloat(order.fooi);
+    let fooi = parseFloat(order.fooi ?? order.tip);
     if (isNaN(fooi)) {
       fooi = 0;
     }
