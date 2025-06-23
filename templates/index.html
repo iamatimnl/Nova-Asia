@@ -940,6 +940,7 @@ input:focus, select:focus, textarea:focus {
   width: 100%;
   height: 100%;
   padding: 0 8px;
+  box-sizing: border-box;
 }
 .order-type-button {
   position: absolute;
@@ -952,6 +953,7 @@ input:focus, select:focus, textarea:focus {
   background-color: var(--accent-color);
   color: #fff;
   font-weight: 600;
+  font-size: 0.85rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -988,9 +990,9 @@ input:focus, select:focus, textarea:focus {
   }
 }
 .order-type-text {
-  font-size: 13px; /* ✅ 改成你想要的大小 */
-  font-weight: 500; /* ✅ 建议加粗 */
- /* ✅ 防止文字换行被压缩 */
+  font-size: 12px; /* slightly smaller text */
+  font-weight: 500; /* keep bold */
+  /* prevent text wrapping */
 }
 
 
