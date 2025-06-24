@@ -481,52 +481,67 @@ button:active {
   margin-bottom: 24px;
 }
 
-.segmented-control {
-  display: flex;
-  justify-content: center;
-  background: var(--section-alt-bg);
-  border-radius: 999px;
-  padding: 4px;
-  margin-bottom: 20px;
+.toggle-switch {
+  margin: 0 auto 20px;
+  width: 220px;
   position: relative;
 }
 
-.segmented-control input[type="radio"] {
+.toggle-switch input[type="radio"] {
   display: none;
 }
 
-.segmented-control label {
-  flex: 1;
-  text-align: center;
-  padding: 10px 0;
-  font-weight: 500;
-  cursor: pointer;
-  border-radius: 999px;
-  z-index: 2;
+.toggle-switch .switch-track {
   position: relative;
-  transition: color 0.3s ease;
+  width: 100%;
+  height: 40px;
+  background: var(--section-alt-bg);
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+  box-sizing: border-box;
 }
 
-.segmented-control .slider {
+.toggle-switch .switch-label {
+  flex: 1;
+  text-align: center;
+  font-weight: 500;
+  pointer-events: none;
+  z-index: 2;
+  user-select: none;
+  color: var(--accent-color);
+}
+
+input#bezorgen:checked ~ .switch-track .switch-label.right,
+input#afhalen:checked ~ .switch-track .switch-label.left {
+  color: #fff;
+}
+
+input#bezorgen:checked ~ .switch-track .switch-label.left,
+input#afhalen:checked ~ .switch-track .switch-label.right {
+  color: var(--accent-color);
+}
+
+.toggle-switch .switch-thumb {
   position: absolute;
   top: 4px;
-  bottom: 4px;
   left: 4px;
-  width: calc(50% - 4px); /* 给两侧留点空间 */
-  background-color: var(--accent-color);
+  width: calc(50% - 4px);
+  height: calc(100% - 8px);
+  background: var(--accent-color);
   border-radius: 999px;
-  transition: transform 0.3s ease;
+  transition: left 0.3s ease;
   z-index: 1;
 }
 
-
-input#bezorgen:checked ~ label[for="bezorgen"],
-input#afhalen:checked ~ label[for="afhalen"] {
-  color: white;
+input#bezorgen:checked ~ .switch-track .switch-thumb {
+  left: calc(50% + 4px);
 }
 
-input#bezorgen:checked ~ .slider {
-  transform: translateX(50%);
+input#afhalen:checked ~ .switch-track .switch-thumb {
+  left: 4px;
 }
 
 .delivery-options label {
@@ -1074,12 +1089,14 @@ input:focus, select:focus, textarea:focus {
     <span class="order-type-text" id="typeSliderText">Slide to Deliver</span>
   </div>
 </div>
-<div class="segmented-control desktop-only">
-<input checked="" id="afhalen" name="orderType" onchange="toggleOrderType()" type="radio" value="afhalen"/>
-<label for="afhalen">Afhalen</label>
-<input id="bezorgen" name="orderType" onchange="toggleOrderType()" type="radio" value="bezorgen"/>
-<label for="bezorgen">Bezorgen</label>
-<div class="slider"></div>
+<div class="toggle-switch desktop-only">
+  <input id="afhalen" name="orderType" type="radio" value="afhalen" onchange="toggleOrderType()" checked>
+  <input id="bezorgen" name="orderType" type="radio" value="bezorgen" onchange="toggleOrderType()">
+  <div class="switch-track">
+    <span class="switch-label left">Afhalen</span>
+    <span class="switch-label right">Bezorgen</span>
+    <div class="switch-thumb"></div>
+  </div>
 </div>
 <div class="info-text" id="locationInfo" style="white-space: pre-line; font-size: 0.95rem; margin-top: 8px;"></div>
 <!-- Afhalen 表单 -->
