@@ -209,6 +209,14 @@ class Setting(db.Model):
     key = db.Column(db.String(50), primary_key=True)
     value = db.Column(db.String(200))
 
+class Review(db.Model):
+    __tablename__ = 'reviews'
+    id = db.Column(db.Integer, primary_key=True)
+    order_number = db.Column(db.String(20), db.ForeignKey('orders.order_number'), unique=True, nullable=False)
+    customer_name = db.Column(db.String(100), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
 with app.app_context():
     db.create_all()
     if not Setting.query.filter_by(key="is_open").first():
@@ -228,6 +236,12 @@ def load_user(user_id: str):
 @app.route('/')
 def home():
     return render_template('index.html')
+
+# Review submission page
+@app.route('/review')
+def review_page():
+    order_number = request.args.get('order') or ''
+    return render_template('review.html', order_number=order_number)
 
 # POS
 @app.route('/pos', methods=["GET", "POST"])
@@ -337,6 +351,45 @@ def submit_order():
 def get_setting(key):
     s = Setting.query.filter_by(key=key).first()
     return jsonify({key: s.value if s else None})
+
+# ----- Review API -----
+@app.route('/api/reviews', methods=['GET', 'POST'])
+def reviews_api():
+    if request.method == 'POST':
+        data = request.get_json() or {}
+        order_number = str(data.get('order_number') or '').strip()
+        name = str(data.get('customer_name') or '').strip()
+        content = str(data.get('content') or '').strip()
+
+        if not order_number or not name or not content:
+            return jsonify({'status': 'fail', 'error': 'missing_fields'}), 400
+
+        if not Order.query.filter_by(order_number=order_number).first():
+            return jsonify({'status': 'fail', 'error': 'invalid_order'}), 400
+
+        if Review.query.filter_by(order_number=order_number).first():
+            return jsonify({'status': 'fail', 'error': 'already_reviewed'}), 400
+
+        review = Review(order_number=order_number, customer_name=name, content=content)
+        db.session.add(review)
+        db.session.commit()
+        socketio.emit('new_review', {
+            'order_number': order_number,
+            'customer_name': name,
+            'content': content,
+            'created_at': review.created_at.isoformat()
+        })
+        return jsonify({'status': 'ok'}), 201
+
+    reviews = Review.query.order_by(Review.created_at.desc()).all()
+    return jsonify([
+        {
+            'customer_name': r.customer_name,
+            'content': r.content,
+            'created_at': r.created_at.isoformat()
+        }
+        for r in reviews
+    ])
 
 
 # Mijn Nova Asia 管理后台

@@ -1018,6 +1018,7 @@ input:focus, select:focus, textarea:focus {
 <a href="#Crispy-rice-sandwich">Crispy Rice</a>
 <a href="#snack">Snack</a>
 <a href="#dessert">Dessert</a>
+<a href="javascript:void(0)" id="openReviews" class="review-link">Review</a>
 </div>
 <div class="indicator" id="indicator"></div>
 </nav>
@@ -2455,7 +2456,7 @@ function toggleMobileCart() {
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const navLinks = document.querySelectorAll('.navbar a');
+      const navLinks = document.querySelectorAll('.nav-categories a:not(.review-link)');
       const sections = Array.from(navLinks).map(link => document.querySelector(link.getAttribute('href')));
       const indicator = document.getElementById('indicator');
       const navbarContainer = document.getElementById('navbar-container');
@@ -2841,6 +2842,44 @@ fetchStatus();
 setInterval(fetchStatus, 30000);
 const socket = io();
 socket.on('setting_update', d => { if(d.key === 'is_open'){ updateStatus(d.value); }});
+</script>
+
+<div id="reviewsModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:1000;">
+  <div style="background:white; padding:20px; max-width:90%; max-height:80%; overflow:auto; border-radius:8px;" id="reviewsContent">
+    <h2>Reviews</h2>
+    <div id="reviewsList"></div>
+    <button id="closeReviews">Sluiten</button>
+  </div>
+</div>
+
+<script>
+  const modal = document.getElementById('reviewsModal');
+  const openBtn = document.getElementById('openReviews');
+  const closeBtn = document.getElementById('closeReviews');
+  const reviewsList = document.getElementById('reviewsList');
+
+  function renderReviews(data){
+    reviewsList.innerHTML = data.map(r => `<p><strong>${r.customer_name}</strong>: ${r.content}</p>`).join('');
+  }
+
+  async function loadReviews(){
+    const r = await fetch('/api/reviews');
+    if(r.ok){
+      const d = await r.json();
+      renderReviews(d);
+    }
+  }
+
+  openBtn.addEventListener('click', () => {
+    modal.style.display = 'flex';
+    loadReviews();
+  });
+  closeBtn.addEventListener('click', () => { modal.style.display = 'none'; });
+  if(typeof socket !== 'undefined'){
+    socket.on('new_review', () => {
+      if(modal.style.display !== 'none') loadReviews();
+    });
+  }
 </script>
 
 
