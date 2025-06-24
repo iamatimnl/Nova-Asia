@@ -983,6 +983,10 @@ input:focus, select:focus, textarea:focus {
   -webkit-text-fill-color: transparent;
   animation: shine 4s linear infinite;
 }
+.order-type-text.left {
+  left: 12px;
+  right: auto;
+}
 
 @keyframes spin {
   to {
@@ -2617,9 +2621,15 @@ window.addEventListener('DOMContentLoaded', () => {
     if (orderType === 'afhalen') {
       button.innerText = 'Pick Up';
       text.innerText = 'Slide to Deliver';
+      text.classList.remove('left');
+      text.style.right = '4px';
+      text.style.left = 'auto';
     } else {
       button.innerText = 'Deliver';
       text.innerText = 'Slide to Pick Up';
+      text.classList.add('left');
+      text.style.left = '12px';
+      text.style.right = 'auto';
     }
   }
 
@@ -2675,14 +2685,12 @@ window.addEventListener('DOMContentLoaded', () => {
     if (movedRatio > 0.5) {
       // 推到右边
       setLeftPosition(maxSlide);
-      button.innerText = 'Deliver';
-      text.innerText = 'Slide to Pick Up';
+      updateTexts('bezorgen');
       bezorgen.checked = true;
     } else {
       // 回到左边
       setLeftPosition(0);
-      button.innerText = 'Pick Up';
-      text.innerText = 'Slide to Deliver';
+      updateTexts('afhalen');
       afhalen.checked = true;
     }
 
