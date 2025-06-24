@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Review</title>
+</head>
+<body>
+<h1>Laat uw review achter</h1>
+<form id="reviewForm">
+  <label>Naam:</label><br>
+  <input type="text" name="customer_name" id="reviewName" required><br>
+  <label>Review:</label><br>
+  <textarea name="content" id="reviewContent" required></textarea><br>
+  <input type="hidden" name="order_number" id="orderNumber" value="{{ order_number }}">
+  <button type="submit">Verstuur</button>
+</form>
+<div id="reviewMessage"></div>
+<script>
+const form = document.getElementById('reviewForm');
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const data = {
+    customer_name: document.getElementById('reviewName').value,
+    content: document.getElementById('reviewContent').value,
+    order_number: document.getElementById('orderNumber').value
+  };
+  const resp = await fetch('/api/reviews', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(data)
+  });
+  const msg = document.getElementById('reviewMessage');
+  if (resp.ok) {
+    msg.textContent = 'Bedankt voor uw review!';
+    form.reset();
+  } else {
+    const d = await resp.json();
+    msg.textContent = d.error || 'Fout bij versturen';
+  }
+});
+</script>
+</body>
+</html>
