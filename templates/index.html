@@ -18,13 +18,16 @@
   }
 
   :root {
-    --primary-color: #e6dbc9; /* soft beige */
-    --secondary-color: #333333; /* deep gray */
-    --accent-color: #3f5c4b; /* ink green */
-    --off-white: #faf8f3;
-    --section-alt-bg: #f0e6d7;
-    --sakura: #f6d4dc;
-    --gold: #c5a253;
+    /* Fresh and luxurious iOS inspired palette */
+    --primary-color: #f5f5f7;
+    --secondary-color: #1c1c1e;
+    --accent-color: #0a84ff;
+    --accent-gradient-start: #0a84ff;
+    --accent-gradient-end: #34c759;
+    --off-white: #ffffff;
+    --section-alt-bg: #f0f0f3;
+    --sakura: #ff375f;
+    --gold: #d4af7f;
   }
     /* Hide horizontal scroll bar in all modern browsers */
   .navbar-container::-webkit-scrollbar {
@@ -74,7 +77,7 @@
   .navbar a {
     flex: 0 0 auto;
     padding: 14px 20px;
-    color: #5ddf99;
+    color: var(--accent-color);
     text-decoration: none;
     font-weight: bold;
     border-radius: 24px;
@@ -91,7 +94,7 @@
     .indicator {
       position: absolute;
       height: 32px;
-      background: linear-gradient(145deg, #5ddf99, #3dbf72);
+      background: linear-gradient(145deg, var(--accent-gradient-start), var(--accent-gradient-end));
       border-radius: 24px;
       bottom: 8px;
       z-index: 1;
@@ -99,8 +102,8 @@
       will-change: transform;
       box-shadow:
         inset 0 1px 1px rgba(255, 255, 255, 0.4),
-        0 4px 8px rgba(36, 138, 61, 0.35),
-        0 6px 20px rgba(36, 138, 61, 0.2);
+        0 4px 8px rgba(10, 132, 255, 0.35),
+        0 6px 20px rgba(10, 132, 255, 0.2);
     }
 
   .navbar::after {
@@ -256,7 +259,7 @@
 }
 
 .add-button:hover {
-  background: #2f463a;
+  background: #0051a8;
 }
 
 .remove-button {
@@ -266,7 +269,7 @@
 }
 
 .remove-button:hover {
-  background: #e8bfc9;
+  background: #ff7b94;
 }
 
 /* Generic button press feedback */
@@ -384,7 +387,7 @@ button:active {
   right: 20px;
   width: 56px;
   height: 56px;
-  background: linear-gradient(145deg, #5ddf99, #3dbf72);
+  background: linear-gradient(145deg, var(--accent-gradient-start), var(--accent-gradient-end));
   color: white;
   font-size: 28px;
   font-weight: 600;
@@ -399,8 +402,8 @@ button:active {
   z-index: 999;
   box-shadow:
     inset 0 1px 1px rgba(255, 255, 255, 0.4),
-    0 4px 8px rgba(36, 138, 61, 0.35),
-    0 6px 20px rgba(36, 138, 61, 0.2);
+    0 4px 8px rgba(10, 132, 255, 0.35),
+    0 6px 20px rgba(10, 132, 255, 0.2);
 
   
 }
@@ -449,16 +452,6 @@ button:active {
   right: -5px;
   display: inline-block;
 }
-.order-type-track {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  
-  padding: 0 24px; /* ✅ 留左右缓冲区 */
-  background: #f0f0f0; /* 药丸背景 */
-  border-radius: 999px;
-  position: relative;
-}
 
 .delivery-options {
   max-width: 500px;
@@ -482,7 +475,9 @@ button:active {
   background: var(--section-alt-bg);
   border-radius: 999px;
   padding: 4px;
-  margin-bottom: 20px;
+  margin: 20px auto;
+  width: 90%;
+  max-width: 340px;
   position: relative;
 }
 
@@ -508,7 +503,7 @@ button:active {
   bottom: 4px;
   left: 4px;
   width: calc(50% - 4px); /* 给两侧留点空间 */
-  background-color: var(--accent-color);
+  background: linear-gradient(145deg, var(--accent-gradient-start), var(--accent-gradient-end));
   border-radius: 999px;
   transition: transform 0.3s ease;
   z-index: 1;
@@ -632,7 +627,7 @@ input#bezorgen:checked ~ .slider {
 }
 
 .checkout-btn:hover {
-  background-color: #2f463a;
+  background-color: #0051a8;
 }
 
 .feedback {
@@ -689,7 +684,7 @@ input:focus, select:focus, textarea:focus {
 .cart-section select:focus,
 .supply-select:focus {
   outline: none;
-  border-color: #ff9900;
+  border-color: var(--accent-color);
 }
 
 .cart-section textarea {
@@ -704,7 +699,7 @@ input:focus, select:focus, textarea:focus {
 
 .cart-section textarea:focus {
   outline: none;
-  border-color: #ff9900;
+  border-color: var(--accent-color);
 }
 
 .price-details {
@@ -833,7 +828,7 @@ input:focus, select:focus, textarea:focus {
   width: 50%; /* 或者用 max-width 限制最大宽度 */
   max-width: 300px;
   height: 64px;
-  background: linear-gradient(to right, rgba(48,209,88,0.35), rgba(255,255,255,0.08));
+  background: linear-gradient(to right, rgba(10,132,255,0.35), rgba(255,255,255,0.08));
   backdrop-filter: blur(12px);
   border-radius: 32px;
   padding: 0;
@@ -851,7 +846,7 @@ input:focus, select:focus, textarea:focus {
   margin-left: -20px;
   height: 100%;
   border-radius: 32px;
-  background-color:linear-gradient(to right, rgba(48,209,88,0.15), rgba(255,255,255,0.05));
+  background-color:linear-gradient(to right, rgba(10,132,255,0.15), rgba(255,255,255,0.05));
   padding: 0 20px;
   display: flex;
   align-items: center;
@@ -861,7 +856,7 @@ input:focus, select:focus, textarea:focus {
 .slider-button {
   width: 58px;
   height: 58px;
-  background: linear-gradient(145deg, #5ddf99, #3dbf72);
+  background: linear-gradient(145deg, var(--accent-gradient-start), var(--accent-gradient-end));
   border-radius: 50%;
   position: absolute;
   left: 0px;
@@ -871,8 +866,8 @@ input:focus, select:focus, textarea:focus {
   transition: left 0.3s ease, box-shadow 0.3s ease;
   box-shadow:
     inset 0 1px 1px rgba(255, 255, 255, 0.4),
-    0 4px 8px rgba(36, 138, 61, 0.35),
-    0 6px 20px rgba(36, 138, 61, 0.2);
+    0 4px 8px rgba(10, 132, 255, 0.35),
+    0 6px 20px rgba(10, 132, 255, 0.2);
 
   display: flex;
   align-items: center;
@@ -934,89 +929,11 @@ input:focus, select:focus, textarea:focus {
   margin: auto;
 }
 
-/* Order type slider */
-.order-type-slider {
-  margin: 16px auto 20px;
-  width: 90%;
-  max-width: 340px;
-  height: 48px;
-  background: linear-gradient(to right, rgba(48,209,88,0.35), rgba(255,255,255,0.08));
-  backdrop-filter: blur(12px); /* ✅ 加毛玻璃 */
-  border-radius: 32px;
-  position: relative;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-}
-.order-type-track {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  padding: 0 8px;
-  box-sizing: border-box;
-  background-color:linear-gradient(to right, rgba(48,209,88,0.15), rgba(255,255,255,0.05));
-
-}
-.order-type-button {
-  position: absolute;
-  left: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 45%;
-  height: 80%;
-  border-radius: 999px;
-  background: linear-gradient(145deg, #5ddf99, #3dbf72);
-  color: #fff;
-  font-weight: 600;
-  font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: left 0.3s ease;
-  user-select: none;
-  box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.4),
-    0 4px 8px rgba(36, 138, 61, 0.35),
-    0 6px 20px rgba(36, 138, 61, 0.2);
-
-}
-
-.order-type-text {
-  position: absolute;
-  right: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  font-weight: 600;
-  font-size: 1rem;
-  white-space: nowrap;
-  background: linear-gradient(
-    90deg,
-    rgba(100, 100, 105, 0.85) 0%,
-    rgba(255, 255, 255, 0.99) 50%,
-    rgba(100, 100, 105, 0.85) 100%
-  );
-  background-size: 200% auto;
-  background-position: -100% 0;
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  animation: shine 4s linear infinite;
-}
-.order-type-text.left {
-  left: 12px;
-  right: auto;
-}
 
 @keyframes spin {
   to {
     transform: rotate(360deg);
   }
-}
-.order-type-text {
-  font-size: 14px; /* slightly smaller text */
-  font-weight: 500; /* keep bold */
-  /* prevent text wrapping */
 }
 
 
@@ -1063,18 +980,12 @@ input:focus, select:focus, textarea:focus {
 <section id="delivery-options">
 <div class="delivery-options">
 <h2>Kies uw bestelmethode</h2>
-<div class="order-type-slider mobile-only">
-  <div class="order-type-track" id="typeSliderTrack">
-    <div class="order-type-button" id="typeSliderButton">Pick Up</div>
-    <span class="order-type-text" id="typeSliderText">Slide to Deliver</span>
-  </div>
-</div>
-<div class="segmented-control desktop-only">
-<input checked="" id="afhalen" name="orderType" onchange="toggleOrderType()" type="radio" value="afhalen"/>
-<label for="afhalen">Afhalen</label>
-<input id="bezorgen" name="orderType" onchange="toggleOrderType()" type="radio" value="bezorgen"/>
-<label for="bezorgen">Bezorgen</label>
-<div class="slider"></div>
+<div class="segmented-control">
+  <input checked="" id="afhalen" name="orderType" onchange="toggleOrderType()" type="radio" value="afhalen"/>
+  <label for="afhalen">Afhalen</label>
+  <input id="bezorgen" name="orderType" onchange="toggleOrderType()" type="radio" value="bezorgen"/>
+  <label for="bezorgen">Bezorgen</label>
+  <div class="slider"></div>
 </div>
 <div class="info-text" id="locationInfo" style="white-space: pre-line; font-size: 0.95rem; margin-top: 8px;"></div>
 <!-- Afhalen 表单 -->
@@ -2613,116 +2524,6 @@ function toggleMobileCart() {
       btn.addEventListener("touchstart", vibrate, { passive: true });
     });
   });
-</script>
-<script>
-window.addEventListener('DOMContentLoaded', () => {
-  const track = document.getElementById('typeSliderTrack');
-  const button = document.getElementById('typeSliderButton');
-  const text = document.getElementById('typeSliderText');
-  const afhalen = document.getElementById('afhalen');
-  const bezorgen = document.getElementById('bezorgen');
-
-  if (!track || !button || !text) return;
-
-  function getPadding(el) {
-    const style = window.getComputedStyle(el);
-    return {
-      left: parseInt(style.paddingLeft) || 0,
-      right: parseInt(style.paddingRight) || 0
-    };
-  }
-
-  function getMaxSlide() {
-    const padding = getPadding(track);
-    return track.offsetWidth - button.offsetWidth - padding.left - padding.right;
-  }
-
-  function setLeftPosition(position) {
-    const padding = getPadding(track);
-    button.style.left = `${padding.left + position}px`;
-  }
-
-  function updateTexts(orderType) {
-    if (orderType === 'afhalen') {
-      button.innerText = 'Pick Up';
-      text.innerText = 'Slide to Deliver';
-      text.classList.remove('left');
-      text.style.right = '4px';
-      text.style.left = 'auto';
-    } else {
-      button.innerText = 'Deliver';
-      text.innerText = 'Slide to Pick Up';
-      text.classList.add('left');
-      text.style.left = '12px';
-      text.style.right = 'auto';
-    }
-  }
-
-  function updateSliderToCurrentRadio() {
-    const padding = getPadding(track);
-    const maxSlide = getMaxSlide();
-
-    if (bezorgen.checked) {
-      setLeftPosition(maxSlide);
-      updateTexts('bezorgen');
-    } else {
-      setLeftPosition(0);
-      updateTexts('afhalen');
-    }
-  }
-
-  updateSliderToCurrentRadio();
-
-  afhalen.addEventListener('change', updateSliderToCurrentRadio);
-  bezorgen.addEventListener('change', updateSliderToCurrentRadio);
-
-  // 拖动逻辑
-  let isSliding = false;
-  let startX = 0;
-  let initialLeft = 0;
-
-  button.addEventListener('touchstart', (e) => {
-    isSliding = true;
-    startX = e.touches[0].clientX;
-    initialLeft = parseInt(button.style.left) || getPadding(track).left;
-  });
-
-  track.addEventListener('touchmove', (e) => {
-    if (!isSliding) return;
-
-    const padding = getPadding(track);
-    const maxSlide = getMaxSlide();
-
-    const delta = e.touches[0].clientX - startX;
-    let newLeft = Math.max(0, Math.min(initialLeft + delta - padding.left, maxSlide));
-
-    button.style.left = `${padding.left + newLeft}px`;
-  });
-
-  track.addEventListener('touchend', () => {
-    isSliding = false;
-
-    const padding = getPadding(track);
-    const maxSlide = getMaxSlide();
-    const currentLeft = parseInt(button.style.left || '0') - padding.left;
-    const movedRatio = currentLeft / maxSlide;
-
-    if (movedRatio > 0.5) {
-      // 推到右边
-      setLeftPosition(maxSlide);
-      updateTexts('bezorgen');
-      bezorgen.checked = true;
-    } else {
-      // 回到左边
-      setLeftPosition(0);
-      updateTexts('afhalen');
-      afhalen.checked = true;
-    }
-
-    toggleOrderType(); // 保留表单联动
-  });
-});
-
 </script>
 <script>
 window.addEventListener('DOMContentLoaded', () => {
