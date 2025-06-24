@@ -479,53 +479,6 @@ button:active {
   margin-bottom: 24px;
 }
 
-.segmented-control {
-  display: flex;
-  justify-content: center;
-  background: var(--section-alt-bg);
-  border-radius: 999px;
-  padding: 4px;
-  margin-bottom: 20px;
-  position: relative;
-}
-
-.segmented-control input[type="radio"] {
-  display: none;
-}
-
-.segmented-control label {
-  flex: 1;
-  text-align: center;
-  padding: 10px 0;
-  font-weight: 500;
-  cursor: pointer;
-  border-radius: 999px;
-  z-index: 2;
-  position: relative;
-  transition: color 0.3s ease;
-}
-
-.segmented-control .slider {
-  position: absolute;
-  top: 4px;
-  bottom: 4px;
-  left: 4px;
-  width: calc(50% - 4px); /* 给两侧留点空间 */
-  background-color: var(--accent-color);
-  border-radius: 999px;
-  transition: transform 0.3s ease;
-  z-index: 1;
-}
-
-
-input#bezorgen:checked ~ label[for="bezorgen"],
-input#afhalen:checked ~ label[for="afhalen"] {
-  color: white;
-}
-
-input#bezorgen:checked ~ .slider {
-  transform: translateX(50%);
-}
 
 .delivery-options label {
   display: block;
@@ -1066,18 +1019,13 @@ input:focus, select:focus, textarea:focus {
 <section id="delivery-options">
 <div class="delivery-options">
 <h2>Kies uw bestelmethode</h2>
-<div class="order-type-slider mobile-only">
+<div class="order-type-slider">
+  <input id="afhalen" name="orderType" type="radio" value="afhalen" onchange="toggleOrderType()" checked class="hidden">
+  <input id="bezorgen" name="orderType" type="radio" value="bezorgen" onchange="toggleOrderType()" class="hidden">
   <div class="order-type-track" id="typeSliderTrack">
     <div class="order-type-button" id="typeSliderButton">Pick Up</div>
     <span class="order-type-text" id="typeSliderText">Slide to Deliver</span>
   </div>
-</div>
-<div class="segmented-control desktop-only">
-<input checked="" id="afhalen" name="orderType" onchange="toggleOrderType()" type="radio" value="afhalen"/>
-<label for="afhalen">Afhalen</label>
-<input id="bezorgen" name="orderType" onchange="toggleOrderType()" type="radio" value="bezorgen"/>
-<label for="bezorgen">Bezorgen</label>
-<div class="slider"></div>
 </div>
 <div class="info-text" id="locationInfo" style="white-space: pre-line; font-size: 0.95rem; margin-top: 8px;"></div>
 <!-- Afhalen 表单 -->
@@ -2684,25 +2632,26 @@ window.addEventListener('DOMContentLoaded', () => {
   let startX = 0;
   let initialLeft = 0;
 
-  button.addEventListener('touchstart', (e) => {
+  const startSlide = (clientX) => {
     isSliding = true;
-    startX = e.touches[0].clientX;
+    startX = clientX;
     initialLeft = parseInt(button.style.left) || getPadding(track).left;
-  });
+  };
 
-  track.addEventListener('touchmove', (e) => {
+  const moveSlide = (clientX) => {
     if (!isSliding) return;
 
     const padding = getPadding(track);
     const maxSlide = getMaxSlide();
 
-    const delta = e.touches[0].clientX - startX;
-    let newLeft = Math.max(0, Math.min(initialLeft + delta - padding.left, maxSlide));
+    const delta = clientX - startX;
+    const newLeft = Math.max(0, Math.min(initialLeft + delta - padding.left, maxSlide));
 
     button.style.left = `${padding.left + newLeft}px`;
-  });
+  };
 
-  track.addEventListener('touchend', () => {
+  const endSlide = () => {
+    if (!isSliding) return;
     isSliding = false;
 
     const padding = getPadding(track);
@@ -2723,7 +2672,16 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     toggleOrderType(); // 保留表单联动
-  });
+  };
+
+  button.addEventListener('touchstart', (e) => startSlide(e.touches[0].clientX));
+  track.addEventListener('touchmove', (e) => moveSlide(e.touches[0].clientX));
+  track.addEventListener('touchend', endSlide);
+
+  button.addEventListener('pointerdown', (e) => startSlide(e.clientX));
+  track.addEventListener('pointermove', (e) => moveSlide(e.clientX));
+  track.addEventListener('pointerup', endSlide);
+  track.addEventListener('pointerleave', endSlide);
 });
 
 </script>
