@@ -929,10 +929,11 @@ input:focus, select:focus, textarea:focus {
   width: 90%;
   max-width: 340px;
   height: 48px;
-  background: var(--section-alt-bg);
+  background: linear-gradient(to right, rgba(48,209,88,0.35), rgba(255,255,255,0.08));
+  backdrop-filter: blur(12px); /* ✅ 加毛玻璃 */
   border-radius: 32px;
   position: relative;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
   overflow: hidden;
 }
 .order-type-track {
@@ -941,6 +942,8 @@ input:focus, select:focus, textarea:focus {
   height: 100%;
   padding: 0 8px;
   box-sizing: border-box;
+  background-color:linear-gradient(to right, rgba(48,209,88,0.15), rgba(255,255,255,0.05));
+
 }
 .order-type-button {
   position: absolute;
@@ -950,24 +953,30 @@ input:focus, select:focus, textarea:focus {
   width: 45%;
   height: 80%;
   border-radius: 999px;
-  background-color: var(--accent-color);
+  background: linear-gradient(145deg, #5ddf99, #3dbf72);
   color: #fff;
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: left 0.3s ease;
   user-select: none;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.4),
+    0 4px 8px rgba(36, 138, 61, 0.35),
+    0 6px 20px rgba(36, 138, 61, 0.2);
+
 }
+
 .order-type-text {
   position: absolute;
-  right: 4px;
+  right: 6px;
   top: 50%;
   transform: translateY(-50%);
   pointer-events: none;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 1rem;
   white-space: nowrap;
   background: linear-gradient(
     90deg,
@@ -994,7 +1003,7 @@ input:focus, select:focus, textarea:focus {
   }
 }
 .order-type-text {
-  font-size: 12px; /* slightly smaller text */
+  font-size: 14px; /* slightly smaller text */
   font-weight: 500; /* keep bold */
   /* prevent text wrapping */
 }
@@ -1150,6 +1159,9 @@ input:focus, select:focus, textarea:focus {
 <div class="price-row"><span>Subtotaal:</span> <span id="subtotalDisplay">€0,00</span></div>
 <div class="price-row"><span>Verpakkingskosten:</span> <span id="packagingDisplay">€0,00</span></div>
 <div class="price-row" id="deliveryRow"><span>Bezorgkosten:</span> <span id="deliveryDisplay">€2,50</span></div>
+<div class="price-row"><span></span> <span id=""> </span></div>
+<div class="price-row"><span></span> <span id=""> </span></div>
+<div class="price-row"><span></span> <span id=""> </span></div>
 <div class="price-row"><label for="tipSelect">Fooi:</label> <select id="tipSelect"></select></div>
 <div class="price-row"><span>BTW (9%):</span> <span id="btwDisplay">€0,00</span></div>
 <div class="price-row total-row"><span>Totaal:</span> <span id="totalDisplay">€0,00</span></div>
@@ -1161,7 +1173,7 @@ input:focus, select:focus, textarea:focus {
 <!-- 移动端滑动确认按钮 -->
 <div class="slider-container mobile-only">
   <div class="slider-track" id="sliderTrack">
-    <div class="slider-button" id="sliderButton">🛒</div>
+    <div class="slider-button" id="sliderButton"></div>
     <span class="slider-text" id="sliderText">Schuif om te bestellen</span>
 
   </div>
