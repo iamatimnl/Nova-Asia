@@ -411,18 +411,24 @@ button:active {
 }
 
 /* logo floating above the cart button */
-/* logo floating above the cart button */
 #back-to-top-logo {
-  position: fixed;
-  bottom: 86px; /* cart button bottom + height + spacing */
-  right: 16px;
-  width: 66px;
+  position: fixed; /* 悬浮 */
+  bottom: 86px;    /* 离底部，距离购物车按钮适合 */
+  right: 16px;     /* 离右侧 */
+  
+  /* 阴影效果（你选的轻柔阴影，✔️ 很适合） */
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.1),
+    0 8px 16px rgba(0, 0, 0, 0.08);
+    
+  width: 66px;     /* 尺寸 ✔️ 合理 */
   height: 66px;
-  border-radius: 16px;
-  z-index: 998;
-  cursor: pointer;
-  display: none; /* default hidden, shown on mobile */
+  border-radius: 16px; /* 圆角 ✔️ 舒适 */
+  z-index: 998;    /* 层级 ✔️ 足够悬浮 */
+  cursor: pointer; /* 鼠标指针变手型 ✔️ 交互友好 */
+  display: none;   /* 默认隐藏，适合用于移动端显示 */
 }
+
 
 @media (max-width: 768px) {
   #back-to-top-logo {
