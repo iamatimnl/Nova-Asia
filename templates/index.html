@@ -1003,6 +1003,7 @@ input:focus, select:focus, textarea:focus {
 
 </head>
 <body>
+<div id="status-banner"></div>
 <div class="feedback" id="feedback"></div>
 <div class="navbar-container" id="navbar-container">
 <nav class="navbar" id="navbar">
@@ -2818,6 +2819,28 @@ sliderTrack.addEventListener('touchmove', (e) => {
     document.getElementById('afhalen').addEventListener('change', scheduleHide);
     document.getElementById('bezorgen').addEventListener('change', scheduleHide);
   })();
+</script>
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script>
+function updateStatus(val){
+  const banner = document.getElementById('status-banner');
+  if(val === 'false'){
+    banner.textContent = '暂不接单';
+    banner.style.display = 'block';
+  }else{
+    banner.textContent = '';
+    banner.style.display = 'none';
+  }
+}
+function fetchStatus(){
+  fetch('/api/settings/is_open')
+    .then(r => r.json())
+    .then(d => updateStatus(d.is_open));
+}
+fetchStatus();
+setInterval(fetchStatus, 30000);
+const socket = io();
+socket.on('setting_update', d => { if(d.key === 'is_open'){ updateStatus(d.value); }});
 </script>
 
 
