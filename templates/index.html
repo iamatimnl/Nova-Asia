@@ -525,6 +525,13 @@ button:active {
   display: none;
 }
 
+.section-theme {
+  font-size: 0.9rem;
+  color: #888;
+  margin-top: -4px;
+  margin-bottom: 10px;
+}
+
 @media (max-width: 600px) {
   .delivery-options {
     padding: 16px;
@@ -1026,6 +1033,7 @@ input:focus, select:focus, textarea:focus {
 <section id="delivery-options">
 <div class="delivery-options">
 <h2>Kies uw bestelmethode</h2>
+<p class="section-theme">特色主题: 便利与选择</p>
 <div class="order-type-slider">
   <input id="afhalen" name="orderType" type="radio" value="afhalen" onchange="toggleOrderType()" checked class="hidden">
   <input id="bezorgen" name="orderType" type="radio" value="bezorgen" onchange="toggleOrderType()" class="hidden">
@@ -1083,6 +1091,7 @@ input:focus, select:focus, textarea:focus {
 <section id="checkbox-group">
 <div class="checkbox-group">
 <h2>Draag bij aan duurzaamheid en voorkom verspilling 🌱</h2>
+<p class="section-theme">特色主题: 绿色环保</p>
 <p style="margin-top: -12px; font-size: 0.95rem; color: #555; text-align: center;">
     Geef aan hoeveel u nodig heeft:
   </p>
@@ -1169,6 +1178,7 @@ input:focus, select:focus, textarea:focus {
 <h2 style="margin-top: -8px; font-size: 1.5rem; color: #333; text-align: center; font-weight: bold;">
   Bubble Tea
 </h2>
+<p class="section-theme">特色主题: 清新活力</p>
 <div class="menu-row menu-item" data-name="Bubble Tea" data-packaging="0.2" data-price="5">
 <div class="menu-img">
 <img alt="Bubble Tea" src="{{ url_for('static', filename='images/bubble-tea-main.jpg') }}"/>
@@ -1216,6 +1226,7 @@ input:focus, select:focus, textarea:focus {
 <h2 style="margin-top: -8px; font-size: 1.5rem; color: #333; text-align: center; font-weight: bold;">
   Bento box
 </h2>
+<p class="section-theme">特色主题: 经典便当</p>
 <!-- Chicken Bento -->
 <div class="menu-row menu-item" data-name="Chicken Bento" data-packaging="0.2" data-price="12">
 <div class="menu-img">
@@ -1408,6 +1419,7 @@ input:focus, select:focus, textarea:focus {
 <!-- Ramen Section -->
 <section id="Ramen">
 <h2>Ramen</h2>
+<p class="section-theme">特色主题: 温暖拉面</p>
 <div class="menu-section">
 <!-- 示例商品，可替换或添加更多 -->
 <div class="menu-row menu-item" data-name="Tonkotsu Ramen" data-packaging="0.2" data-price="13">
@@ -1431,6 +1443,7 @@ input:focus, select:focus, textarea:focus {
 <!-- Pokebowl Section -->
 <section id="Pokebowl">
 <h2>Pokebowl</h2>
+<p class="section-theme">特色主题: 夏威夷风情</p>
 <div class="menu-section">
 <!-- 示例商品，可替换或添加更多 -->
 <div class="menu-row menu-item" data-name="Zalm Pokebowl" data-packaging="0.2" data-price="12">
@@ -1456,6 +1469,7 @@ input:focus, select:focus, textarea:focus {
 <h2 style="margin-top: -8px; font-size: 1.5rem; color: #333; text-align: center; font-weight: bold;">
   Sushi
 </h2>
+<p class="section-theme">特色主题: 海洋风味</p>
 <div class="menu-row menu-item" data-name="Green Dragon Roll" data-packaging="0.2" data-price="13.5">
 <div class="menu-img">
 <img alt="Green Dragon Roll" src="{{ url_for('static', filename='images/green-dragon-roll.png') }}"/>
@@ -1492,6 +1506,7 @@ input:focus, select:focus, textarea:focus {
 <h2 style="margin-top: -8px; font-size: 1.5rem; color: #333; text-align: center; font-weight: bold;">
       Crispy rice sandwich
     </h2>
+<p class="section-theme">特色主题: 创意融合</p>
 <!-- Zalm -->
 <div class="menu-row menu-item" data-name="Zalm crispy rice sandwich" data-packaging="0.2" data-price="7">
 <div class="menu-img">
@@ -1580,6 +1595,7 @@ input:focus, select:focus, textarea:focus {
 <h2 style="margin-top: -8px; font-size: 1.5rem; color: #333; text-align: center; font-weight: bold;">
   Snack
 </h2>
+<p class="section-theme">特色主题: 派对小食</p>
 <div class="menu-row menu-item" data-name="Karaage" data-packaging="0.2" data-price="6.5">
 <img alt="Karaage" class="menu-img" loading="lazy" src="{{ url_for('static', filename='images/karaage.png') }}">
 <div class="menu-content">
@@ -1597,6 +1613,8 @@ input:focus, select:focus, textarea:focus {
 </section>
 <section id="dessert">
 <div class="menu-group">
+<h2 style="margin-top: -8px; font-size: 1.5rem; color: #333; text-align: center; font-weight: bold;">Dessert</h2>
+<p class="section-theme">特色主题: 甜蜜分享</p>
 <!-- Mango -->
 <div class="menu-row menu-item" data-name="Mochi Mango" data-packaging="0.2" data-price="4">
 <div class="menu-img">
