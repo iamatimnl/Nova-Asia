@@ -204,6 +204,18 @@ class Order(db.Model):
     fooi = db.Column(db.Float, default=0.0)
 
 
+class Setting(db.Model):
+    __tablename__ = 'settings'
+    key = db.Column(db.String(50), primary_key=True)
+    value = db.Column(db.String(200))
+
+with app.app_context():
+    db.create_all()
+    if not Setting.query.filter_by(key="is_open").first():
+        db.session.add(Setting(key="is_open", value="true"))
+        db.session.commit()
+
+
 class User(UserMixin):
     def __init__(self, user_id: str):
         self.id = user_id
@@ -318,6 +330,37 @@ def api_orders():
 def submit_order():
     # 兼容旧接口，转发数据到现有逻辑
     return api_orders()
+
+
+# 获取设置
+@app.route('/api/settings/<key>')
+def get_setting(key):
+    s = Setting.query.filter_by(key=key).first()
+    return jsonify({key: s.value if s else None})
+
+
+# Mijn Nova Asia 管理后台
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    s = Setting.query.filter_by(key='is_open').first()
+    val = s.value if s else 'true'
+    return render_template('dashboard.html', is_open=val)
+
+
+@app.route('/dashboard/update', methods=['POST'])
+@login_required
+def update_setting():
+    val = request.form.get('is_open', 'true')
+    s = Setting.query.filter_by(key='is_open').first()
+    if not s:
+        s = Setting(key='is_open', value=val)
+        db.session.add(s)
+    else:
+        s.value = val
+    db.session.commit()
+    socketio.emit('setting_update', {'key': 'is_open', 'value': val})
+    return redirect(url_for('dashboard'))
 
 
 
