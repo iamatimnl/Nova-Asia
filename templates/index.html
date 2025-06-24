@@ -18,13 +18,16 @@
   }
 
   :root {
-    --primary-color: #e6dbc9; /* soft beige */
-    --secondary-color: #333333; /* deep gray */
-    --accent-color: #3f5c4b; /* ink green */
-    --off-white: #faf8f3;
-    --section-alt-bg: #f0e6d7;
-    --sakura: #f6d4dc;
-    --gold: #c5a253;
+    /* Fresh and luxurious iOS inspired palette */
+    --primary-color: #f5f5f7;
+    --secondary-color: #1c1c1e;
+    --accent-color: #0a84ff;
+    --accent-gradient-start: #0a84ff;
+    --accent-gradient-end: #34c759;
+    --off-white: #ffffff;
+    --section-alt-bg: #f0f0f3;
+    --sakura: #ff375f;
+    --gold: #d4af7f;
   }
     /* Hide horizontal scroll bar in all modern browsers */
   .navbar-container::-webkit-scrollbar {
@@ -74,7 +77,7 @@
   .navbar a {
     flex: 0 0 auto;
     padding: 14px 20px;
-    color: #5ddf99;
+    color: var(--accent-color);
     text-decoration: none;
     font-weight: bold;
     border-radius: 24px;
@@ -91,7 +94,7 @@
     .indicator {
       position: absolute;
       height: 32px;
-      background: linear-gradient(145deg, #5ddf99, #3dbf72);
+      background: linear-gradient(145deg, var(--accent-gradient-start), var(--accent-gradient-end));
       border-radius: 24px;
       bottom: 8px;
       z-index: 1;
@@ -99,8 +102,8 @@
       will-change: transform;
       box-shadow:
         inset 0 1px 1px rgba(255, 255, 255, 0.4),
-        0 4px 8px rgba(36, 138, 61, 0.35),
-        0 6px 20px rgba(36, 138, 61, 0.2);
+        0 4px 8px rgba(10, 132, 255, 0.35),
+        0 6px 20px rgba(10, 132, 255, 0.2);
     }
 
   .navbar::after {
@@ -256,7 +259,7 @@
 }
 
 .add-button:hover {
-  background: #2f463a;
+  background: #0051a8;
 }
 
 .remove-button {
@@ -266,7 +269,7 @@
 }
 
 .remove-button:hover {
-  background: #e8bfc9;
+  background: #ff7b94;
 }
 
 /* Generic button press feedback */
@@ -384,7 +387,7 @@ button:active {
   right: 20px;
   width: 56px;
   height: 56px;
-  background: linear-gradient(145deg, #5ddf99, #3dbf72);
+  background: linear-gradient(145deg, var(--accent-gradient-start), var(--accent-gradient-end));
   color: white;
   font-size: 28px;
   font-weight: 600;
@@ -399,8 +402,8 @@ button:active {
   z-index: 999;
   box-shadow:
     inset 0 1px 1px rgba(255, 255, 255, 0.4),
-    0 4px 8px rgba(36, 138, 61, 0.35),
-    0 6px 20px rgba(36, 138, 61, 0.2);
+    0 4px 8px rgba(10, 132, 255, 0.35),
+    0 6px 20px rgba(10, 132, 255, 0.2);
 
   
 }
@@ -632,7 +635,7 @@ input#bezorgen:checked ~ .slider {
 }
 
 .checkout-btn:hover {
-  background-color: #2f463a;
+  background-color: #0051a8;
 }
 
 .feedback {
@@ -689,7 +692,7 @@ input:focus, select:focus, textarea:focus {
 .cart-section select:focus,
 .supply-select:focus {
   outline: none;
-  border-color: #ff9900;
+  border-color: var(--accent-color);
 }
 
 .cart-section textarea {
@@ -704,7 +707,7 @@ input:focus, select:focus, textarea:focus {
 
 .cart-section textarea:focus {
   outline: none;
-  border-color: #ff9900;
+  border-color: var(--accent-color);
 }
 
 .price-details {
@@ -833,7 +836,7 @@ input:focus, select:focus, textarea:focus {
   width: 50%; /* 或者用 max-width 限制最大宽度 */
   max-width: 300px;
   height: 64px;
-  background: linear-gradient(to right, rgba(48,209,88,0.35), rgba(255,255,255,0.08));
+  background: linear-gradient(to right, rgba(10,132,255,0.35), rgba(255,255,255,0.08));
   backdrop-filter: blur(12px);
   border-radius: 32px;
   padding: 0;
@@ -851,7 +854,7 @@ input:focus, select:focus, textarea:focus {
   margin-left: -20px;
   height: 100%;
   border-radius: 32px;
-  background-color:linear-gradient(to right, rgba(48,209,88,0.15), rgba(255,255,255,0.05));
+  background-color:linear-gradient(to right, rgba(10,132,255,0.15), rgba(255,255,255,0.05));
   padding: 0 20px;
   display: flex;
   align-items: center;
@@ -861,7 +864,7 @@ input:focus, select:focus, textarea:focus {
 .slider-button {
   width: 58px;
   height: 58px;
-  background: linear-gradient(145deg, #5ddf99, #3dbf72);
+  background: linear-gradient(145deg, var(--accent-gradient-start), var(--accent-gradient-end));
   border-radius: 50%;
   position: absolute;
   left: 0px;
@@ -871,8 +874,8 @@ input:focus, select:focus, textarea:focus {
   transition: left 0.3s ease, box-shadow 0.3s ease;
   box-shadow:
     inset 0 1px 1px rgba(255, 255, 255, 0.4),
-    0 4px 8px rgba(36, 138, 61, 0.35),
-    0 6px 20px rgba(36, 138, 61, 0.2);
+    0 4px 8px rgba(10, 132, 255, 0.35),
+    0 6px 20px rgba(10, 132, 255, 0.2);
 
   display: flex;
   align-items: center;
@@ -940,7 +943,7 @@ input:focus, select:focus, textarea:focus {
   width: 90%;
   max-width: 340px;
   height: 48px;
-  background: linear-gradient(to right, rgba(48,209,88,0.35), rgba(255,255,255,0.08));
+  background: linear-gradient(to right, rgba(10,132,255,0.35), rgba(255,255,255,0.08));
   backdrop-filter: blur(12px); /* ✅ 加毛玻璃 */
   border-radius: 32px;
   position: relative;
@@ -953,7 +956,7 @@ input:focus, select:focus, textarea:focus {
   height: 100%;
   padding: 0 8px;
   box-sizing: border-box;
-  background-color:linear-gradient(to right, rgba(48,209,88,0.15), rgba(255,255,255,0.05));
+  background-color:linear-gradient(to right, rgba(10,132,255,0.15), rgba(255,255,255,0.05));
 
 }
 .order-type-button {
@@ -964,7 +967,7 @@ input:focus, select:focus, textarea:focus {
   width: 45%;
   height: 80%;
   border-radius: 999px;
-  background: linear-gradient(145deg, #5ddf99, #3dbf72);
+  background: linear-gradient(145deg, var(--accent-gradient-start), var(--accent-gradient-end));
   color: #fff;
   font-weight: 600;
   font-size: 0.9rem;
@@ -975,8 +978,8 @@ input:focus, select:focus, textarea:focus {
   user-select: none;
   box-shadow:
     inset 0 1px 1px rgba(255, 255, 255, 0.4),
-    0 4px 8px rgba(36, 138, 61, 0.35),
-    0 6px 20px rgba(36, 138, 61, 0.2);
+    0 4px 8px rgba(10, 132, 255, 0.35),
+    0 6px 20px rgba(10, 132, 255, 0.2);
 
 }
 
