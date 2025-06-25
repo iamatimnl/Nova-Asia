@@ -4,12 +4,29 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Review</title>
+  <style>
+    .star-container span{
+      font-size:2rem;
+      cursor:pointer;
+    }
+    .star-container .selected{
+      color:gold;
+    }
+  </style>
 </head>
 <body>
 <h1>Laat uw review achter</h1>
 <form id="reviewForm">
   <label>Naam:</label><br>
   <input type="text" name="customer_name" id="reviewName" required><br>
+  <div class="star-container" id="starContainer">
+    <span data-value="1">☆</span>
+    <span data-value="2">☆</span>
+    <span data-value="3">☆</span>
+    <span data-value="4">☆</span>
+    <span data-value="5">☆</span>
+  </div>
+  <input type="hidden" id="rating" name="rating" value="0">
   <label>Review:</label><br>
   <textarea name="content" id="reviewContent" required></textarea><br>
   <input type="hidden" name="order_number" id="orderNumber" value="{{ order_number }}">
@@ -18,12 +35,25 @@
 <div id="reviewMessage"></div>
 <script>
 const form = document.getElementById('reviewForm');
+const stars = document.querySelectorAll('#starContainer span');
+stars.forEach(s => {
+  s.addEventListener('click', () => {
+    const val = parseInt(s.dataset.value);
+    document.getElementById('rating').value = val;
+    stars.forEach(st => {
+      st.textContent = st.dataset.value <= val ? '★' : '☆';
+      if (st.dataset.value <= val) st.classList.add('selected');
+      else st.classList.remove('selected');
+    });
+  });
+});
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   const data = {
     customer_name: document.getElementById('reviewName').value,
     content: document.getElementById('reviewContent').value,
-    order_number: document.getElementById('orderNumber').value
+    order_number: document.getElementById('orderNumber').value,
+    rating: parseInt(document.getElementById('rating').value || '0')
   };
   const resp = await fetch('/api/reviews', {
     method: 'POST',
@@ -34,6 +64,8 @@ form.addEventListener('submit', async (e) => {
   if (resp.ok) {
     msg.textContent = 'Bedankt voor uw review!';
     form.reset();
+    document.getElementById('rating').value = 0;
+    stars.forEach(st => { st.textContent = '☆'; st.classList.remove('selected'); });
   } else {
     const d = await resp.json();
     msg.textContent = d.error || 'Fout bij versturen';
