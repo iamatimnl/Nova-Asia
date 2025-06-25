@@ -50,6 +50,10 @@ with app.app_context():
         if "opmerking" not in cols:
             with db.engine.begin() as conn:
                 conn.execute(text("ALTER TABLE orders ADD COLUMN opmerking TEXT"))
+        cols = {c["name"] for c in inspector.get_columns("reviews")}
+        if "rating" not in cols:
+            with db.engine.begin() as conn:
+                conn.execute(text("ALTER TABLE reviews ADD COLUMN rating INTEGER"))
     except Exception as e:
         print(f"DB init error: {e}")
 
@@ -215,6 +219,7 @@ class Review(db.Model):
     order_number = db.Column(db.String(20), db.ForeignKey('orders.order_number'), unique=True, nullable=False)
     customer_name = db.Column(db.String(100), nullable=False)
     content = db.Column(db.Text, nullable=False)
+    rating = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 with app.app_context():
@@ -360,8 +365,9 @@ def reviews_api():
         order_number = str(data.get('order_number') or '').strip()
         name = str(data.get('customer_name') or '').strip()
         content = str(data.get('content') or '').strip()
+        rating = int(data.get('rating') or 0)
 
-        if not order_number or not name or not content:
+        if not order_number or not name or not content or rating not in range(1, 6):
             return jsonify({'status': 'fail', 'error': 'missing_fields'}), 400
 
         if not Order.query.filter_by(order_number=order_number).first():
@@ -370,13 +376,14 @@ def reviews_api():
         if Review.query.filter_by(order_number=order_number).first():
             return jsonify({'status': 'fail', 'error': 'already_reviewed'}), 400
 
-        review = Review(order_number=order_number, customer_name=name, content=content)
+        review = Review(order_number=order_number, customer_name=name, content=content, rating=rating)
         db.session.add(review)
         db.session.commit()
         socketio.emit('new_review', {
             'order_number': order_number,
             'customer_name': name,
             'content': content,
+            'rating': rating,
             'created_at': review.created_at.isoformat()
         })
         return jsonify({'status': 'ok'}), 201
@@ -386,6 +393,7 @@ def reviews_api():
         {
             'customer_name': r.customer_name,
             'content': r.content,
+            'rating': r.rating,
             'created_at': r.created_at.isoformat()
         }
         for r in reviews
