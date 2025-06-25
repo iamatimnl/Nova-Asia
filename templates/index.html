@@ -1034,9 +1034,7 @@ input:focus, select:focus, textarea:focus {
 <a href="javascript:void(0)" id="openReviews" class="review-link">Review</a>
 </div>
 <div class="auth-section">
-  <input type="email" id="usernameInput" placeholder="Email">
-  <input type="password" id="passwordInput" placeholder="Pincode">
-  <button id="loginBtn" type="button">Login / Register</button>
+
   <span id="pointsDisplay"></span>
 </div>
 <div class="indicator" id="indicator"></div>
@@ -2888,14 +2886,7 @@ const pointsDisplay = document.getElementById('pointsDisplay');
 const pointsRow = document.getElementById('pointsRow');
 let currentDiscount = 0;
 
-// auto-fill login email when customer enters email in order form
-['pickupEmail','deliveryEmail'].forEach(id => {
-  const el = document.getElementById(id);
-  if(el){
-    el.addEventListener('input', () => { usernameInput.value = el.value; });
-  }
-});
-
+main
 function updateAuthUI(){
   const uid = localStorage.getItem('userId');
   if(uid){
