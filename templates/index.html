@@ -69,6 +69,15 @@
     scroll-behavior: auto;
   }
 
+  .auth-section {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+  }
+  .auth-section input {
+    margin-right: 4px;
+  }
+
   .nav-categories {
     display: flex;
     white-space: nowrap;
@@ -1024,6 +1033,12 @@ input:focus, select:focus, textarea:focus {
 <a href="#dessert">Dessert</a>
 <a href="javascript:void(0)" id="openReviews" class="review-link">Review</a>
 </div>
+<div class="auth-section">
+  <input type="email" id="usernameInput" placeholder="Email">
+  <input type="password" id="passwordInput" placeholder="Pincode">
+  <button id="loginBtn" type="button">Login / Register</button>
+  <span id="pointsDisplay"></span>
+</div>
 <div class="indicator" id="indicator"></div>
 </nav>
 </div>
@@ -1133,9 +1148,9 @@ input:focus, select:focus, textarea:focus {
 <div class="price-row"><span>Subtotaal:</span> <span id="subtotalDisplay">€0,00</span></div>
 <div class="price-row"><span>Verpakkingskosten:</span> <span id="packagingDisplay">€0,00</span></div>
 <div class="price-row" id="deliveryRow"><span>Bezorgkosten:</span> <span id="deliveryDisplay">€2,50</span></div>
-<div class="price-row"><span></span> <span id=""> </span></div>
-<div class="price-row"><span></span> <span id=""> </span></div>
-<div class="price-row"><span></span> <span id=""> </span></div>
+<div class="price-row"><label for="discountCodeInput">Kortingscode:</label> <input id="discountCodeInput" type="text" style="width:80px;"> <button onclick="applyDiscount()">Gebruik</button></div>
+<div class="price-row"><span>Korting:</span> <span id="discountDisplay">€0,00</span></div>
+<div class="price-row"><span>Punten:</span> <span id="pointsRow">0</span></div>
 <div class="price-row"><label for="tipSelect">Fooi:</label> <select id="tipSelect"></select></div>
 <div class="price-row"><span>BTW (9%):</span> <span id="btwDisplay">€0,00</span></div>
 <div class="price-row total-row"><span>Totaal:</span> <span id="totalDisplay">€0,00</span></div>
@@ -1695,6 +1710,9 @@ function updatePriceBreakdown(subtotal, packaging) {
   const deliveryFee = orderType === 'bezorgen' ? DELIVERY_FEE : 0;
   const btw = (subtotal + packaging) * 9 / 109;
   finalTotal = subtotal + packaging + deliveryFee + tip;
+  if(currentDiscount > 0){
+    finalTotal = finalTotal * (1 - currentDiscount);
+  }
   document.getElementById('subtotalDisplay').textContent = formatEuro(subtotal);
   document.getElementById('packagingDisplay').textContent = formatEuro(packaging);
   document.getElementById('deliveryDisplay').textContent = formatEuro(deliveryFee);
@@ -2177,7 +2195,7 @@ function checkout() {
     if (qty > 0) itemsToSend[extras[id].label] = { price: 0, qty };
   });
 
-   fetch('https://flask-order-api.onrender.com/submit_order', {
+   fetch('/submit_order', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
@@ -2218,13 +2236,20 @@ function checkout() {
       delivery_fee: deliveryFee.toFixed(2),
       btw: btw.toFixed(2),
       totaal: isNaN(total) ? "0.00" : total.toFixed(2),
-      message, email // ✅ 仍然推送到 Telegram
+      message, email,
+      user_id: localStorage.getItem('userId'),
+      discount_code: document.getElementById('discountCodeInput').value.trim()
     })
   })
     .then(res => res.json())
     .then(data => {
       if (data.status === 'ok') {
         beep();
+        if(typeof data.points !== 'undefined'){
+          localStorage.setItem('points', data.points);
+          updateAuthUI();
+          if(data.new_code){ alert('Nieuwe kortingscode: '+data.new_code); }
+        }
         showFeedback('Bestelling succesvol verzonden! Bestelnummer: ' + orderNumber);
         for (const k in cart) delete cart[k];
         updateCart();
@@ -2855,6 +2880,80 @@ setInterval(fetchStatus, 30000);
 const socket = io();
 socket.on('setting_update', d => { if(d.key === 'is_open'){ updateStatus(d.value); }});
 </script>
+<script>
+const loginBtn = document.getElementById('loginBtn');
+const usernameInput = document.getElementById('usernameInput');
+const passwordInput = document.getElementById('passwordInput');
+const pointsDisplay = document.getElementById('pointsDisplay');
+const pointsRow = document.getElementById('pointsRow');
+let currentDiscount = 0;
+
+// auto-fill login email when customer enters email in order form
+['pickupEmail','deliveryEmail'].forEach(id => {
+  const el = document.getElementById(id);
+  if(el){
+    el.addEventListener('input', () => { usernameInput.value = el.value; });
+  }
+});
+
+function updateAuthUI(){
+  const uid = localStorage.getItem('userId');
+  if(uid){
+    loginBtn.style.display = 'none';
+    usernameInput.style.display = 'none';
+    passwordInput.style.display = 'none';
+    const pts = localStorage.getItem('points') || '0';
+    pointsDisplay.textContent = `Punten: ${pts}`;
+    if(pointsRow) pointsRow.textContent = pts;
+  }else{
+    pointsDisplay.textContent = '';
+    if(pointsRow) pointsRow.textContent = '0';
+  }
+}
+
+updateAuthUI();
+
+loginBtn.addEventListener('click', async () => {
+  const u = usernameInput.value.trim();
+  const p = passwordInput.value.trim();
+  if(!u || !p) return;
+  let r = await fetch('/login', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username:u, password:p})});
+  let d = await r.json();
+  if(r.status === 404 && d.error === 'user_not_found'){
+    const r2 = await fetch('/register', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username:u, password:p})});
+    if(r2.ok){
+      d = await r2.json();
+      localStorage.setItem('userId', d.user_id);
+      localStorage.setItem('username', u);
+      localStorage.setItem('points', 0);
+      updateAuthUI();
+      return;
+    }else{ alert('Registratie mislukt'); return; }
+  }
+  if(r.ok){
+      localStorage.setItem('userId', d.user_id);
+      localStorage.setItem('username', u);
+      localStorage.setItem('points', d.points);
+      updateAuthUI();
+  }else{
+      alert('Login mislukt');
+  }
+});
+
+async function applyDiscount(){
+  const code = document.getElementById('discountCodeInput').value.trim();
+  const uid = localStorage.getItem('userId');
+  if(!code || !uid){ alert('Login vereist'); return; }
+  const r = await fetch('/apply_discount', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:uid, code})});
+  const d = await r.json();
+  if(r.ok){
+     currentDiscount = d.discount;
+     document.getElementById('discountDisplay').textContent = `-${(currentDiscount*100).toFixed(0)}%`;
+     updatePriceBreakdown(currentSubtotal, currentPackaging);
+  }else{
+     alert(d.error || 'Ongeldige code');
+  }
+}
 
 <div id="reviewsModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:1000;">
   <div style="background:white; padding:20px; width:100%; height:100%; overflow:auto;" id="reviewsContent">
@@ -2865,6 +2964,7 @@ socket.on('setting_update', d => { if(d.key === 'is_open'){ updateStatus(d.value
 </div>
 
 <script>
+  window.addEventListener('DOMContentLoaded', () => {
   const modal = document.getElementById('reviewsModal');
   const openBtn = document.getElementById('openReviews');
   const closeBtn = document.getElementById('closeReviews');
@@ -2895,6 +2995,7 @@ socket.on('setting_update', d => { if(d.key === 'is_open'){ updateStatus(d.value
       if(modal.style.display !== 'none') loadReviews();
     });
   }
+  });
 </script>
 
 
