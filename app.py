@@ -9,6 +9,9 @@ from flask_login import (
 )
 from flask_socketio import SocketIO
 from sqlalchemy import text
+from werkzeug.security import generate_password_hash, check_password_hash
+import string
+import random
 import eventlet
 eventlet.monkey_patch()
 from datetime import datetime, timezone
@@ -54,6 +57,10 @@ with app.app_context():
         if "rating" not in cols:
             with db.engine.begin() as conn:
                 conn.execute(text("ALTER TABLE reviews ADD COLUMN rating INTEGER"))
+        cols = {c["name"] for c in inspector.get_columns("orders")}
+        if "customer_id" not in cols:
+            with db.engine.begin() as conn:
+                conn.execute(text("ALTER TABLE orders ADD COLUMN customer_id INTEGER"))
     except Exception as e:
         print(f"DB init error: {e}")
 
@@ -142,6 +149,12 @@ def generate_pdf_today():
     buffer.seek(0)
     return buffer
 
+def generate_code(length=8):
+    while True:
+        code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
+        if not DiscountCode.query.filter_by(code=code).first():
+            return code
+
 @app.route("/admin/orders/download/pdf")
 @login_required
 def download_pdf():
@@ -206,6 +219,7 @@ class Order(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     totaal = db.Column(db.Float)
     fooi = db.Column(db.Float, default=0.0)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'))
 
 
 class Setting(db.Model):
@@ -221,6 +235,21 @@ class Review(db.Model):
     content = db.Column(db.Text, nullable=False)
     rating = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class Customer(db.Model):
+    __tablename__ = 'customers'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password_hash = db.Column(db.String(128), nullable=False)
+    points = db.Column(db.Integer, default=0)
+
+class DiscountCode(db.Model):
+    __tablename__ = 'discount_codes'
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(32), unique=True, nullable=False)
+    discount = db.Column(db.Float, nullable=False)
+    used = db.Column(db.Boolean, default=False)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'))
 
 with app.app_context():
     db.create_all()
@@ -313,6 +342,8 @@ def api_orders():
             order_number=order_number,
             fooi=float(data.get("tip") or data.get("fooi") or 0)
         )
+        if data.get('user_id'):
+            order.customer_id = int(data.get('user_id'))
 
         # 2. 计算 subtotal / totaal
         items = json.loads(order.items or "{}")
@@ -345,9 +376,9 @@ def api_orders():
         return jsonify({"status": "fail", "error": str(e)}), 500
 
 
-@app.route('/submit_order', methods=["POST"])
-def submit_order():
-    # 兼容旧接口，转发数据到现有逻辑
+@app.route('/legacy_submit_order', methods=["POST"])
+def legacy_submit_order():
+    # 兼容旧接口
     return api_orders()
 
 
@@ -538,7 +569,89 @@ def pos_orders_today():
         return jsonify(order_dicts)
 
     return render_template("pos_orders.html", orders=orders)
-@app.route('/login', methods=["GET", "POST"])
+
+# ----- User APIs -----
+
+@app.route('/register', methods=['POST'])
+def register():
+    data = request.get_json() or {}
+    username = str(data.get('username', '')).strip()
+    password = str(data.get('password', '')).strip()
+    if not username or not password:
+        return jsonify({'error': 'missing_fields'}), 400
+    if Customer.query.filter_by(username=username).first():
+        return jsonify({'error': 'user_exists'}), 400
+    user = Customer(username=username, password_hash=generate_password_hash(password))
+    db.session.add(user)
+    db.session.commit()
+    return jsonify({'user_id': user.id})
+
+
+@app.route('/login', methods=['POST'])
+def api_login():
+    data = request.get_json() or {}
+    username = str(data.get('username', '')).strip()
+    password = str(data.get('password', '')).strip()
+    user = Customer.query.filter_by(username=username).first()
+    if not user:
+        return jsonify({'error': 'user_not_found'}), 404
+    if not check_password_hash(user.password_hash, password):
+        return jsonify({'error': 'invalid_password'}), 403
+    return jsonify({'user_id': user.id, 'points': user.points})
+
+
+@app.route('/submit_order', methods=['POST'])
+def submit_order_api():
+    data = request.get_json() or {}
+    user_id = data.get('user_id')
+    amount = float(data.get('totaal') or 0)
+    user = Customer.query.get(user_id) if user_id else None
+
+    resp, status = api_orders()
+    resp_data = resp.get_json()
+
+    new_code = None
+    if user:
+        points_earned = int(amount // 15)
+        user.points += points_earned
+        if user.points >= 10:
+            user.points -= 10
+            code = generate_code()
+            db.session.add(DiscountCode(code=code, discount=0.10, customer_id=user.id))
+            new_code = code
+        db.session.commit()
+        resp_data['points'] = user.points
+        if new_code:
+            resp_data['new_code'] = new_code
+    return jsonify(resp_data), status
+
+
+@app.route('/apply_discount', methods=['POST'])
+def apply_discount():
+    data = request.get_json() or {}
+    user_id = data.get('user_id')
+    code = str(data.get('code', '')).strip()
+    user = Customer.query.get(user_id) if user_id else None
+    if not user:
+        return jsonify({'error': 'invalid_user'}), 400
+    dc = DiscountCode.query.filter_by(code=code, customer_id=user.id).first()
+    if not dc:
+        return jsonify({'error': 'invalid_code'}), 400
+    if dc.used:
+        return jsonify({'error': 'code_used'}), 400
+    dc.used = True
+    db.session.commit()
+    return jsonify({'discount': dc.discount})
+
+
+@app.route('/user_points/<int:user_id>')
+def user_points(user_id):
+    user = Customer.query.get(user_id)
+    if not user:
+        return jsonify({'error': 'user_not_found'}), 404
+    codes = [c.code for c in DiscountCode.query.filter_by(customer_id=user_id, used=False).all()]
+    return jsonify({'points': user.points, 'codes': codes})
+@app.route('/admin/login', methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         username = request.form.get("username")
@@ -550,7 +663,7 @@ def login():
     return render_template("login.html")
 
 # 登出
-@app.route("/logout")
+@app.route("/admin/logout")
 @login_required
 def logout():
     logout_user()
