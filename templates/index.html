@@ -1034,9 +1034,7 @@ input:focus, select:focus, textarea:focus {
 <a href="javascript:void(0)" id="openReviews" class="review-link">Review</a>
 </div>
 <div class="auth-section">
-  <input type="text" id="usernameInput" placeholder="Username">
-  <input type="password" id="passwordInput" placeholder="Pincode">
-  <button id="loginBtn">Login / Register</button>
+
   <span id="pointsDisplay"></span>
 </div>
 <div class="indicator" id="indicator"></div>
@@ -2888,6 +2886,7 @@ const pointsDisplay = document.getElementById('pointsDisplay');
 const pointsRow = document.getElementById('pointsRow');
 let currentDiscount = 0;
 
+main
 function updateAuthUI(){
   const uid = localStorage.getItem('userId');
   if(uid){
@@ -2956,6 +2955,7 @@ async function applyDiscount(){
 </div>
 
 <script>
+  window.addEventListener('DOMContentLoaded', () => {
   const modal = document.getElementById('reviewsModal');
   const openBtn = document.getElementById('openReviews');
   const closeBtn = document.getElementById('closeReviews');
@@ -2986,6 +2986,7 @@ async function applyDiscount(){
       if(modal.style.display !== 'none') loadReviews();
     });
   }
+  });
 </script>
 
 
