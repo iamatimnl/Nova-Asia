@@ -337,6 +337,24 @@ def api_orders():
         db.session.add(order)
         db.session.commit()
 
+        # 4. 如有折扣码，记录到 discount_codes 表
+        discount_code = data.get("discount_code") or data.get("discountCode")
+        customer_email = (
+            data.get("customer_email")
+            or data.get("customerEmail")
+            or order.email
+        )
+        if discount_code and customer_email:
+            disc = DiscountCode(
+                code=discount_code,
+                customer_email=customer_email,
+                discount_percentage=3.0,
+                is_used=False,
+            )
+            db.session.add(disc)
+            db.session.commit()
+            print(f"✅ 折扣码保存成功: {discount_code} for {customer_email}")
+
        
 
         print("✅ 接收到订单:", data)
@@ -362,23 +380,6 @@ def submit_order():
     return api_orders()
 
 
-@app.route("/api/discounts", methods=["POST"])
-def create_discount():
-    try:
-        data = request.get_json()
-        code = data.get("code")
-        email = data.get("customer_email")
-
-        if not code or not email:
-            return jsonify({"error": "Missing code or customer_email"}), 400
-
-        disc = DiscountCode(code=code, customer_email=email, discount_percentage=3.0)
-        db.session.add(disc)
-        db.session.commit()
-
-        return jsonify({"status": "success"}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/api/discounts/validate", methods=["POST"])
