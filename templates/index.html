@@ -3,7 +3,7 @@
 <html lang="nl">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0" name="viewport"/>
 <title>Nova Asia Bestellen</title>
 <style>
   body {
@@ -319,8 +319,10 @@ button:active {
     width: 400px;           /* ✅ 增加宽度，适合桌面显示 */
     max-width: 500px;       /* ✅ 防止屏幕较小时太宽 */
     min-width: 350px;       /* ✅ 防止被压缩 */
-    max-height: 80vh;
-    overflow-y: auto;
+    height: 80vh;           /* 固定高度以便内部滚动 */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
     z-index: 1000;
 }
 
@@ -329,6 +331,8 @@ button:active {
 @media (max-width: 767px) {
   .cart-section {
     display: none;
+    flex-direction: column;
+    overflow: hidden;
   }
 
     #cart-toggle {
@@ -356,10 +360,12 @@ button:active {
   border-radius: 16px 0 0 16px;
   padding: 20px;
   box-shadow: -4px 0 12px rgba(0, 0, 0, 0.2);
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   transition: right 0.3s ease-in-out;
   z-index: 1000;
-  } 
+  }
 
 
 }
@@ -502,7 +508,7 @@ button:active {
   width: 100%;
   min-height: 44px;
   padding: 10px 12px;
-  font-size: 14px;
+  font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 12px;
   box-sizing: border-box;
@@ -704,6 +710,22 @@ input:focus, select:focus, textarea:focus {
   font-size: 0.85rem;
   color: #555;
   text-align: right;
+}
+
+/* cart layout helpers */
+.cart-items {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 1rem;
+}
+.cart-summary {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  background: var(--off-white);
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+  padding-top: 10px;
+  flex-shrink: 0;
 }
 
 
@@ -1133,12 +1155,15 @@ input:focus, select:focus, textarea:focus {
 </div>
 </div></section>
 <div class="cart-section" id="mobileCart">
-<button id="closeCartBtn" onclick="toggleMobileCart()">×</button>
-<h2 style="padding-top: 60px;">Winkelwagen</h2>
-<ul id="cart"></ul>
-<label for="remark" style="display:block;margin-top:10px;">Opmerking:</label>
-<textarea id="remark" placeholder="Bijv. geen komkomer, extra mayo" rows="2"></textarea>
-<div class="price-details">
+  <button id="closeCartBtn" onclick="toggleMobileCart()">×</button>
+  <div class="cart-items">
+    <h2 style="padding-top: 60px;">Winkelwagen</h2>
+    <ul id="cart"></ul>
+    <label for="remark" style="display:block;margin-top:10px;">Opmerking:</label>
+    <textarea id="remark" placeholder="Bijv. geen komkomer, extra mayo" rows="2"></textarea>
+  </div>
+  <div class="cart-summary">
+    <div class="price-details">
 <div class="price-row"><span>Subtotaal:</span> <span id="subtotalDisplay">€0,00</span></div>
 <div class="price-row"><span>Verpakkingskosten:</span> <span id="packagingDisplay">€0,00</span></div>
 <div class="price-row" id="deliveryRow"><span>Bezorgkosten:</span> <span id="deliveryDisplay">€2,50</span></div>
@@ -1167,6 +1192,7 @@ input:focus, select:focus, textarea:focus {
   </div>
 </div>
 
+</div>
 </div>
 <button id="cart-toggle" onclick="toggleMobileCart()">
   <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" width="30" height="30"    viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M256 256v128M320 320H192M80 176a16 16 0 00-16 16v216c0 30.24 25.76 56 56 56h272c30.24 0 56-24.51 56-54.75V192a16 16 0 00-16-16zM160 176v-32a96 96 0 0196-96h0a96 96 0 0196 96v32"/></svg>
