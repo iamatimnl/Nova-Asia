@@ -2050,8 +2050,7 @@ for (let i = 0; i <= 20; i++) {
   tipSel.value = 0;
   tipSel.addEventListener('change', () => updatePriceBreakdown(currentSubtotal, currentPackaging));
 
-  const discountInput = document.getElementById('discountCode');
-  discountInput.addEventListener('change', applyDiscount);
+  
   const validateBtn = document.getElementById('validateDiscountBtn');
   validateBtn.addEventListener('click', applyDiscount);
 
