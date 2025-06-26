@@ -313,18 +313,17 @@ button:active {
     display: none;
   }
   .cart-section {
-     background-color: var(--off-white); /* or --section-alt-bg */
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  padding: 16px;
     position: fixed;
     right: 20px;
     top: 80px;
-    width: 300px;
+    width: 400px;           /* ✅ 增加宽度，适合桌面显示 */
+    max-width: 500px;       /* ✅ 防止屏幕较小时太宽 */
+    min-width: 350px;       /* ✅ 防止被压缩 */
     max-height: 80vh;
     overflow-y: auto;
     z-index: 1000;
-  }
+}
+
 }
 
 @media (max-width: 767px) {
