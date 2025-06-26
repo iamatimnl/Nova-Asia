@@ -322,9 +322,9 @@ def api_orders():
             opmerking=data.get("opmerking") or data.get("remark"),
             items=json.dumps(data.get("items", {})),
             order_number=order_number,
-            fooi=float(data.get("tip") or data.get("fooi") or 0)
-            discount_code=data.get("discount_code") or data.get("discountCode"),  # ✅ 加这个
-            discount_amount=data.get("discount_amount")
+            fooi=float(data.get("tip") or data.get("fooi") or 0),
+            discount_code=data.get("discount_code") or data.get("discountCode"),  # ✅ 加入折扣码
+            discount_amount=data.get("discount_amount")  # ✅ 加入折扣金额
         )
 
         # 2. 计算 subtotal / totaal
@@ -346,18 +346,19 @@ def api_orders():
             or data.get("customerEmail")
             or order.email
         )
+        discount_amount = data.get("discount_amount") or 0  # ✅ 加入 discount_amount 获取
+
         if discount_code and customer_email:
             disc = DiscountCode(
                 code=discount_code,
                 customer_email=customer_email,
                 discount_percentage=3.0,
+                discount_amount=discount_amount,  # ✅ 必须加入
                 is_used=False,
             )
             db.session.add(disc)
             db.session.commit()
-            print(f"✅ 折扣码保存成功: {discount_code} for {customer_email}")
-
-       
+            print(f"✅ 折扣码保存成功: {discount_code} for {customer_email} met korting {discount_amount}")
 
         print("✅ 接收到订单:", data)
 
@@ -374,6 +375,7 @@ def api_orders():
         import traceback
         traceback.print_exc()
         return jsonify({"status": "fail", "error": str(e)}), 500
+
 
 
 @app.route('/submit_order', methods=["POST"])
