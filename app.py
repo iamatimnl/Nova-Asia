@@ -371,31 +371,48 @@ def create_discount():
     db.session.commit()
     return jsonify({'code': code})
 
-
-@app.route('/api/discounts/validate', methods=['POST'])
-def validate_discount():
-    data = request.get_json() or {}
-    code = str(data.get('code') or '').strip()
+@app.route("/api/discounts", methods=["POST"])
+def create_discount():
     try:
-        order_total = float(data.get('order_total') or 0)
-    except Exception:
-        order_total = 0
+        data = request.get_json()
+        email = data.get("customer_email")
 
-    disc = DiscountCode.query.filter_by(code=code, is_used=False).first()
-    if not disc:
-        return jsonify({'valid': False, 'error': 'invalid'}), 400
-    if order_total < 20:
-        return jsonify({'valid': False, 'error': 'min_not_met'}), 400
+        if not email:
+            return jsonify({"error": "Missing customer_email"}), 400
 
-    discount_amount = order_total * disc.discount_percentage / 100
-    disc.is_used = True
-    db.session.commit()
-    new_total = order_total - discount_amount
-    return jsonify({
-        'valid': True,
-        'discount_amount': round(discount_amount, 2),
-        'new_total': round(new_total, 2)
-    })
+        code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+        disc = DiscountCode(code=code, customer_email=email, discount_amount=3.0)
+        db.session.add(disc)
+        db.session.commit()
+
+        return jsonify({"code": code}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+@app.route("/api/discounts/validate", methods=["POST"])
+def validate_discount():
+    try:
+        data = request.get_json()
+        code = data.get("code")
+        order_total = float(data.get("order_total") or 0)
+
+        disc = DiscountCode.query.filter_by(code=code, is_used=False).first()
+        if not disc:
+            return jsonify({"valid": False, "error": "Invalid or used code"}), 400
+
+        discount_amount = disc.discount_amount
+        new_total = max(0, order_total - discount_amount)
+
+        disc.is_used = True
+        db.session.commit()
+
+        return jsonify({
+            "valid": True,
+            "discount_amount": discount_amount,
+            "new_total": new_total
+        }), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 
 # 获取设置
