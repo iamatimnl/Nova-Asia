@@ -1095,7 +1095,9 @@ function formatCurrency(value){
   
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script>
-  const socket = io('https://flask-order-api.onrender.com', { transports: ['websocket'] });
+  // Listen for realtime updates from the same origin (App A)
+  // Using relative connection avoids hardcoded domain issues
+  const socket = io({ transports: ['websocket'] });
 
   let pollTimer;
   const baseTitle = document.title;
