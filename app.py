@@ -15,7 +15,8 @@ from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 import os
 import json
-
+import random
+import string
 from flask_migrate import Migrate
 from urllib.parse import quote
 import uuid
@@ -371,7 +372,7 @@ def create_discount():
             return jsonify({"error": "Missing customer_email"}), 400
 
         code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
-        disc = DiscountCode(code=code, customer_email=email, discount_amount=3.0)
+        disc = DiscountCode(code=code, customer_email=email, discount_percentage=3.0)
         db.session.add(disc)
         db.session.commit()
 
