@@ -405,13 +405,12 @@ def validate_discount():
         if order_total < 20:
             return jsonify({"valid": False, "error": "Minimum order total not met"}), 400
 
-        # ✅ 直接使用数据库里保存的折扣金额
-        discount_amount = disc.discount_amount
+        # ✅ 旧逻辑：动态计算
+        discount_percentage = disc.discount_percentage
+        discount_amount = round(order_total * discount_percentage / 100, 2)
 
-        # ✅ 计算新总价
         new_total = max(0, order_total - discount_amount)
 
-        # ✅ 标记折扣码已使用
         disc.is_used = True
         db.session.commit()
 
