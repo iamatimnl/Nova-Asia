@@ -2228,7 +2228,9 @@ function checkout() {
     tipLine = `\nFooi: €${tip.toFixed(2)}`;
   }
 
-  const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}${tipLine}\nTotaal: €${totalPrice}`;
+  const discountCode = document.getElementById('discountCode').value.trim();
+  const discountLine = `\nKorting: -€${currentDiscount.toFixed(2)} (Code: ${discountCode || 'geen'})`;
+  const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}${tipLine}${discountLine}\nTotaal: €${totalPrice}`;
 
   const itemsToSend = { ...cart };
   Object.keys(extras).forEach(id => {
