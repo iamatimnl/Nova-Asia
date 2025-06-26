@@ -189,7 +189,7 @@ login_manager.login_view = "login"
 
 # 数据模型
 class Order(db.Model):
-    __tablename__ = 'orders'  # ✅ 避免使用 SQL 保留字
+    __tablename__ = 'orders'
     id = db.Column(db.Integer, primary_key=True)
     order_number = db.Column(db.String(20))
     order_type = db.Column(db.String(20))
@@ -208,6 +208,9 @@ class Order(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     totaal = db.Column(db.Float)
     fooi = db.Column(db.Float, default=0.0)
+    discount_code = db.Column(db.String(50))  # ✅ 新增
+    discount_amount = db.Column(db.Float, default=0.0)  # ✅ 新增
+
 
 
 class Setting(db.Model):
