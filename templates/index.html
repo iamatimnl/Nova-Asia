@@ -1133,6 +1133,8 @@ input:focus, select:focus, textarea:focus {
 <div class="price-row"><span>Subtotaal:</span> <span id="subtotalDisplay">€0,00</span></div>
 <div class="price-row"><span>Verpakkingskosten:</span> <span id="packagingDisplay">€0,00</span></div>
 <div class="price-row" id="deliveryRow"><span>Bezorgkosten:</span> <span id="deliveryDisplay">€2,50</span></div>
+<div class="price-row"><label for="discountCode">Kortingscode:</label> <input id="discountCode" /></div>
+<div class="price-row" id="discountRow" style="display:none;"><span>Korting:</span> <span id="discountDisplay">- €0,00</span></div>
 <div class="price-row"><span></span> <span id=""> </span></div>
 <div class="price-row"><span></span> <span id=""> </span></div>
 <div class="price-row"><span></span> <span id=""> </span></div>
@@ -1682,6 +1684,7 @@ const DELIVERY_FEE = 2.50;
 let currentPackaging = 0;
 let currentSubtotal = 0;
 let finalTotal = 0;
+let currentDiscount = 0;
 
 function formatEuro(val) {
   return `€${val.toFixed(2).replace('.', ',')}`;
@@ -1694,12 +1697,42 @@ function updatePriceBreakdown(subtotal, packaging) {
   const orderType = document.querySelector('input[name="orderType"]:checked').value;
   const deliveryFee = orderType === 'bezorgen' ? DELIVERY_FEE : 0;
   const btw = (subtotal + packaging) * 9 / 109;
-  finalTotal = subtotal + packaging + deliveryFee + tip;
+  finalTotal = subtotal + packaging + deliveryFee + tip - currentDiscount;
   document.getElementById('subtotalDisplay').textContent = formatEuro(subtotal);
   document.getElementById('packagingDisplay').textContent = formatEuro(packaging);
   document.getElementById('deliveryDisplay').textContent = formatEuro(deliveryFee);
+  document.getElementById('discountDisplay').textContent = `- ${formatEuro(currentDiscount)}`;
+  document.getElementById('discountRow').style.display = currentDiscount > 0 ? 'flex' : 'none';
   document.getElementById('btwDisplay').textContent = formatEuro(btw);
   document.getElementById('totalDisplay').textContent = formatEuro(finalTotal);
+}
+
+function applyDiscount() {
+  const code = document.getElementById('discountCode').value.trim();
+  if (!code) {
+    currentDiscount = 0;
+    updatePriceBreakdown(currentSubtotal, currentPackaging);
+    return;
+  }
+  fetch('/validate_discount', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code: code, order_total: currentSubtotal + currentPackaging + (document.querySelector('input[name="orderType"]:checked').value === 'bezorgen' ? DELIVERY_FEE : 0) + parseFloat(document.getElementById('tipSelect').value || '0') })
+  })
+    .then(r => r.json())
+    .then(res => {
+      if (res.valid) {
+        currentDiscount = res.discount_amount;
+      } else {
+        currentDiscount = 0;
+        alert('Ongeldige kortingscode');
+      }
+      updatePriceBreakdown(currentSubtotal, currentPackaging);
+    })
+    .catch(() => {
+      currentDiscount = 0;
+      updatePriceBreakdown(currentSubtotal, currentPackaging);
+    });
 }
 
 
@@ -1995,6 +2028,9 @@ for (let i = 0; i <= 20; i++) {
   tipSel.value = 0;
   tipSel.addEventListener('change', () => updatePriceBreakdown(currentSubtotal, currentPackaging));
 
+  const discountInput = document.getElementById('discountCode');
+  discountInput.addEventListener('change', applyDiscount);
+
   updateCart();
 });
 </script>
@@ -2159,7 +2195,7 @@ function checkout() {
   const packagingFee = Object.values(cart).reduce((s, it) => s + (it.packaging || 0) * it.qty, 0);
   const deliveryFee = orderType === 'bezorgen' ? 2.50 : 0;
   const btw = (subtotal + packagingFee) * 9 / 109;
-  const total = subtotal + packagingFee + deliveryFee + tip;
+  const total = subtotal + packagingFee + deliveryFee + tip - currentDiscount;
   const totalPrice = !isNaN(total) ? total.toFixed(2) : "0.00";
 
   const orderNumber = generateOrderNumber();
@@ -2218,6 +2254,8 @@ function checkout() {
       delivery_fee: deliveryFee.toFixed(2),
       btw: btw.toFixed(2),
       totaal: isNaN(total) ? "0.00" : total.toFixed(2),
+      discountAmount: currentDiscount.toFixed(2),
+      discountCode: document.getElementById('discountCode').value.trim(),
       message, email // ✅ 仍然推送到 Telegram
     })
   })

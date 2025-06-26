@@ -18,6 +18,7 @@ import json
 
 from flask_migrate import Migrate
 from urllib.parse import quote
+import uuid
 from flask import send_file
 from io import BytesIO
 import pandas as pd
@@ -222,6 +223,15 @@ class Review(db.Model):
     rating = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+class DiscountCode(db.Model):
+    __tablename__ = 'discount_codes'
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(50), unique=True, nullable=False)
+    discount_percentage = db.Column(db.Float, default=3.0)
+    is_used = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    customer_email = db.Column(db.String(120))
+
 with app.app_context():
     db.create_all()
     if not Setting.query.filter_by(key="is_open").first():
@@ -349,6 +359,43 @@ def api_orders():
 def submit_order():
     # 兼容旧接口，转发数据到现有逻辑
     return api_orders()
+
+
+@app.route('/api/discounts', methods=['POST'])
+def create_discount():
+    data = request.get_json() or {}
+    email = data.get('customer_email')
+    code = uuid.uuid4().hex[:8].upper()
+    disc = DiscountCode(code=code, customer_email=email, discount_percentage=3.0)
+    db.session.add(disc)
+    db.session.commit()
+    return jsonify({'code': code})
+
+
+@app.route('/api/discounts/validate', methods=['POST'])
+def validate_discount():
+    data = request.get_json() or {}
+    code = str(data.get('code') or '').strip()
+    try:
+        order_total = float(data.get('order_total') or 0)
+    except Exception:
+        order_total = 0
+
+    disc = DiscountCode.query.filter_by(code=code, is_used=False).first()
+    if not disc:
+        return jsonify({'valid': False, 'error': 'invalid'}), 400
+    if order_total < 20:
+        return jsonify({'valid': False, 'error': 'min_not_met'}), 400
+
+    discount_amount = order_total * disc.discount_percentage / 100
+    disc.is_used = True
+    db.session.commit()
+    new_total = order_total - discount_amount
+    return jsonify({
+        'valid': True,
+        'discount_amount': round(discount_amount, 2),
+        'new_total': round(new_total, 2)
+    })
 
 
 # 获取设置
