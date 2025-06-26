@@ -727,6 +727,10 @@ input:focus, select:focus, textarea:focus {
   padding-top: 10px;
 }
 
+#cartExtrasContainer {
+  text-align: center;
+}
+
 /* extras row inside cart */
 .cart-extras {
   display: flex;
@@ -1184,10 +1188,11 @@ input:focus, select:focus, textarea:focus {
   <div class="cart-items">
     <h2 style="padding-top: 60px;">Winkelwagen</h2>
     <ul id="cart"></ul>
-    <label for="remark" style="display:block;margin-top:10px;">Opmerking:</label>
-    <textarea id="remark" placeholder="Bijv. geen komkomer, extra mayo" rows="2"></textarea>
   </div>
   <div class="cart-summary">
+    <div id="cartExtrasContainer"></div>
+    <label for="remark" style="display:block;margin-top:10px;">Opmerking:</label>
+    <textarea id="remark" placeholder="Bijv. geen komkomer, extra mayo" rows="2"></textarea>
     <div class="price-details">
 <div class="price-row"><span>Subtotaal:</span> <span id="subtotalDisplay">€0,00</span></div>
 <div class="price-row"><span>Verpakkingskosten:</span> <span id="packagingDisplay">€0,00</span></div>
@@ -2023,13 +2028,14 @@ function updateCart() {
     }
   });
 
-  const title = document.createElement('li');
+  const extrasContainer = document.getElementById('cartExtrasContainer');
+  extrasContainer.innerHTML = '';
+  const title = document.createElement('div');
   title.textContent = '— Extra’s —';
   title.style.marginTop = '10px';
   title.style.fontWeight = 'bold';
-  list.appendChild(title);
+  extrasContainer.appendChild(title);
 
-  const extrasLi = document.createElement('li');
   const row = document.createElement('div');
   row.className = 'cart-extras';
   Object.keys(extras).forEach(id => {
@@ -2046,8 +2052,7 @@ function updateCart() {
     wrapper.appendChild(sel);
     row.appendChild(wrapper);
   });
-  extrasLi.appendChild(row);
-  list.appendChild(extrasLi);
+  extrasContainer.appendChild(row);
 
   updatePriceBreakdown(total, packagingTotal);
 
