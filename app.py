@@ -323,6 +323,8 @@ def api_orders():
             items=json.dumps(data.get("items", {})),
             order_number=order_number,
             fooi=float(data.get("tip") or data.get("fooi") or 0)
+            discount_code=data.get("discount_code") or data.get("discountCode"),  # ✅ 加这个
+            discount_amount=data.get("discount_amount")
         )
 
         # 2. 计算 subtotal / totaal
