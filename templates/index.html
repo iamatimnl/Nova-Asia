@@ -1720,33 +1720,49 @@ function updatePriceBreakdown(subtotal, packaging) {
   document.getElementById('totalDisplay').textContent = formatEuro(finalTotal);
 }
 
+let isValidating = false; // 防止重复点击的锁
+
 function applyDiscount() {
-  const code = document.getElementById('discountCode').value.trim();
-  if (!code) {
-    currentDiscount = 0;
-    updatePriceBreakdown(currentSubtotal, currentPackaging);
-    return;
-  }
-  fetch('/api/discounts/validate', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ code: code, order_total: currentSubtotal + currentPackaging + (document.querySelector('input[name="orderType"]:checked').value === 'bezorgen' ? DELIVERY_FEE : 0) + parseFloat(document.getElementById('tipSelect').value || '0') })
-  })
+    if (isValidating) return; // 如果正在验证，直接忽略后续点击
+    isValidating = true; // 上锁，禁止重复点击
+
+    const code = document.getElementById('discountCode').value.trim(); // 获取输入的优惠码，去除空格
+    if (!code) {
+        currentDiscount = 0;
+        updatePriceBreakdown(currentSubtotal, currentPackaging);
+        isValidating = false; // 解锁
+        return;
+    }
+
+    // 发送验证请求
+    fetch('/api/discounts/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            code: code,
+            order_total: currentSubtotal + currentPackaging + 
+                (document.querySelector('input[name="orderType"]:checked').value === 'bezorgen' ? DELIVERY_FEE : 0) + 
+                parseFloat(document.getElementById('tipSelect').value || '0')
+        })
+    })
     .then(r => r.json())
     .then(res => {
-      if (res.valid) {
-        currentDiscount = res.discount_amount;
-      } else {
-        currentDiscount = 0;
-        alert('Ongeldige kortingscode');
-      }
-      updatePriceBreakdown(currentSubtotal, currentPackaging);
+        if (res.valid) {
+            currentDiscount = res.discount_amount; // 使用后端返回的折扣金额
+        } else {
+            currentDiscount = 0;
+            alert('Ongeldige kortingscode'); // 无效折扣码提示
+        }
+        updatePriceBreakdown(currentSubtotal, currentPackaging); // 更新价格
+        isValidating = false; // 解锁，允许后续点击
     })
     .catch(() => {
-      currentDiscount = 0;
-      updatePriceBreakdown(currentSubtotal, currentPackaging);
+        currentDiscount = 0;
+        updatePriceBreakdown(currentSubtotal, currentPackaging);
+        isValidating = false; // 请求失败也要解锁
     });
 }
+
 
 
 function changeBubbleQty(delta) {
