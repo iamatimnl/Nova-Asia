@@ -235,6 +235,8 @@ class DiscountCode(db.Model):
     is_used = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     customer_email = db.Column(db.String(120))
+    discount_amount = db.Column(db.Float, default=0.0)  # ✅ 必须加这个
+
 
 with app.app_context():
     db.create_all()
