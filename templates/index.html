@@ -727,6 +727,32 @@ input:focus, select:focus, textarea:focus {
   padding-top: 10px;
 }
 
+/* extras row inside cart */
+.cart-extras {
+  display: flex;
+  justify-content: space-around;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.cart-extra-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cart-extra-item img {
+  width: 32px;
+  height: 32px;
+}
+
+.cart-extra-item select {
+  width: 50px;
+  margin-top: 2px;
+  padding: 4px;
+  font-size: 0.85rem;
+}
+
 
 
 /* 修复结账按钮遮挡问题 - 标准修复版 */
@@ -1710,10 +1736,26 @@ input:focus, select:focus, textarea:focus {
 <script>
 const cart = {};
 const extras = {
-  chopstickCount: { label: 'Stokjes', price: 0 },
-  soyCount: { label: 'Sojasaus', price: 0 },
-  wasabiCount: { label: 'Wasabi', price: 0 },
-  gemberCount: { label: 'Gember', price: 0 }
+  chopstickCount: {
+    label: 'Stokjes',
+    price: 0,
+    icon: "{{ url_for('static', filename='images/chopsticks.png') }}"
+  },
+  soyCount: {
+    label: 'Sojasaus',
+    price: 0,
+    icon: "{{ url_for('static', filename='images/soja saus.webp') }}"
+  },
+  wasabiCount: {
+    label: 'Wasabi',
+    price: 0,
+    icon: "{{ url_for('static', filename='images/wasabi.webp') }}"
+  },
+  gemberCount: {
+    label: 'Gember',
+    price: 0,
+    icon: "{{ url_for('static', filename='images/gember.webp') }}"
+  }
 };
 
 const DEFAULT_PACKAGING_FEE = 0.20;
@@ -1987,16 +2029,25 @@ function updateCart() {
   title.style.fontWeight = 'bold';
   list.appendChild(title);
 
+  const extrasLi = document.createElement('li');
+  const row = document.createElement('div');
+  row.className = 'cart-extras';
   Object.keys(extras).forEach(id => {
-    const li = document.createElement('li');
-    li.textContent = `${extras[id].label}: `;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'cart-extra-item';
+    const img = document.createElement('img');
+    img.src = extras[id].icon;
+    img.alt = extras[id].label;
+    wrapper.appendChild(img);
     const sel = createSelect(parseInt(document.getElementById(id).value || 0), val => {
       document.getElementById(id).value = val;
       updateCart();
     });
-    li.appendChild(sel);
-    list.appendChild(li);
+    wrapper.appendChild(sel);
+    row.appendChild(wrapper);
   });
+  extrasLi.appendChild(row);
+  list.appendChild(extrasLi);
 
   updatePriceBreakdown(total, packagingTotal);
 
