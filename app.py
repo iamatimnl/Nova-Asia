@@ -366,19 +366,20 @@ def submit_order():
 def create_discount():
     try:
         data = request.get_json()
+        code = data.get("code")
         email = data.get("customer_email")
 
-        if not email:
-            return jsonify({"error": "Missing customer_email"}), 400
+        if not code or not email:
+            return jsonify({"error": "Missing code or customer_email"}), 400
 
-        code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
         disc = DiscountCode(code=code, customer_email=email, discount_percentage=3.0)
         db.session.add(disc)
         db.session.commit()
 
-        return jsonify({"code": code}), 200
+        return jsonify({"status": "success"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 @app.route("/api/discounts/validate", methods=["POST"])
 def validate_discount():
