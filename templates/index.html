@@ -601,6 +601,16 @@ button:active {
   background-color: #0051a8;
 }
 
+.apply-discount-btn {
+  margin-left: 8px;
+  padding: 6px 12px;
+  background: var(--accent-color);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
 .feedback {
   position: fixed;
   top: 80px;
@@ -1133,7 +1143,10 @@ input:focus, select:focus, textarea:focus {
 <div class="price-row"><span>Subtotaal:</span> <span id="subtotalDisplay">€0,00</span></div>
 <div class="price-row"><span>Verpakkingskosten:</span> <span id="packagingDisplay">€0,00</span></div>
 <div class="price-row" id="deliveryRow"><span>Bezorgkosten:</span> <span id="deliveryDisplay">€2,50</span></div>
-<div class="price-row"><label for="discountCode">Kortingscode:</label> <input id="discountCode" /></div>
+<div class="price-row"><label for="discountCode">Kortingscode:</label>
+  <input id="discountCode" />
+  <button id="validateDiscountBtn" class="apply-discount-btn" type="button" onclick="applyDiscount()">Controleer</button>
+</div>
 <div class="price-row" id="discountRow" style="display:none;"><span>Korting:</span> <span id="discountDisplay">- €0,00</span></div>
 <div class="price-row"><span></span> <span id=""> </span></div>
 <div class="price-row"><span></span> <span id=""> </span></div>
@@ -1714,7 +1727,7 @@ function applyDiscount() {
     updatePriceBreakdown(currentSubtotal, currentPackaging);
     return;
   }
-  fetch('/validate_discount', {
+  fetch('/api/discounts/validate', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ code: code, order_total: currentSubtotal + currentPackaging + (document.querySelector('input[name="orderType"]:checked').value === 'bezorgen' ? DELIVERY_FEE : 0) + parseFloat(document.getElementById('tipSelect').value || '0') })
@@ -2030,6 +2043,8 @@ for (let i = 0; i <= 20; i++) {
 
   const discountInput = document.getElementById('discountCode');
   discountInput.addEventListener('change', applyDiscount);
+  const validateBtn = document.getElementById('validateDiscountBtn');
+  validateBtn.addEventListener('click', applyDiscount);
 
   updateCart();
 });
