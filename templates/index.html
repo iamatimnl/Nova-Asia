@@ -317,10 +317,10 @@ button:active {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.6); /* 添加半透明背景 */
-  z-index: 2000; /* 必须高于菜单 */
-  justify-content: center;
-  align-items: center;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 2000;
+  justify-content: flex-start;  /* 关键：不要居中 */
+  align-items: stretch;         /* 关键：不要居中 */
 }
 
 /* 内部购物车面板保持现有宽度但适配移动端 */
