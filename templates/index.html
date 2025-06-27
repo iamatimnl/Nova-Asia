@@ -372,13 +372,14 @@ button:active {
     z-index: 1000;
   }
 
-  .cart-items {
+.cart-items {
     width: 100%;
-    margin: 0 auto;
+    margin: 0;
     font-size: 0.875rem;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
+    text-align: left;
 
   }
 
@@ -744,6 +745,7 @@ input:focus, select:focus, textarea:focus {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   padding-bottom: 1rem;
+  text-align: left;
 }
 
 .cart-items.scrollable {
@@ -759,6 +761,7 @@ input:focus, select:focus, textarea:focus {
               -2px 0 8px rgba(0, 0, 0, 0.05),
               2px 0 8px rgba(0, 0, 0, 0.05);
   padding-top: 10px;
+  text-align: left;
 }
 
 
