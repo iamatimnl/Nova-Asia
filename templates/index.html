@@ -316,19 +316,21 @@ button:active {
 
 @media (min-width: 768px) {
   .cart-section {
+    position: fixed;
+    top: 60px;
+    right: 0;
+    width: 360px;
+    height: 100vh;
     display: flex;
-    align-items: flex-start;
-    justify-content: space-between; /* 👉 保证左右分开 */
-    max-width: 1400px;
-    margin: auto;
-    gap: 24px;
-    padding: 0 20px;
+    flex-direction: column;
+    background: var(--off-white);
+    box-shadow: -2px 0 8px rgba(0,0,0,0.15);
+    z-index: 1000;
   }
 
   /* 左侧商品列表 */
   .cart-left {
-    flex: 1 1 65%; /* 👉 优先占 65% 宽度，适应大屏 */
-    max-height: calc(100vh - 80px);
+    flex: 1 1 auto;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -341,22 +343,18 @@ button:active {
   .cart-items {
     flex: 1;
     overflow-y: auto;
-    padding: 16px;
+    padding-bottom: 16px;
   }
 
-  /* 右侧结算区 */
+  /* 结算区固定在面板底部 */
   .cart-summary {
-    flex: 0 0 32%;  /* 👉 固定宽度，大约占 1/3 */
-    max-width: 450px;
-    position: sticky;
-    top: 60px;
-    max-height: calc(100vh - 80px);
-    display: flex;
-    flex-direction: column;
-    background: var(--off-white);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    flex: 0 0 auto;
+    width: 100%;
+    position: static;
     padding: 16px;
-    border-radius: 12px;
+    background: var(--off-white);
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+    border-radius: 12px 12px 0 0;
   }
 
   /* 移动端相关按钮桌面隐藏 */
