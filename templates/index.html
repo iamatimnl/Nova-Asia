@@ -338,6 +338,13 @@ button:active {
   border-bottom-left-radius: 16px;
   margin-top: 0px;
   padding: 16px 36px;
+  position: relative; /* allow absolute children like the close button */
+}
+
+/* Position close button inside summary on mobile */
+.cart-section.mobile-visible .cart-summary #closeCartBtn {
+  top: 16px;
+  right: 16px;
 }
 
 
