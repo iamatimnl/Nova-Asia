@@ -1068,11 +1068,15 @@ input:focus, select:focus, textarea:focus {
   width: 90%;
   max-width: 340px;
   height: 48px;
-  background: linear-gradient(to right, rgba(10,132,255,0.35), rgba(255,255,255,0.08));
-  backdrop-filter: blur(12px); /* ✅ 加毛玻璃 */
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow:
+    0 0 4px rgba(255, 255, 255, 0.6),  /* 柔光边缘 */
+    0 4px 12px rgba(0, 0, 0, 0.08);    /* 底部轻柔投影 */
+  transition: box-shadow 0.3s ease, border 0.3s ease;
   border-radius: 32px;
   position: relative;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
   overflow: hidden;
 }
 .order-type-track {
