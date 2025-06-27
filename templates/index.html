@@ -720,6 +720,10 @@ input:focus, select:focus, textarea:focus {
   -webkit-overflow-scrolling: touch;
   padding-bottom: 1rem;
 }
+
+.cart-items.scrollable {
+  max-height: 60vh;
+}
 .cart-summary {
   position: sticky;
   bottom: 0;
@@ -2055,6 +2059,13 @@ function updateCart() {
     row.appendChild(wrapper);
   });
   extrasContainer.appendChild(row);
+
+  const cartContainer = document.querySelector('.cart-items');
+  if (list.children.length > 3) {
+    cartContainer.classList.add('scrollable');
+  } else {
+    cartContainer.classList.remove('scrollable');
+  }
 
   updatePriceBreakdown(total, packagingTotal);
 
