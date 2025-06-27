@@ -302,51 +302,75 @@ button:active {
 
 
 
-  }
-.cart-section {
-  position: fixed;
-  background: var(--off-white);
-  box-shadow: 0 0 12px rgba(0,0,0,0.2);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  z-index: 1000;
-  pointer-events: none;
-  transition: transform 0.3s ease;
+.cart-section.mobile-visible {
+  display: block !important;
 }
 
-.cart-section.open {
-  pointer-events: auto;
-}
+
 
 @media (min-width: 768px) {
+  #cart-toggle {
+    display: none;
+  }
   .cart-section {
+    position: fixed;
+    right: 20px;
     top: 80px;
-    right: 0;
-    bottom: 0;
-    width: 35%;
-    max-width: 600px;
-    transform: translateX(100%);
-  }
-  .cart-section.open {
-    transform: translateX(0);
-  }
+    width: 500px;           /* 扩大宽度以容纳更多内容 */
+    max-width: 600px;       /* 防止屏幕较小时过宽 */
+    min-width: 400px;       /* 避免被压缩 */
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 1000;
+}
+
 }
 
 @media (max-width: 767px) {
   .cart-section {
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+    #cart-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    width: 56px;
+    height: 56px;
+    font-size: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    z-index: 999;
+  }
+
+  .cart-section.mobile-visible {
+    position: fixed;
+    top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     width: 100%;
-    max-height: 80vh;
-    transform: translateY(100%);
+    height: 100vh;
+    max-width: none;
+    max-height: none;
+    transform: none;
+    background: var(--off-white);
+    border-radius: 0;
+    padding: 20px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    /* Allow internal scrolling on mobile */
+    overflow-y: auto;
+    z-index: 1000;
   }
-  .cart-section.open {
-    transform: translateY(0);
-  }
-}
-
 
 .cart-items {
     width: 100%;
@@ -448,6 +472,16 @@ button:active {
 
 
 
+@media (min-width: 768px) {
+  #cart-toggle {
+    display: none;
+  }
+}
+@media (min-width: 768px) {
+  #closeCartBtn {
+    display: none;
+  }
+}
 #cart-badge {
   background: var(--gold);
   color: white;
@@ -1211,7 +1245,7 @@ input:focus, select:focus, textarea:focus {
 </div>
 </div></section>
 <div class="cart-section" id="mobileCart">
-  <button id="closeCartBtn" onclick="toggleCart()">×</button>
+  <button id="closeCartBtn" onclick="toggleMobileCart()">×</button>
   <div class="cart-items">
     <h2 style="padding-top: 60px;">Winkelwagen</h2>
     <ul id="cart"></ul>
@@ -1251,7 +1285,7 @@ input:focus, select:focus, textarea:focus {
 
 </div>
 </div>
-<button id="cart-toggle" onclick="toggleCart()">
+<button id="cart-toggle" onclick="toggleMobileCart()">
   <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" width="30" height="30"    viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M256 256v128M320 320H192M80 176a16 16 0 00-16 16v216c0 30.24 25.76 56 56 56h272c30.24 0 56-24.51 56-54.75V192a16 16 0 00-16-16zM160 176v-32a96 96 0 0196-96h0a96 96 0 0196 96v32"/></svg>
   <span id="cart-count" style="
       position: absolute;
@@ -2596,6 +2630,21 @@ function checkout() {
   houseNumInput.addEventListener('blur', () => { autofillAddress(); updateMapLink(); });
   streetInput.addEventListener('blur', updateMapLink);
   areaInput.addEventListener('blur', updateMapLink);
+</script>
+<script>
+function showMobileCartButtonIfNeeded() {
+  const toggleBtn = document.getElementById('cart-toggle');
+  if (window.innerWidth < 768) {
+    toggleBtn.style.display = 'block';
+  } else {
+    toggleBtn.style.display = 'none';
+  }
+}
+
+showMobileCartButtonIfNeeded();
+
+window.addEventListener('resize', showMobileCartButtonIfNeeded);
+</script>
 <script>
 const backTopLogo = document.getElementById('back-to-top-logo');
 backTopLogo.addEventListener('click', () => {
@@ -2608,9 +2657,9 @@ backTopLogo.addEventListener('click', () => {
   });
 </script>
 <script>
-function toggleCart() {
+function toggleMobileCart() {
   const cartSection = document.getElementById('mobileCart');
-  if (!cartSection.classList.contains('open')) {
+  if (!cartSection.classList.contains('mobile-visible')) {
     const missing = getFirstMissingField();
     if (missing) {
       showFeedback('Vul eerst uw gegevens in', true);
@@ -2618,7 +2667,7 @@ function toggleCart() {
       return;
     }
   }
-  cartSection.classList.toggle('open');
+  cartSection.classList.toggle('mobile-visible');
 }
 </script>
 <script>
@@ -3058,6 +3107,10 @@ socket.on('setting_update', d => { if(d.key === 'is_open'){ updateStatus(d.value
 
 </body>
 </html>
+
+
+
+
 
 
 
