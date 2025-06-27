@@ -328,8 +328,6 @@ button:active {
   width: 100%;
   max-height: 100%;
   background: white;
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
   overflow-y: auto;
   position: relative;
 }
@@ -1263,7 +1261,7 @@ input:focus, select:focus, textarea:focus {
 
   <!-- 左侧: Winkelwagen 商品列表 -->
   <div class="cart-left">
-    <button id="closeCartBtn" onclick="toggleMobileCart()">×</button>
+   
     <div class="cart-items">
       <h2 style="padding-top: 60px;">Winkelwagen <span style="font-size: 0.9rem; color: #666;">(scrollen 👇)</span></h2>
 
@@ -1273,6 +1271,7 @@ input:focus, select:focus, textarea:focus {
 
   <!-- 右侧: 结算区域 -->
   <div class="cart-summary">
+    <button id="closeCartBtn" onclick="toggleMobileCart()">×</button>
     <div id="cartExtrasContainer"></div>
     <label for="remark" style="display:block;margin-top:10px;">Opmerking:</label>
     <textarea id="remark" placeholder="Bijv. geen komkomer, extra mayo" rows="2"></textarea>
