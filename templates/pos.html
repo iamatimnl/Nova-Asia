@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>POS Interface</title>
 <style>
   body {
@@ -182,6 +182,27 @@
   border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
+ .checkout-panel button {
+  background: linear-gradient(to bottom, #d8f4e7, #a9e5cd);
+  color: #1a2e28;
+  font-weight: 600;
+  padding: 12px;
+  width: 100%;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 14px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12),
+              inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(6px);
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+  
+  .checkout-panel button:hover {
+    background: linear-gradient(to bottom, #b2eadd, #86dcc3);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2),
+              inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  }
 
   .order-type-switch {
     display: flex;
@@ -233,7 +254,6 @@
     border:1px solid rgba(255,255,255,0.4);
     border-radius:8px;
     padding:6px 10px;
-    font-size:1rem;
     background: rgba(255,255,255,0.6);
     backdrop-filter: blur(6px);
     box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
@@ -258,7 +278,7 @@
     cursor:pointer;
   }
   #closeToday:hover { background:#e0e0e0; }
-  .cart-items {
+  .cart-area {
     background: linear-gradient(to bottom right, #fdfaf6, #f0e6d7);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     border: 1px solid rgba(0, 0, 0, 0.06);
@@ -267,34 +287,9 @@
     border-radius: 16px;
     padding: 20px;
     margin-bottom:20px;
-    flex: 1;
-    overflow-y: auto;
-  }
-
-  .checkout-area {
-    background: linear-gradient(to bottom, #fdfaf6, #f0e6d7);
-    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    border-radius: 16px;
-    padding: 20px;
     position: sticky;
-    bottom: 0;
-    z-index: 5;
+    top: 70px;
   }
-
-  .checkout-area button {
-    width:100%;
-    margin-top:10px;
-    padding:12px;
-    font-size:1.1rem;
-    background:#b3d4ff;
-    color:#333;
-    border:none;
-    border-radius:12px;
-    transition: background 0.3s ease;
-  }
-
-  .checkout-area button:hover { background:#a3c8ff; }
   .supply-row {
     display:flex;
     align-items:center;
@@ -315,6 +310,18 @@
     .side-tools { flex:0 0 180px; }
     .center-area { flex:2; margin-right:20px; }
   }
+  .cart-area button {
+    width:100%;
+    margin-top:10px;
+    padding:12px;
+    font-size:1.1rem;
+    background:#b3d4ff;
+    color:#333;
+    border:none;
+    border-radius:12px;
+    transition: background 0.3s ease;
+  }
+  .cart-area button:hover { background:#a3c8ff; }
   .hidden { display:none; }
 @media (min-width: 768px) {
   .pos-layout {
@@ -339,10 +346,6 @@
     align-self: flex-start;
     flex: 1.4;
     max-width: 420px;
-    display: flex;
-    flex-direction: column;
-    max-height: calc(100vh - 80px);
-    overflow: hidden;
   }
   .close-btn { display:none; }
   .cart-toggle {
@@ -424,11 +427,11 @@
   }
   @media (max-width: 768px) {
     .cart-toggle { display: block; }
-
+  
     .cart-panel {
       position: fixed;
       inset: 0;
-      overflow: hidden;
+      overflow-y: auto;
       background: rgba(255,255,255,0.95);
       padding: 20px;
       z-index: 1050;
@@ -436,12 +439,7 @@
     }
     .cart-panel.open { display: block; }
     .close-btn { display: block; }
-    .cart-panel .cart-items {
-      position: static;
-      top: auto;
-      flex: 1;
-      overflow-y: auto;
-    }
+    .cart-panel .cart-area { position: static; top: auto; }
     .pos-layout { flex-direction: column; align-items: center; }
     .center-area { width:100%; margin-right:0; }
   }
@@ -511,9 +509,41 @@
   </div>
   <div id="cartPanel" class="cart-panel">
     <button id="closeCartPanel" class="close-btn">×</button>
-    <div class="cart-items">
+    <div class="cart-area">
       <h2>Overzicht</h2>
       <ul id="cart"></ul>
+      <div class="supply-row">
+        <label for="chopstickCount">Aantal stokjes</label>
+        <select id="chopstickCount" class="supply-select"></select>
+      </div>
+      <div class="supply-row">
+        <label for="soyCount">Aantal sojasaus flesjes</label>
+        <select id="soyCount" class="supply-select"></select>
+      </div>
+      <div class="supply-row">
+        <label for="gemberCount">Aantal gember porties</label>
+        <select id="gemberCount" class="supply-select"></select>
+      </div>
+      <div class="supply-row">
+        <label for="wasabiCount">Aantal wasabi flesjes</label>
+        <select id="wasabiCount" class="supply-select"></select>
+      </div>
+      <div>Subtotaal: <span id="summarySubtotal">€0,00</span></div>
+      <div>Verpakkingskosten: <span id="summaryPackaging">€0,00</span></div>
+      <div id="summaryDeliveryRow" class="hidden">Bezorgkosten: <span id="summaryDelivery">€0,00</span></div>
+      <div>
+        Korting:
+        <select id="discountType">
+          <option value="amount">€</option>
+          <option value="percent">%</option>
+        </select>
+        <input id="discountValue" type="number" value="0" min="0" step="0.01" />
+        <span id="summaryDiscount">€0,00</span>
+      </div>
+      <div>BTW (9%): <span id="summaryBtw">€0,00</span></div>
+      <div><strong>Totaal: <span id="total">€0,00</span></strong></div>
+      <label for="remark" style="display:block;margin-top:10px;">Opmerking:</label>
+      <textarea id="remark" rows="2" placeholder="Bijv. geen komkomer, extra mayo"></textarea>
     </div>
     <div class="checkout-panel">
       <section id="customer-info">
@@ -568,40 +598,6 @@
         </div>
         </div>
       </section>
-    </div>
-    <div class="checkout-area">
-      <div class="supply-row">
-        <label for="chopstickCount">Aantal stokjes</label>
-        <select id="chopstickCount" class="supply-select"></select>
-      </div>
-      <div class="supply-row">
-        <label for="soyCount">Aantal sojasaus flesjes</label>
-        <select id="soyCount" class="supply-select"></select>
-      </div>
-      <div class="supply-row">
-        <label for="gemberCount">Aantal gember porties</label>
-        <select id="gemberCount" class="supply-select"></select>
-      </div>
-      <div class="supply-row">
-        <label for="wasabiCount">Aantal wasabi flesjes</label>
-        <select id="wasabiCount" class="supply-select"></select>
-      </div>
-      <label for="remark" style="display:block;margin-top:10px;">Opmerking:</label>
-      <textarea id="remark" rows="2" placeholder="Bijv. geen komkomer, extra mayo"></textarea>
-      <div>Subtotaal: <span id="summarySubtotal">€0,00</span></div>
-      <div>Verpakkingskosten: <span id="summaryPackaging">€0,00</span></div>
-      <div id="summaryDeliveryRow" class="hidden">Bezorgkosten: <span id="summaryDelivery">€0,00</span></div>
-      <div>
-        Korting:
-        <select id="discountType">
-          <option value="amount">€</option>
-          <option value="percent">%</option>
-        </select>
-        <input id="discountValue" type="number" value="0" min="0" step="0.01" />
-        <span id="summaryDiscount">€0,00</span>
-      </div>
-      <div>BTW (9%): <span id="summaryBtw">€0,00</span></div>
-      <div><strong>Totaal: <span id="total">€0,00</span></strong></div>
       <button id="submitOrder">Submit Order</button>
     </div>
   </div>
