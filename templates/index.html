@@ -316,9 +316,9 @@ button:active {
     position: fixed;
     right: 20px;
     top: 80px;
-    width: 400px;           /* ✅ 增加宽度，适合桌面显示 */
-    max-width: 500px;       /* ✅ 防止屏幕较小时太宽 */
-    min-width: 350px;       /* ✅ 防止被压缩 */
+    width: 500px;           /* 扩大宽度以容纳更多内容 */
+    max-width: 600px;       /* 防止屏幕较小时过宽 */
+    min-width: 400px;       /* 避免被压缩 */
     max-height: 80vh;
     display: flex;
     flex-direction: column;
@@ -354,7 +354,7 @@ button:active {
   position: fixed;
   top: 0;
   right: 0;
-  width: 90%;
+  width: 100%;
   height: 100vh;
   background: var(--off-white);
   border-radius: 16px 0 0 16px;
