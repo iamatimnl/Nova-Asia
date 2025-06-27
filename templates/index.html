@@ -369,6 +369,23 @@ button:active {
   z-index: 1000;
   }
 
+  .cart-items,
+  .cart-summary {
+    width: 100%;
+    margin: 0 auto;
+    font-size: 0.875rem;
+  }
+
+  .slider-container {
+    height: 48px;
+    max-width: 240px;
+  }
+
+  .slider-button {
+    width: 46px;
+    height: 46px;
+  }
+
 
 }
 
@@ -730,11 +747,11 @@ input:focus, select:focus, textarea:focus {
   position: sticky;
   bottom: 0;
   left: 0;
-  border-radius: 12px; /* 小错误: 你写成了 'borderradius' */
-  background: transparent; /* 小错误: 你写成了 'transparant' */
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05), /* 顶部阴影 */
-              -2px 0 8px rgba(0, 0, 0, 0.05), /* 左侧阴影 */
-              2px 0 8px rgba(0, 0, 0, 0.05);  /* 右侧阴影 */
+  border-radius: 12px;
+  background: var(--off-white);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05),
+              -2px 0 8px rgba(0, 0, 0, 0.05),
+              2px 0 8px rgba(0, 0, 0, 0.05);
   padding-top: 10px;
 }
 
