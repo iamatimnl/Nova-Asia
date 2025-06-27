@@ -728,10 +728,14 @@ input:focus, select:focus, textarea:focus {
   position: sticky;
   bottom: 0;
   left: 0;
-  background: transparant;
-  box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+  border-radius: 12px; /* 小错误: 你写成了 'borderradius' */
+  background: transparent; /* 小错误: 你写成了 'transparant' */
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05), /* 顶部阴影 */
+              -2px 0 8px rgba(0, 0, 0, 0.05), /* 左侧阴影 */
+              2px 0 8px rgba(0, 0, 0, 0.05);  /* 右侧阴影 */
   padding-top: 10px;
 }
+
 
 #cartExtrasContainer {
   text-align: center;
