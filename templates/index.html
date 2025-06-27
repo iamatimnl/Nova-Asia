@@ -369,35 +369,39 @@ button:active {
   }
 }
 
-@media (min-width: 768px) {
-  .cart-section {
-    position: fixed;
-    top: 62px;
-    right: 25px;
-    width: 600px;
-    height: 95vh;
-    display: flex;
-    flex-direction: column;
-    background: var(--off-white);
-    border-radius: 12px;
-    z-index: 1000;
-  }
+.cart-section.mobile-visible {
+  display: flex !important;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  height: 100dvh; /* ✅ 关键改动：使用 100dvh 解决地址栏收起自适配 */
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 2000;
+  justify-content: flex-start; /* ✅ 正确，顶部开始显示购物车 */
+  align-items: center; /* ✅ 水平居中可以保留 */
+  overflow: auto; /* ✅ 确保购物车整体可以滑动，防止内容溢出 */
+ 
+}
 
-  /* 左侧商品列表 */
-  .cart-left {
-    flex: 1 1 auto;
-    display: flex;
-    width: 600px;
-    flex-direction: column;
-    overflow: hidden;
-    border-top-left-radius: 16px;
-    background: var(--off-white);
-    box-shadow: 
-    0 -4px 8px rgba(48, 177, 88, 0.15), /* 上侧淡绿光 */
-    -4px 0 8px rgba(48, 177, 88, 0.15); /* 左侧淡绿光 */
-    padding: 16px;
-   
-  }
+
+
+/* 内部购物车面板保持现有宽度但适配移动端 */
+.cart-section.mobile-visible .cart-left {
+  width: 100%;
+  max-height: 100%;
+  flex: 1 1 auto; /* 让它自动占据中间空间 */
+
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  background: white;
+  overflow-y: auto;
+  position: relative;
+}
+
+
 
   .cart-items {
     flex: 1;
@@ -407,18 +411,16 @@ button:active {
   }
 
   /* 结算区固定在面板底部 */
-  .cart-summary {
-    flex: 0 0 auto;
-    width: 100%;
-    position: static;
-    padding: 16px;
-    background: var(--off-white);
-    border-bottom-left-radius: 16px;
-    box-shadow: 
-    -4px 0 8px rgba(48, 177, 88, 0.15), /* 左侧淡绿光 */
-    0 4px 8px rgba(48, 177, 88, 0.15);  /* 下侧淡绿光 */
-   
-  }
+  .cart-section.mobile-visible .cart-summary {
+  width: 100%;
+  flex: 0 0 auto;
+  background: white;
+  border-bottom-left-radius: 16px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding: 16px 36px;
+  position: relative; /* allow absolute children like the close button */
+}
 
   /* 移动端相关按钮桌面隐藏 */
   #cart-toggle, #closeCartBtn, .slider-container {
