@@ -490,9 +490,9 @@ button:active {
   cursor: pointer;
   z-index: 999;
   box-shadow:
-    inset 0 2px 4px rgba(255, 255, 255, 0.6),
-    0 4px 8px rgba(0, 0, 0, 0.2),
-    0 6px 12px rgba(0, 0, 0, 0.1);
+    inset 0 1px 1px rgba(255, 255, 255, 0.4),
+    0 4px 8px rgba(10, 132, 255, 0.35),
+    0 6px 20px rgba(10, 132, 255, 0.2);
 
   
 }
@@ -981,8 +981,7 @@ input:focus, select:focus, textarea:focus {
   margin-left: -20px;
   height: 100%;
   border-radius: 32px;
-  background: var(--off-white);
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+  background-color:linear-gradient(to right, rgba(10,132,255,0.15), rgba(255,255,255,0.05));
   padding: 0 20px;
   display: flex;
   align-items: center;
@@ -992,7 +991,7 @@ input:focus, select:focus, textarea:focus {
 .slider-button {
   width: 60px;
   height: 60px;
-  background: var(--off-white);
+  background: linear-gradient(145deg, var(--accent-gradient-start), var(--accent-gradient-end));
   border-radius: 50%;
   position: absolute;
   left: 0px;
@@ -1001,13 +1000,14 @@ input:focus, select:focus, textarea:focus {
   z-index: 10;
   transition: left 0.3s ease, box-shadow 0.3s ease;
   box-shadow:
-    inset 0 1px 2px rgba(0,0,0,0.1),
-    0 2px 4px rgba(0,0,0,0.1);
+    inset 0 1px 1px rgba(255, 255, 255, 0.4),
+    0 4px 8px rgba(10, 132, 255, 0.35),
+    0 6px 20px rgba(10, 132, 255, 0.2);
 
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--secondary-color);
+  color: white;
   font-size: 24px;
 }
 
@@ -3166,6 +3166,23 @@ socket.on('setting_update', d => { if(d.key === 'is_open'){ updateStatus(d.value
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
