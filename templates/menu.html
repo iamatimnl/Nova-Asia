@@ -228,14 +228,15 @@
 </div>
 
 
-  <div class="menu-row menu-item" data-name="Sushi Bento" data-price="14" data-packaging="0.2">
+  <div class="menu-row menu-item" data-name="Bento Sushi Omakase" data-price="22" data-packaging="0.2">
   <div class="menu-img">
-    <img src="{{ url_for('static', filename='images/sushi-bento.jpg') }}" alt="Sushi Bento">
+    <img src="{{ url_for('static', filename='images/sushi-bento.jpg') }}" alt="Bento Sushi Omakase">
   </div>
 
   <div class="menu-content">
-    <h3>Sushi Bento</h3>
-    <p>€ 14.00</p>
+    <h3>Bento Sushi Omakase</h3>
+    <p>€ 22.00</p>
+    <p class="menu-description">±16 stuks Verrassing van de chef.</p>
 
     <div class="qty-box">
       <label for="sushiBentoCount">Aantal</label>
@@ -243,6 +244,7 @@
       <select id="sushiBentoCount" name="sushiBentoCount"></select>
       <button type="button" class="qty-plus add-button" data-target="sushiBentoCount">+</button>
     </div>
+    <div id="omakasePrefs"></div>
   </div>
 </div>
 
