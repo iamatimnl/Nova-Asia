@@ -2353,6 +2353,7 @@ function checkout() {
   const wasabiCount = document.getElementById('wasabiCount').value;
   const gemberCount = document.getElementById('gemberCount').value;
   const remark = document.getElementById('remark').value.trim();
+
   if (sliderText && sliderButton && sliderTrack) {
     sliderText.innerText = 'Bezig met verwerken…';
     sliderButton.innerHTML = `
@@ -2363,7 +2364,6 @@ function checkout() {
 </svg>`;
     sliderTrack.style.pointerEvents = 'none';
   }
-
 
   let orderSummary = Object.entries(cart)
     .map(([name, item]) => `${name} x ${item.qty}`)
@@ -2386,7 +2386,6 @@ function checkout() {
     const time = document.getElementById('pickup_time').value;
     paymentMethod = document.getElementById('pickupPayment').value;
 
-
     customerDetails = `\n[Afhalen]\nNaam: ${name}\nTelefoon: ${phone}`;
     if (email) customerDetails += `\nEmail: ${email}`;
     customerDetails += `\nAfhaaltijd: ${time}\nBetaalwijze: ${paymentMethod}`;
@@ -2404,7 +2403,6 @@ function checkout() {
     const postcodeClean = postcodeRaw.replace(/\s+/g, '');
     const postcode = postcodeClean.slice(0, 4);
     const allowedPostcodes = ['2341', '2342', '2343', '2333', '2334', '2231', '2232', '2361', '2235'];
-
 
     if (!allowedPostcodes.includes(postcode)) {
       alert(`🚫 Wij bezorgen helaas niet in dit postcodegebied (${postcode}).`);
@@ -2446,38 +2444,22 @@ function checkout() {
     if (qty > 0) itemsToSend[extras[id].label] = { price: 0, qty };
   });
 
-   fetch('https://flask-order-api.onrender.com/submit_order', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
+  fetch('https://flask-order-api.onrender.com/submit_order', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
       orderType: orderType,
-      name: orderType === 'afhalen'
-        ? document.getElementById('pickupName').value.trim()
-        : document.getElementById('deliveryName').value.trim(),
-      phone: orderType === 'afhalen'
-        ? document.getElementById('pickupPhone').value.trim()
-        : document.getElementById('deliveryPhone').value.trim(),
+      name: orderType === 'afhalen' ? document.getElementById('pickupName').value.trim() : document.getElementById('deliveryName').value.trim(),
+      phone: orderType === 'afhalen' ? document.getElementById('pickupPhone').value.trim() : document.getElementById('deliveryPhone').value.trim(),
       email: email,
       customerEmail: email,
-      pickup_time: orderType === 'afhalen'
-        ? document.getElementById('pickup_time').value
-        : '',
-      delivery_time: orderType === 'bezorgen'
-        ? document.getElementById('delivery_time').value
-        : '',
+      pickup_time: orderType === 'afhalen' ? document.getElementById('pickup_time').value : '',
+      delivery_time: orderType === 'bezorgen' ? document.getElementById('delivery_time').value : '',
       paymentMethod: paymentMethod,
-      postcode: orderType === 'bezorgen'
-        ? document.getElementById('deliveryPostcode').value.trim()
-        : '',
-      house_number: orderType === 'bezorgen'
-        ? document.getElementById('deliveryHouseNumber').value.trim()
-        : '',
-      street: orderType === 'bezorgen'
-        ? document.getElementById('deliveryAddress').value.trim()
-        : '',
-      city: orderType === 'bezorgen'
-        ? document.getElementById('deliveryArea').value.trim()
-        : '',
+      postcode: orderType === 'bezorgen' ? document.getElementById('deliveryPostcode').value.trim() : '',
+      house_number: orderType === 'bezorgen' ? document.getElementById('deliveryHouseNumber').value.trim() : '',
+      street: orderType === 'bezorgen' ? document.getElementById('deliveryAddress').value.trim() : '',
+      city: orderType === 'bezorgen' ? document.getElementById('deliveryArea').value.trim() : '',
       order_number: orderNumber,
       items: itemsToSend,
       opmerking: remark,
@@ -2488,8 +2470,9 @@ function checkout() {
       btw: btw.toFixed(2),
       totaal: isNaN(total) ? "0.00" : total.toFixed(2),
       discountAmount: currentDiscount.toFixed(2),
-      discountCode: document.getElementById('discountCode').value.trim(),
-      message, email // ✅ 仍然推送到 Telegram
+      discountCode: discountCode,
+      message,
+      email
     })
   })
     .then(res => res.json())
@@ -2499,30 +2482,36 @@ function checkout() {
         showFeedback('Bestelling succesvol verzonden! Bestelnummer: ' + orderNumber);
         for (const k in cart) delete cart[k];
         updateCart();
-        sliderText.innerText = 'Schuif om te betalen';
-        sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
-        sliderTrack.style.pointerEvents = 'auto';
+
+        // ✅ 这里改成显示下单成功，不立即恢复按钮
+        if (sliderText && sliderButton && sliderTrack) {
+          sliderText.innerText = 'Bestelling geslaagd ✅';
+          sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
+          sliderTrack.style.pointerEvents = 'none';
+        }
 
         if (paymentMethod === 'online' && data.paymentLink) {
           window.location.href = data.paymentLink;
         } else {
-          setTimeout(() => { window.location.href = '/'; }, 2000);
+          setTimeout(() => { window.location.href = '/'; }, 1500); // 保留成功提示 1.5 秒
         }
       } else {
         showFeedback('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.', true);
+        if (sliderText && sliderButton && sliderTrack) {
+          sliderText.innerText = 'Schuif om te betalen';
+          sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
+          sliderTrack.style.pointerEvents = 'auto';
+        }
       }
-        sliderText.innerText = 'Schuif om te betalen';
-        sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
-        sliderTrack.style.pointerEvents = 'auto';
     })
     .catch(err => {
       console.error(err);
       showFeedback('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.', true);
-       sliderText.innerText = 'Schuif om te betalen';
-       sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
-       sliderTrack.style.pointerEvents = 'auto';
-
-
+      if (sliderText && sliderButton && sliderTrack) {
+        sliderText.innerText = 'Schuif om te betalen';
+        sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
+        sliderTrack.style.pointerEvents = 'auto';
+      }
     });
 }
 
