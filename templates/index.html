@@ -333,7 +333,7 @@ button:active {
   z-index: 2000;
   justify-content: flex-start; /* ✅ 正确，顶部开始显示购物车 */
   align-items: center; /* ✅ 水平居中可以保留 */
-  overflow: auto; /* ✅ 确保购物车整体可以滑动，防止内容溢出 */
+  overflow: hidden; /* ✅ 确保购物车整体可以滑动，防止内容溢出 */
  
 }
 
@@ -360,7 +360,8 @@ button:active {
   margin-top: 0px;
   margin-bottom: 0px;
   padding: 16px 36px;
-  position: relative; /* allow absolute children like the close button */
+  position: position: fixed; bottom: 0
+; /* allow absolute children like the close button */
 }
 
 /* Position close button inside summary on mobile */
