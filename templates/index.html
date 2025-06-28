@@ -160,15 +160,9 @@
     max-width: none;
   }
 
-  @media (min-width: 768px) {
-    .menu-item {
-      width: 40%;
-    }
-  }
-
   img {
     max-width: 100%;
-    height: 95%;
+    height: auto;
   }
 
   .menu-item img {
@@ -179,17 +173,6 @@
     object-fit: cover;
   }
 
-  /* Adjust menu image on mobile to show more text without cropping */
-  @media (max-width: 600px) {
-    .menu-item {
-      width: 95%;
-      aspect-ratio: 4 / 3;
-    }
-
-    .menu-item img {
-      object-fit: contain;
-    }
-  }
 
   img.supply-img {
     width: 32px;
@@ -239,8 +222,8 @@
   }
 
  .menu-item select {
-  max-width: 140px;
-  width: 55%;
+  max-width: 92px;
+  width: 32%;
   margin: 2px 0;
   padding: 4px 6px;
   font-size: 0.85rem;
