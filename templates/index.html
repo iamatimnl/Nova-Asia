@@ -2478,24 +2478,32 @@ function checkout() {
     .then(res => res.json())
     .then(data => {
       if (data.status === 'ok') {
-        beep();
-        showFeedback('Bestelling succesvol verzonden! Bestelnummer: ' + orderNumber);
-        for (const k in cart) delete cart[k];
-        updateCart();
+  beep();
+  showFeedback('Bestelling succesvol verzonden! Bestelnummer: ' + orderNumber);
+  for (const k in cart) delete cart[k];
+  updateCart();
 
-        // ✅ 这里改成显示下单成功，不立即恢复按钮
-        if (sliderText && sliderButton && sliderTrack) {
-          sliderText.innerText = 'Bestelling geslaagd ✅';
-          sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
-          sliderTrack.style.pointerEvents = 'none';
-        }
+  // ✅ 按钮文字显示成功，灯照效果保留
+  sliderText.innerText = 'Gelukt ✔️';
 
-        if (paymentMethod === 'online' && data.paymentLink) {
-          window.location.href = data.paymentLink;
-        } else {
-          setTimeout(() => { window.location.href = '/'; }, 1500); // 保留成功提示 1.5 秒
-        }
-      } else {
+  // ✅ 圆形滑块图标显示 SVG 勾勾，不会显示问号
+  sliderButton.innerHTML = `
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>`;
+
+  // ✅ 滑块锁定，防止重复滑动
+  sliderTrack.style.pointerEvents = 'none';
+
+  if (paymentMethod === 'online' && data.paymentLink) {
+    // 在线支付立即跳转
+    window.location.href = data.paymentLink;
+  } else {
+    // 普通支付 1.5 秒后跳转
+    setTimeout(() => { window.location.href = '/'; }, 1500);
+  }
+}  
+   else {
         showFeedback('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.', true);
         if (sliderText && sliderButton && sliderTrack) {
           sliderText.innerText = 'Schuif om te betalen';
