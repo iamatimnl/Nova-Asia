@@ -226,12 +226,23 @@
     border-radius: 8px;
   }
 
-  @media (max-width: 600px) {
+  @media (max-width: 768px) {
   .qty-box {
-    width: auto;
-    min-width: 100px;
+    width: 60%;
+    max-width: 200px;
+    min-width: 140px;
+    justify-content: center;
+    gap: 8px; /* 稍微拉开按钮间距 */
+  }
+
+  .menu-item button {
+    width: 1.8rem;
+    height: 1.8rem;
+    font-size: 0.9rem;
+    flex-shrink: 0;  /* 关键，防止按钮被压扁 */
   }
 }
+
   
 
   
