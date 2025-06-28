@@ -228,20 +228,13 @@
 
   @media (max-width: 768px) {
   .qty-box {
-    width: 60%;
-    max-width: 200px;
-    min-width: 140px;
+    width: 60%;          /* 使用百分比宽度，始终保持比例 */
+    max-width: 200px;    /* 上限，防止过宽 */
+    min-width: 140px;    /* 下限，防止过小 */
     justify-content: center;
-    gap: 8px; /* 稍微拉开按钮间距 */
+    gap: 8px;            /* 稍微拉开按钮距离 */
   }
 
-  .menu-item button {
-    width: 1.8rem;
-    height: 1.8rem;
-    font-size: 0.9rem;
-    flex-shrink: 0;  /* 关键，防止按钮被压扁 */
-  }
-}
 
   
 
