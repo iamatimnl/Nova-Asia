@@ -1540,19 +1540,21 @@ input:focus, select:focus, textarea:focus {
 </div>
 </div>
 </div>
-<div class="menu-row menu-item" data-name="Sushi Bento" data-packaging="0.2" data-price="14">
+<div class="menu-row menu-item" data-name="Bento Sushi Omakase" data-packaging="0.2" data-price="22">
 <div class="menu-img">
-<img alt="Sushi Bento" src="{{ url_for('static', filename='images/sushi-bento.jpg') }}"/>
+<img alt="Bento Sushi Omakase" src="{{ url_for('static', filename='images/sushi-bento.jpg') }}"/>
 </div>
 <div class="menu-content">
-<h3>Sushi Bento</h3>
-<p>€ 14.00</p>
+<h3>Bento Sushi Omakase</h3>
+<p>€ 22.00</p>
+<p class="menu-description">±16 stuks Verrassing van de chef.</p>
 <div class="qty-box">
 <label for="sushiBentoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="sushiBentoCount" type="button">-</button>
 <select id="sushiBentoCount" name="sushiBentoCount"></select>
 <button class="qty-plus add-button" data-target="sushiBentoCount" type="button">+</button>
 </div>
+<div id="omakasePrefs"></div>
 </div>
 </div>
 <!-- Xbento - Stel je eigen bento samen -->
@@ -1989,6 +1991,47 @@ function changeXbentoQty(delta) {
   setQty(fullName, basePrice, val, DEFAULT_PACKAGING_FEE);
 }
 
+function changeOmakaseQty(delta) {
+  const qtySel = document.getElementById('sushiBentoCount');
+  let val = parseInt(qtySel.value || 0);
+  val = Math.max(0, Math.min(20, val + delta));
+  qtySel.value = val;
+  updateOmakasePrefs();
+}
+
+function updateOmakasePrefs() {
+  const qty = parseInt(document.getElementById('sushiBentoCount').value || 0);
+  const container = document.getElementById('omakasePrefs');
+  container.innerHTML = '';
+  const count = Math.min(qty, 5);
+  const existing = (cart['Bento Sushi Omakase'] && cart['Bento Sushi Omakase'].prefs) || [];
+  for (let i = 1; i <= count; i++) {
+    const sel = document.createElement('select');
+    ['Geen voorkeur','Alleen vis','Alleen vlees','Alleen veggie'].forEach(opt => {
+      const o = document.createElement('option');
+      o.value = opt;
+      o.textContent = opt;
+      sel.appendChild(o);
+    });
+    sel.value = existing[i-1] || 'Geen voorkeur';
+    sel.id = `omakasePref${i}`;
+    sel.addEventListener('change', setOmakaseQty);
+    container.appendChild(sel);
+  }
+  setOmakaseQty();
+}
+
+function setOmakaseQty() {
+  const qty = parseInt(document.getElementById('sushiBentoCount').value || 0);
+  const prefs = [];
+  const count = Math.min(qty, 5);
+  for (let i = 1; i <= count; i++) {
+    prefs.push(document.getElementById(`omakasePref${i}`).value);
+  }
+  const price = parseFloat(document.querySelector('[data-name="Bento Sushi Omakase"]').dataset.price);
+  setQty('Bento Sushi Omakase', price, qty, DEFAULT_PACKAGING_FEE, prefs);
+}
+
 
 
  document.addEventListener('DOMContentLoaded', () => {
@@ -2039,6 +2082,14 @@ function changeXbentoQty(delta) {
     }
     changeXbentoQty(-1);
   });
+
+  document.querySelector('.qty-plus[data-target="sushiBentoCount"]').addEventListener('click', () => {
+    changeOmakaseQty(1);
+  });
+  document.querySelector('.qty-minus[data-target="sushiBentoCount"]').addEventListener('click', () => {
+    changeOmakaseQty(-1);
+  });
+  document.getElementById('sushiBentoCount').addEventListener('change', () => changeOmakaseQty(0));
 
   // 🧋 奶茶 select 直接选择数量时
   document.getElementById('bubbleTeaQty').addEventListener('change', () => {
@@ -2102,11 +2153,13 @@ function createSelect(current, onChange) {
   return select;
 }
 
-function setQty(name, price, qty, packaging = DEFAULT_PACKAGING_FEE) {
+function setQty(name, price, qty, packaging = DEFAULT_PACKAGING_FEE, prefs = null) {
   if (qty === 0) {
     delete cart[name];
   } else {
     cart[name] = { price, qty, packaging };
+    if (prefs) cart[name].prefs = prefs;
+    else if (cart[name] && cart[name].prefs) delete cart[name].prefs;
   }
   updateCart();
 }
@@ -2136,11 +2189,27 @@ function updateCart() {
           }
         }
       }
-      setQty(name, item.price, val, item.packaging);
+      setQty(name, item.price, val, item.packaging, item.prefs);
+      if (name === 'Bento Sushi Omakase') {
+        document.getElementById('sushiBentoCount').value = val;
+        updateOmakasePrefs();
+      }
     });
     const subtotal = item.qty * item.price;
-    li.textContent = `${name} = €${subtotal.toFixed(2)} `;
+    li.textContent = `${name} - €${subtotal.toFixed(2)} `;
     li.appendChild(sel);
+    if (item.prefs) {
+      const prefTitle = document.createElement('div');
+      prefTitle.textContent = 'Voorkeur:';
+      const ul = document.createElement('ul');
+      item.prefs.forEach((p, i) => {
+        const pli = document.createElement('li');
+        pli.textContent = `${i + 1}. ${p}`;
+        ul.appendChild(pli);
+      });
+      li.appendChild(prefTitle);
+      li.appendChild(ul);
+    }
     list.appendChild(li);
     if (item.qty > 0) {
       total += subtotal;
@@ -2205,9 +2274,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const name = parent.dataset.name;
     const price = parseFloat(parent.dataset.price);
     const pack = parseFloat(parent.dataset.packaging || DEFAULT_PACKAGING_FEE);
-    sel.addEventListener('change', () => {
-      setQty(name, price, parseInt(sel.value), pack);
-    });
+    if (name === 'Bento Sushi Omakase') {
+      sel.addEventListener('change', () => changeOmakaseQty(0));
+    } else {
+      sel.addEventListener('change', () => {
+        setQty(name, price, parseInt(sel.value), pack);
+      });
+    }
   });
 
   document.querySelectorAll('.qty-plus').forEach(btn => {
@@ -2219,7 +2292,11 @@ document.addEventListener('DOMContentLoaded', () => {
       sel.value = val;
       const parent = sel.closest('.menu-item');
       const pack = parseFloat(parent.dataset.packaging || DEFAULT_PACKAGING_FEE);
-      setQty(parent.dataset.name, parseFloat(parent.dataset.price), val, pack);
+      if (parent.dataset.name === 'Bento Sushi Omakase') {
+        changeOmakaseQty(0);
+      } else {
+        setQty(parent.dataset.name, parseFloat(parent.dataset.price), val, pack);
+      }
     });
   });
 
@@ -2232,7 +2309,11 @@ document.addEventListener('DOMContentLoaded', () => {
       sel.value = val;
       const parent = sel.closest('.menu-item');
       const pack = parseFloat(parent.dataset.packaging || DEFAULT_PACKAGING_FEE);
-      setQty(parent.dataset.name, parseFloat(parent.dataset.price), val, pack);
+      if (parent.dataset.name === 'Bento Sushi Omakase') {
+        changeOmakaseQty(0);
+      } else {
+        setQty(parent.dataset.name, parseFloat(parent.dataset.price), val, pack);
+      }
     });
   });
 
@@ -2366,7 +2447,14 @@ function checkout() {
   }
 
   let orderSummary = Object.entries(cart)
-    .map(([name, item]) => `${name} x ${item.qty}`)
+    .map(([name, item]) => {
+      let line = `${name} x ${item.qty}`;
+      if (item.prefs) {
+        const prefsText = item.prefs.map((p, i) => `${i + 1}. ${p}`).join('\\n   ');
+        line += `\\n   Voorkeur:\n   ${prefsText}`;
+      }
+      return line;
+    })
     .join('\n');
   orderSummary += `\nStokjes nodig: ${chopstickCount}`;
   orderSummary += `\nSojasaus: ${soyCount}`;
