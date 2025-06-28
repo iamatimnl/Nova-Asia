@@ -39,3 +39,21 @@ Create a new Web Service on Render, link this repository, and it will deploy usi
 
 For local development copy `.env.example` to `.env` and fill in the values.
 Without these variables Telegram, email and payment notifications will fail.
+
+## Electron POS
+
+An Electron version of `pos.html` is provided in `electron-app`. To run it locally:
+
+```bash
+cd electron-app
+npm install
+npm start
+```
+
+To build a Windows installer (requires `npm install` first):
+
+```bash
+npm run pack
+```
+
+Set `SOCKET_URL` environment variable to change the Socket.IO server.
