@@ -778,6 +778,26 @@ function setDragonQty(){
   const price=parseFloat(document.querySelector('[data-name="Dragon Roll Omakase"]').dataset.price);
   setQty('Dragon Roll Omakase',price,qty,0.2,prefs);
 }
+
+function isRamenValid(code){
+  return document.getElementById(code+'Base').value && document.getElementById(code+'Smaak').value;
+}
+
+function changeRamenQty(code,delta){
+  const sel=document.getElementById(code+'Qty');
+  let val=parseInt(sel.value||0);
+  val=Math.max(0,Math.min(20,val+delta));
+  sel.value=val;
+  const item=document.querySelector(`.menu-item[data-code="${code}"]`);
+  const base=document.getElementById(code+'Base').value;
+  const smaak=document.getElementById(code+'Smaak').value;
+  if(!base||!smaak) return;
+  const name=item.dataset.name;
+  const price=parseFloat(item.dataset.price);
+  const pack=parseFloat(item.dataset.packaging||0);
+  const fullName=`${name} - ${base} - ${smaak}`;
+  setQty(fullName,price,val,pack);
+}
 function populateSelect(sel){
   for(let i=0;i<=20;i++){ const opt=document.createElement('option'); opt.value=i; opt.textContent=i; sel.appendChild(opt); }
 }
@@ -867,7 +887,9 @@ function updateCart(){
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
-  const skip=['bubbleTeaQty','bubbleType','bubbleFlavor','bubbleTopping','xBentoMain','xBentoSide','xBentoRice'];
+  const skip=['bubbleTeaQty','bubbleType','bubbleFlavor','bubbleTopping','xBentoMain','xBentoSide','xBentoRice',
+    'ebiBase','ebiSmaak','ebiQty','chickenBase','chickenSmaak','chickenQty','beefBase','beefSmaak','beefQty',
+    'ribeyeBase','ribeyeSmaak','ribeyeQty','chasiuBase','chasiuSmaak','chasiuQty'];
   document.querySelectorAll('.menu-item select').forEach(sel=>{
     if(!skip.includes(sel.id)){
       populateSelect(sel);
@@ -902,8 +924,9 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(!document.getElementById('xBentoMain').value||!document.getElementById('xBentoSide').value||!document.getElementById('xBentoRice').value){alert('🍱 Kies eerst hoofdgerecht, bijgerecht en rijstsoort voor je Xbento.');return;}changeXbentoQty(-1);});
   document.getElementById('xBentoQty').addEventListener('change',()=>{if(!document.getElementById('xBentoMain').value||!document.getElementById('xBentoSide').value||!document.getElementById('xBentoRice').value){alert('🍱 Kies eerst hoofdgerecht, bijgerecht en rijstsoort voor je Xbento.');document.getElementById('xBentoQty').value=0;return;}changeXbentoQty(0);});
 
+  const ramenIds=['ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty'];
   document.querySelectorAll('.qty-plus').forEach(btn=>{
-    if(['bubbleTeaQty','xBentoQty'].includes(btn.dataset.target)) return;
+    if(['bubbleTeaQty','xBentoQty',...ramenIds].includes(btn.dataset.target)) return;
     btn.addEventListener('click',()=>{
       const sel=document.getElementById(btn.dataset.target);
       let val=parseInt(sel.value);
@@ -920,7 +943,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     });
   });
   document.querySelectorAll('.qty-minus').forEach(btn=>{
-    if(['bubbleTeaQty','xBentoQty'].includes(btn.dataset.target)) return;
+    if(['bubbleTeaQty','xBentoQty',...ramenIds].includes(btn.dataset.target)) return;
     btn.addEventListener('click',()=>{
       const sel=document.getElementById(btn.dataset.target);
       let val=parseInt(sel.value);
@@ -934,6 +957,30 @@ document.addEventListener('DOMContentLoaded',()=>{
       } else {
         setQty(parent.dataset.name,parseFloat(parent.dataset.price),val,parseFloat(parent.dataset.packaging||0));
       }
+    });
+  });
+
+  const ramenCodes=['ebi','chicken','beef','ribeye','chasiu'];
+  ramenCodes.forEach(code=>{
+    const qty=document.getElementById(code+'Qty');
+    populateSelect(qty);
+    qty.value=0;
+    document.querySelector(`.qty-plus[data-target="${code}Qty"]`).addEventListener('click',()=>{
+      if(!isRamenValid(code)){alert('🍜 Kies eerst base en smaak voor je ramen.');return;}
+      changeRamenQty(code,1);
+    });
+    document.querySelector(`.qty-minus[data-target="${code}Qty"]`).addEventListener('click',()=>{
+      if(!isRamenValid(code)){alert('🍜 Kies eerst base en smaak voor je ramen.');return;}
+      changeRamenQty(code,-1);
+    });
+    qty.addEventListener('change',()=>{
+      if(!isRamenValid(code)){alert('🍜 Kies eerst base en smaak voor je ramen.');qty.value=0;return;}
+      changeRamenQty(code,0);
+    });
+    document.getElementById(code+'New').addEventListener('click',()=>{
+      document.getElementById(code+'Base').value='';
+      document.getElementById(code+'Smaak').value='';
+      qty.value=0;
     });
   });
   ['chopstickCount','soyCount','gemberCount','wasabiCount'].forEach(id=>{
