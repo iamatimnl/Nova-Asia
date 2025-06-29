@@ -1823,9 +1823,9 @@ input:focus, select:focus, textarea:focus {
 </section>
 <section id="Pokebowl">
 <h2>Pokebowl</h2>
-<div class="menu-section">
-<!-- 示例商品，可替换或添加更多 -->
-<div class="menu-row menu-item" data-name="Zalm Pokebowl" data-packaging="0.2" data-price="12">
+  <div class="menu-section">
+    <!-- Pokebowl menu items -->
+    <div class="menu-row menu-item" data-name="Zalm Pokebowl" data-packaging="0.2" data-price="12">
 <div class="menu-img">
 <img alt="Zalm Pokebowl" src="{{ url_for('static', filename='images/zalm-pokebowl.png') }}"/>
 </div>
@@ -1838,10 +1838,267 @@ input:focus, select:focus, textarea:focus {
 <button class="qty-minus remove-button" data-target="zalmPokebowlCount" type="button">-</button>
 <select id="zalmPokebowlCount" name="zalmPokebowlCount"></select>
 <button class="qty-plus add-button" data-target="zalmPokebowlCount" type="button">+</button>
-</div>
-</div>
-</div>
-</div>
+    </div>
+    </div>
+    <!-- Newly added bowls -->
+    <div class="menu-row menu-item" data-name="Tuna Bowl" data-packaging="0.2" data-price="15">
+      <div class="menu-img">
+        <img alt="Tuna Bowl" src="{{ url_for('static', filename='images/tuna-bowl.png') }}" />
+      </div>
+      <div class="menu-content">
+        <h3>Tuna Bowl</h3>
+        <p>€ 15.00</p>
+        <div class="qty-box">
+          <label for="tunaBowlQty">Aantal</label>
+          <button class="qty-minus remove-button" data-target="tunaBowlQty" type="button">-</button>
+          <select id="tunaBowlQty" name="tunaBowlQty"></select>
+          <button class="qty-plus add-button" data-target="tunaBowlQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-row menu-item" data-name="California Bowl" data-packaging="0.2" data-price="14">
+      <div class="menu-img">
+        <img alt="California Bowl" src="{{ url_for('static', filename='images/california-bowl.png') }}" />
+      </div>
+      <div class="menu-content">
+        <h3>California Bowl</h3>
+        <p>€ 14.00</p>
+        <div class="qty-box">
+          <label for="californiaBowlQty">Aantal</label>
+          <button class="qty-minus remove-button" data-target="californiaBowlQty" type="button">-</button>
+          <select id="californiaBowlQty" name="californiaBowlQty"></select>
+          <button class="qty-plus add-button" data-target="californiaBowlQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-row menu-item" data-name="Ebi Fry Bowl" data-packaging="0.2" data-price="15.5">
+      <div class="menu-img">
+        <img alt="Ebi Fry Bowl" src="{{ url_for('static', filename='images/ebi-fry-bowl.png') }}" />
+      </div>
+      <div class="menu-content">
+        <h3>Ebi Fry Bowl</h3>
+        <p>€ 15.50</p>
+        <div class="qty-box">
+          <label for="ebiFryBowlQty">Aantal</label>
+          <button class="qty-minus remove-button" data-target="ebiFryBowlQty" type="button">-</button>
+          <select id="ebiFryBowlQty" name="ebiFryBowlQty"></select>
+          <button class="qty-plus add-button" data-target="ebiFryBowlQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-row menu-item" data-name="Chicken Karaage Bowl" data-packaging="0.2" data-price="15.5">
+      <div class="menu-img">
+        <img alt="Chicken Karaage Bowl" src="{{ url_for('static', filename='images/chicken-karaage-bowl.png') }}" />
+      </div>
+      <div class="menu-content">
+        <h3>Chicken Karaage Bowl</h3>
+        <p>€ 15.50</p>
+        <div class="qty-box">
+          <label for="chickenKaraageBowlQty">Aantal</label>
+          <button class="qty-minus remove-button" data-target="chickenKaraageBowlQty" type="button">-</button>
+          <select id="chickenKaraageBowlQty" name="chickenKaraageBowlQty"></select>
+          <button class="qty-plus add-button" data-target="chickenKaraageBowlQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-row menu-item" data-name="Spicy Chicken Bowl" data-packaging="0.2" data-price="15.5">
+      <div class="menu-img">
+        <img alt="Spicy Chicken Bowl" src="{{ url_for('static', filename='images/spicy-chicken-bowl.png') }}" />
+      </div>
+      <div class="menu-content">
+        <h3>Spicy Chicken Bowl</h3>
+        <p>€ 15.50</p>
+        <div class="qty-box">
+          <label for="spicyChickenBowlQty">Aantal</label>
+          <button class="qty-minus remove-button" data-target="spicyChickenBowlQty" type="button">-</button>
+          <select id="spicyChickenBowlQty" name="spicyChickenBowlQty"></select>
+          <button class="qty-plus add-button" data-target="spicyChickenBowlQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-row menu-item" data-name="Teriyaki Chicken Bowl" data-packaging="0.2" data-price="15.5">
+      <div class="menu-img">
+        <img alt="Teriyaki Chicken Bowl" src="{{ url_for('static', filename='images/teriyaki-chicken-bowl.png') }}" />
+      </div>
+      <div class="menu-content">
+        <h3>Teriyaki Chicken Bowl</h3>
+        <p>€ 15.50</p>
+        <div class="qty-box">
+          <label for="teriyakiChickenBowlQty">Aantal</label>
+          <button class="qty-minus remove-button" data-target="teriyakiChickenBowlQty" type="button">-</button>
+          <select id="teriyakiChickenBowlQty" name="teriyakiChickenBowlQty"></select>
+          <button class="qty-plus add-button" data-target="teriyakiChickenBowlQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-row menu-item" data-name="Teriyaki Beef Bowl" data-packaging="0.2" data-price="15.5">
+      <div class="menu-img">
+        <img alt="Teriyaki Beef Bowl" src="{{ url_for('static', filename='images/teriyaki-beef-bowl.png') }}" />
+      </div>
+      <div class="menu-content">
+        <h3>Teriyaki Beef Bowl</h3>
+        <p>€ 15.50</p>
+        <div class="qty-box">
+          <label for="teriyakiBeefBowlQty">Aantal</label>
+          <button class="qty-minus remove-button" data-target="teriyakiBeefBowlQty" type="button">-</button>
+          <select id="teriyakiBeefBowlQty" name="teriyakiBeefBowlQty"></select>
+          <button class="qty-plus add-button" data-target="teriyakiBeefBowlQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-row menu-item" data-name="Ribeye Bowl" data-packaging="0.2" data-price="15.5">
+      <div class="menu-img">
+        <img alt="Ribeye Bowl" src="{{ url_for('static', filename='images/ribeye-bowl.png') }}" />
+      </div>
+      <div class="menu-content">
+        <h3>Ribeye Bowl</h3>
+        <p>€ 15.50</p>
+        <div class="qty-box">
+          <label for="ribeyeBowlQty">Aantal</label>
+          <button class="qty-minus remove-button" data-target="ribeyeBowlQty" type="button">-</button>
+          <select id="ribeyeBowlQty" name="ribeyeBowlQty"></select>
+          <button class="qty-plus add-button" data-target="ribeyeBowlQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-row menu-item" data-name="Vega Bowl" data-packaging="0.2" data-price="13">
+      <div class="menu-img">
+        <img alt="Vega Bowl" src="{{ url_for('static', filename='images/vega-bowl.png') }}" />
+      </div>
+      <div class="menu-content">
+        <h3>Vega Bowl (Vegetarisch)</h3>
+        <p>€ 13.00</p>
+        <div class="qty-box">
+          <label for="vegaBowlQty">Aantal</label>
+          <button class="qty-minus remove-button" data-target="vegaBowlQty" type="button">-</button>
+          <select id="vegaBowlQty" name="vegaBowlQty"></select>
+          <button class="qty-plus add-button" data-target="vegaBowlQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-row menu-item" data-name="Meatlover Bowl" data-packaging="0.2" data-price="17">
+      <div class="menu-img">
+        <img alt="Meatlover Bowl" src="{{ url_for('static', filename='images/meatlover-bowl.png') }}" />
+      </div>
+      <div class="menu-content">
+        <h3>Meatlover Bowl</h3>
+        <p>€ 17.00</p>
+        <div class="qty-box">
+          <label for="meatloverBowlQty">Aantal</label>
+          <button class="qty-minus remove-button" data-target="meatloverBowlQty" type="button">-</button>
+          <select id="meatloverBowlQty" name="meatloverBowlQty"></select>
+          <button class="qty-plus add-button" data-target="meatloverBowlQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-row menu-item" data-name="Rainbow Bowl" data-packaging="0.2" data-price="17">
+      <div class="menu-img">
+        <img alt="Rainbow Bowl" src="{{ url_for('static', filename='images/rainbow-bowl.png') }}" />
+      </div>
+      <div class="menu-content">
+        <h3>Rainbow Bowl</h3>
+        <p>€ 17.00</p>
+        <div class="qty-box">
+          <label for="rainbowBowlQty">Aantal</label>
+          <button class="qty-minus remove-button" data-target="rainbowBowlQty" type="button">-</button>
+          <select id="rainbowBowlQty" name="rainbowBowlQty"></select>
+          <button class="qty-plus add-button" data-target="rainbowBowlQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-row menu-item" data-name="Spicy Tuna Bowl" data-packaging="0.2" data-price="15.5">
+      <div class="menu-img">
+        <img alt="Spicy Tuna Bowl" src="{{ url_for('static', filename='images/spicy-tuna-bowl.png') }}" />
+      </div>
+      <div class="menu-content">
+        <h3>Spicy Tuna Bowl</h3>
+        <p>€ 15.50</p>
+        <div class="qty-box">
+          <label for="spicyTunaBowlQty">Aantal</label>
+          <button class="qty-minus remove-button" data-target="spicyTunaBowlQty" type="button">-</button>
+          <select id="spicyTunaBowlQty" name="spicyTunaBowlQty"></select>
+          <button class="qty-plus add-button" data-target="spicyTunaBowlQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-row menu-item" data-name="Flamed Zalm Bowl" data-packaging="0.2" data-price="16">
+      <div class="menu-img">
+        <img alt="Flamed Zalm Bowl" src="{{ url_for('static', filename='images/flamed-salmon-bowl.png') }}" />
+      </div>
+      <div class="menu-content">
+        <h3>Flamed Zalm Bowl</h3>
+        <p>€ 16.00</p>
+        <div class="qty-box">
+          <label for="flamedZalmBowlQty">Aantal</label>
+          <button class="qty-minus remove-button" data-target="flamedZalmBowlQty" type="button">-</button>
+          <select id="flamedZalmBowlQty" name="flamedZalmBowlQty"></select>
+          <button class="qty-plus add-button" data-target="flamedZalmBowlQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-row menu-item" data-name="Flamed Tuna Bowl" data-packaging="0.2" data-price="16">
+      <div class="menu-img">
+        <img alt="Flamed Tuna Bowl" src="{{ url_for('static', filename='images/flamed-tuna-bowl.png') }}" />
+      </div>
+      <div class="menu-content">
+        <h3>Flamed Tuna Bowl</h3>
+        <p>€ 16.00</p>
+        <div class="qty-box">
+          <label for="flamedTunaBowlQty">Aantal</label>
+          <button class="qty-minus remove-button" data-target="flamedTunaBowlQty" type="button">-</button>
+          <select id="flamedTunaBowlQty" name="flamedTunaBowlQty"></select>
+          <button class="qty-plus add-button" data-target="flamedTunaBowlQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-row menu-item" data-name="X-Bowl" data-packaging="0.2" data-price="0">
+      <div class="menu-img">
+        <img alt="X-Bowl" src="{{ url_for('static', filename='images/xbowl.png') }}" />
+      </div>
+      <div class="menu-content">
+        <h3>X-Bowl (stel zelf samen)</h3>
+        <p>Prijs afhankelijk van keuzes</p>
+        <div class="bubble-option">
+          <select id="xBowlBase">
+            <option value="">Basis</option>
+            <option value="Zalm" data-price="15">Zalm</option>
+            <option value="Tonijn" data-price="15">Tonijn</option>
+            <option value="Kip" data-price="15">Kip</option>
+            <option value="Vega" data-price="13">Vega</option>
+          </select>
+        </div>
+        <div class="bubble-option">
+          <select id="xBowlSauce">
+            <option value="">Saus</option>
+            <option value="Teriyaki" data-price="0">Teriyaki</option>
+            <option value="Spicy" data-price="0">Spicy</option>
+          </select>
+        </div>
+        <div class="qty-box">
+          <label for="xBowlQty">Aantal</label>
+          <button class="qty-minus remove-button" data-target="xBowlQty" type="button">-</button>
+          <select id="xBowlQty" class="qty-select" name="xBowlQty"></select>
+          <button class="qty-plus add-button" data-target="xBowlQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
+
+    </div>
+  </div>
 </section>
 <section id="sushi">
 <div class="menu-group">
@@ -2277,6 +2534,26 @@ function changeXbentoQty(delta) {
   setQty(fullName, basePrice, val, DEFAULT_PACKAGING_FEE);
 }
 
+function changeXbowlQty(delta) {
+  const qtySel = document.getElementById('xBowlQty');
+  let val = parseInt(qtySel.value || 0);
+
+  const baseOpt = document.querySelector('#xBowlBase option:checked');
+  const sauceOpt = document.querySelector('#xBowlSauce option:checked');
+
+  if (!baseOpt.value || !sauceOpt.value) return;
+
+  val = Math.max(0, Math.min(20, val + delta));
+  qtySel.value = val;
+
+  const basePrice = parseFloat(baseOpt.dataset.price || 0);
+  const saucePrice = parseFloat(sauceOpt.dataset.price || 0);
+  const price = basePrice + saucePrice;
+
+  const fullName = `X-Bowl (${baseOpt.value}, ${sauceOpt.value})`;
+  setQty(fullName, price, val, DEFAULT_PACKAGING_FEE);
+}
+
 function changeOmakaseQty(delta) {
   const qtySel = document.getElementById('sushiBentoCount');
   let val = parseInt(qtySel.value || 0);
@@ -2375,6 +2652,12 @@ function setDragonQty() {
     return main && side && rice;
   }
 
+  function isXbowlValid() {
+    const base = document.getElementById('xBowlBase').value;
+    const sauce = document.getElementById('xBowlSauce').value;
+    return base && sauce;
+  }
+
   // 🧋 奶茶按钮加减
   document.querySelector('.qty-plus[data-target="bubbleTeaQty"]').addEventListener('click', () => {
     if (!isBubbleTeaValid()) {
@@ -2409,6 +2692,23 @@ function setDragonQty() {
     changeXbentoQty(-1);
   });
 
+  // 🥗 X-Bowl buttons
+  document.querySelector('.qty-plus[data-target="xBowlQty"]').addEventListener('click', () => {
+    if (!isXbowlValid()) {
+      alert('🥗 Kies eerst basis en saus voor je X-Bowl.');
+      return;
+    }
+    changeXbowlQty(1);
+  });
+
+  document.querySelector('.qty-minus[data-target="xBowlQty"]').addEventListener('click', () => {
+    if (!isXbowlValid()) {
+      alert('🥗 Kies eerst basis en saus voor je X-Bowl.');
+      return;
+    }
+    changeXbowlQty(-1);
+  });
+
 
   // 🧋 奶茶 select 直接选择数量时
   document.getElementById('bubbleTeaQty').addEventListener('change', () => {
@@ -2430,8 +2730,17 @@ function setDragonQty() {
     changeXbentoQty(0);
   });
 
+  document.getElementById('xBowlQty').addEventListener('change', () => {
+    if (!isXbowlValid()) {
+      alert('🥗 Kies eerst basis en saus voor je X-Bowl.');
+      document.getElementById('xBowlQty').value = 0;
+      return;
+    }
+    changeXbowlQty(0);
+  });
+
   // 🧁 初始化下拉数量为 0～20
-  ['bubbleTeaQty','xBentoQty','ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty'].forEach(id => {
+  ['bubbleTeaQty','xBentoQty','xBowlQty','ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty'].forEach(id => {
     const sel = document.getElementById(id);
     for (let i = 0; i <= 20; i++) {
       const opt = document.createElement('option');
@@ -2654,7 +2963,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   document.querySelectorAll('.menu-item select').forEach(sel => {
-    if (['bubbleTeaQty','bubbleType','bubbleFlavor','bubbleTopping','xBentoMain','xBentoSide','xBentoRice','ebiBase','ebiSmaak','ebiQty','chickenBase','chickenSmaak','chickenQty','beefBase','beefSmaak','beefQty','ribeyeBase','ribeyeSmaak','ribeyeQty','chasiuBase','chasiuSmaak','chasiuQty'].includes(sel.id)) return;
+    if (['bubbleTeaQty','bubbleType','bubbleFlavor','bubbleTopping','xBentoMain','xBentoSide','xBentoRice','xBowlBase','xBowlSauce','xBowlQty','ebiBase','ebiSmaak','ebiQty','chickenBase','chickenSmaak','chickenQty','beefBase','beefSmaak','beefQty','ribeyeBase','ribeyeSmaak','ribeyeQty','chasiuBase','chasiuSmaak','chasiuQty'].includes(sel.id)) return;
     populateSelect(sel);
     const parent = sel.closest('.menu-item');
     const name = parent.dataset.name;
@@ -2672,7 +2981,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.querySelectorAll('.qty-plus').forEach(btn => {
-    if (['bubbleTeaQty','xBentoQty','ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty'].includes(btn.dataset.target)) return;
+    if (['bubbleTeaQty','xBentoQty','xBowlQty','ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty'].includes(btn.dataset.target)) return;
     btn.addEventListener('click', () => {
       const sel = document.getElementById(btn.dataset.target);
       let val = parseInt(sel.value);
@@ -2691,7 +3000,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.querySelectorAll('.qty-minus').forEach(btn => {
-    if (['bubbleTeaQty','xBentoQty','ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty'].includes(btn.dataset.target)) return;
+    if (['bubbleTeaQty','xBentoQty','xBowlQty','ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty'].includes(btn.dataset.target)) return;
     btn.addEventListener('click', () => {
       const sel = document.getElementById(btn.dataset.target);
       let val = parseInt(sel.value);
