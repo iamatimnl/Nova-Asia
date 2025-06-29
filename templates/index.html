@@ -1946,6 +1946,53 @@ function loadCart() {
   }
 }
 
+const FORM_KEY = 'orderForm';
+const storageOk = (() => {
+  try {
+    const t = '__test';
+    sessionStorage.setItem(t, t);
+    sessionStorage.removeItem(t);
+    return true;
+  } catch (e) {
+    return false;
+  }
+})();
+
+function saveOrderForm() {
+  if (!storageOk) return;
+  const data = { orderType: document.querySelector('input[name="orderType"]:checked')?.id };
+  document.querySelectorAll('#afhalenFields input, #afhalenFields select, #bezorgenFields input, #bezorgenFields select, #checkbox-group select, #remark, #discountCode, #tipSelect').forEach(el => {
+    if (el.id) data[el.id] = el.value;
+  });
+  sessionStorage.setItem(FORM_KEY, JSON.stringify(data));
+}
+
+function loadOrderForm() {
+  if (!storageOk) return;
+  const stored = sessionStorage.getItem(FORM_KEY);
+  if (!stored) return;
+  const data = JSON.parse(stored);
+  Object.keys(data).forEach(id => {
+    if (id === 'orderType') return;
+    const el = document.getElementById(id);
+    if (el) el.value = data[id];
+  });
+  if (data.orderType) {
+    const radio = document.getElementById(data.orderType);
+    if (radio) {
+      radio.checked = true;
+      toggleOrderType();
+    }
+  }
+}
+
+function attachFormListeners() {
+  if (!storageOk) return;
+  document.querySelectorAll('#afhalenFields input, #afhalenFields select, #bezorgenFields input, #bezorgenFields select, #checkbox-group select, #remark, #discountCode, #tipSelect, input[name="orderType"]').forEach(el => {
+    ['input', 'change'].forEach(evt => el.addEventListener(evt, saveOrderForm));
+  });
+}
+
 function formatEuro(val) {
   return `€${val.toFixed(2).replace('.', ',')}`;
 }
@@ -2311,6 +2358,8 @@ function updateCart() {
 
 document.addEventListener('DOMContentLoaded', () => {
   loadCart();
+  loadOrderForm();
+  attachFormListeners();
   updateCart();
 });
 
@@ -2398,6 +2447,7 @@ for (let i = 0; i <= 20; i++) {
   validateBtn.addEventListener('click', applyDiscount);
 
   updateCart();
+  loadOrderForm();
 });
 </script>
 <script>
@@ -2619,10 +2669,11 @@ function checkout() {
   })
     .then(res => res.json())
     .then(data => {
-      if (data.status === 'ok') {
+  if (data.status === 'ok') {
   beep();
   showFeedback('Bestelling succesvol verzonden! Bestelnummer: ' + orderNumber);
   for (const k in cart) delete cart[k];
+  sessionStorage.removeItem(FORM_KEY);
   updateCart();
 
   // ✅ 按钮文字显示成功，灯照效果保留
@@ -3149,6 +3200,8 @@ function validateOrderAmount() {
   const amount = finalTotal;
 
   if (orderType === 'bezorgen' && amount < 20) {
+    saveOrderForm();
+    saveCart();
     resetSlider();
     isSubmitting = false;
     alert('Sorry, de minimum bezorgbedrag is 20 euro.');
@@ -3157,6 +3210,8 @@ function validateOrderAmount() {
   }
 
   if (orderType === 'afhalen' && amount === 0) {
+    saveOrderForm();
+    saveCart();
     resetSlider();
     isSubmitting = false;
     alert('Sorry, u heeft nog niks gekozen.');
