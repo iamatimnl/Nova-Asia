@@ -1244,6 +1244,7 @@ input:focus, select:focus, textarea:focus {
 <a href="#Ramen">Ramen</a>
 <a href="#Pokebowl">Pokebowl</a>
 <a href="#sushi">Special Sushi Rolls</a>
+<a href="#sashimi">Sashimi</a>
 <a href="#Crispy-rice-sandwich">Crispy Rice</a>
 <a href="#snack">Snack</a>
 <a href="#dessert">Dessert</a>
@@ -2148,6 +2149,46 @@ input:focus, select:focus, textarea:focus {
 </div>
 </div>
 </div></section>
+<section id="sashimi">
+<div class="menu-group">
+<h2 style="margin-top: -8px; font-size: 1.5rem; color: #333; text-align: center; font-weight: bold;">
+      Sashimi
+    </h2>
+
+<div class="menu-row menu-item" data-name="Salmon sashimi" data-packaging="0.2" data-price="8">
+<div class="menu-img">
+<img alt="Salmon sashimi" src="{{ url_for('static', filename='images/zalm.png') }}"/>
+</div>
+<div class="menu-content">
+<h3>Salmon sashimi</h3>
+<p>€ 8.00</p>
+<div class="qty-box">
+<label for="salmonSashimiQty">Aantal</label>
+<button class="qty-minus remove-button" data-target="salmonSashimiQty" type="button">-</button>
+<select id="salmonSashimiQty" name="salmonSashimiQty"></select>
+<button class="qty-plus add-button" data-target="salmonSashimiQty" type="button">+</button>
+</div>
+</div>
+</div>
+
+<div class="menu-row menu-item" data-name="Beef sashimi" data-packaging="0.2" data-price="9">
+<div class="menu-img">
+<img alt="Beef sashimi" src="{{ url_for('static', filename='images/beef-crispy.png') }}"/>
+</div>
+<div class="menu-content">
+<h3>Beef sashimi</h3>
+<p>€ 9.00</p>
+<div class="qty-box">
+<label for="beefSashimiQty">Aantal</label>
+<button class="qty-minus remove-button" data-target="beefSashimiQty" type="button">-</button>
+<select id="beefSashimiQty" name="beefSashimiQty"></select>
+<button class="qty-plus add-button" data-target="beefSashimiQty" type="button">+</button>
+</div>
+</div>
+</div>
+
+</div>
+</section>
 <section id="Crispy-rice-sandwich">
 <div class="menu-group">
 <h2 style="margin-top: -8px; font-size: 1.5rem; color: #333; text-align: center; font-weight: bold;">
