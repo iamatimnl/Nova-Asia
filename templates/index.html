@@ -221,7 +221,7 @@
     border-radius: 8px;
   }
 
- .menu-item select {
+.menu-item select {
   max-width: 150px;
   width: 46%;
   margin: 2px 0;
@@ -231,6 +231,11 @@
   border: 1px solid #ccc;
   background: rgba(255, 255, 255, 0.7);
   box-sizing: border-box;
+}
+/* Ensure Omakase preference dropdowns keep full width */
+#omakasePrefs select {
+  width: 100%;
+  max-width: 160px;
 }
   
   .menu-item button,
@@ -2010,7 +2015,7 @@ function updateOmakasePrefs() {
   container.innerHTML = '';
 
   const existing = (cart['Bento Sushi Omakase'] && cart['Bento Sushi Omakase'].prefs) || [];
-  for (let i = 1; i <= count; i++) {
+  for (let i = 1; i <= qty; i++) {
     const sel = document.createElement('select');
     ['Geen voorkeur','Alleen vis','Alleen vlees','Alleen veggie'].forEach(opt => {
       const o = document.createElement('option');
@@ -2030,7 +2035,7 @@ function setOmakaseQty() {
   const qty = parseInt(document.getElementById('sushiBentoCount').value || 0);
   const prefs = [];
 
-  for (let i = 1; i <= count; i++) {
+  for (let i = 1; i <= qty; i++) {
     prefs.push(document.getElementById(`omakasePref${i}`).value);
   }
   const price = parseFloat(document.querySelector('[data-name="Bento Sushi Omakase"]').dataset.price);
