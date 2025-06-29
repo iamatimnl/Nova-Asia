@@ -3128,19 +3128,12 @@ function resetSlider() {
 function validateOrderAmount() {
   const orderType = document.querySelector('input[name="orderType"]:checked').value;
   const tip = parseFloat(document.getElementById('tipSelect').value || '0');
-  const amount = currentSubtotal + currentPackaging + tip; // excl. bezorgkosten en korting
 
-  if (orderType === 'bezorgen' && amount < 20) {
-    resetSlider();
-    alert('Sorry, de minimum bezorgbedrag is 20 euro.');
-    window.location.href = '/';
     return false;
   }
 
   if (orderType === 'afhalen' && amount === 0) {
-    resetSlider();
-    alert('Sorry, u heeft nog niks gekozen.');
-    window.location.href = '/';
+
     return false;
   }
 
