@@ -2008,7 +2008,7 @@ function updateOmakasePrefs() {
   const qty = parseInt(document.getElementById('sushiBentoCount').value || 0);
   const container = document.getElementById('omakasePrefs');
   container.innerHTML = '';
-  const count = Math.min(qty, 5);
+
   const existing = (cart['Bento Sushi Omakase'] && cart['Bento Sushi Omakase'].prefs) || [];
   for (let i = 1; i <= count; i++) {
     const sel = document.createElement('select');
@@ -2029,7 +2029,7 @@ function updateOmakasePrefs() {
 function setOmakaseQty() {
   const qty = parseInt(document.getElementById('sushiBentoCount').value || 0);
   const prefs = [];
-  const count = Math.min(qty, 5);
+
   for (let i = 1; i <= count; i++) {
     prefs.push(document.getElementById(`omakasePref${i}`).value);
   }
@@ -2088,13 +2088,6 @@ function setOmakaseQty() {
     changeXbentoQty(-1);
   });
 
-  document.querySelector('.qty-plus[data-target="sushiBentoCount"]').addEventListener('click', () => {
-    changeOmakaseQty(1);
-  });
-  document.querySelector('.qty-minus[data-target="sushiBentoCount"]').addEventListener('click', () => {
-    changeOmakaseQty(-1);
-  });
-  document.getElementById('sushiBentoCount').addEventListener('change', () => changeOmakaseQty(0));
 
   // 🧋 奶茶 select 直接选择数量时
   document.getElementById('bubbleTeaQty').addEventListener('change', () => {
