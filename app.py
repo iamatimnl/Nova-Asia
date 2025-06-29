@@ -21,6 +21,7 @@ from flask_migrate import Migrate
 from urllib.parse import quote
 import uuid
 from flask import send_file
+from werkzeug.utils import secure_filename
 from io import BytesIO
 import pandas as pd
 from reportlab.lib.pagesizes import A4
@@ -39,6 +40,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app = Flask(__name__, template_folder="templates", static_folder="static")
 app.config["SECRET_KEY"] = "replace-this"
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+app.config["UPLOAD_FOLDER"] = os.path.join(app.static_folder, "uploads")
+os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 print(repr(os.getenv("DATABASE_URL")))
 
 
@@ -236,6 +239,22 @@ class DiscountCode(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     customer_email = db.Column(db.String(120))
     discount_amount = db.Column(db.Float, default=0.0)  # ✅ 必须加这个
+
+
+class MenuSection(db.Model):
+    __tablename__ = 'menu_sections'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), unique=True, nullable=False)
+
+
+class MenuItem(db.Model):
+    __tablename__ = 'menu_items'
+    id = db.Column(db.Integer, primary_key=True)
+    section_id = db.Column(db.Integer, db.ForeignKey('menu_sections.id'))
+    name = db.Column(db.String(100), nullable=False)
+    price = db.Column(db.Float, default=0.0)
+    image = db.Column(db.String(200))
+    section = db.relationship('MenuSection', backref=db.backref('items', lazy=True))
 
 
 with app.app_context():
@@ -478,7 +497,8 @@ def reviews_api():
 def dashboard():
     s = Setting.query.filter_by(key='is_open').first()
     val = s.value if s else 'true'
-    return render_template('dashboard.html', is_open=val)
+    sections = MenuSection.query.all()
+    return render_template('dashboard.html', is_open=val, sections=sections)
 
 
 @app.route('/dashboard/update', methods=['POST'])
@@ -493,6 +513,46 @@ def update_setting():
         s.value = val
     db.session.commit()
     socketio.emit('setting_update', {'key': 'is_open', 'value': val})
+    return redirect(url_for('dashboard'))
+
+
+@app.route('/dashboard/add_section', methods=['POST'])
+@login_required
+def add_section():
+    name = request.form.get('section_name', '').strip()
+    if name:
+        section = MenuSection(name=name)
+        db.session.add(section)
+        db.session.commit()
+    return redirect(url_for('dashboard'))
+
+
+@app.route('/dashboard/add_item', methods=['POST'])
+@login_required
+def add_item():
+    name = request.form.get('item_name', '').strip()
+    price = request.form.get('price', '0')
+    section_id = request.form.get('section_id')
+    image_file = request.files.get('image')
+    image_path = None
+    if image_file and image_file.filename:
+        filename = secure_filename(image_file.filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        image_file.save(filepath)
+        image_path = f'uploads/{filename}'
+    if name and section_id:
+        try:
+            price_value = float(price)
+        except ValueError:
+            price_value = 0.0
+        item = MenuItem(
+            name=name,
+            price=price_value,
+            section_id=section_id,
+            image=image_path,
+        )
+        db.session.add(item)
+        db.session.commit()
     return redirect(url_for('dashboard'))
 
 
