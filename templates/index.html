@@ -237,6 +237,10 @@
   width: 100%;
   max-width: 170px;
 }
+#dragonPrefs select {
+  width: 100%;
+  max-width: 170px;
+}
   
   .menu-item button,
   .menu-item label {
@@ -1230,7 +1234,7 @@ input:focus, select:focus, textarea:focus {
 <a href="#bento">Bento Box</a>
 <a href="#Ramen">Ramen</a>
 <a href="#Pokebowl">Pokebowl</a>
-<a href="#sushi">Sushi Rolls</a>
+<a href="#sushi">Special Sushi Rolls</a>
 <a href="#Crispy-rice-sandwich">Crispy Rice</a>
 <a href="#snack">Snack</a>
 <a href="#dessert">Dessert</a>
@@ -1696,35 +1700,67 @@ input:focus, select:focus, textarea:focus {
 <section id="sushi">
 <div class="menu-group">
 <h2 style="margin-top: -8px; font-size: 1.5rem; color: #333; text-align: center; font-weight: bold;">
-  Sushi
+  Special Sushi Rolls
 </h2>
-<div class="menu-row menu-item" data-name="Green Salmonroll Roll" data-packaging="0.2" data-price="13.5">
+<div class="menu-row menu-item" data-name="Salmon Roll Omakase" data-packaging="0.2" data-price="16">
 <div class="menu-img">
 <img alt="Green Dragon Roll" src="{{ url_for('static', filename='images/green-dragon-roll.png') }}"/>
 </div>
 <div class="menu-content">
-<h3>Green Salmon Roll</h3>
-<p>Salmon roll met avocado &amp; viskuit topping<br/>€ 13.50</p>
+<h3>Salmon Roll Omakase</h3>
+<p>9 st verrassing samengesteld<br/>€ 16.00</p>
 <div class="qty-box">
-<label for="greenSalmonCount">Aantal</label>
-<button class="qty-minus remove-button" data-target="greenDragonCount" type="button">-</button>
-<select id="greenSalmonCount" name="greenSalmonCount"></select>
-<button class="qty-plus add-button" data-target="greenSalmonCount" type="button">+</button>
+<label for="salmonRollCount">Aantal</label>
+<button class="qty-minus remove-button" data-target="salmonRollCount" type="button">-</button>
+<select id="salmonRollCount" name="salmonRollCount"></select>
+<button class="qty-plus add-button" data-target="salmonRollCount" type="button">+</button>
 </div>
 </div>
 </div>
-<div class="menu-row menu-item" data-name="Angry Dragon Roll" data-packaging="0.2" data-price="13.5">
+<div class="menu-row menu-item" data-name="Dragon Roll Omakase" data-packaging="0.2" data-price="16">
 <div class="menu-img">
 <img alt="Angry Dragon Roll" src="{{ url_for('static', filename='images/angry-dragon.png') }}"/>
 </div>
 <div class="menu-content">
-<h3>Angry Dragon Roll</h3>
-<p>Ebi fry roll met aburi zalm &amp; unagi saus topping<br/>€ 13.50</p>
+<h3>Dragon Roll Omakase</h3>
+<p>9 st verrassing samengesteld<br/>€ 16.00</p>
+<p class="menu-description">Geef je voorkeur aan!</p>
 <div class="qty-box">
-<label for="angryDragonCount">Aantal</label>
-<button class="qty-minus remove-button" data-target="angryDragonCount" type="button">-</button>
-<select id="angryDragonCount" name="angryDragonCount"></select>
-<button class="qty-plus add-button" data-target="angryDragonCount" type="button">+</button>
+<label for="dragonRollCount">Aantal</label>
+<button class="qty-minus remove-button" data-target="dragonRollCount" type="button">-</button>
+<select id="dragonRollCount" name="dragonRollCount"></select>
+<button class="qty-plus add-button" data-target="dragonRollCount" type="button">+</button>
+</div>
+<div id="dragonPrefs"></div>
+</div>
+</div>
+<div class="menu-row menu-item" data-name="Beef Roll Omakase" data-packaging="0.2" data-price="16">
+<div class="menu-img">
+<img alt="Beef Roll Omakase" src="{{ url_for('static', filename='images/beef-crispy.png') }}"/>
+</div>
+<div class="menu-content">
+<h3>Beef Roll Omakase</h3>
+<p>9 st verrassing samengesteld<br/>€ 16.00</p>
+<div class="qty-box">
+<label for="beefRollCount">Aantal</label>
+<button class="qty-minus remove-button" data-target="beefRollCount" type="button">-</button>
+<select id="beefRollCount" name="beefRollCount"></select>
+<button class="qty-plus add-button" data-target="beefRollCount" type="button">+</button>
+</div>
+</div>
+</div>
+<div class="menu-row menu-item" data-name="Chicken Roll Omakase" data-packaging="0.2" data-price="16">
+<div class="menu-img">
+<img alt="Chicken Roll Omakase" src="{{ url_for('static', filename='images/chicken-crispy.png') }}"/>
+</div>
+<div class="menu-content">
+<h3>Chicken Roll Omakase</h3>
+<p>9 st verrassing samengesteld<br/>€ 16.00</p>
+<div class="qty-box">
+<label for="chickenRollCount">Aantal</label>
+<button class="qty-minus remove-button" data-target="chickenRollCount" type="button">-</button>
+<select id="chickenRollCount" name="chickenRollCount"></select>
+<button class="qty-plus add-button" data-target="chickenRollCount" type="button">+</button>
 </div>
 </div>
 </div>
@@ -2136,6 +2172,46 @@ function setOmakaseQty() {
   setQty('Bento Sushi Omakase', price, qty, DEFAULT_PACKAGING_FEE, prefs);
 }
 
+function changeDragonQty(delta) {
+  const qtySel = document.getElementById('dragonRollCount');
+  let val = parseInt(qtySel.value || 0);
+  val = Math.max(0, Math.min(20, val + delta));
+  qtySel.value = val;
+  updateDragonPrefs();
+}
+
+function updateDragonPrefs() {
+  const qty = parseInt(document.getElementById('dragonRollCount').value || 0);
+  const container = document.getElementById('dragonPrefs');
+  container.innerHTML = '';
+
+  const existing = (cart['Dragon Roll Omakase'] && cart['Dragon Roll Omakase'].prefs) || [];
+  for (let i = 1; i <= qty; i++) {
+    const sel = document.createElement('select');
+    ['Geen voorkeur','Alleen vis','Alleen vlees'].forEach(opt => {
+      const o = document.createElement('option');
+      o.value = opt;
+      o.textContent = opt;
+      sel.appendChild(o);
+    });
+    sel.value = existing[i-1] || 'Geen voorkeur';
+    sel.id = `dragonPref${i}`;
+    sel.addEventListener('change', setDragonQty);
+    container.appendChild(sel);
+  }
+  setDragonQty();
+}
+
+function setDragonQty() {
+  const qty = parseInt(document.getElementById('dragonRollCount').value || 0);
+  const prefs = [];
+  for (let i = 1; i <= qty; i++) {
+    prefs.push(document.getElementById(`dragonPref${i}`).value);
+  }
+  const price = parseFloat(document.querySelector('[data-name="Dragon Roll Omakase"]').dataset.price);
+  setQty('Dragon Roll Omakase', price, qty, DEFAULT_PACKAGING_FEE, prefs);
+}
+
 
 
  document.addEventListener('DOMContentLoaded', () => {
@@ -2291,6 +2367,9 @@ function updateCart() {
       if (name === 'Bento Sushi Omakase') {
         document.getElementById('sushiBentoCount').value = val;
         updateOmakasePrefs();
+      } else if (name === 'Dragon Roll Omakase') {
+        document.getElementById('dragonRollCount').value = val;
+        updateDragonPrefs();
       }
     });
     const subtotal = item.qty * item.price;
@@ -2382,6 +2461,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const pack = parseFloat(parent.dataset.packaging || DEFAULT_PACKAGING_FEE);
     if (name === 'Bento Sushi Omakase') {
       sel.addEventListener('change', () => changeOmakaseQty(0));
+    } else if (name === 'Dragon Roll Omakase') {
+      sel.addEventListener('change', () => changeDragonQty(0));
     } else {
       sel.addEventListener('change', () => {
         setQty(name, price, parseInt(sel.value), pack);
@@ -2400,6 +2481,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const pack = parseFloat(parent.dataset.packaging || DEFAULT_PACKAGING_FEE);
       if (parent.dataset.name === 'Bento Sushi Omakase') {
         changeOmakaseQty(0);
+      } else if (parent.dataset.name === 'Dragon Roll Omakase') {
+        changeDragonQty(0);
       } else {
         setQty(parent.dataset.name, parseFloat(parent.dataset.price), val, pack);
       }
@@ -2417,6 +2500,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const pack = parseFloat(parent.dataset.packaging || DEFAULT_PACKAGING_FEE);
       if (parent.dataset.name === 'Bento Sushi Omakase') {
         changeOmakaseQty(0);
+      } else if (parent.dataset.name === 'Dragon Roll Omakase') {
+        changeDragonQty(0);
       } else {
         setQty(parent.dataset.name, parseFloat(parent.dataset.price), val, pack);
       }

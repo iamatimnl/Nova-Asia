@@ -146,6 +146,10 @@
     width: 100%;
     max-width: 160px;
   }
+  #dragonPrefs select {
+    width: 100%;
+    max-width: 160px;
+  }
   .menu-item button {
     width: 2.2rem;
     height: 2.2rem;
@@ -530,7 +534,7 @@
     <div class="nav-categories">
       <a href="#customer-info">Klant</a>
       <a href="#bento">Bento Box</a>
-      <a href="#sushi">Sushi Rolls</a>
+      <a href="#sushi">Special Sushi Rolls</a>
       <a href="#bubble">Bubble Tea</a>
       <a href="#dessert">Dessert</a>
       <a href="#snack">Snack</a>
@@ -738,6 +742,42 @@ function setOmakaseQty(){
   const price=parseFloat(document.querySelector('[data-name="Bento Sushi Omakase"]').dataset.price);
   setQty('Bento Sushi Omakase',price,qty,0.2,prefs);
 }
+
+function changeDragonQty(delta){
+  const sel=document.getElementById('dragonRollCount');
+  let val=parseInt(sel.value||0);
+  val=Math.max(0,Math.min(20,val+delta));
+  sel.value=val;
+  updateDragonPrefs();
+}
+
+function updateDragonPrefs(){
+  const qty=parseInt(document.getElementById('dragonRollCount').value||0);
+  const container=document.getElementById('dragonPrefs');
+  container.innerHTML='';
+
+  const existing=(cart['Dragon Roll Omakase']&&cart['Dragon Roll Omakase'].prefs)||[];
+  for(let i=1;i<=qty;i++){
+    const sel=document.createElement('select');
+    ['Geen voorkeur','Alleen vis','Alleen vlees'].forEach(opt=>{
+      const o=document.createElement('option');o.value=opt;o.textContent=opt;sel.appendChild(o);});
+    sel.value=existing[i-1]||'Geen voorkeur';
+    sel.id=`dragonPref${i}`;
+    sel.addEventListener('change',setDragonQty);
+    container.appendChild(sel);
+  }
+  setDragonQty();
+}
+
+function setDragonQty(){
+  const qty=parseInt(document.getElementById('dragonRollCount').value||0);
+  const prefs=[];
+  for(let i=1;i<=qty;i++){
+    prefs.push(document.getElementById(`dragonPref${i}`).value);
+  }
+  const price=parseFloat(document.querySelector('[data-name="Dragon Roll Omakase"]').dataset.price);
+  setQty('Dragon Roll Omakase',price,qty,0.2,prefs);
+}
 function populateSelect(sel){
   for(let i=0;i<=20;i++){ const opt=document.createElement('option'); opt.value=i; opt.textContent=i; sel.appendChild(opt); }
 }
@@ -773,6 +813,9 @@ function updateCart(){
       if(name==='Bento Sushi Omakase'){
         document.getElementById('sushiBentoCount').value=val;
         updateOmakasePrefs();
+      } else if(name==='Dragon Roll Omakase'){
+        document.getElementById('dragonRollCount').value=val;
+        updateDragonPrefs();
       }
     });
     const rowTotal=item.qty*item.price;
@@ -834,6 +877,8 @@ document.addEventListener('DOMContentLoaded',()=>{
       const pack=parseFloat(parent.dataset.packaging||0);
       if(name==='Bento Sushi Omakase'){
         sel.addEventListener('change',()=>changeOmakaseQty(0));
+      } else if(name==='Dragon Roll Omakase'){
+        sel.addEventListener('change',()=>changeDragonQty(0));
       } else {
         sel.addEventListener('change',()=>{ setQty(name,price,parseInt(sel.value),pack); });
       }
@@ -867,6 +912,8 @@ document.addEventListener('DOMContentLoaded',()=>{
       const parent=sel.closest('.menu-item');
       if(parent.dataset.name==='Bento Sushi Omakase'){
         changeOmakaseQty(0);
+      } else if(parent.dataset.name==='Dragon Roll Omakase'){
+        changeDragonQty(0);
       } else {
         setQty(parent.dataset.name,parseFloat(parent.dataset.price),val,parseFloat(parent.dataset.packaging||0));
       }
@@ -882,6 +929,8 @@ document.addEventListener('DOMContentLoaded',()=>{
       const parent=sel.closest('.menu-item');
       if(parent.dataset.name==='Bento Sushi Omakase'){
         changeOmakaseQty(0);
+      } else if(parent.dataset.name==='Dragon Roll Omakase'){
+        changeDragonQty(0);
       } else {
         setQty(parent.dataset.name,parseFloat(parent.dataset.price),val,parseFloat(parent.dataset.packaging||0));
       }
@@ -928,6 +977,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     });
   }
   updateOmakasePrefs();
+  updateDragonPrefs();
   updateCart();
   toggleAddress();
   updateTodayBadge();
