@@ -353,42 +353,79 @@
 <section id="sushi">
   <div class="menu-group">
     <h2 style="margin-top: -8px; font-size: 1.5rem; color: #333; text-align: center; font-weight: bold;">
-  Sushi
+  Special Sushi Rolls
 </h2>
 
-
-<div class="menu-row menu-item" data-name="Green Dragon Roll" data-price="13.5" data-packaging="0.2">
+<div class="menu-row menu-item" data-name="Salmon Roll Omakase" data-price="16" data-packaging="0.2">
   <div class="menu-img">
     <img src="{{ url_for('static', filename='images/green-dragon-roll.png') }}" alt="Green Dragon Roll">
   </div>
 
   <div class="menu-content">
-    <h3>Green Dragon Roll</h3>
-    <p>Ebi fry roll met avocado & viskuit topping<br>€ 13.50</p>
+    <h3>Salmon Roll Omakase</h3>
+    <p>9 st verrassing samengesteld<br>€ 16.00</p>
 
     <div class="qty-box">
-      <label for="greenDragonCount">Aantal</label>
-      <button type="button" class="qty-minus remove-button" data-target="greenDragonCount">-</button>
-      <select id="greenDragonCount" name="greenDragonCount"></select>
-      <button type="button" class="qty-plus add-button" data-target="greenDragonCount">+</button>
+      <label for="salmonRollCount">Aantal</label>
+      <button type="button" class="qty-minus remove-button" data-target="salmonRollCount">-</button>
+      <select id="salmonRollCount" name="salmonRollCount"></select>
+      <button type="button" class="qty-plus add-button" data-target="salmonRollCount">+</button>
     </div>
   </div>
 </div>
 
-<div class="menu-row menu-item" data-name="Angry Dragon Roll" data-price="13.5" data-packaging="0.2">
+<div class="menu-row menu-item" data-name="Dragon Roll Omakase" data-price="16" data-packaging="0.2">
   <div class="menu-img">
     <img src="{{ url_for('static', filename='images/angry-dragon.png') }}" alt="Angry Dragon Roll">
   </div>
 
   <div class="menu-content">
-    <h3>Angry Dragon Roll</h3>
-    <p>Ebi fry roll met aburi zalm & unagi saus topping<br>€ 13.50</p>
+    <h3>Dragon Roll Omakase</h3>
+    <p>9 st verrassing samengesteld<br>€ 16.00</p>
+    <p class="menu-description">Geef je voorkeur aan!</p>
 
     <div class="qty-box">
-      <label for="angryDragonCount">Aantal</label>
-      <button type="button" class="qty-minus remove-button" data-target="angryDragonCount">-</button>
-      <select id="angryDragonCount" name="angryDragonCount"></select>
-      <button type="button" class="qty-plus add-button" data-target="angryDragonCount">+</button>
+      <label for="dragonRollCount">Aantal</label>
+      <button type="button" class="qty-minus remove-button" data-target="dragonRollCount">-</button>
+      <select id="dragonRollCount" name="dragonRollCount"></select>
+      <button type="button" class="qty-plus add-button" data-target="dragonRollCount">+</button>
+    </div>
+    <div id="dragonPrefs"></div>
+  </div>
+</div>
+
+<div class="menu-row menu-item" data-name="Beef Roll Omakase" data-price="16" data-packaging="0.2">
+  <div class="menu-img">
+    <img src="{{ url_for('static', filename='images/beef-crispy.png') }}" alt="Beef Roll Omakase">
+  </div>
+
+  <div class="menu-content">
+    <h3>Beef Roll Omakase</h3>
+    <p>9 st verrassing samengesteld<br>€ 16.00</p>
+
+    <div class="qty-box">
+      <label for="beefRollCount">Aantal</label>
+      <button type="button" class="qty-minus remove-button" data-target="beefRollCount">-</button>
+      <select id="beefRollCount" name="beefRollCount"></select>
+      <button type="button" class="qty-plus add-button" data-target="beefRollCount">+</button>
+    </div>
+  </div>
+</div>
+
+<div class="menu-row menu-item" data-name="Chicken Roll Omakase" data-price="16" data-packaging="0.2">
+  <div class="menu-img">
+    <img src="{{ url_for('static', filename='images/chicken-crispy.png') }}" alt="Chicken Roll Omakase">
+  </div>
+
+  <div class="menu-content">
+    <h3>Chicken Roll Omakase</h3>
+    <p>9 st verrassing samengesteld<br>€ 16.00</p>
+
+    <div class="qty-box">
+      <label for="chickenRollCount">Aantal</label>
+      <button type="button" class="qty-minus remove-button" data-target="chickenRollCount">-</button>
+      <select id="chickenRollCount" name="chickenRollCount"></select>
+      <button type="button" class="qty-plus add-button" data-target="chickenRollCount">+</button>
     </div>
   </div>
 </div>
