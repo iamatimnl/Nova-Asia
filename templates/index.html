@@ -297,6 +297,15 @@
   background: #ff7b94;
 }
 
+.new-set-button {
+  background: var(--off-white);
+  color: var(--accent-color);
+  border: 1px solid var(--accent-color);
+  border-radius: 6px;
+  padding: 0 6px;
+  height: 2rem;
+  font-size: 0.7rem;
+}
 /* Generic button press feedback */
 button {
   transition: transform 0.1s ease, filter 0.1s ease, box-shadow 0.1s ease;
@@ -1651,30 +1660,167 @@ input:focus, select:focus, textarea:focus {
 </div>
 </div>
 </section>
-<!-- Ramen Section -->
+<!-- Pokebowl Section -->
 <section id="Ramen">
 <h2>Ramen</h2>
 <div class="menu-section">
-<!-- 示例商品，可替换或添加更多 -->
-<div class="menu-row menu-item" data-name="Tonkotsu Ramen" data-packaging="0.2" data-price="13">
-<div class="menu-img">
-<img alt="Tonkotsu Ramen" src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}"/>
-</div>
-<div class="menu-content">
-<h3>Tonkotsu Ramen</h3>
-<p>€ 13.00</p>
-<p class="menu-description">Romige varkensbouillon met chashu, ramennoedels, ei en nori.</p>
-<div class="qty-box">
-<label for="tonkotsuRamenCount">Aantal</label>
-<button class="qty-minus remove-button" data-target="tonkotsuRamenCount" type="button">-</button>
-<select id="tonkotsuRamenCount" name="tonkotsuRamenCount"></select>
-<button class="qty-plus add-button" data-target="tonkotsuRamenCount" type="button">+</button>
-</div>
-</div>
-</div>
+  <!-- Ebi Furai Ramen -->
+  <div class="menu-row menu-item" data-code="ebi" data-name="Ebi Furai Ramen" data-packaging="0.2" data-price="13">
+    <div class="menu-img">
+      <img alt="Ebi Furai Ramen" src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}"/>
+    </div>
+    <div class="menu-content">
+      <h3>Ebi Furai Ramen</h3>
+      <p>€ 13.00</p>
+      <div class="bubble-option">
+        <select id="ebiBase">
+          <option value="">Base</option>
+          <option value="Ramen">Ramen</option>
+          <option value="Udon">Udon</option>
+        </select>
+      </div>
+      <div class="bubble-option">
+        <select id="ebiSmaak">
+          <option value="">Smaak</option>
+          <option value="Miso">Miso</option>
+          <option value="Soyu">Soyu</option>
+        </select>
+      </div>
+      <div class="qty-box">
+        <label for="ebiQty">Aantal</label>
+        <button class="qty-minus remove-button" data-target="ebiQty" type="button">-</button>
+        <select id="ebiQty"></select>
+        <button class="qty-plus add-button" data-target="ebiQty" type="button">+</button>
+        <button type="button" class="new-set-button" id="ebiNew">New Set</button>
+      </div>
+    </div>
+  </div>
+  <!-- Chicken Ramen -->
+  <div class="menu-row menu-item" data-code="chicken" data-name="Chicken Ramen" data-packaging="0.2" data-price="13">
+    <div class="menu-img">
+      <img alt="Chicken Ramen" src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}"/>
+    </div>
+    <div class="menu-content">
+      <h3>Chicken Ramen</h3>
+      <p>€ 13.00</p>
+      <div class="bubble-option">
+        <select id="chickenBase">
+          <option value="">Base</option>
+          <option value="Ramen">Ramen</option>
+          <option value="Udon">Udon</option>
+        </select>
+      </div>
+      <div class="bubble-option">
+        <select id="chickenSmaak">
+          <option value="">Smaak</option>
+          <option value="Miso">Miso</option>
+          <option value="Soyu">Soyu</option>
+        </select>
+      </div>
+      <div class="qty-box">
+        <label for="chickenQty">Aantal</label>
+        <button class="qty-minus remove-button" data-target="chickenQty" type="button">-</button>
+        <select id="chickenQty"></select>
+        <button class="qty-plus add-button" data-target="chickenQty" type="button">+</button>
+        <button type="button" class="new-set-button" id="chickenNew">New Set</button>
+      </div>
+    </div>
+  </div>
+  <!-- Beef Ramen -->
+  <div class="menu-row menu-item" data-code="beef" data-name="Beef Ramen" data-packaging="0.2" data-price="13">
+    <div class="menu-img">
+      <img alt="Beef Ramen" src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}"/>
+    </div>
+    <div class="menu-content">
+      <h3>Beef Ramen</h3>
+      <p>€ 13.00</p>
+      <div class="bubble-option">
+        <select id="beefBase">
+          <option value="">Base</option>
+          <option value="Ramen">Ramen</option>
+          <option value="Udon">Udon</option>
+        </select>
+      </div>
+      <div class="bubble-option">
+        <select id="beefSmaak">
+          <option value="">Smaak</option>
+          <option value="Miso">Miso</option>
+          <option value="Soyu">Soyu</option>
+        </select>
+      </div>
+      <div class="qty-box">
+        <label for="beefQty">Aantal</label>
+        <button class="qty-minus remove-button" data-target="beefQty" type="button">-</button>
+        <select id="beefQty"></select>
+        <button class="qty-plus add-button" data-target="beefQty" type="button">+</button>
+        <button type="button" class="new-set-button" id="beefNew">New Set</button>
+      </div>
+    </div>
+  </div>
+  <!-- Ribeye Ramen -->
+  <div class="menu-row menu-item" data-code="ribeye" data-name="Ribeye Ramen" data-packaging="0.2" data-price="13">
+    <div class="menu-img">
+      <img alt="Ribeye Ramen" src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}"/>
+    </div>
+    <div class="menu-content">
+      <h3>Ribeye Ramen</h3>
+      <p>€ 13.00</p>
+      <div class="bubble-option">
+        <select id="ribeyeBase">
+          <option value="">Base</option>
+          <option value="Ramen">Ramen</option>
+          <option value="Udon">Udon</option>
+        </select>
+      </div>
+      <div class="bubble-option">
+        <select id="ribeyeSmaak">
+          <option value="">Smaak</option>
+          <option value="Miso">Miso</option>
+          <option value="Soyu">Soyu</option>
+        </select>
+      </div>
+      <div class="qty-box">
+        <label for="ribeyeQty">Aantal</label>
+        <button class="qty-minus remove-button" data-target="ribeyeQty" type="button">-</button>
+        <select id="ribeyeQty"></select>
+        <button class="qty-plus add-button" data-target="ribeyeQty" type="button">+</button>
+        <button type="button" class="new-set-button" id="ribeyeNew">New Set</button>
+      </div>
+    </div>
+  </div>
+  <!-- Chasiu Ramen -->
+  <div class="menu-row menu-item" data-code="chasiu" data-name="Chasiu Ramen" data-packaging="0.2" data-price="13">
+    <div class="menu-img">
+      <img alt="Chasiu Ramen" src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}"/>
+    </div>
+    <div class="menu-content">
+      <h3>Chasiu Ramen</h3>
+      <p>€ 13.00</p>
+      <div class="bubble-option">
+        <select id="chasiuBase">
+          <option value="">Base</option>
+          <option value="Ramen">Ramen</option>
+          <option value="Udon">Udon</option>
+        </select>
+      </div>
+      <div class="bubble-option">
+        <select id="chasiuSmaak">
+          <option value="">Smaak</option>
+          <option value="Miso">Miso</option>
+          <option value="Soyu">Soyu</option>
+        </select>
+      </div>
+      <div class="qty-box">
+        <label for="chasiuQty">Aantal</label>
+        <button class="qty-minus remove-button" data-target="chasiuQty" type="button">-</button>
+        <select id="chasiuQty"></select>
+        <button class="qty-plus add-button" data-target="chasiuQty" type="button">+</button>
+        <button type="button" class="new-set-button" id="chasiuNew">New Set</button>
+      </div>
+    </div>
+  </div>
 </div>
 </section>
-<!-- Pokebowl Section -->
 <section id="Pokebowl">
 <h2>Pokebowl</h2>
 <div class="menu-section">
@@ -2285,7 +2431,7 @@ function setDragonQty() {
   });
 
   // 🧁 初始化下拉数量为 0～20
-  ['bubbleTeaQty', 'xBentoQty'].forEach(id => {
+  ['bubbleTeaQty','xBentoQty','ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty'].forEach(id => {
     const sel = document.getElementById(id);
     for (let i = 0; i <= 20; i++) {
       const opt = document.createElement('option');
@@ -2297,6 +2443,67 @@ function setDragonQty() {
   });
 });
 
+function isRamenValid(code) {
+  return document.getElementById(code + 'Base').value && document.getElementById(code + 'Smaak').value;
+}
+
+function updateRamenControls(code) {
+  const plus = document.querySelector(`.qty-plus[data-target="${code}Qty"]`);
+  const minus = document.querySelector(`.qty-minus[data-target="${code}Qty"]`);
+  const sel = document.getElementById(code + 'Qty');
+  const valid = isRamenValid(code);
+  if (plus) plus.disabled = !valid;
+  if (minus) minus.disabled = !valid;
+  if (sel) sel.disabled = !valid;
+}
+
+function changeRamenQty(code, delta) {
+  const sel = document.getElementById(code + 'Qty');
+  let val = parseInt(sel.value || 0);
+  val = Math.max(0, Math.min(20, val + delta));
+  sel.value = val;
+  const item = document.querySelector(`.menu-item[data-code="${code}"]`);
+  const base = document.getElementById(code + 'Base').value;
+  const smaak = document.getElementById(code + 'Smaak').value;
+  if (!base || !smaak) return;
+  const name = item.dataset.name;
+  const price = parseFloat(item.dataset.price);
+  const pack = parseFloat(item.dataset.packaging || DEFAULT_PACKAGING_FEE);
+  const fullName = `${name} - ${base} - ${smaak}`;
+  setQty(fullName, price, val, pack);
+}
+
+function clearRamenSet(code) {
+  document.getElementById(code + 'Base').value = '';
+  document.getElementById(code + 'Smaak').value = '';
+  document.getElementById(code + 'Qty').value = 0;
+  updateRamenControls(code);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const codes = ['ebi','chicken','beef','ribeye','chasiu'];
+  codes.forEach(code => {
+    const qty = document.getElementById(code + 'Qty');
+    populateSelect(qty);
+    qty.value = 0;
+    updateRamenControls(code);
+    document.getElementById(code + 'Base').addEventListener('change', () => updateRamenControls(code));
+    document.getElementById(code + 'Smaak').addEventListener('change', () => updateRamenControls(code));
+    document.querySelector(`.qty-plus[data-target="${code}Qty"]`).addEventListener('click', () => {
+      if (!isRamenValid(code)) { alert('🍜 Kies eerst base en smaak voor je ramen.'); return; }
+      changeRamenQty(code, 1);
+    });
+    document.querySelector(`.qty-minus[data-target="${code}Qty"]`).addEventListener('click', () => {
+      if (!isRamenValid(code)) { alert('🍜 Kies eerst base en smaak voor je ramen.'); return; }
+      changeRamenQty(code, -1);
+    });
+    qty.addEventListener('change', () => {
+      if (!isRamenValid(code)) { alert('🍜 Kies eerst base en smaak voor je ramen.'); qty.value = 0; return; }
+      changeRamenQty(code, 0);
+    });
+    document.getElementById(code + 'New').addEventListener('click', () => clearRamenSet(code));
+  });
+});
 
 
 
@@ -2453,7 +2660,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   document.querySelectorAll('.menu-item select').forEach(sel => {
-    if (['bubbleTeaQty', 'bubbleType', 'bubbleFlavor', 'bubbleTopping', 'xBentoMain', 'xBentoSide', 'xBentoRice'].includes(sel.id)) return;
+    if (['bubbleTeaQty','bubbleType','bubbleFlavor','bubbleTopping','xBentoMain','xBentoSide','xBentoRice','ebiBase','ebiSmaak','ebiQty','chickenBase','chickenSmaak','chickenQty','beefBase','beefSmaak','beefQty','ribeyeBase','ribeyeSmaak','ribeyeQty','chasiuBase','chasiuSmaak','chasiuQty'].includes(sel.id)) return;
     populateSelect(sel);
     const parent = sel.closest('.menu-item');
     const name = parent.dataset.name;
@@ -2471,7 +2678,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.querySelectorAll('.qty-plus').forEach(btn => {
-    if (['bubbleTeaQty', 'xBentoQty'].includes(btn.dataset.target)) return;
+    if (['bubbleTeaQty','xBentoQty','ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty'].includes(btn.dataset.target)) return;
     btn.addEventListener('click', () => {
       const sel = document.getElementById(btn.dataset.target);
       let val = parseInt(sel.value);
@@ -2490,7 +2697,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.querySelectorAll('.qty-minus').forEach(btn => {
-    if (['bubbleTeaQty', 'xBentoQty'].includes(btn.dataset.target)) return;
+    if (['bubbleTeaQty','xBentoQty','ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty'].includes(btn.dataset.target)) return;
     btn.addEventListener('click', () => {
       const sel = document.getElementById(btn.dataset.target);
       let val = parseInt(sel.value);

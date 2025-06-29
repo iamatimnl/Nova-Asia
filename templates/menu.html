@@ -302,30 +302,167 @@
   </div>
 </section>
 
-<!-- Ramen Section -->
+<!-- Pokebowl Section -->
 <section id="Ramen">
-  <h2>Ramen</h2>
-  <div class="menu-section">
-    <!-- 示例商品，可替换或添加更多 -->
-    <div class="menu-row menu-item" data-name="Tonkotsu Ramen" data-price="13" data-packaging="0.2">
-      <div class="menu-img">
-        <img src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}" alt="Tonkotsu Ramen">
+<h2>Ramen</h2>
+<div class="menu-section">
+  <!-- Ebi Furai Ramen -->
+  <div class="menu-row menu-item" data-code="ebi" data-name="Ebi Furai Ramen" data-packaging="0.2" data-price="13">
+    <div class="menu-img">
+      <img alt="Ebi Furai Ramen" src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}"/>
+    </div>
+    <div class="menu-content">
+      <h3>Ebi Furai Ramen</h3>
+      <p>€ 13.00</p>
+      <div class="bubble-option">
+        <select id="ebiBase">
+          <option value="">Base</option>
+          <option value="Ramen">Ramen</option>
+          <option value="Udon">Udon</option>
+        </select>
       </div>
-      <div class="menu-content">
-        <h3>Tonkotsu Ramen</h3>
-        <p>€ 13.00</p>
-        <p class="menu-description">Romige varkensbouillon met chashu, ramennoedels, ei en nori.</p>
-        <div class="qty-box">
-          <label for="tonkotsuRamenCount">Aantal</label>
-          <button type="button" class="qty-minus remove-button" data-target="tonkotsuRamenCount">-</button>
-          <select id="tonkotsuRamenCount" name="tonkotsuRamenCount"></select>
-          <button type="button" class="qty-plus add-button" data-target="tonkotsuRamenCount">+</button>
-        </div>
+      <div class="bubble-option">
+        <select id="ebiSmaak">
+          <option value="">Smaak</option>
+          <option value="Miso">Miso</option>
+          <option value="Soyu">Soyu</option>
+        </select>
+      </div>
+      <div class="qty-box">
+        <label for="ebiQty">Aantal</label>
+        <button class="qty-minus remove-button" data-target="ebiQty" type="button">-</button>
+        <select id="ebiQty"></select>
+        <button class="qty-plus add-button" data-target="ebiQty" type="button">+</button>
+        <button type="button" class="new-set-button" id="ebiNew">New Set</button>
       </div>
     </div>
   </div>
+  <!-- Chicken Ramen -->
+  <div class="menu-row menu-item" data-code="chicken" data-name="Chicken Ramen" data-packaging="0.2" data-price="13">
+    <div class="menu-img">
+      <img alt="Chicken Ramen" src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}"/>
+    </div>
+    <div class="menu-content">
+      <h3>Chicken Ramen</h3>
+      <p>€ 13.00</p>
+      <div class="bubble-option">
+        <select id="chickenBase">
+          <option value="">Base</option>
+          <option value="Ramen">Ramen</option>
+          <option value="Udon">Udon</option>
+        </select>
+      </div>
+      <div class="bubble-option">
+        <select id="chickenSmaak">
+          <option value="">Smaak</option>
+          <option value="Miso">Miso</option>
+          <option value="Soyu">Soyu</option>
+        </select>
+      </div>
+      <div class="qty-box">
+        <label for="chickenQty">Aantal</label>
+        <button class="qty-minus remove-button" data-target="chickenQty" type="button">-</button>
+        <select id="chickenQty"></select>
+        <button class="qty-plus add-button" data-target="chickenQty" type="button">+</button>
+        <button type="button" class="new-set-button" id="chickenNew">New Set</button>
+      </div>
+    </div>
+  </div>
+  <!-- Beef Ramen -->
+  <div class="menu-row menu-item" data-code="beef" data-name="Beef Ramen" data-packaging="0.2" data-price="13">
+    <div class="menu-img">
+      <img alt="Beef Ramen" src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}"/>
+    </div>
+    <div class="menu-content">
+      <h3>Beef Ramen</h3>
+      <p>€ 13.00</p>
+      <div class="bubble-option">
+        <select id="beefBase">
+          <option value="">Base</option>
+          <option value="Ramen">Ramen</option>
+          <option value="Udon">Udon</option>
+        </select>
+      </div>
+      <div class="bubble-option">
+        <select id="beefSmaak">
+          <option value="">Smaak</option>
+          <option value="Miso">Miso</option>
+          <option value="Soyu">Soyu</option>
+        </select>
+      </div>
+      <div class="qty-box">
+        <label for="beefQty">Aantal</label>
+        <button class="qty-minus remove-button" data-target="beefQty" type="button">-</button>
+        <select id="beefQty"></select>
+        <button class="qty-plus add-button" data-target="beefQty" type="button">+</button>
+        <button type="button" class="new-set-button" id="beefNew">New Set</button>
+      </div>
+    </div>
+  </div>
+  <!-- Ribeye Ramen -->
+  <div class="menu-row menu-item" data-code="ribeye" data-name="Ribeye Ramen" data-packaging="0.2" data-price="13">
+    <div class="menu-img">
+      <img alt="Ribeye Ramen" src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}"/>
+    </div>
+    <div class="menu-content">
+      <h3>Ribeye Ramen</h3>
+      <p>€ 13.00</p>
+      <div class="bubble-option">
+        <select id="ribeyeBase">
+          <option value="">Base</option>
+          <option value="Ramen">Ramen</option>
+          <option value="Udon">Udon</option>
+        </select>
+      </div>
+      <div class="bubble-option">
+        <select id="ribeyeSmaak">
+          <option value="">Smaak</option>
+          <option value="Miso">Miso</option>
+          <option value="Soyu">Soyu</option>
+        </select>
+      </div>
+      <div class="qty-box">
+        <label for="ribeyeQty">Aantal</label>
+        <button class="qty-minus remove-button" data-target="ribeyeQty" type="button">-</button>
+        <select id="ribeyeQty"></select>
+        <button class="qty-plus add-button" data-target="ribeyeQty" type="button">+</button>
+        <button type="button" class="new-set-button" id="ribeyeNew">New Set</button>
+      </div>
+    </div>
+  </div>
+  <!-- Chasiu Ramen -->
+  <div class="menu-row menu-item" data-code="chasiu" data-name="Chasiu Ramen" data-packaging="0.2" data-price="13">
+    <div class="menu-img">
+      <img alt="Chasiu Ramen" src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}"/>
+    </div>
+    <div class="menu-content">
+      <h3>Chasiu Ramen</h3>
+      <p>€ 13.00</p>
+      <div class="bubble-option">
+        <select id="chasiuBase">
+          <option value="">Base</option>
+          <option value="Ramen">Ramen</option>
+          <option value="Udon">Udon</option>
+        </select>
+      </div>
+      <div class="bubble-option">
+        <select id="chasiuSmaak">
+          <option value="">Smaak</option>
+          <option value="Miso">Miso</option>
+          <option value="Soyu">Soyu</option>
+        </select>
+      </div>
+      <div class="qty-box">
+        <label for="chasiuQty">Aantal</label>
+        <button class="qty-minus remove-button" data-target="chasiuQty" type="button">-</button>
+        <select id="chasiuQty"></select>
+        <button class="qty-plus add-button" data-target="chasiuQty" type="button">+</button>
+        <button type="button" class="new-set-button" id="chasiuNew">New Set</button>
+      </div>
+    </div>
+  </div>
+</div>
 </section>
-<!-- Pokebowl Section -->
 <section id="Pokebowl">
   <h2>Pokebowl</h2>
   <div class="menu-section">
