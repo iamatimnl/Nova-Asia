@@ -1934,6 +1934,18 @@ let currentSubtotal = 0;
 let finalTotal = 0;
 let currentDiscount = 0;
 
+function saveCart() {
+  sessionStorage.setItem('novaCart', JSON.stringify(cart));
+}
+
+function loadCart() {
+  const stored = sessionStorage.getItem('novaCart');
+  if (stored) {
+    const data = JSON.parse(stored);
+    Object.keys(data).forEach(k => { cart[k] = data[k]; });
+  }
+}
+
 function formatEuro(val) {
   return `€${val.toFixed(2).replace('.', ',')}`;
 }
@@ -2197,6 +2209,7 @@ function setQty(name, price, qty, packaging = DEFAULT_PACKAGING_FEE, prefs = nul
     else if (cart[name] && cart[name].prefs) delete cart[name].prefs;
   }
   updateCart();
+  saveCart();
 }
 
 function updateCart() {
@@ -2293,7 +2306,13 @@ function updateCart() {
   const badge = document.getElementById('cart-count');
   badge.textContent = totalQty;
   badge.style.display = totalQty > 0 ? 'inline-block' : 'none';
+  saveCart();
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadCart();
+  updateCart();
+});
 
 document.addEventListener('DOMContentLoaded', () => {
   const bubbleSel = document.getElementById("bubbleTeaQty");
@@ -3127,13 +3146,21 @@ function resetSlider() {
 
 function validateOrderAmount() {
   const orderType = document.querySelector('input[name="orderType"]:checked').value;
-  const tip = parseFloat(document.getElementById('tipSelect').value || '0');
+  const amount = finalTotal;
 
+  if (orderType === 'bezorgen' && amount < 20) {
+    resetSlider();
+    isSubmitting = false;
+    alert('Sorry, de minimum bezorgbedrag is 20 euro.');
+    window.location.href = '/';
     return false;
   }
 
   if (orderType === 'afhalen' && amount === 0) {
-
+    resetSlider();
+    isSubmitting = false;
+    alert('Sorry, u heeft nog niks gekozen.');
+    window.location.href = '/';
     return false;
   }
 
