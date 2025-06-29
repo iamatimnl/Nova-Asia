@@ -466,24 +466,21 @@
 <section id="Pokebowl">
   <h2>Pokebowl</h2>
   <div class="menu-section">
-    <!-- 示例商品，可替换或添加更多 -->
-    <div class="menu-row menu-item" data-name="Zalm Pokebowl" data-price="12" data-packaging="0.2">
+    <div class="menu-row menu-item" data-name="Zalm Bowl" data-price="15" data-packaging="0.2">
       <div class="menu-img">
-        <img src="{{ url_for('static', filename='images/zalm-pokebowl.png') }}" alt="Zalm Pokebowl">
+        <img src="{{ url_for('static', filename='images/zalm-pokebowl.png') }}" alt="Zalm Bowl">
       </div>
       <div class="menu-content">
-        <h3>Zalm Pokebowl</h3>
-        <p>€ 12.00</p>
-        <p class="menu-description">Verse zalm met sushirijst, avocado, komkommer, wakame en sesam.</p>
+        <h3>Zalm Bowl</h3>
+        <p>€ 15.00</p>
         <div class="qty-box">
-          <label for="zalmPokebowlCount">Aantal</label>
-          <button type="button" class="qty-minus remove-button" data-target="zalmPokebowlCount">-</button>
-          <select id="zalmPokebowlCount" name="zalmPokebowlCount"></select>
-          <button type="button" class="qty-plus add-button" data-target="zalmPokebowlCount">+</button>
+          <label for="zalmBowlQty">Aantal</label>
+          <button type="button" class="qty-minus remove-button" data-target="zalmBowlQty">-</button>
+          <select id="zalmBowlQty" name="zalmBowlQty"></select>
+          <button type="button" class="qty-plus add-button" data-target="zalmBowlQty">+</button>
         </div>
       </div>
     </div>
-    <!-- Newly added bowls -->
     <div class="menu-row menu-item" data-name="Tuna Bowl" data-price="15" data-packaging="0.2">
       <div class="menu-img">
         <img src="{{ url_for('static', filename='images/tuna-bowl.png') }}" alt="Tuna Bowl">
@@ -500,21 +497,6 @@
       </div>
     </div>
 
-    <div class="menu-row menu-item" data-name="California Bowl" data-price="14" data-packaging="0.2">
-      <div class="menu-img">
-        <img src="{{ url_for('static', filename='images/california-bowl.png') }}" alt="California Bowl">
-      </div>
-      <div class="menu-content">
-        <h3>California Bowl</h3>
-        <p>€ 14.00</p>
-        <div class="qty-box">
-          <label for="californiaBowlQty">Aantal</label>
-          <button type="button" class="qty-minus remove-button" data-target="californiaBowlQty">-</button>
-          <select id="californiaBowlQty" name="californiaBowlQty"></select>
-          <button type="button" class="qty-plus add-button" data-target="californiaBowlQty">+</button>
-        </div>
-      </div>
-    </div>
 
     <div class="menu-row menu-item" data-name="Ebi Fry Bowl" data-price="15.5" data-packaging="0.2">
       <div class="menu-img">
@@ -596,21 +578,22 @@
       </div>
     </div>
 
-    <div class="menu-row menu-item" data-name="Ribeye Bowl" data-price="15.5" data-packaging="0.2">
+    <div class="menu-row menu-item" data-name="California Bowl" data-price="14" data-packaging="0.2">
       <div class="menu-img">
-        <img src="{{ url_for('static', filename='images/ribeye-bowl.png') }}" alt="Ribeye Bowl">
+        <img src="{{ url_for('static', filename='images/california-bowl.png') }}" alt="California Bowl">
       </div>
       <div class="menu-content">
-        <h3>Ribeye Bowl</h3>
-        <p>€ 15.50</p>
+        <h3>California Bowl</h3>
+        <p>€ 14.00</p>
         <div class="qty-box">
-          <label for="ribeyeBowlQty">Aantal</label>
-          <button type="button" class="qty-minus remove-button" data-target="ribeyeBowlQty">-</button>
-          <select id="ribeyeBowlQty" name="ribeyeBowlQty"></select>
-          <button type="button" class="qty-plus add-button" data-target="ribeyeBowlQty">+</button>
+          <label for="californiaBowlQty">Aantal</label>
+          <button type="button" class="qty-minus remove-button" data-target="californiaBowlQty">-</button>
+          <select id="californiaBowlQty" name="californiaBowlQty"></select>
+          <button type="button" class="qty-plus add-button" data-target="californiaBowlQty">+</button>
         </div>
       </div>
     </div>
+
 
     <div class="menu-row menu-item" data-name="Vega Bowl" data-price="13" data-packaging="0.2">
       <div class="menu-img">
@@ -713,7 +696,7 @@
         <img src="{{ url_for('static', filename='images/xbowl.png') }}" alt="X-Bowl">
       </div>
       <div class="menu-content">
-        <h3>X-Bowl (stel zelf samen)</h3>
+        <h3>X-Bowl (Vrije samenstelling)</h3>
         <p>Prijs afhankelijk van keuzes</p>
         <div class="bubble-option">
           <select id="xBowlBase">
