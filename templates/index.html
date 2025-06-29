@@ -3117,11 +3117,44 @@ function getMaxSlide() {
   return trackWidth - buttonWidth - padding.left - padding.right;
 }
 
+function resetSlider() {
+  const padding = getHorizontalPadding(sliderTrack);
+  sliderButton.style.left = `${padding.left}px`;
+  sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
+  sliderText.innerText = 'Schuif om te bestellen';
+  sliderTrack.style.pointerEvents = 'auto';
+}
+
+function validateOrderAmount() {
+  const orderType = document.querySelector('input[name="orderType"]:checked').value;
+  const tip = parseFloat(document.getElementById('tipSelect').value || '0');
+  const amount = currentSubtotal + currentPackaging + tip;
+
+  if (orderType === 'bezorgen' && amount < 20) {
+    showFeedback('Sorry, de minimum bezorgbedrag is 20 euro.', true);
+    resetSlider();
+    setTimeout(() => { window.location.href = '/'; }, 3000);
+    return false;
+  }
+
+  if (orderType === 'afhalen' && amount === 0) {
+    showFeedback('Sorry, u heeft nog niks gekozen.', true);
+    resetSlider();
+    setTimeout(() => { window.location.href = '/'; }, 3000);
+    return false;
+  }
+
+  return true;
+}
+
 
 
 
 function triggerCheckout() {
   if (isSubmitting) return;
+  if (!validateOrderAmount()) {
+    return;
+  }
   isSubmitting = true;
 
   const padding = getHorizontalPadding(sliderTrack);
