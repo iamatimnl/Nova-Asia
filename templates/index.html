@@ -343,7 +343,8 @@ button:active {
   z-index: 2000;
   justify-content: flex-start; /* ✅ 正确，顶部开始显示购物车 */
   align-items: center; /* ✅ 水平居中可以保留 */
-  overflow: auto; /* ✅ 确保购物车整体可以滑动，防止内容溢出 */
+  overflow-y: auto; /* ✅ 确保购物车整体可以滑动，防止内容溢出 */
+  overflow-x: hidden; /* ❌ 阻止横向滚动导致的整体滑动 */
  
 }
 
@@ -996,6 +997,7 @@ input:focus, select:focus, textarea:focus {
   display: flex;
   align-items: center;
   justify-content: center;
+  touch-action: pan-y; /* 允许竖向滚动，阻止横向滑动影响页面 */
 
   /* 外围蓝色光环 */
   box-shadow: 0 0 10px rgba(10, 132, 255, 0.6);
@@ -1026,6 +1028,7 @@ input:focus, select:focus, textarea:focus {
   font-size: 28px;
   font-weight: bold;
   cursor: pointer;
+  touch-action: pan-y; /* 允许纵向滚动，阻止横向滑动 */
 }
 
 .slider-button:active {
@@ -3250,12 +3253,15 @@ function triggerCheckout() {
 }
 
 sliderButton.addEventListener('touchstart', (e) => {
+  e.stopPropagation();
   isSliding = true;
   startX = e.touches[0].clientX;
   initialLeft = parseInt(sliderButton.style.left) || getHorizontalPadding(sliderTrack).left;
 });
 
 sliderTrack.addEventListener('touchmove', (e) => {
+  e.stopPropagation();
+  e.preventDefault();
   if (!isSliding) return;
 
   const padding = getHorizontalPadding(sliderTrack);
@@ -3267,7 +3273,8 @@ sliderTrack.addEventListener('touchmove', (e) => {
   sliderButton.style.left = `${padding.left + moveX}px`;
 });
 
-  sliderTrack.addEventListener('touchend', () => {
+  sliderTrack.addEventListener('touchend', (e) => {
+    e.stopPropagation();
     isSliding = false;
     const padding = getHorizontalPadding(sliderTrack);
     const maxSlide = getMaxSlide();
