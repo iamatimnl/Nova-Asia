@@ -1822,28 +1822,26 @@ input:focus, select:focus, textarea:focus {
 </div>
 </section>
 <section id="Pokebowl">
-<h2>Pokebowl</h2>
+  <h2>Pokebowl</h2>
   <div class="menu-section">
-    <!-- Pokebowl menu items -->
-    <div class="menu-row menu-item" data-name="Zalm Pokebowl" data-packaging="0.2" data-price="12">
-<div class="menu-img">
-<img alt="Zalm Pokebowl" src="{{ url_for('static', filename='images/zalm-pokebowl.png') }}"/>
-</div>
-<div class="menu-content">
-<h3>Zalm Pokebowl</h3>
-<p>€ 12.00</p>
-<p class="menu-description">Verse zalm met sushirijst, avocado, komkommer, wakame en sesam.</p>
-<div class="qty-box">
-<label for="zalmPokebowlCount">Aantal</label>
-<button class="qty-minus remove-button" data-target="zalmPokebowlCount" type="button">-</button>
-<select id="zalmPokebowlCount" name="zalmPokebowlCount"></select>
-<button class="qty-plus add-button" data-target="zalmPokebowlCount" type="button">+</button>
-    </div>
-    </div>
-    <!-- Newly added bowls -->
-    <div class="menu-row menu-item" data-name="Tuna Bowl" data-packaging="0.2" data-price="15">
+    <div class="menu-row menu-item" data-name="Zalm Bowl" data-price="15" data-packaging="0.2">
       <div class="menu-img">
-        <img alt="Tuna Bowl" src="{{ url_for('static', filename='images/tuna-bowl.png') }}" />
+        <img src="{{ url_for('static', filename='images/zalm-pokebowl.png') }}" alt="Zalm Bowl">
+      </div>
+      <div class="menu-content">
+        <h3>Zalm Bowl</h3>
+        <p>€ 15.00</p>
+        <div class="qty-box">
+          <label for="zalmBowlQty">Aantal</label>
+          <button class="qty-minus remove-button" data-target="zalmBowlQty" type="button">-</button>
+          <select id="zalmBowlQty" name="zalmBowlQty"></select>
+          <button class="qty-plus add-button" data-target="zalmBowlQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-row menu-item" data-name="Tuna Bowl" data-price="15" data-packaging="0.2">
+      <div class="menu-img">
+        <img src="{{ url_for('static', filename='images/tuna-bowl.png') }}" alt="Tuna Bowl">
       </div>
       <div class="menu-content">
         <h3>Tuna Bowl</h3>
@@ -1857,25 +1855,9 @@ input:focus, select:focus, textarea:focus {
       </div>
     </div>
 
-    <div class="menu-row menu-item" data-name="California Bowl" data-packaging="0.2" data-price="14">
+    <div class="menu-row menu-item" data-name="Ebi Fry Bowl" data-price="15.5" data-packaging="0.2">
       <div class="menu-img">
-        <img alt="California Bowl" src="{{ url_for('static', filename='images/california-bowl.png') }}" />
-      </div>
-      <div class="menu-content">
-        <h3>California Bowl</h3>
-        <p>€ 14.00</p>
-        <div class="qty-box">
-          <label for="californiaBowlQty">Aantal</label>
-          <button class="qty-minus remove-button" data-target="californiaBowlQty" type="button">-</button>
-          <select id="californiaBowlQty" name="californiaBowlQty"></select>
-          <button class="qty-plus add-button" data-target="californiaBowlQty" type="button">+</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="menu-row menu-item" data-name="Ebi Fry Bowl" data-packaging="0.2" data-price="15.5">
-      <div class="menu-img">
-        <img alt="Ebi Fry Bowl" src="{{ url_for('static', filename='images/ebi-fry-bowl.png') }}" />
+        <img src="{{ url_for('static', filename='images/ebi-fry-bowl.png') }}" alt="Ebi Fry Bowl">
       </div>
       <div class="menu-content">
         <h3>Ebi Fry Bowl</h3>
@@ -1889,9 +1871,9 @@ input:focus, select:focus, textarea:focus {
       </div>
     </div>
 
-    <div class="menu-row menu-item" data-name="Chicken Karaage Bowl" data-packaging="0.2" data-price="15.5">
+    <div class="menu-row menu-item" data-name="Chicken Karaage Bowl" data-price="15.5" data-packaging="0.2">
       <div class="menu-img">
-        <img alt="Chicken Karaage Bowl" src="{{ url_for('static', filename='images/chicken-karaage-bowl.png') }}" />
+        <img src="{{ url_for('static', filename='images/chicken-karaage-bowl.png') }}" alt="Chicken Karaage Bowl">
       </div>
       <div class="menu-content">
         <h3>Chicken Karaage Bowl</h3>
@@ -1905,9 +1887,9 @@ input:focus, select:focus, textarea:focus {
       </div>
     </div>
 
-    <div class="menu-row menu-item" data-name="Spicy Chicken Bowl" data-packaging="0.2" data-price="15.5">
+    <div class="menu-row menu-item" data-name="Spicy Chicken Bowl" data-price="15.5" data-packaging="0.2">
       <div class="menu-img">
-        <img alt="Spicy Chicken Bowl" src="{{ url_for('static', filename='images/spicy-chicken-bowl.png') }}" />
+        <img src="{{ url_for('static', filename='images/spicy-chicken-bowl.png') }}" alt="Spicy Chicken Bowl">
       </div>
       <div class="menu-content">
         <h3>Spicy Chicken Bowl</h3>
@@ -1921,9 +1903,9 @@ input:focus, select:focus, textarea:focus {
       </div>
     </div>
 
-    <div class="menu-row menu-item" data-name="Teriyaki Chicken Bowl" data-packaging="0.2" data-price="15.5">
+    <div class="menu-row menu-item" data-name="Teriyaki Chicken Bowl" data-price="15.5" data-packaging="0.2">
       <div class="menu-img">
-        <img alt="Teriyaki Chicken Bowl" src="{{ url_for('static', filename='images/teriyaki-chicken-bowl.png') }}" />
+        <img src="{{ url_for('static', filename='images/teriyaki-chicken-bowl.png') }}" alt="Teriyaki Chicken Bowl">
       </div>
       <div class="menu-content">
         <h3>Teriyaki Chicken Bowl</h3>
@@ -1937,9 +1919,9 @@ input:focus, select:focus, textarea:focus {
       </div>
     </div>
 
-    <div class="menu-row menu-item" data-name="Teriyaki Beef Bowl" data-packaging="0.2" data-price="15.5">
+    <div class="menu-row menu-item" data-name="Teriyaki Beef Bowl" data-price="15.5" data-packaging="0.2">
       <div class="menu-img">
-        <img alt="Teriyaki Beef Bowl" src="{{ url_for('static', filename='images/teriyaki-beef-bowl.png') }}" />
+        <img src="{{ url_for('static', filename='images/teriyaki-beef-bowl.png') }}" alt="Teriyaki Beef Bowl">
       </div>
       <div class="menu-content">
         <h3>Teriyaki Beef Bowl</h3>
@@ -1953,25 +1935,25 @@ input:focus, select:focus, textarea:focus {
       </div>
     </div>
 
-    <div class="menu-row menu-item" data-name="Ribeye Bowl" data-packaging="0.2" data-price="15.5">
+    <div class="menu-row menu-item" data-name="California Bowl" data-price="14" data-packaging="0.2">
       <div class="menu-img">
-        <img alt="Ribeye Bowl" src="{{ url_for('static', filename='images/ribeye-bowl.png') }}" />
+        <img src="{{ url_for('static', filename='images/california-bowl.png') }}" alt="California Bowl">
       </div>
       <div class="menu-content">
-        <h3>Ribeye Bowl</h3>
-        <p>€ 15.50</p>
+        <h3>California Bowl</h3>
+        <p>€ 14.00</p>
         <div class="qty-box">
-          <label for="ribeyeBowlQty">Aantal</label>
-          <button class="qty-minus remove-button" data-target="ribeyeBowlQty" type="button">-</button>
-          <select id="ribeyeBowlQty" name="ribeyeBowlQty"></select>
-          <button class="qty-plus add-button" data-target="ribeyeBowlQty" type="button">+</button>
+          <label for="californiaBowlQty">Aantal</label>
+          <button class="qty-minus remove-button" data-target="californiaBowlQty" type="button">-</button>
+          <select id="californiaBowlQty" name="californiaBowlQty"></select>
+          <button class="qty-plus add-button" data-target="californiaBowlQty" type="button">+</button>
         </div>
       </div>
     </div>
 
-    <div class="menu-row menu-item" data-name="Vega Bowl" data-packaging="0.2" data-price="13">
+    <div class="menu-row menu-item" data-name="Vega Bowl" data-price="13" data-packaging="0.2">
       <div class="menu-img">
-        <img alt="Vega Bowl" src="{{ url_for('static', filename='images/vega-bowl.png') }}" />
+        <img src="{{ url_for('static', filename='images/vega-bowl.png') }}" alt="Vega Bowl">
       </div>
       <div class="menu-content">
         <h3>Vega Bowl (Vegetarisch)</h3>
@@ -1985,9 +1967,9 @@ input:focus, select:focus, textarea:focus {
       </div>
     </div>
 
-    <div class="menu-row menu-item" data-name="Meatlover Bowl" data-packaging="0.2" data-price="17">
+    <div class="menu-row menu-item" data-name="Meatlover Bowl" data-price="17" data-packaging="0.2">
       <div class="menu-img">
-        <img alt="Meatlover Bowl" src="{{ url_for('static', filename='images/meatlover-bowl.png') }}" />
+        <img src="{{ url_for('static', filename='images/meatlover-bowl.png') }}" alt="Meatlover Bowl">
       </div>
       <div class="menu-content">
         <h3>Meatlover Bowl</h3>
@@ -2001,9 +1983,9 @@ input:focus, select:focus, textarea:focus {
       </div>
     </div>
 
-    <div class="menu-row menu-item" data-name="Rainbow Bowl" data-packaging="0.2" data-price="17">
+    <div class="menu-row menu-item" data-name="Rainbow Bowl" data-price="17" data-packaging="0.2">
       <div class="menu-img">
-        <img alt="Rainbow Bowl" src="{{ url_for('static', filename='images/rainbow-bowl.png') }}" />
+        <img src="{{ url_for('static', filename='images/rainbow-bowl.png') }}" alt="Rainbow Bowl">
       </div>
       <div class="menu-content">
         <h3>Rainbow Bowl</h3>
@@ -2017,9 +1999,9 @@ input:focus, select:focus, textarea:focus {
       </div>
     </div>
 
-    <div class="menu-row menu-item" data-name="Spicy Tuna Bowl" data-packaging="0.2" data-price="15.5">
+    <div class="menu-row menu-item" data-name="Spicy Tuna Bowl" data-price="15.5" data-packaging="0.2">
       <div class="menu-img">
-        <img alt="Spicy Tuna Bowl" src="{{ url_for('static', filename='images/spicy-tuna-bowl.png') }}" />
+        <img src="{{ url_for('static', filename='images/spicy-tuna-bowl.png') }}" alt="Spicy Tuna Bowl">
       </div>
       <div class="menu-content">
         <h3>Spicy Tuna Bowl</h3>
@@ -2033,9 +2015,9 @@ input:focus, select:focus, textarea:focus {
       </div>
     </div>
 
-    <div class="menu-row menu-item" data-name="Flamed Zalm Bowl" data-packaging="0.2" data-price="16">
+    <div class="menu-row menu-item" data-name="Flamed Zalm Bowl" data-price="16" data-packaging="0.2">
       <div class="menu-img">
-        <img alt="Flamed Zalm Bowl" src="{{ url_for('static', filename='images/flamed-salmon-bowl.png') }}" />
+        <img src="{{ url_for('static', filename='images/flamed-salmon-bowl.png') }}" alt="Flamed Zalm Bowl">
       </div>
       <div class="menu-content">
         <h3>Flamed Zalm Bowl</h3>
@@ -2049,9 +2031,9 @@ input:focus, select:focus, textarea:focus {
       </div>
     </div>
 
-    <div class="menu-row menu-item" data-name="Flamed Tuna Bowl" data-packaging="0.2" data-price="16">
+    <div class="menu-row menu-item" data-name="Flamed Tuna Bowl" data-price="16" data-packaging="0.2">
       <div class="menu-img">
-        <img alt="Flamed Tuna Bowl" src="{{ url_for('static', filename='images/flamed-tuna-bowl.png') }}" />
+        <img src="{{ url_for('static', filename='images/flamed-tuna-bowl.png') }}" alt="Flamed Tuna Bowl">
       </div>
       <div class="menu-content">
         <h3>Flamed Tuna Bowl</h3>
@@ -2065,12 +2047,12 @@ input:focus, select:focus, textarea:focus {
       </div>
     </div>
 
-    <div class="menu-row menu-item" data-name="X-Bowl" data-packaging="0.2" data-price="0">
+    <div class="menu-row menu-item" data-name="X-Bowl" data-price="0" data-packaging="0.2">
       <div class="menu-img">
-        <img alt="X-Bowl" src="{{ url_for('static', filename='images/xbowl.png') }}" />
+        <img src="{{ url_for('static', filename='images/xbowl.png') }}" alt="X-Bowl">
       </div>
       <div class="menu-content">
-        <h3>X-Bowl (stel zelf samen)</h3>
+        <h3>X-Bowl (Vrije samenstelling)</h3>
         <p>Prijs afhankelijk van keuzes</p>
         <div class="bubble-option">
           <select id="xBowlBase">
@@ -2097,7 +2079,6 @@ input:focus, select:focus, textarea:focus {
       </div>
     </div>
 
-    </div>
   </div>
 </section>
 <section id="sushi">
