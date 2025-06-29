@@ -313,9 +313,9 @@ button:active {
   }
 
   .menu-item select {
-    max-width: 120px;
+    max-width: 140px;
     width: 40%;
-    font-size: 1rem;
+    font-size: 0.7rem;
   }
 }
 
@@ -346,7 +346,7 @@ button:active {
 
 /* 内部购物车面板保持现有宽度但适配移动端 */
 .cart-section.mobile-visible .cart-left {
-  width: 100%;
+  width: 119%;
   max-height: 100%;
   flex: 1 1 auto; /* 让它自动占据中间空间 */
 
@@ -973,7 +973,7 @@ input:focus, select:focus, textarea:focus {
   border-radius: 32px;
   padding: 0;
   z-index: 999;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 0 10px rgba(10, 132, 255, 0.6);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -986,88 +986,112 @@ input:focus, select:focus, textarea:focus {
   margin-left: -20px;
   height: 100%;
   border-radius: 32px;
-  background-color:linear-gradient(to right, rgba(10,132,255,0.15), rgba(255,255,255,0.05));
+  background: linear-gradient(90deg, #d3d3d3, #bcbcbc);
   padding: 0 20px;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  /* 外围蓝色光环 */
+  box-shadow: 0 0 10px rgba(10, 132, 255, 0.6);
 }
+
+
 
 .slider-button {
   width: 60px;
   height: 60px;
-  background: linear-gradient(145deg, var(--accent-gradient-start), var(--accent-gradient-end));
+  background: #0a84ff; /* 苹果蓝 */
   border-radius: 50%;
   position: absolute;
   left: 0px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 10;
-  transition: left 0.3s ease, box-shadow 0.3s ease;
+  transition: left 0.3s ease, box-shadow 0.3s ease, transform 0.1s ease;
   box-shadow:
     inset 0 1px 1px rgba(255, 255, 255, 0.4),
-    0 4px 8px rgba(10, 132, 255, 0.35),
-    0 6px 20px rgba(10, 132, 255, 0.2);
+    0 4px 8px rgba(10, 132, 255, 0.4),
+    0 8px 24px rgba(0, 0, 0, 0.2);
 
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 24px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
-
-
-@keyframes shine {
+.slider-button:active {
+  transform: translateY(-50%) scale(0.95);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.4),
+    0 2px 4px rgba(10, 132, 255, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.2);
+}
+@keyframes ios-shine {
   0% {
-    background-position: -100% 0;
-  }
-  100% {
     background-position: 100% 0;
   }
+  100% {
+    background-position: -100% 0;
+  }
 }
-
-
-
-
-
-
 
 .slider-text {
   position: absolute;
-  left: 50%;
+  left: 51%;
   top: 50%;
   transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 1;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
 
   background: linear-gradient(
-  90deg,
-  rgba(100, 100, 105, 0.85) 0%,
-  rgba(255, 255, 255, 0.99) 50%,
-  rgba(100, 100, 105, 0.85) 100%
+    90deg,
+    rgba(0, 0, 0, 0.85) 0%,
+    rgba(0, 0, 0, 0.85) 40%,
+    rgba(255, 255, 255, 1) 45%,
+    rgba(255, 255, 255, 1) 55%,
+    rgba(0, 0, 0, 0.85) 60%,
+    rgba(0, 0, 0, 0.85) 100%
   );
-  background-size: 200% auto;
-  background-position: -100% 0;
+
+  background-size: 200% auto; /* 不要太大 */
+  background-position: 100% 0;
   background-clip: text;
   -webkit-background-clip: text;
-  color: transparent;
+  color: black;
   -webkit-text-fill-color: transparent;
-  animation: shine 4s linear infinite;
+
+  animation: ios-shine 5s linear infinite; /* 合理的扫光频率 */
 }
+
+
+
 
 .spinner {
   width: 24px;
   height: 24px;
   border: 3px solid rgba(255, 255, 255, 0.3);
-  border-top: 3px solid white; /* 或其他主色 */
+  border-top: 3px solid rgb(46, 232, 33);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   display: block;
   margin: auto;
 }
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 /* Order type slider */
 .order-type-slider {
   margin: 16px auto 20px;
@@ -1129,12 +1153,12 @@ input:focus, select:focus, textarea:focus {
   white-space: nowrap;
   background: linear-gradient(
     90deg,
-    rgba(100, 100, 105, 0.85) 0%,
-    rgba(255, 255, 255, 0.99) 50%,
-    rgba(100, 100, 105, 0.85) 100%
+    rgba(95, 95, 102, 0.85) 0%,
+    rgba(229, 221, 221, 0.99) 50%,
+    rgba(0, 0, 7, 0.85) 100%
   );
   background-size: 200% auto;
-  background-position: -100% 0;
+  background-position: -200% 0;
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
@@ -1144,6 +1168,14 @@ input:focus, select:focus, textarea:focus {
 .order-type-text.left {
   left: 12px;
   right: auto;
+}
+@keyframes shine {
+  0% {
+    background-position: 100% 0; /* 从左开始 */
+  }
+  100% {
+    background-position: -100% 0;  /* 向右扫过去 */
+  }
 }
 
 @keyframes spin {
