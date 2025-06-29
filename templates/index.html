@@ -160,15 +160,9 @@
     max-width: none;
   }
 
-  @media (min-width: 768px) {
-    .menu-item {
-      width: 40%;
-    }
-  }
-
   img {
     max-width: 100%;
-    height: 95%;
+    height: auto;
   }
 
   .menu-item img {
@@ -178,6 +172,7 @@
     height: 100%;
     object-fit: cover;
   }
+
 
   img.supply-img {
     width: 32px;
@@ -227,8 +222,8 @@
   }
 
  .menu-item select {
-  max-width: 140px;
-  width: 55%;
+  max-width: 92px;
+  width: 32%;
   margin: 2px 0;
   padding: 4px 6px;
   font-size: 0.85rem;
@@ -305,12 +300,22 @@ button:active {
   box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.35);
 }
 
-/* 手机端同样保持一致大小 */
+/* 手机端放大菜单项尺寸以提升可读性 */
 @media (max-width: 600px) {
+  .menu-item {
+    width: 95%;
+  }
+
   .menu-item button {
-    width: 1.8rem;
-    height: 1.8rem;
-    font-size: 0.9rem;
+    width: 2.6rem;
+    height: 2.6rem;
+    font-size: 1.1rem;
+  }
+
+  .menu-item select {
+    max-width: 120px;
+    width: 40%;
+    font-size: 1rem;
   }
 }
 
@@ -2003,7 +2008,7 @@ function updateOmakasePrefs() {
   const qty = parseInt(document.getElementById('sushiBentoCount').value || 0);
   const container = document.getElementById('omakasePrefs');
   container.innerHTML = '';
-  const count = qty;
+
   const existing = (cart['Bento Sushi Omakase'] && cart['Bento Sushi Omakase'].prefs) || [];
   for (let i = 1; i <= count; i++) {
     const sel = document.createElement('select');
@@ -2024,7 +2029,7 @@ function updateOmakasePrefs() {
 function setOmakaseQty() {
   const qty = parseInt(document.getElementById('sushiBentoCount').value || 0);
   const prefs = [];
-  const count = qty;
+
   for (let i = 1; i <= count; i++) {
     prefs.push(document.getElementById(`omakasePref${i}`).value);
   }

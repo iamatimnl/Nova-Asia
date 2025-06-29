@@ -709,7 +709,7 @@ function updateOmakasePrefs(){
   const qty=parseInt(document.getElementById('sushiBentoCount').value||0);
   const container=document.getElementById('omakasePrefs');
   container.innerHTML='';
-  const count=qty;
+
   const existing=(cart['Bento Sushi Omakase']&&cart['Bento Sushi Omakase'].prefs)||[];
   for(let i=1;i<=count;i++){
     const sel=document.createElement('select');
@@ -726,7 +726,7 @@ function updateOmakasePrefs(){
 function setOmakaseQty(){
   const qty=parseInt(document.getElementById('sushiBentoCount').value||0);
   const prefs=[];
-  const count=qty;
+
   for(let i=1;i<=count;i++){
     prefs.push(document.getElementById(`omakasePref${i}`).value);
   }
