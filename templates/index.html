@@ -2010,7 +2010,7 @@ function updateOmakasePrefs() {
   container.innerHTML = '';
 
   const existing = (cart['Bento Sushi Omakase'] && cart['Bento Sushi Omakase'].prefs) || [];
-  for (let i = 1; i <= count; i++) {
+  for (let i = 1; i <= qty; i++) {
     const sel = document.createElement('select');
     ['Geen voorkeur','Alleen vis','Alleen vlees','Alleen veggie'].forEach(opt => {
       const o = document.createElement('option');
@@ -2030,7 +2030,7 @@ function setOmakaseQty() {
   const qty = parseInt(document.getElementById('sushiBentoCount').value || 0);
   const prefs = [];
 
-  for (let i = 1; i <= count; i++) {
+  for (let i = 1; i <= qty; i++) {
     prefs.push(document.getElementById(`omakasePref${i}`).value);
   }
   const price = parseFloat(document.querySelector('[data-name="Bento Sushi Omakase"]').dataset.price);
