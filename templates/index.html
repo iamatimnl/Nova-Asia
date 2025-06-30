@@ -760,6 +760,13 @@
 #hours-info {
   margin-bottom: 8px;
 }
+#closed-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: none;
+  background: rgba(0,0,0,0);
+}
   .feedback.error {
     background: #c55;
   }
@@ -1263,6 +1270,7 @@ input:focus, select:focus, textarea:focus {
 <body>
 <div id="status-banner"></div>
 <div id="hours-info"></div>
+<div id="closed-overlay"></div>
 <div class="feedback" id="feedback"></div>
 <div class="navbar-container" id="navbar-container">
 <nav class="navbar" id="navbar">
@@ -3181,6 +3189,7 @@ for (let i = 0; i <= 20; i++) {
 <script>
 let storeOpen = true;
 let businessHours = '';
+let closedMessage = '';
 function showFeedback(msg, isError=false) {
   const el = document.getElementById('feedback');
   el.textContent = msg;
@@ -3241,7 +3250,7 @@ function generateOrderNumber() {
 
 function checkout() {
   if(!storeOpen){
-    showFeedback(`暂不接单，营业时间 ${businessHours}`, true);
+    showFeedback(closedMessage, true);
     window.scrollTo({top: 0, behavior: 'smooth'});
     return;
   }
@@ -3906,7 +3915,7 @@ const sliderContainer = document.querySelector('.slider-container');
 if(sliderContainer){
   sliderContainer.addEventListener('click', () => {
     if(!storeOpen){
-      showFeedback(`暂不接单，营业时间 ${businessHours}`, true);
+      showFeedback(closedMessage, true);
       window.scrollTo({top: 0, behavior: 'smooth'});
     }
   });
@@ -4096,6 +4105,7 @@ function updateStatus(settings){
   const checkoutBtn = document.querySelector('.checkout-btn');
   const sliderTrack = document.getElementById('sliderTrack');
   const sliderText = document.getElementById('sliderText');
+  const overlayEl = document.getElementById('closed-overlay');
 
   hoursEl.textContent = `Openingstijden: ${settings.open_time} - ${settings.close_time}`;
 
@@ -4103,18 +4113,40 @@ function updateStatus(settings){
   const timeOk = inBusinessHours(settings);
   storeOpen = openFlag && timeOk;
   businessHours = `${settings.open_time} - ${settings.close_time}`;
+  closedMessage = '';
+  const now = new Date();
+  const [oh, om] = settings.open_time.split(':');
+  const [ch, cm] = settings.close_time.split(':');
+  const nowMin = now.getHours()*60 + now.getMinutes();
+  const openMin = parseInt(oh)*60 + parseInt(om);
+  const closeMin = parseInt(ch)*60 + parseInt(cm);
+  let notOpenYet = false;
+  if(openMin <= closeMin){
+    notOpenYet = nowMin < openMin;
+  }else{
+    notOpenYet = nowMin >= closeMin && nowMin < openMin;
+  }
+  if(!openFlag || (!timeOk && nowMin >= closeMin && openMin <= closeMin)){
+    closedMessage = 'We are currently closed and not accepting orders.';
+  }else if(!timeOk && notOpenYet){
+    closedMessage = `We are currently closed. We will open today at ${settings.open_time}.`;
+  }else if(!timeOk){
+    closedMessage = 'We are currently closed and not accepting orders.';
+  }
 
   if(openFlag && timeOk){
     banner.textContent = '';
     banner.style.display = 'none';
+    if(overlayEl) overlayEl.style.display = 'none';
     if(checkoutBtn) checkoutBtn.disabled = false;
     if(sliderTrack){
       sliderTrack.style.pointerEvents = 'auto';
       if(sliderText) sliderText.textContent = 'Schuif om te bestellen';
     }
   }else{
-    banner.textContent = `暂不接单，营业时间 ${settings.open_time} - ${settings.close_time}`;
+    banner.textContent = closedMessage;
     banner.style.display = 'block';
+    if(overlayEl) overlayEl.style.display = 'block';
     window.scrollTo({top: 0, behavior: 'smooth'});
     if(checkoutBtn) checkoutBtn.disabled = true;
     if(sliderTrack){
@@ -4132,6 +4164,12 @@ function fetchStatus(){
 fetchStatus();
 const socket = io();
 socket.on('setting_update', updateStatus);
+const overlay = document.getElementById('closed-overlay');
+if(overlay){
+  overlay.addEventListener('click', () => {
+    showFeedback(closedMessage, true);
+  });
+}
 </script>
 
 <div id="reviewsModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:1000;">
