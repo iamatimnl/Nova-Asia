@@ -3179,6 +3179,8 @@ for (let i = 0; i <= 20; i++) {
 });
 </script>
 <script>
+let storeOpen = true;
+let businessHours = '';
 function showFeedback(msg, isError=false) {
   const el = document.getElementById('feedback');
   el.textContent = msg;
@@ -3238,6 +3240,11 @@ function generateOrderNumber() {
 }
 
 function checkout() {
+  if(!storeOpen){
+    showFeedback(`暂不接单，营业时间 ${businessHours}`, true);
+    window.scrollTo({top: 0, behavior: 'smooth'});
+    return;
+  }
   const paidItems = Object.values(cart).filter(item => item.price > 0 && item.qty > 0);
   if (paidItems.length === 0) {
     alert('U moet ten minste één gerecht selecteren om te bestellen.');
@@ -3895,6 +3902,15 @@ window.addEventListener('DOMContentLoaded', () => {
 const sliderButton = document.getElementById('sliderButton');
 const sliderTrack = document.getElementById('sliderTrack');
 const sliderText = document.querySelector('.slider-text');
+const sliderContainer = document.querySelector('.slider-container');
+if(sliderContainer){
+  sliderContainer.addEventListener('click', () => {
+    if(!storeOpen){
+      showFeedback(`暂不接单，营业时间 ${businessHours}`, true);
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+  });
+}
 
 let isSliding = false;
 let startX = 0;
@@ -4085,6 +4101,8 @@ function updateStatus(settings){
 
   const openFlag = settings.is_open !== 'false';
   const timeOk = inBusinessHours(settings);
+  storeOpen = openFlag && timeOk;
+  businessHours = `${settings.open_time} - ${settings.close_time}`;
 
   if(openFlag && timeOk){
     banner.textContent = '';
@@ -4095,8 +4113,9 @@ function updateStatus(settings){
       if(sliderText) sliderText.textContent = 'Schuif om te bestellen';
     }
   }else{
-    banner.textContent = '暂不接单';
+    banner.textContent = `暂不接单，营业时间 ${settings.open_time} - ${settings.close_time}`;
     banner.style.display = 'block';
+    window.scrollTo({top: 0, behavior: 'smooth'});
     if(checkoutBtn) checkoutBtn.disabled = true;
     if(sliderTrack){
       sliderTrack.style.pointerEvents = 'none';
