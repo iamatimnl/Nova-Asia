@@ -298,36 +298,46 @@
 }
 
 .new-set-button {
-  background: var(--off-white);
-  color: var(--accent-color);
-  border: 1px solid var(--accent-color);
-  border-radius: 12px;
-  width: 2.2rem;
-  height: 2.2rem;
-  font-size: 0.65rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
+  all: unset !important; /* 重置所有默认和遗留样式 */
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important; /* 强制蓝色渐变 */
+  color: white !important;
+  border: none !important;
+  border-radius: 16px !important;
+  padding: 8px 18px !important;
+  font-size: 1.6rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  min-width: 30px !important;
+  min-height: 20px !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.2s ease !important;
 }
 
-.new-set-wrap {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin: 4px 0;
+.new-set-button:active {
+  transform: scale(0.95) !important;
+  filter: brightness(0.9) !important;
 }
+
+.new-set-wrap.hidden {
+  display: none !important;
+}
+
+
+.new-set-msg {
+  font-size: 1.6rem;  /* 稍微加大，更友好 */
+  color: #007AFF
+;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  margin: 0;
+  line-height: 1.4;
+}
+
+
+
 /* Generic button press feedback */
-button {
-  transition: transform 0.1s ease, filter 0.1s ease, box-shadow 0.1s ease;
-  touch-action: manipulation;
-}
-
-button:active {
-  transform: scale(0.94);
-  filter: brightness(0.85);
-  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.35);
-}
 
 /* 手机端放大菜单项尺寸以提升可读性 */
 @media (max-width: 600px) {
