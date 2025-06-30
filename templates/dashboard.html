@@ -1,6 +1,14 @@
 <!doctype html>
-<title>Mijn Nova Asia</title>
+<html>
+<head>
+    <title>Mijn Nova Asia</title>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+</head>
+<body>
 <h1>Mijn Nova Asia</h1>
+
+<p id="status_display">当前状态: {{ '营业' if is_open == 'true' else '暂停接单' }}</p>
+
 <form method="post" action="{{ url_for('update_setting') }}">
   <label>营业状态:</label>
   <select name="is_open">
@@ -14,6 +22,7 @@
   <button type="submit">保存</button>
 </form>
 
+<p><a href="{{ url_for('logout') }}">Logout</a></p>
 
 <h2>Add Section</h2>
 <form method="post" action="{{ url_for('add_section') }}">
@@ -33,3 +42,26 @@
   <input type="file" name="image"><br>
   <button type="submit">Add Item</button>
 </form>
+
+<script>
+// 连接 Render 上的 SocketIO
+var socket = io('https://flask-order-api.onrender.com');
+
+socket.on('connect', function() {
+    console.log('✅ 已连接到 Render SocketIO');
+});
+
+// 监听营业状态更新
+socket.on('setting_update', function(data) {
+    console.log('✅ 收到 Render 推送:', data);
+    if (data.key === 'is_open') {
+        document.getElementById('status_display').innerText = '当前状态: ' + (data.value === 'true' ? '营业' : '暂停接单');
+    }
+    if (data.key === 'open_time' || data.key === 'close_time') {
+        // 如果你想，也可以实时显示营业时间更新
+    }
+});
+</script>
+</body>
+</html>
+
