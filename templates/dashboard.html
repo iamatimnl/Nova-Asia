@@ -1,13 +1,6 @@
 <!doctype html>
-<html>
-<head>
-    <title>Mijn Nova Asia</title>
-    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
-</head>
-<body>
+<title>Mijn Nova Asia</title>
 <h1>Mijn Nova Asia</h1>
-
-<p id="status_display">当前状态: {{ '营业' if is_open == 'true' else '暂停接单' }}</p>
 
 <form method="post" action="{{ url_for('update_setting') }}">
   <label>营业状态:</label>
@@ -15,53 +8,12 @@
     <option value="true" {% if is_open == 'true' %}selected{% endif %}>营业</option>
     <option value="false" {% if is_open == 'false' %}selected{% endif %}>暂停接单</option>
   </select>
-  <br>
+  <br><br>
   <label>营业时间:</label>
   <input type="time" name="open_time" value="{{ open_time }}"> -
   <input type="time" name="close_time" value="{{ close_time }}">
+  <br><br>
   <button type="submit">保存</button>
 </form>
 
-<p><a href="{{ url_for('logout') }}">Logout</a></p>
-
-<h2>Add Section</h2>
-<form method="post" action="{{ url_for('add_section') }}">
-  <input type="text" name="section_name" placeholder="Section name">
-  <button type="submit">Add Section</button>
-</form>
-
-<h2>Add Menu Item</h2>
-<form method="post" action="{{ url_for('add_item') }}" enctype="multipart/form-data">
-  <input type="text" name="item_name" placeholder="Item name"><br>
-  <input type="number" step="0.01" name="price" placeholder="Price"><br>
-  <select name="section_id">
-    {% for s in sections %}
-    <option value="{{ s.id }}">{{ s.name }}</option>
-    {% endfor %}
-  </select><br>
-  <input type="file" name="image"><br>
-  <button type="submit">Add Item</button>
-</form>
-
-<script>
-// 连接 Render 上的 SocketIO
-var socket = io('https://flask-order-api.onrender.com');
-
-socket.on('connect', function() {
-    console.log('✅ 已连接到 Render SocketIO');
-});
-
-// 监听营业状态更新
-socket.on('setting_update', function(data) {
-    console.log('✅ 收到 Render 推送:', data);
-    if (data.key === 'is_open') {
-        document.getElementById('status_display').innerText = '当前状态: ' + (data.value === 'true' ? '营业' : '暂停接单');
-    }
-    if (data.key === 'open_time' || data.key === 'close_time') {
-        // 如果你想，也可以实时显示营业时间更新
-    }
-});
-</script>
-</body>
-</html>
 
