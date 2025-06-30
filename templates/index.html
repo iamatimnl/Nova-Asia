@@ -301,10 +301,21 @@
   background: var(--off-white);
   color: var(--accent-color);
   border: 1px solid var(--accent-color);
-  border-radius: 6px;
-  padding: 0 6px;
-  height: 2rem;
-  font-size: 0.7rem;
+  border-radius: 12px;
+  width: 2.2rem;
+  height: 2.2rem;
+  font-size: 0.65rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.new-set-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 4px 0;
 }
 /* Generic button press feedback */
 button {
@@ -1687,7 +1698,10 @@ input:focus, select:focus, textarea:focus {
           <option value="Soyu">Soyu</option>
         </select>
       </div>
-      <button type="button" class="new-set-button" id="ebiNew">New Set</button>
+      <div class="new-set-wrap hidden" id="ebiNewWrap">
+        <span class="new-set-msg">Toegevoegd. Nieuw selecteren?</span>
+        <button type="button" class="new-set-button" id="ebiNew">druk op</button>
+      </div>
       <div class="qty-box">
         <label for="ebiQty">Aantal</label>
         <button class="qty-minus remove-button" data-target="ebiQty" type="button">-</button>
@@ -1718,7 +1732,10 @@ input:focus, select:focus, textarea:focus {
           <option value="Soyu">Soyu</option>
         </select>
       </div>
-      <button type="button" class="new-set-button" id="chickenNew">New Set</button>
+      <div class="new-set-wrap hidden" id="chickenNewWrap">
+        <span class="new-set-msg">Toegevoegd. Nieuw selecteren?</span>
+        <button type="button" class="new-set-button" id="chickenNew">druk op</button>
+      </div>
       <div class="qty-box">
         <label for="chickenQty">Aantal</label>
         <button class="qty-minus remove-button" data-target="chickenQty" type="button">-</button>
@@ -1749,7 +1766,10 @@ input:focus, select:focus, textarea:focus {
           <option value="Soyu">Soyu</option>
         </select>
       </div>
-      <button type="button" class="new-set-button" id="beefNew">New Set</button>
+      <div class="new-set-wrap hidden" id="beefNewWrap">
+        <span class="new-set-msg">Toegevoegd. Nieuw selecteren?</span>
+        <button type="button" class="new-set-button" id="beefNew">druk op</button>
+      </div>
       <div class="qty-box">
         <label for="beefQty">Aantal</label>
         <button class="qty-minus remove-button" data-target="beefQty" type="button">-</button>
@@ -1780,7 +1800,10 @@ input:focus, select:focus, textarea:focus {
           <option value="Soyu">Soyu</option>
         </select>
       </div>
-      <button type="button" class="new-set-button" id="ribeyeNew">New Set</button>
+      <div class="new-set-wrap hidden" id="ribeyeNewWrap">
+        <span class="new-set-msg">Toegevoegd. Nieuw selecteren?</span>
+        <button type="button" class="new-set-button" id="ribeyeNew">druk op</button>
+      </div>
       <div class="qty-box">
         <label for="ribeyeQty">Aantal</label>
         <button class="qty-minus remove-button" data-target="ribeyeQty" type="button">-</button>
@@ -1811,7 +1834,10 @@ input:focus, select:focus, textarea:focus {
           <option value="Soyu">Soyu</option>
         </select>
       </div>
-      <button type="button" class="new-set-button" id="chasiuNew">New Set</button>
+      <div class="new-set-wrap hidden" id="chasiuNewWrap">
+        <span class="new-set-msg">Toegevoegd. Nieuw selecteren?</span>
+        <button type="button" class="new-set-button" id="chasiuNew">druk op</button>
+      </div>
       <div class="qty-box">
         <label for="chasiuQty">Aantal</label>
         <button class="qty-minus remove-button" data-target="chasiuQty" type="button">-</button>
@@ -2778,7 +2804,14 @@ function isRamenValid(code) {
 }
 
 function updateRamenControls(code) {
-  // controls remain enabled; validation handled on click
+  const base = document.getElementById(code + 'Base').value;
+  const smaak = document.getElementById(code + 'Smaak').value;
+  const qty = parseInt(document.getElementById(code + 'Qty').value || 0);
+  const wrap = document.getElementById(code + 'NewWrap');
+  if (wrap) {
+    if (base && smaak && qty > 0) wrap.classList.remove('hidden');
+    else wrap.classList.add('hidden');
+  }
 }
 
 function changeRamenQty(code, delta) {
@@ -2795,6 +2828,7 @@ function changeRamenQty(code, delta) {
   const pack = parseFloat(item.dataset.packaging || DEFAULT_PACKAGING_FEE);
   const fullName = `${name} - ${base} - ${smaak}`;
   setQty(fullName, price, val, pack);
+  updateRamenControls(code);
 }
 
 function clearRamenSet(code) {
