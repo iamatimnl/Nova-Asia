@@ -752,6 +752,14 @@
   z-index: 1000;
   display: none;
 }
+#status-banner {
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: red;
+}
+#hours-info {
+  margin-bottom: 8px;
+}
   .feedback.error {
     background: #c55;
   }
@@ -1254,6 +1262,7 @@ input:focus, select:focus, textarea:focus {
 </head>
 <body>
 <div id="status-banner"></div>
+<div id="hours-info"></div>
 <div class="feedback" id="feedback"></div>
 <div class="navbar-container" id="navbar-container">
 <nav class="navbar" id="navbar">
@@ -4067,14 +4076,32 @@ function inBusinessHours(settings){
 
 function updateStatus(settings){
   const banner = document.getElementById('status-banner');
+  const hoursEl = document.getElementById('hours-info');
+  const checkoutBtn = document.querySelector('.checkout-btn');
+  const sliderTrack = document.getElementById('sliderTrack');
+  const sliderText = document.getElementById('sliderText');
+
+  hoursEl.textContent = `Openingstijden: ${settings.open_time} - ${settings.close_time}`;
+
   const openFlag = settings.is_open !== 'false';
   const timeOk = inBusinessHours(settings);
+
   if(openFlag && timeOk){
     banner.textContent = '';
     banner.style.display = 'none';
+    if(checkoutBtn) checkoutBtn.disabled = false;
+    if(sliderTrack){
+      sliderTrack.style.pointerEvents = 'auto';
+      if(sliderText) sliderText.textContent = 'Schuif om te bestellen';
+    }
   }else{
     banner.textContent = '暂不接单';
     banner.style.display = 'block';
+    if(checkoutBtn) checkoutBtn.disabled = true;
+    if(sliderTrack){
+      sliderTrack.style.pointerEvents = 'none';
+      if(sliderText) sliderText.textContent = 'Momenteel gesloten';
+    }
   }
 }
 
@@ -4084,9 +4111,8 @@ function fetchStatus(){
     .then(updateStatus);
 }
 fetchStatus();
-setInterval(fetchStatus, 30000);
 const socket = io();
-socket.on('setting_update', fetchStatus);
+socket.on('setting_update', updateStatus);
 </script>
 
 <div id="reviewsModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:1000;">
