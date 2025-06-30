@@ -523,9 +523,10 @@ def dashboard():
 @app.route('/dashboard/update', methods=['POST'])
 @login_required
 def update_setting():
-    is_open_val = request.form.get('is_open', 'true')
-    open_time_val = request.form.get('open_time', '11:00')
-    close_time_val = request.form.get('close_time', '21:00')
+    data = request.get_json()
+    is_open_val = data.get('is_open', 'true')
+    open_time_val = data.get('open_time', '11:00')
+    close_time_val = data.get('close_time', '21:00')
 
     for key, val in [
         ('is_open', is_open_val),
@@ -541,7 +542,8 @@ def update_setting():
     db.session.commit()
     settings = {s.key: s.value for s in Setting.query.all()}
     socketio.emit('setting_update', settings)
-    return redirect(url_for('dashboard'))
+    return jsonify({'success': True})
+
 
 
 @app.route('/dashboard/add_section', methods=['POST'])
