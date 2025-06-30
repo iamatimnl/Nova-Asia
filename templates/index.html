@@ -1469,15 +1469,19 @@ input:focus, select:focus, textarea:focus {
 </select>
 </div>
 <div class="bubble-option">
-<select id="bubbleTopping">
+  <select id="bubbleTopping">
 <option value="">Topping</option>
 <option value="Appel Popping">Appel Popping</option>
 <option value="Perzik Popping">Perzik Popping</option>
-<option value="Tapioca">Tapioca</option>
-</select>
+  <option value="Tapioca">Tapioca</option>
+  </select>
 </div>
+        <div class="new-set-wrap hidden" id="bubbleNewWrap">
+          <span class="new-set-msg">Toegevoegd. Nieuw selecteren?</span>
+          <button type="button" class="new-set-button" id="bubbleNew">druk op</button>
+        </div>
 <div class="qty-box">
-<label for="bubbleTeaQty">Aantal</label>
+  <label for="bubbleTeaQty">Aantal</label>
 <button class="qty-minus remove-button" data-target="bubbleTeaQty" type="button">-</button>
 <select id="bubbleTeaQty"></select>
 <button class="qty-plus add-button" data-target="bubbleTeaQty" type="button">+</button>
@@ -1665,15 +1669,19 @@ input:focus, select:focus, textarea:focus {
 </select>
 </div>
 <div class="bubble-option">
-<select id="xBentoRice">
+  <select id="xBentoRice">
 <option value="">Rijstsoort</option>
 <option value="White rice">White rice</option>
 <option value="Fried rice (+€5)">Fried rice (+€5)</option>
-<option value="Sushi rice">Sushi rice</option>
-</select>
+  <option value="Sushi rice">Sushi rice</option>
+  </select>
 </div>
+    <div class="new-set-wrap hidden" id="xBentoNewWrap">
+      <span class="new-set-msg">Toegevoegd. Nieuw selecteren?</span>
+      <button type="button" class="new-set-button" id="xBentoNew">druk op</button>
+    </div>
 <div class="qty-box">
-<label for="xBentoQty">Aantal</label>
+  <label for="xBentoQty">Aantal</label>
 <button class="qty-minus remove-button" data-target="xBentoQty" type="button">-</button>
 <select class="qty-select" id="xBentoQty" name="xBentoQty"></select>
 <button class="qty-plus add-button" data-target="xBentoQty" type="button">+</button>
@@ -2432,6 +2440,8 @@ let currentPackaging = 0;
 let currentSubtotal = 0;
 let finalTotal = 0;
 let currentDiscount = 0;
+let bubbleSetControls;
+let xbentoSetControls;
 
 function saveCart() {
   sessionStorage.setItem('novaCart', JSON.stringify(cart));
@@ -2566,6 +2576,7 @@ function changeBubbleQty(delta) {
 
   const fullName = `Bubble Tea (${type}, ${flavor}, ${topping})`;
   setQty(fullName, 5, val, DEFAULT_PACKAGING_FEE);
+  if (bubbleSetControls) bubbleSetControls.update();
 }
 
 function changeXbentoQty(delta) {
@@ -2589,6 +2600,7 @@ function changeXbentoQty(delta) {
 
   const fullName = `Xbento (${main}, ${side}, ${rice})`;
   setQty(fullName, basePrice, val, DEFAULT_PACKAGING_FEE);
+  if (xbentoSetControls) xbentoSetControls.update();
 }
 
 function changeXbowlQty(delta) {
@@ -2714,6 +2726,22 @@ function setDragonQty() {
     const sauce = document.getElementById('xBowlSauce').value;
     return base && sauce;
   }
+
+  bubbleSetControls = initNewSetControls({
+    qtyId: 'bubbleTeaQty',
+    wrapId: 'bubbleNewWrap',
+    buttonId: 'bubbleNew',
+    fieldIds: ['bubbleType','bubbleFlavor','bubbleTopping']
+  });
+  bubbleSetControls.update();
+
+  xbentoSetControls = initNewSetControls({
+    qtyId: 'xBentoQty',
+    wrapId: 'xBentoNewWrap',
+    buttonId: 'xBentoNew',
+    fieldIds: ['xBentoMain','xBentoSide','xBentoRice']
+  });
+  xbentoSetControls.update();
 
   // 🧋 奶茶按钮加减
   document.querySelector('.qty-plus[data-target="bubbleTeaQty"]').addEventListener('click', () => {
@@ -2846,6 +2874,30 @@ function clearRamenSet(code) {
   document.getElementById(code + 'Smaak').value = '';
   document.getElementById(code + 'Qty').value = 0;
   updateRamenControls(code);
+}
+
+function initNewSetControls({qtyId, wrapId, buttonId, fieldIds}) {
+  const qtyEl = document.getElementById(qtyId);
+  const wrapEl = document.getElementById(wrapId);
+  const btn = document.getElementById(buttonId);
+
+  function update() {
+    const filled = fieldIds.every(id => document.getElementById(id).value);
+    const qty = parseInt(qtyEl.value || 0);
+    if (filled && qty > 0) wrapEl.classList.remove('hidden');
+    else wrapEl.classList.add('hidden');
+  }
+
+  function clear() {
+    fieldIds.forEach(id => { document.getElementById(id).value = ''; });
+    qtyEl.value = 0;
+    update();
+  }
+
+  fieldIds.forEach(id => document.getElementById(id).addEventListener('change', update));
+  qtyEl.addEventListener('change', update);
+  if (btn) btn.addEventListener('click', clear);
+  return { update, clear };
 }
 
 document.addEventListener('DOMContentLoaded', () => {

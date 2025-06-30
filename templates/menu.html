@@ -41,12 +41,17 @@
             <option value="">Topping</option>
             <option value="Appel Popping">Appel Popping</option>
             <option value="Perzik Popping">Perzik Popping</option>
-            <option value="Tapioca">Tapioca</option>
-          </select>
-        </div>
+          <option value="Tapioca">Tapioca</option>
+        </select>
+      </div>
 
-        <div class="qty-box">
-          <label for="bubbleTeaQty">Aantal</label>
+      <div class="new-set-wrap hidden" id="bubbleNewWrap">
+        <span class="new-set-msg">Toegevoegd. Nieuw selecteren?</span>
+        <button type="button" class="new-set-button" id="bubbleNew">druk op</button>
+      </div>
+
+      <div class="qty-box">
+        <label for="bubbleTeaQty">Aantal</label>
           <button type="button" class="qty-minus remove-button" data-target="bubbleTeaQty">-</button>
           <select id="bubbleTeaQty"></select>
           <button type="button" class="qty-plus add-button" data-target="bubbleTeaQty">+</button>
@@ -284,8 +289,13 @@
         <option value="">Rijstsoort</option>
         <option value="White rice">White rice</option>
         <option value="Fried rice (+€5)">Fried rice (+€5)</option>
-        <option value="Sushi rice">Sushi rice</option>
+       <option value="Sushi rice">Sushi rice</option>
       </select>
+    </div>
+
+    <div class="new-set-wrap hidden" id="xBentoNewWrap">
+      <span class="new-set-msg">Toegevoegd. Nieuw selecteren?</span>
+      <button type="button" class="new-set-button" id="xBentoNew">druk op</button>
     </div>
 
     <div class="qty-box">
