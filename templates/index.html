@@ -3468,24 +3468,36 @@ function checkout() {
     return num.toString().padStart(2, '0');
   }
 
-  function populateTimeOptions(selectId, offsetMinutes) {
+  let openTime = '12:00';
+  let closeTime = '23:59';
+
+  function populateTimeOptions(selectId, offsetMinutes, openStr, closeStr) {
     const select = document.getElementById(selectId);
     if (!select) return;
     const prev = select.value; // keep current selection
     select.innerHTML = '';
+
     const now = new Date();
     now.setMinutes(now.getMinutes() + offsetMinutes);
 
+    const oStr = openStr || openTime;
+    const cStr = closeStr || closeTime;
+    const [oh, om] = oStr.split(':').map(Number);
+    const [ch, cm] = cStr.split(':').map(Number);
+
     const open = new Date();
-    open.setHours(12, 0, 0, 0);
+    open.setHours(oh, om, 0, 0);
     const close = new Date();
-    close.setHours(23, 59, 0, 0);
+    close.setHours(ch, cm, 0, 0);
+    if (ch * 60 + cm <= oh * 60 + om) {
+      close.setDate(close.getDate() + 1);
+    }
 
     let start = now > open ? now : open;
     start = new Date(start);
     start.setMinutes(Math.ceil(start.getMinutes() / 15) * 15, 0, 0);
 
-    for (let t = start; t <= close; t.setMinutes(t.getMinutes() + 15)) {
+    for (let t = new Date(start); t <= close; t.setMinutes(t.getMinutes() + 15)) {
       const hh = pad(t.getHours());
       const mm = pad(t.getMinutes());
       const timeStr = `${hh}:${mm}`;
@@ -4108,6 +4120,10 @@ function updateStatus(settings){
   const overlayEl = document.getElementById('closed-overlay');
 
   hoursEl.textContent = `Openingstijden: ${settings.open_time} - ${settings.close_time}`;
+  openTime = settings.open_time || openTime;
+  closeTime = settings.close_time || closeTime;
+  populateTimeOptions('pickup_time', 30);
+  populateTimeOptions('delivery_time', 45);
 
   const openFlag = settings.is_open !== 'false';
   const timeOk = inBusinessHours(settings);
