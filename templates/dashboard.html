@@ -1,19 +1,61 @@
 <!doctype html>
-<title>Mijn Nova Asia</title>
-<h1>Mijn Nova Asia</h1>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mijn Nova Asia - Dashboard</title>
+</head>
+<body>
+    <h1>Mijn Nova Asia - Dashboard</h1>
 
-<form method="post" action="{{ url_for('update_setting') }}">
-  <label>营业状态:</label>
-  <select name="is_open">
-    <option value="true" {% if is_open == 'true' %}selected{% endif %}>营业</option>
-    <option value="false" {% if is_open == 'false' %}selected{% endif %}>暂停接单</option>
-  </select>
-  <br><br>
-  <label>营业时间:</label>
-  <input type="time" name="open_time" value="{{ open_time }}"> -
-  <input type="time" name="close_time" value="{{ close_time }}">
-  <br><br>
-  <button type="submit">保存</button>
-</form>
+    <form id="settingForm">
+        <label>营业状态:</label>
+        <select name="is_open" id="is_open_select">
+            <option value="true" {% if is_open == 'true' %}selected{% endif %}>营业</option>
+            <option value="false" {% if is_open == 'false' %}selected{% endif %}>暂停接单</option>
+        </select>
+        <br><br>
+
+        <label>营业时间:</label>
+        <input type="time" name="open_time" id="open_time_input" value="{{ open_time }}"> -
+        <input type="time" name="close_time" id="close_time_input" value="{{ close_time }}">
+        <br><br>
+
+        <button type="submit">保存</button>
+    </form>
+
+    <script>
+        document.getElementById('settingForm').addEventListener('submit', function(e) {
+            e.preventDefault();  // 防止页面刷新
+
+            const is_open = document.getElementById('is_open_select').value;
+            const open_time = document.getElementById('open_time_input').value;
+            const close_time = document.getElementById('close_time_input').value;
+
+            fetch('/dashboard/update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    is_open: is_open,
+                    open_time: open_time,
+                    close_time: close_time
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('设置已成功更新！');
+                } else {
+                    alert('更新失败，请重试。');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('请求失败，请检查网络。');
+            });
+        });
+    </script>
+</body>
+</html>
+
 
 
