@@ -3179,6 +3179,36 @@ for (let i = 0; i <= 20; i++) {
 });
 </script>
 <script>
+let storeOpen = true;
+let manualOpen = true;
+let openTime = '';
+let closeTime = '';
+
+function isBeforeOpen(){
+  if(!openTime || !closeTime) return false;
+  const now = new Date();
+  const [oh, om] = openTime.split(':');
+  const [ch, cm] = closeTime.split(':');
+  const nowMin = now.getHours()*60 + now.getMinutes();
+  const openMin = parseInt(oh)*60 + parseInt(om);
+  const closeMin = parseInt(ch)*60 + parseInt(cm);
+  if(openMin <= closeMin){
+    return nowMin < openMin;
+  }
+  return nowMin >= closeMin && nowMin < openMin;
+}
+
+function getClosedMessage(){
+  if(manualOpen && isBeforeOpen()){
+    return `We are currently closed. We will open today at ${openTime}.`;
+  }
+  return 'We are currently closed and not accepting orders.';
+}
+
+function showClosedMessage(){
+  showFeedback(getClosedMessage(), true);
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
 function showFeedback(msg, isError=false) {
   const el = document.getElementById('feedback');
   el.textContent = msg;
@@ -3201,6 +3231,18 @@ function beep(){
   osc.stop(audioCtx.currentTime + 0.2);
 }
 document.body.addEventListener('click',()=>{if(audioCtx.state==='suspended') audioCtx.resume();},{once:true});
+
+document.addEventListener('DOMContentLoaded', () => {
+  ['click','input','change'].forEach(evt => {
+    document.body.addEventListener(evt, (e) => {
+      if(!storeOpen){
+        showClosedMessage();
+        e.preventDefault();
+        e.stopImmediatePropagation();
+      }
+    }, true);
+  });
+});
 
 function scrollToField(id) {
   const el = document.getElementById(id);
@@ -3238,6 +3280,10 @@ function generateOrderNumber() {
 }
 
 function checkout() {
+  if(!storeOpen){
+    showClosedMessage();
+    return;
+  }
   const paidItems = Object.values(cart).filter(item => item.price > 0 && item.qty > 0);
   if (paidItems.length === 0) {
     alert('U moet ten minste één gerecht selecteren om te bestellen.');
@@ -3895,6 +3941,14 @@ window.addEventListener('DOMContentLoaded', () => {
 const sliderButton = document.getElementById('sliderButton');
 const sliderTrack = document.getElementById('sliderTrack');
 const sliderText = document.querySelector('.slider-text');
+const sliderContainer = document.querySelector('.slider-container');
+if(sliderContainer){
+  sliderContainer.addEventListener('click', () => {
+    if(!storeOpen){
+      showClosedMessage();
+    }
+  });
+}
 
 let isSliding = false;
 let startX = 0;
@@ -4085,6 +4139,10 @@ function updateStatus(settings){
 
   const openFlag = settings.is_open !== 'false';
   const timeOk = inBusinessHours(settings);
+  manualOpen = openFlag;
+  openTime = settings.open_time;
+  closeTime = settings.close_time;
+  storeOpen = openFlag && timeOk;
 
   if(openFlag && timeOk){
     banner.textContent = '';
@@ -4095,8 +4153,9 @@ function updateStatus(settings){
       if(sliderText) sliderText.textContent = 'Schuif om te bestellen';
     }
   }else{
-    banner.textContent = '暂不接单';
+    banner.textContent = getClosedMessage();
     banner.style.display = 'block';
+    window.scrollTo({top: 0, behavior: 'smooth'});
     if(checkoutBtn) checkoutBtn.disabled = true;
     if(sliderTrack){
       sliderTrack.style.pointerEvents = 'none';
