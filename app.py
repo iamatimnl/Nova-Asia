@@ -259,9 +259,15 @@ class MenuItem(db.Model):
 
 with app.app_context():
     db.create_all()
-    if not Setting.query.filter_by(key="is_open").first():
-        db.session.add(Setting(key="is_open", value="true"))
-        db.session.commit()
+    defaults = {
+        "is_open": "true",
+        "open_time": "11:00",
+        "close_time": "21:00",
+    }
+    for k, v in defaults.items():
+        if not Setting.query.filter_by(key=k).first():
+            db.session.add(Setting(key=k, value=v))
+    db.session.commit()
 
 
 class User(UserMixin):
@@ -448,6 +454,11 @@ def get_setting(key):
     s = Setting.query.filter_by(key=key).first()
     return jsonify({key: s.value if s else None})
 
+@app.route('/api/settings')
+def get_all_settings():
+    settings = {s.key: s.value for s in Setting.query.all()}
+    return jsonify(settings)
+
 # ----- Review API -----
 @app.route('/api/reviews', methods=['GET', 'POST'])
 def reviews_api():
@@ -495,24 +506,41 @@ def reviews_api():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    s = Setting.query.filter_by(key='is_open').first()
-    val = s.value if s else 'true'
+    def get_value(key, default):
+        s = Setting.query.filter_by(key=key).first()
+        return s.value if s else default
+
     sections = MenuSection.query.all()
-    return render_template('dashboard.html', is_open=val, sections=sections)
+    return render_template(
+        'dashboard.html',
+        is_open=get_value('is_open', 'true'),
+        open_time=get_value('open_time', '11:00'),
+        close_time=get_value('close_time', '21:00'),
+        sections=sections,
+    )
 
 
 @app.route('/dashboard/update', methods=['POST'])
 @login_required
 def update_setting():
-    val = request.form.get('is_open', 'true')
-    s = Setting.query.filter_by(key='is_open').first()
-    if not s:
-        s = Setting(key='is_open', value=val)
-        db.session.add(s)
-    else:
-        s.value = val
+    is_open_val = request.form.get('is_open', 'true')
+    open_time_val = request.form.get('open_time', '11:00')
+    close_time_val = request.form.get('close_time', '21:00')
+
+    for key, val in [
+        ('is_open', is_open_val),
+        ('open_time', open_time_val),
+        ('close_time', close_time_val),
+    ]:
+        s = Setting.query.filter_by(key=key).first()
+        if not s:
+            db.session.add(Setting(key=key, value=val))
+        else:
+            s.value = val
+
     db.session.commit()
-    socketio.emit('setting_update', {'key': 'is_open', 'value': val})
+    settings = {s.key: s.value for s in Setting.query.all()}
+    socketio.emit('setting_update', settings)
     return redirect(url_for('dashboard'))
 
 
