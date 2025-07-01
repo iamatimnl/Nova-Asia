@@ -2531,7 +2531,8 @@ function updatePriceBreakdown(subtotal, packaging) {
   currentSubtotal = subtotal;
   currentPackaging = packaging;
   const tip = parseFloat(document.getElementById('tipSelect').value || '0');
-  const orderType = document.querySelector('input[name="orderType"]:checked').value;
+  const selectedType = document.querySelector('input[name="orderType"]:checked');
+  const orderType = selectedType ? selectedType.value : '';
   const deliveryFee = orderType === 'bezorgen' ? DELIVERY_FEE : 0;
   const btw = (subtotal + packaging) * 9 / 109;
   finalTotal = subtotal + packaging + deliveryFee + tip - currentDiscount;
@@ -2559,8 +2560,8 @@ function applyDiscount() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       code: code,
-      order_total: currentSubtotal + currentPackaging + 
-        (document.querySelector('input[name="orderType"]:checked').value === 'bezorgen' ? DELIVERY_FEE : 0)
+      order_total: currentSubtotal + currentPackaging +
+        ((document.querySelector('input[name="orderType"]:checked')?.value === 'bezorgen') ? DELIVERY_FEE : 0)
       // 🚨 去掉小费：+ parseFloat(document.getElementById('tipSelect').value || '0')
     })
   })
@@ -3230,7 +3231,9 @@ function scrollToField(id) {
 }
 
 function getFirstMissingField() {
-  const type = document.querySelector('input[name="orderType"]:checked').value;
+  const selected = document.querySelector('input[name="orderType"]:checked');
+  if (!selected) return 'orderType';
+  const type = selected.value;
   if (type === 'afhalen') {
     if (!document.getElementById('pickupName').value.trim()) return 'pickupName';
     if (!document.getElementById('pickupPhone').value.trim()) return 'pickupPhone';
@@ -3283,7 +3286,8 @@ function checkout() {
     return;
   }
 
-  const orderType = document.querySelector('input[name="orderType"]:checked').value;
+  const selectedType2 = document.querySelector('input[name="orderType"]:checked');
+  const orderType = selectedType2 ? selectedType2.value : '';
   const selectedTime = orderType === 'afhalen'
     ? document.getElementById('pickup_time').value
     : document.getElementById('delivery_time').value;
@@ -3333,7 +3337,8 @@ function checkout() {
   orderSummary += `\nGember: ${gemberCount}`;
   if (remark) orderSummary += `\nOpmerking: ${remark}`;
 
-  const orderType = document.querySelector('input[name="orderType"]:checked').value;
+  const selectedType3 = document.querySelector('input[name="orderType"]:checked');
+  const orderType = selectedType3 ? selectedType3.value : '';
   let customerDetails = '';
   let paymentMethod = '';
   let email = '';
@@ -3995,7 +4000,8 @@ function resetSlider() {
 }
 
 function validateOrderAmount() {
-  const orderType = document.querySelector('input[name="orderType"]:checked').value;
+  const selectedType4 = document.querySelector('input[name="orderType"]:checked');
+  const orderType = selectedType4 ? selectedType4.value : '';
   const amount = finalTotal;
 
   if (orderType === 'bezorgen' && amount < 20) {
@@ -4095,7 +4101,8 @@ sliderTrack.addEventListener('touchmove', (e) => {
     }
 
     function requiredFilled() {
-      const type = document.querySelector('input[name="orderType"]:checked').value;
+      const selected = document.querySelector('input[name="orderType"]:checked');
+      const type = selected ? selected.value : null;
       if (type === 'afhalen') {
         return document.getElementById('pickupName').value.trim() &&
                document.getElementById('pickupPhone').value.trim() &&
