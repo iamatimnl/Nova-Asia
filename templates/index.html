@@ -3190,6 +3190,12 @@ for (let i = 0; i <= 20; i++) {
 let storeOpen = true;
 let businessHours = '';
 let closedMessage = '';
+let pickupAvailable = true;
+let deliveryAvailable = true;
+let pickupOpenTime = '12:00';
+let pickupCloseTime = '23:59';
+let deliveryOpenTime = '12:00';
+let deliveryCloseTime = '23:59';
 function showFeedback(msg, isError=false) {
   const el = document.getElementById('feedback');
   el.textContent = msg;
@@ -3468,9 +3474,6 @@ function checkout() {
     return num.toString().padStart(2, '0');
   }
 
-  let openTime = '12:00';
-  let closeTime = '23:59';
-
   function populateTimeOptions(selectId, offsetMinutes, openStr, closeStr) {
     const select = document.getElementById(selectId);
     if (!select) return;
@@ -3480,8 +3483,8 @@ function checkout() {
     const now = new Date();
     now.setMinutes(now.getMinutes() + offsetMinutes);
 
-    const oStr = openStr || openTime;
-    const cStr = closeStr || closeTime;
+    const oStr = openStr || '00:00';
+    const cStr = closeStr || '23:59';
     const [oh, om] = oStr.split(':').map(Number);
     const [ch, cm] = cStr.split(':').map(Number);
 
@@ -3514,6 +3517,7 @@ function checkout() {
 
   function toggleOrderType() {
     const afhalen = document.getElementById('afhalen');
+    const bezorgen = document.getElementById('bezorgen');
     const infoBox = document.getElementById('locationInfo');
     const afhalenFields = document.getElementById('afhalenFields');
     const bezorgenFields = document.getElementById('bezorgenFields');
@@ -3530,26 +3534,36 @@ function checkout() {
       });
     };
 
+    if (afhalen.checked && !pickupAvailable) {
+      showFeedback('Vandaag is afhalen niet mogelijk.', true);
+      bezorgen.checked = true;
+    }
+    if (bezorgen.checked && !deliveryAvailable) {
+      showFeedback('Vandaag is bezorging niet mogelijk.', true);
+      afhalen.checked = true;
+    }
+
     if (afhalen.checked) {
       transferValues(bezorgenFields, afhalenFields);
       infoBox.innerHTML = `Adres voor afhalen:
   <a href="https://www.google.com/maps?q=Sjoukje+Dijkstralaan+83,+2134+CN+Hoofddorp" target="_blank" style="color: var(--accent-color); text-decoration: underline;">
     Sjoukje Dijkstralaan 83, 2134 CN Hoofddorp
-</a><br>
+  </a><br>
   📞: <a href="tel:0633399366" style="color: var(--accent-color); text-decoration: underline;">0622599566</a>`;
 
       afhalenFields.classList.remove('hidden');
       bezorgenFields.classList.add('hidden');
-      populateTimeOptions('pickup_time', 30);
+      populateTimeOptions('pickup_time', 30, pickupOpenTime, pickupCloseTime);
     } else {
       transferValues(afhalenFields, bezorgenFields);
       infoBox.textContent = 'Wij bezorgen in de volgende postcodegebieden:\n2341, 2342, 2343, 2333, 2334, 2231, 2232, 2361, 2235';
 
       bezorgenFields.classList.remove('hidden');
       afhalenFields.classList.add('hidden');
-      populateTimeOptions('delivery_time', 45);
+      populateTimeOptions('delivery_time', 45, deliveryOpenTime, deliveryCloseTime);
     }
     updatePriceBreakdown(currentSubtotal, currentPackaging);
+    storeOpen = afhalen.checked ? pickupAvailable : deliveryAvailable;
   }
 
   // 初始化执行一次
@@ -4095,20 +4109,19 @@ sliderTrack.addEventListener('touchmove', (e) => {
 </script>
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 <script>
-function inBusinessHours(settings){
-  if(!settings.open_time || !settings.close_time){
-    return true;
-  }
+
+function inRange(startStr, endStr){
+  if(!startStr || !endStr) return true;
   const now = new Date();
-  const [oh, om] = settings.open_time.split(':');
-  const [ch, cm] = settings.close_time.split(':');
+  const [sh, sm] = startStr.split(':').map(Number);
+  const [eh, em] = endStr.split(':').map(Number);
   const nowMin = now.getHours()*60 + now.getMinutes();
-  const openMin = parseInt(oh)*60 + parseInt(om);
-  const closeMin = parseInt(ch)*60 + parseInt(cm);
-  if(openMin <= closeMin){
-    return nowMin >= openMin && nowMin < closeMin;
+  const sMin = sh*60 + sm;
+  const eMin = eh*60 + em;
+  if(sMin <= eMin){
+    return nowMin >= sMin && nowMin < eMin;
   }
-  return nowMin >= openMin || nowMin < closeMin;
+  return nowMin >= sMin || nowMin < eMin;
 }
 
 function updateStatus(settings){
@@ -4118,39 +4131,56 @@ function updateStatus(settings){
   const sliderTrack = document.getElementById('sliderTrack');
   const sliderText = document.getElementById('sliderText');
   const overlayEl = document.getElementById('closed-overlay');
+  const afhalen = document.getElementById('afhalen');
+  const bezorgen = document.getElementById('bezorgen');
 
-  hoursEl.textContent = `Openingstijden: ${settings.open_time} - ${settings.close_time}`;
-  openTime = settings.open_time || openTime;
-  closeTime = settings.close_time || closeTime;
-  populateTimeOptions('pickup_time', 30);
-  populateTimeOptions('delivery_time', 45);
+  hoursEl.textContent = `Afhalen: ${settings.pickup_start} - ${settings.pickup_end} | Bezorg: ${settings.delivery_start} - ${settings.delivery_end}`;
+  pickupOpenTime = settings.pickup_start || pickupOpenTime;
+  pickupCloseTime = settings.pickup_end || pickupCloseTime;
+  deliveryOpenTime = settings.delivery_start || deliveryOpenTime;
+  deliveryCloseTime = settings.delivery_end || deliveryCloseTime;
+  populateTimeOptions('pickup_time', 30, pickupOpenTime, pickupCloseTime);
+  populateTimeOptions('delivery_time', 45, deliveryOpenTime, deliveryCloseTime);
 
-  const openFlag = settings.is_open !== 'false';
-  const timeOk = inBusinessHours(settings);
-  storeOpen = openFlag && timeOk;
-  businessHours = `${settings.open_time} - ${settings.close_time}`;
-  closedMessage = '';
-  const now = new Date();
-  const [oh, om] = settings.open_time.split(':');
-  const [ch, cm] = settings.close_time.split(':');
-  const nowMin = now.getHours()*60 + now.getMinutes();
-  const openMin = parseInt(oh)*60 + parseInt(om);
-  const closeMin = parseInt(ch)*60 + parseInt(cm);
-  let notOpenYet = false;
-  if(openMin <= closeMin){
-    notOpenYet = nowMin < openMin;
+  const websiteOn = settings.is_open !== 'false';
+  pickupAvailable = websiteOn && settings.pickup_enabled !== 'false' && inRange(settings.pickup_start, settings.pickup_end);
+  deliveryAvailable = websiteOn && settings.delivery_enabled !== 'false' && inRange(settings.delivery_start, settings.delivery_end);
+
+  let message = '';
+  if(!websiteOn){
+    storeOpen = false;
+    message = 'De website is momenteel gesloten';
+  }else if(!pickupAvailable && !deliveryAvailable){
+    storeOpen = false;
+    message = 'Vandaag zijn er geen bestellingen mogelijk';
+  }else if(afhalen.checked && !pickupAvailable){
+    message = 'Vandaag is afhalen niet mogelijk.';
+    if(deliveryAvailable){
+      bezorgen.checked = true;
+      afhalen.checked = false;
+      toggleOrderType();
+      storeOpen = deliveryAvailable;
+    }else{
+      storeOpen = false;
+    }
+  }else if(bezorgen.checked && !deliveryAvailable){
+    message = 'Vandaag is bezorging niet mogelijk.';
+    if(pickupAvailable){
+      afhalen.checked = true;
+      bezorgen.checked = false;
+      toggleOrderType();
+      storeOpen = pickupAvailable;
+    }else{
+      storeOpen = false;
+    }
   }else{
-    notOpenYet = nowMin >= closeMin && nowMin < openMin;
-  }
-  if(!openFlag || (!timeOk && nowMin >= closeMin && openMin <= closeMin)){
-    closedMessage = 'We are currently closed and not accepting orders.';
-  }else if(!timeOk && notOpenYet){
-    closedMessage = `We are currently closed. We will open today at ${settings.open_time}.`;
-  }else if(!timeOk){
-    closedMessage = 'We are currently closed and not accepting orders.';
+    storeOpen = afhalen.checked ? pickupAvailable : deliveryAvailable;
   }
 
-  if(openFlag && timeOk){
+  closedMessage = message;
+  businessHours = `Afhalen ${settings.pickup_start} - ${settings.pickup_end} | Bezorg ${settings.delivery_start} - ${settings.delivery_end}`;
+
+  if(storeOpen){
     banner.textContent = '';
     banner.style.display = 'none';
     if(overlayEl) overlayEl.style.display = 'none';
@@ -4160,7 +4190,7 @@ function updateStatus(settings){
       if(sliderText) sliderText.textContent = 'Schuif om te bestellen';
     }
   }else{
-    banner.textContent = closedMessage;
+    banner.textContent = message;
     banner.style.display = 'block';
     if(overlayEl) overlayEl.style.display = 'block';
     window.scrollTo({top: 0, behavior: 'smooth'});
