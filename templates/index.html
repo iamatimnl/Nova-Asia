@@ -2531,8 +2531,7 @@ function updatePriceBreakdown(subtotal, packaging) {
   currentSubtotal = subtotal;
   currentPackaging = packaging;
   const tip = parseFloat(document.getElementById('tipSelect').value || '0');
-  const selectedType = document.querySelector('input[name="orderType"]:checked');
-  const orderType = selectedType ? selectedType.value : '';
+  const orderType = document.querySelector('input[name="orderType"]:checked').value;
   const deliveryFee = orderType === 'bezorgen' ? DELIVERY_FEE : 0;
   const btw = (subtotal + packaging) * 9 / 109;
   finalTotal = subtotal + packaging + deliveryFee + tip - currentDiscount;
@@ -2560,8 +2559,8 @@ function applyDiscount() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       code: code,
-      order_total: currentSubtotal + currentPackaging +
-        ((document.querySelector('input[name="orderType"]:checked')?.value === 'bezorgen') ? DELIVERY_FEE : 0)
+      order_total: currentSubtotal + currentPackaging + 
+        (document.querySelector('input[name="orderType"]:checked').value === 'bezorgen' ? DELIVERY_FEE : 0)
       // 🚨 去掉小费：+ parseFloat(document.getElementById('tipSelect').value || '0')
     })
   })
@@ -3231,9 +3230,7 @@ function scrollToField(id) {
 }
 
 function getFirstMissingField() {
-  const selected = document.querySelector('input[name="orderType"]:checked');
-  if (!selected) return 'orderType';
-  const type = selected.value;
+  const type = document.querySelector('input[name="orderType"]:checked').value;
   if (type === 'afhalen') {
     if (!document.getElementById('pickupName').value.trim()) return 'pickupName';
     if (!document.getElementById('pickupPhone').value.trim()) return 'pickupPhone';
@@ -3286,8 +3283,7 @@ function checkout() {
     return;
   }
 
-  const selectedType2 = document.querySelector('input[name="orderType"]:checked');
-  const orderType = selectedType2 ? selectedType2.value : '';
+  const orderType = document.querySelector('input[name="orderType"]:checked').value;
   const selectedTime = orderType === 'afhalen'
     ? document.getElementById('pickup_time').value
     : document.getElementById('delivery_time').value;
@@ -3337,8 +3333,7 @@ function checkout() {
   orderSummary += `\nGember: ${gemberCount}`;
   if (remark) orderSummary += `\nOpmerking: ${remark}`;
 
-  const selectedType3 = document.querySelector('input[name="orderType"]:checked');
-  const orderType = selectedType3 ? selectedType3.value : '';
+  const orderType = document.querySelector('input[name="orderType"]:checked').value;
   let customerDetails = '';
   let paymentMethod = '';
   let email = '';
@@ -4000,8 +3995,7 @@ function resetSlider() {
 }
 
 function validateOrderAmount() {
-  const selectedType4 = document.querySelector('input[name="orderType"]:checked');
-  const orderType = selectedType4 ? selectedType4.value : '';
+  const orderType = document.querySelector('input[name="orderType"]:checked').value;
   const amount = finalTotal;
 
   if (orderType === 'bezorgen' && amount < 20) {
@@ -4101,8 +4095,7 @@ sliderTrack.addEventListener('touchmove', (e) => {
     }
 
     function requiredFilled() {
-      const selected = document.querySelector('input[name="orderType"]:checked');
-      const type = selected ? selected.value : null;
+      const type = document.querySelector('input[name="orderType"]:checked').value;
       if (type === 'afhalen') {
         return document.getElementById('pickupName').value.trim() &&
                document.getElementById('pickupPhone').value.trim() &&
@@ -4253,32 +4246,10 @@ function fetchStatus(){
     .then(r => r.json())
     .then(updateStatus);
 }
-  fetchStatus();
-  const socket = io();
-  socket.on('setting_update', updateStatus);
-  function applyMenuPrices(items){
-    const map={};
-    items.forEach(i=>{map[i.name]=i.price;});
-    document.querySelectorAll('.menu-item').forEach(el=>{
-      const name=el.dataset.name;
-      if(name&&map[name]!==undefined){
-        const p=parseFloat(map[name]);
-        el.dataset.price=p;
-        const pe=el.querySelector('p');
-        if(pe) pe.textContent=`€ ${p.toFixed(2)}`;
-      }
-    });
-  }
-  async function loadMenu(){
-    const r=await fetch('/api/menu');
-    if(r.ok){
-      const d=await r.json();
-      applyMenuPrices(d);
-    }
-  }
-  loadMenu();
-  socket.on('menu_update', applyMenuPrices);
-  const overlay = document.getElementById('closed-overlay');
+fetchStatus();
+const socket = io();
+socket.on('setting_update', updateStatus);
+const overlay = document.getElementById('closed-overlay');
 if(overlay){
   overlay.addEventListener('click', () => {
     showFeedback(closedMessage, true);
@@ -4333,7 +4304,6 @@ if(overlay){
 
 </body>
 </html>
-
 
 
 
