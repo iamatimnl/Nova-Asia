@@ -1,5 +1,6 @@
 {
   "is_open": "true",
   "open_time": "11:00",
-  "close_time": "21:00"
+  "close_time": "21:00",
+  "closed_days": ""
 }

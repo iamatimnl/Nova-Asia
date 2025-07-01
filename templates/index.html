@@ -4134,7 +4134,19 @@ function updateStatus(settings){
   const afhalen = document.getElementById('afhalen');
   const bezorgen = document.getElementById('bezorgen');
 
-  hoursEl.textContent = `Afhalen: ${settings.pickup_start} - ${settings.pickup_end} | Bezorg: ${settings.delivery_start} - ${settings.delivery_end}`;
+  const closedDays = (settings.closed_days || '').split(',').filter(d => d);
+  const allClosed = closedDays.length === 7;
+  const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const todayName = dayNames[new Date().getDay()];
+
+  const hoursText = `Daily ${settings.open_time} - ${settings.close_time}`;
+  let closedText = '';
+  if(allClosed){
+    closedText = ', Closed All Week';
+  }else if(closedDays.length){
+    closedText = ', Closed on ' + closedDays.join(', ');
+  }
+  hoursEl.textContent = hoursText + closedText;
   pickupOpenTime = settings.pickup_start || pickupOpenTime;
   pickupCloseTime = settings.pickup_end || pickupCloseTime;
   deliveryOpenTime = settings.delivery_start || deliveryOpenTime;
@@ -4142,12 +4154,16 @@ function updateStatus(settings){
   populateTimeOptions('pickup_time', 30, pickupOpenTime, pickupCloseTime);
   populateTimeOptions('delivery_time', 45, deliveryOpenTime, deliveryCloseTime);
 
-  const websiteOn = settings.is_open !== 'false';
-  pickupAvailable = websiteOn && settings.pickup_enabled !== 'false' && inRange(settings.pickup_start, settings.pickup_end);
-  deliveryAvailable = websiteOn && settings.delivery_enabled !== 'false' && inRange(settings.delivery_start, settings.delivery_end);
+  const websiteOn = settings.is_open !== 'false' && !allClosed;
+  const dayOpen = closedDays.indexOf(todayName) === -1;
+  pickupAvailable = websiteOn && dayOpen && settings.pickup_enabled !== 'false' && inRange(settings.pickup_start, settings.pickup_end);
+  deliveryAvailable = websiteOn && dayOpen && settings.delivery_enabled !== 'false' && inRange(settings.delivery_start, settings.delivery_end);
 
   let message = '';
-  if(!websiteOn){
+  if(allClosed){
+    storeOpen = false;
+    message = 'This week the store is closed.';
+  }else if(!websiteOn){
     storeOpen = false;
     message = 'De website is momenteel gesloten';
   }else if(!pickupAvailable && !deliveryAvailable){
@@ -4178,11 +4194,10 @@ function updateStatus(settings){
   }
 
   closedMessage = message;
-  businessHours = `Afhalen ${settings.pickup_start} - ${settings.pickup_end} | Bezorg ${settings.delivery_start} - ${settings.delivery_end}`;
+  businessHours = hoursEl.textContent;
 
   if(storeOpen){
     banner.textContent = '';
-    banner.style.display = 'none';
     if(overlayEl) overlayEl.style.display = 'none';
     if(checkoutBtn) checkoutBtn.disabled = false;
     if(sliderTrack){
@@ -4191,7 +4206,6 @@ function updateStatus(settings){
     }
   }else{
     banner.textContent = message;
-    banner.style.display = 'block';
     if(overlayEl) overlayEl.style.display = 'block';
     window.scrollTo({top: 0, behavior: 'smooth'});
     if(checkoutBtn) checkoutBtn.disabled = true;
@@ -4200,6 +4214,7 @@ function updateStatus(settings){
       if(sliderText) sliderText.textContent = 'Momenteel gesloten';
     }
   }
+  banner.style.display = 'block';
 }
 
 function fetchStatus(){
