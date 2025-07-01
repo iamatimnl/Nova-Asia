@@ -20,6 +20,15 @@
         <input type="time" name="close_time" id="close_time_input" value="{{ close_time }}">
         <br><br>
 
+        <label>Gesloten dagen:</label><br>
+        {% set days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'] %}
+        {% for day in days %}
+        <label>
+            <input type="checkbox" name="closed_days" value="{{ day }}" {% if day in closed_days.split(',') %}checked{% endif %}> {{ day }}
+        </label>
+        {% endfor %}
+        <br><br>
+
         <label>Afhalen aan/uit:</label>
         <select id="pickup_enabled_select">
             <option value="true" {% if pickup_enabled == 'true' %}selected{% endif %}>Aan</option>
@@ -52,6 +61,7 @@
             const is_open = document.getElementById('is_open_select').value;
             const open_time = document.getElementById('open_time_input').value;
             const close_time = document.getElementById('close_time_input').value;
+            const closedDays = Array.from(document.querySelectorAll('input[name="closed_days"]:checked')).map(cb => cb.value).join(',');
             const pickup_enabled = document.getElementById('pickup_enabled_select').value;
             const delivery_enabled = document.getElementById('delivery_enabled_select').value;
             const pickup_start = document.getElementById('pickup_start_input').value;
@@ -66,6 +76,7 @@
                     is_open: is_open,
                     open_time: open_time,
                     close_time: close_time,
+                    closed_days: closedDays,
                     pickup_enabled: pickup_enabled,
                     delivery_enabled: delivery_enabled,
                     pickup_start: pickup_start,
