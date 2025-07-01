@@ -1341,6 +1341,26 @@ function formatCurrency(value){
   const socketUrl = (typeof process !== 'undefined' && process.env && process.env.SOCKET_URL) ? process.env.SOCKET_URL : 'https://flask-order-api.onrender.com';
   const socket = io(socketUrl, { transports: ['websocket'] });
 
+  function applyMenuPrices(items){
+    const map={};
+    items.forEach(i=>{map[i.name]=i.price;});
+    document.querySelectorAll('.menu-item').forEach(el=>{
+      const name=el.dataset.name;
+      if(name&&map[name]!==undefined){
+        const p=parseFloat(map[name]);
+        el.dataset.price=p;
+        const pe=el.querySelector('p');
+        if(pe) pe.textContent=`€${p.toFixed(2)}`;
+      }
+    });
+  }
+  async function loadMenu(){
+    const r=await fetch('/api/menu');
+    if(r.ok){ const d=await r.json(); applyMenuPrices(d); }
+  }
+  loadMenu();
+  socket.on('menu_update', applyMenuPrices);
+
   let pollTimer;
   const baseTitle = document.title;
   let newOrderCount = 0; // unseen orders for title
