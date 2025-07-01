@@ -466,6 +466,22 @@ def get_all_settings():
     settings = {s.key: s.value for s in Setting.query.all()}
     return jsonify(settings)
 
+# ----- Menu API -----
+@app.route('/api/menu')
+def api_menu():
+    items = MenuItem.query.all()
+    data = [
+        {
+            'id': i.id,
+            'name': i.name,
+            'price': i.price,
+            'section': i.section.name if i.section else None,
+            'image': i.image,
+        }
+        for i in items
+    ]
+    return jsonify(data)
+
 # ----- Review API -----
 @app.route('/api/reviews', methods=['GET', 'POST'])
 def reviews_api():
@@ -611,6 +627,42 @@ def add_item():
         )
         db.session.add(item)
         db.session.commit()
+        items = [
+            {
+                'id': i.id,
+                'name': i.name,
+                'price': i.price,
+                'section': i.section.name if i.section else None,
+                'image': i.image,
+            }
+            for i in MenuItem.query.all()
+        ]
+        socketio.emit('menu_update', items)
+    return redirect(url_for('dashboard'))
+
+
+@app.route('/dashboard/item/<int:item_id>', methods=['POST'])
+@login_required
+def update_item(item_id):
+    price = request.form.get('price', '0')
+    try:
+        price_value = float(price)
+    except ValueError:
+        price_value = 0.0
+    item = MenuItem.query.get_or_404(item_id)
+    item.price = price_value
+    db.session.commit()
+    items = [
+        {
+            'id': i.id,
+            'name': i.name,
+            'price': i.price,
+            'section': i.section.name if i.section else None,
+            'image': i.image,
+        }
+        for i in MenuItem.query.all()
+    ]
+    socketio.emit('menu_update', items)
     return redirect(url_for('dashboard'))
 
 
