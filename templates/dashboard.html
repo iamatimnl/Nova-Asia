@@ -54,24 +54,6 @@
         <button type="submit">保存</button>
     </form>
 
-    <h2>Menu prijzen</h2>
-    <table>
-    {% for section in sections %}
-        <tr><th colspan="2">{{ section.name }}</th></tr>
-        {% for item in section.items %}
-        <tr>
-            <td>{{ item.name }}</td>
-            <td>
-                <form action="{{ url_for('update_item', item_id=item.id) }}" method="post" style="display:inline;">
-                    <input type="number" step="0.01" name="price" value="{{ '%.2f' % item.price }}">
-                    <button type="submit">Opslaan</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    {% endfor %}
-    </table>
-
     <script>
         document.getElementById('settingForm').addEventListener('submit', function(e) {
             e.preventDefault();  // 防止页面刷新
@@ -119,6 +101,5 @@
     </script>
 </body>
 </html>
-
 
 
