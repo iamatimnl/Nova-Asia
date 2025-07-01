@@ -3283,6 +3283,23 @@ function checkout() {
     return;
   }
 
+  const orderType = document.querySelector('input[name="orderType"]:checked').value;
+  const selectedTime = orderType === 'afhalen'
+    ? document.getElementById('pickup_time').value
+    : document.getElementById('delivery_time').value;
+  const validTime = orderType === 'afhalen'
+    ? inRange(pickupOpenTime, pickupCloseTime, selectedTime)
+    : inRange(deliveryOpenTime, deliveryCloseTime, selectedTime);
+  if(!validTime){
+    showFeedback('Kies een geldige tijd binnen de openingstijden.', true);
+    if (sliderText && sliderButton && sliderTrack) {
+      sliderText.innerText = 'Schuif om te bestellen';
+      sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
+      sliderTrack.style.pointerEvents = 'auto';
+    }
+    return;
+  }
+
   const chopstickCount = document.getElementById('chopstickCount').value;
   const soyCount = document.getElementById('soyCount').value;
   const wasabiCount = document.getElementById('wasabiCount').value;
@@ -3564,6 +3581,9 @@ function checkout() {
     }
     updatePriceBreakdown(currentSubtotal, currentPackaging);
     storeOpen = afhalen.checked ? pickupAvailable : deliveryAvailable;
+    if (typeof updateSliderToCurrentRadio === 'function') {
+      updateSliderToCurrentRadio();
+    }
   }
 
   // 初始化执行一次
@@ -3864,7 +3884,7 @@ window.addEventListener('DOMContentLoaded', () => {
       updateTexts('afhalen');
     }
   }
-
+  window.updateSliderToCurrentRadio = updateSliderToCurrentRadio;
   updateSliderToCurrentRadio();
 
   afhalen.addEventListener('change', updateSliderToCurrentRadio);
@@ -4110,12 +4130,16 @@ sliderTrack.addEventListener('touchmove', (e) => {
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 <script>
 
-function inRange(startStr, endStr){
+function inRange(startStr, endStr, timeStr){
   if(!startStr || !endStr) return true;
-  const now = new Date();
   const [sh, sm] = startStr.split(':').map(Number);
   const [eh, em] = endStr.split(':').map(Number);
-  const nowMin = now.getHours()*60 + now.getMinutes();
+  let t = new Date();
+  if(timeStr){
+    const [th, tm] = timeStr.split(':').map(Number);
+    t.setHours(th, tm, 0, 0);
+  }
+  const nowMin = t.getHours()*60 + t.getMinutes();
   const sMin = sh*60 + sm;
   const eMin = eh*60 + em;
   if(sMin <= eMin){
@@ -4156,8 +4180,9 @@ function updateStatus(settings){
 
   const websiteOn = settings.is_open !== 'false' && !allClosed;
   const dayOpen = closedDays.indexOf(todayName) === -1;
-  pickupAvailable = websiteOn && dayOpen && settings.pickup_enabled !== 'false' && inRange(settings.pickup_start, settings.pickup_end);
-  deliveryAvailable = websiteOn && dayOpen && settings.delivery_enabled !== 'false' && inRange(settings.delivery_start, settings.delivery_end);
+  const typeSlider = document.querySelector('.order-type-slider');
+  pickupAvailable = websiteOn && dayOpen && settings.pickup_enabled !== 'false';
+  deliveryAvailable = websiteOn && dayOpen && settings.delivery_enabled !== 'false';
 
   let message = '';
   if(allClosed){
@@ -4169,28 +4194,23 @@ function updateStatus(settings){
   }else if(!pickupAvailable && !deliveryAvailable){
     storeOpen = false;
     message = 'Vandaag zijn er geen bestellingen mogelijk';
-  }else if(afhalen.checked && !pickupAvailable){
-    message = 'Vandaag is afhalen niet mogelijk.';
-    if(deliveryAvailable){
-      bezorgen.checked = true;
-      afhalen.checked = false;
-      toggleOrderType();
-      storeOpen = deliveryAvailable;
-    }else{
-      storeOpen = false;
-    }
-  }else if(bezorgen.checked && !deliveryAvailable){
-    message = 'Vandaag is bezorging niet mogelijk.';
-    if(pickupAvailable){
-      afhalen.checked = true;
-      bezorgen.checked = false;
-      toggleOrderType();
-      storeOpen = pickupAvailable;
-    }else{
-      storeOpen = false;
-    }
   }else{
-    storeOpen = afhalen.checked ? pickupAvailable : deliveryAvailable;
+    if(!pickupAvailable && deliveryAvailable){
+      afhalen.checked = false;
+      bezorgen.checked = true;
+      if(typeSlider) typeSlider.style.display = 'none';
+      toggleOrderType();
+      storeOpen = true;
+    }else if(pickupAvailable && !deliveryAvailable){
+      bezorgen.checked = false;
+      afhalen.checked = true;
+      if(typeSlider) typeSlider.style.display = 'none';
+      toggleOrderType();
+      storeOpen = true;
+    }else{
+      if(typeSlider) typeSlider.style.display = 'block';
+      storeOpen = afhalen.checked ? pickupAvailable : deliveryAvailable;
+    }
   }
 
   closedMessage = message;
@@ -4204,6 +4224,9 @@ function updateStatus(settings){
       sliderTrack.style.pointerEvents = 'auto';
       if(sliderText) sliderText.textContent = 'Schuif om te bestellen';
     }
+    if(typeSlider && typeSlider.style.display === 'none' && pickupAvailable && deliveryAvailable){
+      typeSlider.style.display = 'block';
+    }
   }else{
     banner.textContent = message;
     if(overlayEl) overlayEl.style.display = 'block';
@@ -4213,6 +4236,7 @@ function updateStatus(settings){
       sliderTrack.style.pointerEvents = 'none';
       if(sliderText) sliderText.textContent = 'Momenteel gesloten';
     }
+    if(typeSlider) typeSlider.style.display = 'none';
   }
   banner.style.display = 'block';
 }
