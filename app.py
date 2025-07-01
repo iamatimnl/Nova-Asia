@@ -263,6 +263,12 @@ with app.app_context():
         "is_open": "true",
         "open_time": "11:00",
         "close_time": "21:00",
+        "pickup_enabled": "true",
+        "delivery_enabled": "true",
+        "pickup_start": "11:00",
+        "pickup_end": "21:00",
+        "delivery_start": "11:00",
+        "delivery_end": "21:00",
     }
     for k, v in defaults.items():
         if not Setting.query.filter_by(key=k).first():
@@ -516,6 +522,12 @@ def dashboard():
         is_open=get_value('is_open', 'true'),
         open_time=get_value('open_time', '11:00'),
         close_time=get_value('close_time', '21:00'),
+        pickup_enabled=get_value('pickup_enabled', 'true'),
+        delivery_enabled=get_value('delivery_enabled', 'true'),
+        pickup_start=get_value('pickup_start', '11:00'),
+        pickup_end=get_value('pickup_end', '21:00'),
+        delivery_start=get_value('delivery_start', '11:00'),
+        delivery_end=get_value('delivery_end', '21:00'),
         sections=sections,
     )
 
@@ -527,11 +539,23 @@ def update_setting():
     is_open_val = data.get('is_open', 'true')
     open_time_val = data.get('open_time', '11:00')
     close_time_val = data.get('close_time', '21:00')
+    pickup_enabled_val = data.get('pickup_enabled', 'true')
+    delivery_enabled_val = data.get('delivery_enabled', 'true')
+    pickup_start_val = data.get('pickup_start', '11:00')
+    pickup_end_val = data.get('pickup_end', '21:00')
+    delivery_start_val = data.get('delivery_start', '11:00')
+    delivery_end_val = data.get('delivery_end', '21:00')
 
     for key, val in [
         ('is_open', is_open_val),
         ('open_time', open_time_val),
         ('close_time', close_time_val),
+        ('pickup_enabled', pickup_enabled_val),
+        ('delivery_enabled', delivery_enabled_val),
+        ('pickup_start', pickup_start_val),
+        ('pickup_end', pickup_end_val),
+        ('delivery_start', delivery_start_val),
+        ('delivery_end', delivery_end_val),
     ]:
         s = Setting.query.filter_by(key=key).first()
         if not s:

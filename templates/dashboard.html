@@ -20,6 +20,28 @@
         <input type="time" name="close_time" id="close_time_input" value="{{ close_time }}">
         <br><br>
 
+        <label>Afhalen aan/uit:</label>
+        <select id="pickup_enabled_select">
+            <option value="true" {% if pickup_enabled == 'true' %}selected{% endif %}>Aan</option>
+            <option value="false" {% if pickup_enabled == 'false' %}selected{% endif %}>Uit</option>
+        </select>
+        <br>
+        <label>Afhalen tijden:</label>
+        <input type="time" id="pickup_start_input" value="{{ pickup_start }}"> -
+        <input type="time" id="pickup_end_input" value="{{ pickup_end }}">
+        <br><br>
+
+        <label>Bezorging aan/uit:</label>
+        <select id="delivery_enabled_select">
+            <option value="true" {% if delivery_enabled == 'true' %}selected{% endif %}>Aan</option>
+            <option value="false" {% if delivery_enabled == 'false' %}selected{% endif %}>Uit</option>
+        </select>
+        <br>
+        <label>Bezorg tijden:</label>
+        <input type="time" id="delivery_start_input" value="{{ delivery_start }}"> -
+        <input type="time" id="delivery_end_input" value="{{ delivery_end }}">
+        <br><br>
+
         <button type="submit">保存</button>
     </form>
 
@@ -30,6 +52,12 @@
             const is_open = document.getElementById('is_open_select').value;
             const open_time = document.getElementById('open_time_input').value;
             const close_time = document.getElementById('close_time_input').value;
+            const pickup_enabled = document.getElementById('pickup_enabled_select').value;
+            const delivery_enabled = document.getElementById('delivery_enabled_select').value;
+            const pickup_start = document.getElementById('pickup_start_input').value;
+            const pickup_end = document.getElementById('pickup_end_input').value;
+            const delivery_start = document.getElementById('delivery_start_input').value;
+            const delivery_end = document.getElementById('delivery_end_input').value;
 
             fetch('/dashboard/update', {
                 method: 'POST',
@@ -37,7 +65,13 @@
                 body: JSON.stringify({
                     is_open: is_open,
                     open_time: open_time,
-                    close_time: close_time
+                    close_time: close_time,
+                    pickup_enabled: pickup_enabled,
+                    delivery_enabled: delivery_enabled,
+                    pickup_start: pickup_start,
+                    pickup_end: pickup_end,
+                    delivery_start: delivery_start,
+                    delivery_end: delivery_end
                 })
             })
             .then(response => response.json())
