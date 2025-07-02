@@ -4156,8 +4156,10 @@ function updateStatus(settings){
 
   const websiteOn = settings.is_open !== 'false' && !allClosed;
   const dayOpen = closedDays.indexOf(todayName) === -1;
-  pickupAvailable = websiteOn && dayOpen && settings.pickup_enabled !== 'false' && inRange(settings.pickup_start, settings.pickup_end);
-  deliveryAvailable = websiteOn && dayOpen && settings.delivery_enabled !== 'false' && inRange(settings.delivery_start, settings.delivery_end);
+  pickupAvailable = websiteOn && dayOpen && settings.pickup_enabled !== 'false';
+  deliveryAvailable = websiteOn && dayOpen && settings.delivery_enabled !== 'false';
+  const pickupWithinHours = inRange(settings.pickup_start, settings.pickup_end);
+  const deliveryWithinHours = inRange(settings.delivery_start, settings.delivery_end);
 
   let message = '';
   if(allClosed){
@@ -4191,13 +4193,19 @@ function updateStatus(settings){
     }
   }else{
     storeOpen = afhalen.checked ? pickupAvailable : deliveryAvailable;
+    if(storeOpen){
+      const within = afhalen.checked ? pickupWithinHours : deliveryWithinHours;
+      if(!within){
+        message = 'Let op: u bestelt buiten openingstijden, maar vooruitbestellen is toegestaan.';
+      }
+    }
   }
 
   closedMessage = message;
   businessHours = hoursEl.textContent;
 
   if(storeOpen){
-    banner.textContent = '';
+    banner.textContent = message;
     if(overlayEl) overlayEl.style.display = 'none';
     if(checkoutBtn) checkoutBtn.disabled = false;
     if(sliderTrack){
