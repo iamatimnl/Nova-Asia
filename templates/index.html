@@ -3196,6 +3196,7 @@ let pickupOpenTime = '12:00';
 let pickupCloseTime = '23:59';
 let deliveryOpenTime = '12:00';
 let deliveryCloseTime = '23:59';
+let timeInterval = 15;
 function showFeedback(msg, isError=false) {
   const el = document.getElementById('feedback');
   el.textContent = msg;
@@ -3504,9 +3505,8 @@ function checkout() {
 
     let start = now > open ? now : open;
     start = new Date(start);
-    start.setMinutes(Math.ceil(start.getMinutes() / 15) * 15, 0, 0);
-
-    for (let t = new Date(start); t <= close; t.setMinutes(t.getMinutes() + 15)) {
+    start.setMinutes(Math.ceil(start.getMinutes() / timeInterval) * timeInterval, 0, 0);
+    for (let t = new Date(start); t <= close; t.setMinutes(t.getMinutes() + timeInterval)) {
       const hh = pad(t.getHours());
       const mm = pad(t.getMinutes());
       const timeStr = `${hh}:${mm}`;
@@ -4165,6 +4165,7 @@ function updateStatus(settings){
   pickupCloseTime = settings.pickup_end || pickupCloseTime;
   deliveryOpenTime = settings.delivery_start || deliveryOpenTime;
   deliveryCloseTime = settings.delivery_end || deliveryCloseTime;
+  timeInterval = parseInt(settings.time_interval || timeInterval);
   populateTimeOptions('pickup_time', 30, pickupOpenTime, pickupCloseTime);
   populateTimeOptions('delivery_time', 45, deliveryOpenTime, deliveryCloseTime);
 

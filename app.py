@@ -270,6 +270,7 @@ with app.app_context():
         "pickup_end": "21:00",
         "delivery_start": "11:00",
         "delivery_end": "21:00",
+        "time_interval": "15",
     }
     for k, v in defaults.items():
         if not Setting.query.filter_by(key=k).first():
@@ -546,6 +547,7 @@ def dashboard():
         pickup_end=get_value('pickup_end', '21:00'),
         delivery_start=get_value('delivery_start', '11:00'),
         delivery_end=get_value('delivery_end', '21:00'),
+        time_interval=get_value('time_interval', '15'),
         sections=sections,
     )
 
@@ -564,6 +566,7 @@ def update_setting():
     pickup_end_val = data.get('pickup_end', '21:00')
     delivery_start_val = data.get('delivery_start', '11:00')
     delivery_end_val = data.get('delivery_end', '21:00')
+    time_interval_val = data.get('time_interval', '15')
 
     for key, val in [
         ('is_open', is_open_val),
@@ -576,6 +579,7 @@ def update_setting():
         ('pickup_end', pickup_end_val),
         ('delivery_start', delivery_start_val),
         ('delivery_end', delivery_end_val),
+        ('time_interval', time_interval_val),
     ]:
         s = Setting.query.filter_by(key=key).first()
         if not s:
