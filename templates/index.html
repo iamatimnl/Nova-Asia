@@ -3658,11 +3658,14 @@ function checkout() {
       close.setDate(close.getDate() + 1);
     }
 
-    // always include configured start time as the first option
-    const firstOpt = document.createElement('option');
-    firstOpt.value = oStr;
-    firstOpt.textContent = oStr;
-    select.appendChild(firstOpt);
+    // only include Dashboard start time if it is not in the past
+    const includeStart = open.getTime() >= now.getTime();
+    if (includeStart) {
+      const firstOpt = document.createElement('option');
+      firstOpt.value = oStr;
+      firstOpt.textContent = oStr;
+      select.appendChild(firstOpt);
+    }
 
     let start = now > open ? now : open;
     start = new Date(start);
