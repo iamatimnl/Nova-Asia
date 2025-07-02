@@ -4240,6 +4240,16 @@ function updateStatus(settings){
   banner.style.display = 'block';
 }
 
+function updateTimes(settings){
+  pickupOpenTime = settings.pickup_start || pickupOpenTime;
+  pickupCloseTime = settings.pickup_end || pickupCloseTime;
+  deliveryOpenTime = settings.delivery_start || deliveryOpenTime;
+  deliveryCloseTime = settings.delivery_end || deliveryCloseTime;
+  timeInterval = parseInt(settings.time_interval || timeInterval);
+  populateTimeOptions('pickup_time', 30, pickupOpenTime, pickupCloseTime);
+  populateTimeOptions('delivery_time', 45, deliveryOpenTime, deliveryCloseTime);
+}
+
 function fetchStatus(){
   fetch('/api/settings')
     .then(r => r.json())
@@ -4248,6 +4258,7 @@ function fetchStatus(){
 fetchStatus();
 const socket = io();
 socket.on('setting_update', updateStatus);
+socket.on('time_update', updateTimes);
 const overlay = document.getElementById('closed-overlay');
 if(overlay){
   overlay.addEventListener('click', () => {
