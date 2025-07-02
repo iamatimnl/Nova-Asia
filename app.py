@@ -187,6 +187,13 @@ def get_bubble_options_dict():
     return opts
 
 
+def get_xbento_options_dict():
+    opts = {'main': [], 'side': [], 'rice': [], 'groente': []}
+    for o in XbentoOption.query.order_by(XbentoOption.id).all():
+        opts[o.category].append({'id': o.id, 'name': o.name, 'price': o.price})
+    return opts
+
+
 # Socket.IO for real-time updates
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
@@ -268,6 +275,14 @@ class BubbleOption(db.Model):
     __tablename__ = 'bubble_options'
     id = db.Column(db.Integer, primary_key=True)
     category = db.Column(db.String(20))  # base, smaak, topping
+    name = db.Column(db.String(100), nullable=False)
+    price = db.Column(db.Float, default=0.0)
+
+
+class XbentoOption(db.Model):
+    __tablename__ = 'xbento_options'
+    id = db.Column(db.Integer, primary_key=True)
+    category = db.Column(db.String(20))  # main, side, rice, groente
     name = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Float, default=0.0)
 
@@ -514,6 +529,10 @@ def api_menu():
 def api_bubble_options():
     return jsonify(get_bubble_options_dict())
 
+@app.route('/api/xbento_options')
+def api_xbento_options():
+    return jsonify(get_xbento_options_dict())
+
 # ----- Review API -----
 @app.route('/api/reviews', methods=['GET', 'POST'])
 def reviews_api():
@@ -569,6 +588,10 @@ def dashboard():
     bases = BubbleOption.query.filter_by(category='base').all()
     smaken = BubbleOption.query.filter_by(category='smaak').all()
     toppings = BubbleOption.query.filter_by(category='topping').all()
+    xbento_main = XbentoOption.query.filter_by(category='main').all()
+    xbento_side = XbentoOption.query.filter_by(category='side').all()
+    xbento_rice = XbentoOption.query.filter_by(category='rice').all()
+    xbento_groente = XbentoOption.query.filter_by(category='groente').all()
     return render_template(
         'dashboard.html',
         is_open=get_value('is_open', 'true'),
@@ -587,6 +610,10 @@ def dashboard():
         base_options=bases,
         smaak_options=smaken,
         topping_options=toppings,
+        xbento_main=xbento_main,
+        xbento_side=xbento_side,
+        xbento_rice=xbento_rice,
+        xbento_groente=xbento_groente,
     )
 
 
@@ -775,6 +802,48 @@ def delete_bubble_option(opt_id):
     db.session.delete(opt)
     db.session.commit()
     socketio.emit('bubble_options_update', get_bubble_options_dict())
+    return redirect(url_for('dashboard'))
+
+
+@app.route('/dashboard/xbento_options/add', methods=['POST'])
+@login_required
+def add_xbento_option():
+    name = request.form.get('name', '').strip()
+    category = request.form.get('category')
+    price = request.form.get('price', '0')
+    try:
+        price_val = float(price)
+    except ValueError:
+        price_val = 0.0
+    if name and category in ['main', 'side', 'rice', 'groente']:
+        opt = XbentoOption(name=name, category=category, price=price_val)
+        db.session.add(opt)
+        db.session.commit()
+        socketio.emit('xbento_options_update', get_xbento_options_dict())
+    return redirect(url_for('dashboard'))
+
+
+@app.route('/dashboard/xbento_options/<int:opt_id>', methods=['POST'])
+@login_required
+def update_xbento_option(opt_id):
+    opt = XbentoOption.query.get_or_404(opt_id)
+    opt.name = request.form.get('name', opt.name)
+    try:
+        opt.price = float(request.form.get('price', opt.price))
+    except ValueError:
+        pass
+    db.session.commit()
+    socketio.emit('xbento_options_update', get_xbento_options_dict())
+    return redirect(url_for('dashboard'))
+
+
+@app.route('/dashboard/xbento_options/<int:opt_id>/delete', methods=['POST'])
+@login_required
+def delete_xbento_option(opt_id):
+    opt = XbentoOption.query.get_or_404(opt_id)
+    db.session.delete(opt)
+    db.session.commit()
+    socketio.emit('xbento_options_update', get_xbento_options_dict())
     return redirect(url_for('dashboard'))
 
 
