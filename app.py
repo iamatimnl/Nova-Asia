@@ -72,6 +72,42 @@ def to_nl(dt: datetime) -> datetime:
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=UTC)
     return dt.astimezone(NL_TZ)
+
+def is_store_open() -> tuple[bool, str]:
+    """Return whether the shop is open and a message if closed."""
+    settings = {s.key: s.value for s in Setting.query.all()}
+    if settings.get("is_open", "true") == "false":
+        return False, "De website is momenteel gesloten"
+
+    closed_days = [d for d in (settings.get("closed_days") or "").split(',') if d]
+    day_names = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+    ]
+    today_name = day_names[datetime.now(NL_TZ).weekday()]
+    if today_name in closed_days:
+        return False, "Vandaag zijn er geen bestellingen mogelijk"
+
+    try:
+        open_time = datetime.strptime(settings.get("open_time", "11:00"), "%H:%M").time()
+        close_time = datetime.strptime(settings.get("close_time", "21:00"), "%H:%M").time()
+    except Exception:
+        return True, ""
+
+    now_t = datetime.now(NL_TZ).time()
+    if open_time <= close_time:
+        within = open_time <= now_t < close_time
+    else:
+        within = now_t >= open_time or now_t < close_time
+    if not within:
+        return False, "Momenteel gesloten"
+
+    return True, ""
 def generate_excel_today():
     today = datetime.now(NL_TZ).date()
     start_local = datetime.combine(today, datetime.min.time(), tzinfo=NL_TZ)
@@ -383,6 +419,10 @@ def pos():
 @app.route('/api/orders', methods=["POST"])
 def api_orders():
     try:
+        open_ok, reason = is_store_open()
+        if not open_ok:
+            return jsonify({"status": "closed", "message": reason}), 403
+
         data = request.get_json() or {}
         order_number = data.get("order_number") or data.get("orderNumber")
 
