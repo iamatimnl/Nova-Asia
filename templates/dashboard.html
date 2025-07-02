@@ -134,6 +134,96 @@
         <button type="submit">Toevoegen</button>
     </form>
 
+    <h2>Xbento Opties</h2>
+
+    <h3>Hoofdgerecht</h3>
+    <ul>
+    {% for o in xbento_main %}
+        <li>
+            <form action="/dashboard/xbento_options/{{ o.id }}" method="post" style="display:inline;">
+                <input type="text" name="name" value="{{ o.name }}">
+                <input type="number" step="0.01" name="price" value="{{ o.price }}">
+                <button type="submit">Opslaan</button>
+            </form>
+            <form action="/dashboard/xbento_options/{{ o.id }}/delete" method="post" style="display:inline;">
+                <button type="submit">Verwijder</button>
+            </form>
+        </li>
+    {% endfor %}
+    </ul>
+    <form action="/dashboard/xbento_options/add" method="post">
+        <input type="hidden" name="category" value="main">
+        <input type="text" name="name" placeholder="Naam">
+        <input type="number" step="0.01" name="price" placeholder="Prijs">
+        <button type="submit">Toevoegen</button>
+    </form>
+
+    <h3>Bijgerecht</h3>
+    <ul>
+    {% for o in xbento_side %}
+        <li>
+            <form action="/dashboard/xbento_options/{{ o.id }}" method="post" style="display:inline;">
+                <input type="text" name="name" value="{{ o.name }}">
+                <input type="number" step="0.01" name="price" value="{{ o.price }}">
+                <button type="submit">Opslaan</button>
+            </form>
+            <form action="/dashboard/xbento_options/{{ o.id }}/delete" method="post" style="display:inline;">
+                <button type="submit">Verwijder</button>
+            </form>
+        </li>
+    {% endfor %}
+    </ul>
+    <form action="/dashboard/xbento_options/add" method="post">
+        <input type="hidden" name="category" value="side">
+        <input type="text" name="name" placeholder="Naam">
+        <input type="number" step="0.01" name="price" placeholder="Prijs">
+        <button type="submit">Toevoegen</button>
+    </form>
+
+    <h3>Rijstsoort</h3>
+    <ul>
+    {% for o in xbento_rice %}
+        <li>
+            <form action="/dashboard/xbento_options/{{ o.id }}" method="post" style="display:inline;">
+                <input type="text" name="name" value="{{ o.name }}">
+                <input type="number" step="0.01" name="price" value="{{ o.price }}">
+                <button type="submit">Opslaan</button>
+            </form>
+            <form action="/dashboard/xbento_options/{{ o.id }}/delete" method="post" style="display:inline;">
+                <button type="submit">Verwijder</button>
+            </form>
+        </li>
+    {% endfor %}
+    </ul>
+    <form action="/dashboard/xbento_options/add" method="post">
+        <input type="hidden" name="category" value="rice">
+        <input type="text" name="name" placeholder="Naam">
+        <input type="number" step="0.01" name="price" placeholder="Prijs">
+        <button type="submit">Toevoegen</button>
+    </form>
+
+    <h3>Groente</h3>
+    <ul>
+    {% for o in xbento_groente %}
+        <li>
+            <form action="/dashboard/xbento_options/{{ o.id }}" method="post" style="display:inline;">
+                <input type="text" name="name" value="{{ o.name }}">
+                <input type="number" step="0.01" name="price" value="{{ o.price }}">
+                <button type="submit">Opslaan</button>
+            </form>
+            <form action="/dashboard/xbento_options/{{ o.id }}/delete" method="post" style="display:inline;">
+                <button type="submit">Verwijder</button>
+            </form>
+        </li>
+    {% endfor %}
+    </ul>
+    <form action="/dashboard/xbento_options/add" method="post">
+        <input type="hidden" name="category" value="groente">
+        <input type="text" name="name" placeholder="Naam">
+        <input type="number" step="0.01" name="price" placeholder="Prijs">
+        <button type="submit">Toevoegen</button>
+    </form>
+
     <script>
         document.getElementById('settingForm').addEventListener('submit', function(e) {
             e.preventDefault();  // 防止页面刷新

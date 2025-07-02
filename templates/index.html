@@ -1670,31 +1670,21 @@ input:focus, select:focus, textarea:focus {
 <div class="bubble-option">
 <select id="xBentoMain">
 <option value="">Hoofdgerecht</option>
-<option value="Teriyaki beef">Teriyaki beef</option>
-<option value="Lamskotelet">Lamskotelet</option>
-<option value="Ebi">Ebi</option>
-<option value="Zalm">Zalm</option>
-<option value="Usuyaki(biefroll)">Usuyaki(biefroll)</option>
-
-<option value="Teriyaki chicken">Teriyaki chicken</option>
 </select>
 </div>
 <div class="bubble-option">
 <select id="xBentoSide">
 <option value="">Bijgerecht</option>
-<option value="Gyoza">Gyoza</option>
-<option value="Edamame">Edamame</option>
-<option value="Ebi fry">Ebi fry</option>
-<option value="Chicken karaage">Chicken karaage</option>
-<option value="Chicken spring roll">Chicken spring roll</option>
 </select>
 </div>
 <div class="bubble-option">
   <select id="xBentoRice">
 <option value="">Rijstsoort</option>
-<option value="White rice">White rice</option>
-<option value="Fried rice (+€5)">Fried rice (+€5)</option>
-  <option value="Sushi rice">Sushi rice</option>
+  </select>
+</div>
+<div class="bubble-option">
+  <select id="xBentoVeg">
+    <option value="">Groente</option>
   </select>
 </div>
     <div class="new-set-wrap hidden" id="xBentoNewWrap">
@@ -2459,6 +2449,7 @@ const DEFAULT_PACKAGING_FEE = 0.20;
 const DELIVERY_FEE = 2.50;
 let milkTeaPrice = 0;
 let bubbleOptions = {base: [], smaak: [], topping: []};
+let xbentoOptions = {main: [], side: [], rice: [], groente: []};
 let currentPackaging = 0;
 let currentSubtotal = 0;
 let finalTotal = 0;
@@ -2488,6 +2479,29 @@ function updateMilkTeaDisplay(){
   }
 }
 
+function getXbentoOptionPrice(cat, name){
+  const opt = (xbentoOptions[cat]||[]).find(o=>o.name===name);
+  return opt ? parseFloat(opt.price) : 0;
+}
+
+function getXbentoPrice(){
+  const main=document.getElementById('xBentoMain').value;
+  const side=document.getElementById('xBentoSide').value;
+  const rice=document.getElementById('xBentoRice').value;
+  const veg=document.getElementById('xBentoVeg').value;
+  return getXbentoOptionPrice('main',main)+getXbentoOptionPrice('side',side)+getXbentoOptionPrice('rice',rice)+getXbentoOptionPrice('groente',veg);
+}
+
+function updateXbentoDisplay(){
+  const price=getXbentoPrice();
+  const item=document.querySelector('.menu-item[data-name="Xbento"]');
+  if(item){
+    item.dataset.price=price;
+    const p=item.querySelector('p');
+    if(p) p.textContent=`€ ${price.toFixed(2)}`;
+  }
+}
+
 function saveCart() {
   sessionStorage.setItem('novaCart', JSON.stringify(cart));
 }
@@ -2513,11 +2527,37 @@ function populateBubbleSelectors(){
   bubbleOptions.topping.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.textContent=o.name;if(o.name===curTopping) opt.selected=true;toppingSel.appendChild(opt);});
 }
 
+function populateXbentoSelectors(){
+  const mainSel=document.getElementById('xBentoMain');
+  const sideSel=document.getElementById('xBentoSide');
+  const riceSel=document.getElementById('xBentoRice');
+  const vegSel=document.getElementById('xBentoVeg');
+  const curMain=mainSel.value,curSide=sideSel.value,curRice=riceSel.value,curVeg=vegSel.value;
+  mainSel.innerHTML='<option value="">Hoofdgerecht</option>';
+  xbentoOptions.main.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.textContent=o.name;if(o.name===curMain) opt.selected=true;mainSel.appendChild(opt);});
+  sideSel.innerHTML='<option value="">Bijgerecht</option>';
+  xbentoOptions.side.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.textContent=o.name;if(o.name===curSide) opt.selected=true;sideSel.appendChild(opt);});
+  riceSel.innerHTML='<option value="">Rijstsoort</option>';
+  xbentoOptions.rice.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.textContent=o.name;if(o.name===curRice) opt.selected=true;riceSel.appendChild(opt);});
+  vegSel.innerHTML='<option value="">Groente</option>';
+  xbentoOptions.groente.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.textContent=o.name;if(o.name===curVeg) opt.selected=true;vegSel.appendChild(opt);});
+}
+
 function updateBubbleCartPrices(){
   Object.entries(cart).forEach(([name,item])=>{
     const m=name.match(/^Bubble Tea \(([^,]+), ([^,]+), ([^)]+)\)$/);
     if(!m) return;
     const price=getOptionPrice('base',m[1])+getOptionPrice('smaak',m[2])+getOptionPrice('topping',m[3]);
+    item.price=price;
+  });
+  updateCart();
+}
+
+function updateXbentoCartPrices(){
+  Object.entries(cart).forEach(([name,item])=>{
+    const m=name.match(/^Xbento \(([^,]+), ([^,]+), ([^,]+), ([^)]+)\)$/);
+    if(!m) return;
+    const price=getXbentoOptionPrice('main',m[1])+getXbentoOptionPrice('side',m[2])+getXbentoOptionPrice('rice',m[3])+getXbentoOptionPrice('groente',m[4]);
     item.price=price;
   });
   updateCart();
@@ -2529,6 +2569,15 @@ function fetchBubbleOptions(){
     populateBubbleSelectors();
     updateMilkTeaDisplay();
     updateBubbleCartPrices();
+  });
+}
+
+function fetchXbentoOptions(){
+  fetch('/api/xbento_options').then(r=>r.json()).then(data=>{
+    xbentoOptions=data;
+    populateXbentoSelectors();
+    updateXbentoDisplay();
+    updateXbentoCartPrices();
   });
 }
 
@@ -2664,20 +2713,18 @@ function changeXbentoQty(delta) {
   const main = document.getElementById("xBentoMain").value;
   const side = document.getElementById("xBentoSide").value;
   const rice = document.getElementById("xBentoRice").value;
+  const veg = document.getElementById("xBentoVeg").value;
 
   // 如果没选完配料，不更新数量也不更新购物车
-  if (!main || !side || !rice) return;
+  if (!main || !side || !rice || !veg) return;
 
   val = Math.max(0, Math.min(20, val + delta));
   qtySel.value = val;  // ✅ 只有当所有项都选择后再更新数量
 
-  let basePrice = 14;
-  if (rice.includes("Fried rice")) {
-    basePrice += 5;
-  }
+  const price = getXbentoPrice();
 
-  const fullName = `Xbento (${main}, ${side}, ${rice})`;
-  setQty(fullName, basePrice, val, DEFAULT_PACKAGING_FEE);
+  const fullName = `Xbento (${main}, ${side}, ${rice}, ${veg})`;
+  setQty(fullName, price, val, DEFAULT_PACKAGING_FEE);
   if (xbentoSetControls) xbentoSetControls.update();
 }
 
@@ -2796,7 +2843,8 @@ function setDragonQty() {
     const main = document.getElementById("xBentoMain").value;
     const side = document.getElementById("xBentoSide").value;
     const rice = document.getElementById("xBentoRice").value;
-    return main && side && rice;
+    const veg = document.getElementById("xBentoVeg").value;
+    return main && side && rice && veg;
   }
 
   function isXbowlValid() {
@@ -2818,11 +2866,17 @@ function setDragonQty() {
     });
   });
 
+  ['xBentoMain','xBentoSide','xBentoRice','xBentoVeg'].forEach(id=>{
+    document.getElementById(id).addEventListener('change', () => {
+      updateXbentoDisplay();
+    });
+  });
+
   xbentoSetControls = initNewSetControls({
     qtyId: 'xBentoQty',
     wrapId: 'xBentoNewWrap',
     buttonId: 'xBentoNew',
-    fieldIds: ['xBentoMain','xBentoSide','xBentoRice']
+    fieldIds: ['xBentoMain','xBentoSide','xBentoRice','xBentoVeg']
   });
   xbentoSetControls.update();
 
@@ -2846,7 +2900,7 @@ function setDragonQty() {
   // 🍱 Xbento 按钮加减（保留一次即可）
   document.querySelector('.qty-plus[data-target="xBentoQty"]').addEventListener('click', () => {
     if (!isXbentoValid()) {
-      alert("🍱 Kies eerst hoofdgerecht, bijgerecht en rijstsoort voor je Xbento.");
+      alert("🍱 Kies eerst hoofdgerecht, bijgerecht, rijstsoort en groente voor je Xbento.");
       return;
     }
     changeXbentoQty(1);
@@ -2854,7 +2908,7 @@ function setDragonQty() {
 
   document.querySelector('.qty-minus[data-target="xBentoQty"]').addEventListener('click', () => {
     if (!isXbentoValid()) {
-      alert("🍱 Kies eerst hoofdgerecht, bijgerecht en rijstsoort voor je Xbento.");
+      alert("🍱 Kies eerst hoofdgerecht, bijgerecht, rijstsoort en groente voor je Xbento.");
       return;
     }
     changeXbentoQty(-1);
@@ -2891,7 +2945,7 @@ function setDragonQty() {
   // 🍱 Xbento select 直接选择数量时
   document.getElementById('xBentoQty').addEventListener('change', () => {
     if (!isXbentoValid()) {
-      alert("🍱 Kies eerst hoofdgerecht, bijgerecht en rijstsoort voor je Xbento.");
+      alert("🍱 Kies eerst hoofdgerecht, bijgerecht, rijstsoort en groente voor je Xbento.");
       document.getElementById('xBentoQty').value = 0;
       return;
     }
@@ -4324,6 +4378,7 @@ function fetchStatus(){
 }
 fetchStatus();
 fetchBubbleOptions();
+fetchXbentoOptions();
 const socket = io();
 socket.on('setting_update', updateStatus);
 socket.on('time_update', updateTimes);
@@ -4336,6 +4391,12 @@ socket.on('bubble_options_update', data => {
   populateBubbleSelectors();
   updateMilkTeaDisplay();
   updateBubbleCartPrices();
+});
+socket.on('xbento_options_update', data => {
+  xbentoOptions = data;
+  populateXbentoSelectors();
+  updateXbentoDisplay();
+  updateXbentoCartPrices();
 });
 const overlay = document.getElementById('closed-overlay');
 if(overlay){
