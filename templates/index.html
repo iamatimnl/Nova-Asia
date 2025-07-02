@@ -2850,7 +2850,7 @@ function updateDragonPrefs() {
   const existing = (cart['Dragon Roll Omakase'] && cart['Dragon Roll Omakase'].prefs) || [];
   for (let i = 1; i <= qty; i++) {
     const sel = document.createElement('select');
-    ['Geen voorkeur','Alleen vis','Alleen vlees'].forEach(opt => {
+    ['Geen voorkeur','Alleen met vis','Alleen met vlees'].forEach(opt => {
       const o = document.createElement('option');
       o.value = opt;
       o.textContent = opt;
