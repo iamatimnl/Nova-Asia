@@ -2457,12 +2457,22 @@ const extras = {
 
 const DEFAULT_PACKAGING_FEE = 0.20;
 const DELIVERY_FEE = 2.50;
+let milkTeaPrice = 5;
 let currentPackaging = 0;
 let currentSubtotal = 0;
 let finalTotal = 0;
 let currentDiscount = 0;
 let bubbleSetControls;
 let xbentoSetControls;
+
+function updateMilkTeaDisplay(){
+  const item = document.querySelector('.menu-item[data-name="Bubble Tea"]');
+  if(item){
+    item.dataset.price = milkTeaPrice;
+    const p = item.querySelector('p');
+    if(p) p.textContent = `€ ${milkTeaPrice.toFixed(2)}`;
+  }
+}
 
 function saveCart() {
   sessionStorage.setItem('novaCart', JSON.stringify(cart));
@@ -2596,7 +2606,7 @@ function changeBubbleQty(delta) {
   if (!type || !flavor || !topping) return;
 
   const fullName = `Bubble Tea (${type}, ${flavor}, ${topping})`;
-  setQty(fullName, 5, val, DEFAULT_PACKAGING_FEE);
+  setQty(fullName, milkTeaPrice, val, DEFAULT_PACKAGING_FEE);
   if (bubbleSetControls) bubbleSetControls.update();
 }
 
@@ -4148,6 +4158,11 @@ function updateStatus(settings){
   const afhalen = document.getElementById('afhalen');
   const bezorgen = document.getElementById('bezorgen');
 
+  if(settings.milktea_price){
+    milkTeaPrice = parseFloat(settings.milktea_price);
+    updateMilkTeaDisplay();
+  }
+
   const closedDays = (settings.closed_days || '').split(',').filter(d => d);
   const allClosed = closedDays.length === 7;
   const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -4259,6 +4274,10 @@ fetchStatus();
 const socket = io();
 socket.on('setting_update', updateStatus);
 socket.on('time_update', updateTimes);
+socket.on('milktea_price_update', data => {
+  milkTeaPrice = parseFloat(data.price || data);
+  updateMilkTeaDisplay();
+});
 const overlay = document.getElementById('closed-overlay');
 if(overlay){
   overlay.addEventListener('click', () => {

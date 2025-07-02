@@ -548,6 +548,7 @@ def dashboard():
         delivery_start=get_value('delivery_start', '11:00'),
         delivery_end=get_value('delivery_end', '21:00'),
         time_interval=get_value('time_interval', '15'),
+        milktea_price=get_value('milktea_price', '5'),
         sections=sections,
     )
 
@@ -676,6 +677,26 @@ def update_item(item_id):
     ]
     socketio.emit('menu_update', items)
     return redirect(url_for('dashboard'))
+
+
+@app.route('/update_milktea_price', methods=['POST'])
+@login_required
+def update_milktea_price():
+    data = request.get_json() or {}
+    try:
+        price_val = float(data.get('price'))
+    except (TypeError, ValueError):
+        return jsonify({'success': False, 'error': 'invalid_price'}), 400
+
+    setting = Setting.query.filter_by(key='milktea_price').first()
+    if not setting:
+        setting = Setting(key='milktea_price', value=str(price_val))
+        db.session.add(setting)
+    else:
+        setting.value = str(price_val)
+    db.session.commit()
+    socketio.emit('milktea_price_update', {'price': price_val})
+    return jsonify({'success': True})
 
 
 

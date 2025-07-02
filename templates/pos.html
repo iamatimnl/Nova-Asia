@@ -678,6 +678,16 @@ const extras = {
   gemberCount: { label: 'Gember', price: 0 },
   wasabiCount: { label: 'Wasabi', price: 0 }
 };
+let milkTeaPrice = 5;
+
+function updateMilkTeaDisplay(){
+  const item = document.querySelector('.menu-item[data-name="Bubble Tea"]');
+  if(item){
+    item.dataset.price = milkTeaPrice;
+    const p = item.querySelector('p');
+    if(p) p.textContent = `€${milkTeaPrice.toFixed(2)}`;
+  }
+}
 
 function changeBubbleQty(delta){
   const sel=document.getElementById('bubbleTeaQty');
@@ -689,7 +699,7 @@ function changeBubbleQty(delta){
   const topping=document.getElementById('bubbleTopping').value;
   if(!type||!flavor||!topping) return;
   const name=`Bubble Tea (${type}, ${flavor}, ${topping})`;
-  setQty(name,5,val,0.2);
+  setQty(name,milkTeaPrice,val,0.2);
 }
 
 function changeXbentoQty(delta){
@@ -1359,7 +1369,12 @@ function formatCurrency(value){
     if(r.ok){ const d=await r.json(); applyMenuPrices(d); }
   }
   loadMenu();
+  fetch('/api/settings').then(r=>r.json()).then(s=>{ if(s.milktea_price){ milkTeaPrice=parseFloat(s.milktea_price); updateMilkTeaDisplay(); }});
   socket.on('menu_update', applyMenuPrices);
+  socket.on('milktea_price_update', data => {
+    milkTeaPrice = parseFloat(data.price || data);
+    updateMilkTeaDisplay();
+  });
 
   let pollTimer;
   const baseTitle = document.title;
