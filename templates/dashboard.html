@@ -50,6 +50,13 @@
         <input type="time" id="delivery_start_input" value="{{ delivery_start }}"> -
         <input type="time" id="delivery_end_input" value="{{ delivery_end }}">
         <br><br>
+        <label>Tijd interval:</label>
+        <select id="interval_select">
+            {% for n in [5,10,15,30] %}
+            <option value="{{ n }}" {% if time_interval == n|string %}selected{% endif %}>{{ n }} min</option>
+            {% endfor %}
+        </select>
+        <br><br>
 
         <button type="submit">保存</button>
     </form>
@@ -68,6 +75,7 @@
             const pickup_end = document.getElementById('pickup_end_input').value;
             const delivery_start = document.getElementById('delivery_start_input').value;
             const delivery_end = document.getElementById('delivery_end_input').value;
+            const time_interval = document.getElementById('interval_select').value;
 
             fetch('/dashboard/update', {
                 method: 'POST',
@@ -82,7 +90,8 @@
                     pickup_start: pickup_start,
                     pickup_end: pickup_end,
                     delivery_start: delivery_start,
-                    delivery_end: delivery_end
+                    delivery_end: delivery_end,
+                    time_interval: time_interval
                 })
             })
             .then(response => response.json())
