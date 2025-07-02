@@ -590,6 +590,14 @@ def update_setting():
     db.session.commit()
     settings = {s.key: s.value for s in Setting.query.all()}
     socketio.emit('setting_update', settings)
+    time_settings = {
+        'pickup_start': settings.get('pickup_start'),
+        'pickup_end': settings.get('pickup_end'),
+        'delivery_start': settings.get('delivery_start'),
+        'delivery_end': settings.get('delivery_end'),
+        'time_interval': settings.get('time_interval')
+    }
+    socketio.emit('time_update', time_settings)
     return jsonify({'success': True})
 
 
