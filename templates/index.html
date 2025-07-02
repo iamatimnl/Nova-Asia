@@ -2457,7 +2457,10 @@ const extras = {
 
 const DEFAULT_PACKAGING_FEE = 0.20;
 const DELIVERY_FEE = 2.50;
-let milkTeaPrice = 5;
+let milkTeaPrice = 0;
+let bubbleOptions = {base: [], smaak: [], topping: []};
+const XBENTO_BASE_PRICE = 14;
+let xbentoOptions = {main: [], side: [], rice: []};
 let currentPackaging = 0;
 let currentSubtotal = 0;
 let finalTotal = 0;
@@ -2465,12 +2468,47 @@ let currentDiscount = 0;
 let bubbleSetControls;
 let xbentoSetControls;
 
+function getOptionPrice(cat, name){
+  const opt = (bubbleOptions[cat]||[]).find(o=>o.name===name);
+  return opt ? parseFloat(opt.price) : 0;
+}
+
+function getBubbleTeaPrice(){
+  const type = document.getElementById('bubbleType').value;
+  const flavor = document.getElementById('bubbleFlavor').value;
+  const topping = document.getElementById('bubbleTopping').value;
+  return getOptionPrice('base', type)+getOptionPrice('smaak', flavor)+getOptionPrice('topping', topping);
+}
+
+function getXbentoOptionPrice(cat, name){
+  const opt = (xbentoOptions[cat]||[]).find(o=>o.name===name);
+  return opt ? parseFloat(opt.price) : 0;
+}
+
+function getXbentoPrice(){
+  const main=document.getElementById('xBentoMain').value;
+  const side=document.getElementById('xBentoSide').value;
+  const rice=document.getElementById('xBentoRice').value;
+  return XBENTO_BASE_PRICE + getXbentoOptionPrice('main',main)+getXbentoOptionPrice('side',side)+getXbentoOptionPrice('rice',rice);
+}
+
 function updateMilkTeaDisplay(){
+  milkTeaPrice = getBubbleTeaPrice();
   const item = document.querySelector('.menu-item[data-name="Bubble Tea"]');
   if(item){
     item.dataset.price = milkTeaPrice;
     const p = item.querySelector('p');
     if(p) p.textContent = `€ ${milkTeaPrice.toFixed(2)}`;
+  }
+}
+
+function updateXbentoDisplay(){
+  const price=getXbentoPrice();
+  const item=document.querySelector('.menu-item[data-name="Xbento"]');
+  if(item){
+    item.dataset.price=price;
+    const p=item.querySelector('p');
+    if(p) p.textContent=`Vanaf € ${price.toFixed(2)}`;
   }
 }
 
@@ -2484,6 +2522,70 @@ function loadCart() {
     const data = JSON.parse(stored);
     Object.keys(data).forEach(k => { cart[k] = data[k]; });
   }
+}
+
+function populateBubbleSelectors(){
+  const baseSel=document.getElementById('bubbleType');
+  const flavorSel=document.getElementById('bubbleFlavor');
+  const toppingSel=document.getElementById('bubbleTopping');
+  const curBase=baseSel.value; const curFlavor=flavorSel.value; const curTopping=toppingSel.value;
+  baseSel.innerHTML='<option value="">Base</option>';
+  bubbleOptions.base.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.textContent=o.name;if(o.name===curBase) opt.selected=true;baseSel.appendChild(opt);});
+  flavorSel.innerHTML='<option value="">Smaak</option>';
+  bubbleOptions.smaak.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.textContent=o.name;if(o.name===curFlavor) opt.selected=true;flavorSel.appendChild(opt);});
+  toppingSel.innerHTML='<option value="">Topping</option>';
+  bubbleOptions.topping.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.textContent=o.name;if(o.name===curTopping) opt.selected=true;toppingSel.appendChild(opt);});
+}
+
+function populateXbentoSelectors(){
+  const mainSel=document.getElementById('xBentoMain');
+  const sideSel=document.getElementById('xBentoSide');
+  const riceSel=document.getElementById('xBentoRice');
+  const cMain=mainSel.value, cSide=sideSel.value, cRice=riceSel.value;
+  mainSel.innerHTML='<option value="">Hoofdgerecht</option>';
+  xbentoOptions.main.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.textContent=o.name;if(o.name===cMain) opt.selected=true;mainSel.appendChild(opt);});
+  sideSel.innerHTML='<option value="">Bijgerecht</option>';
+  xbentoOptions.side.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.textContent=o.name;if(o.name===cSide) opt.selected=true;sideSel.appendChild(opt);});
+  riceSel.innerHTML='<option value="">Rijstsoort</option>';
+  xbentoOptions.rice.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.textContent=o.name;if(o.name===cRice) opt.selected=true;riceSel.appendChild(opt);});
+}
+
+function updateBubbleCartPrices(){
+  Object.entries(cart).forEach(([name,item])=>{
+    const m=name.match(/^Bubble Tea \(([^,]+), ([^,]+), ([^)]+)\)$/);
+    if(!m) return;
+    const price=getOptionPrice('base',m[1])+getOptionPrice('smaak',m[2])+getOptionPrice('topping',m[3]);
+    item.price=price;
+  });
+  updateCart();
+}
+
+function updateXbentoCartPrices(){
+  Object.entries(cart).forEach(([name,item])=>{
+    const m=name.match(/^Xbento \(([^,]+), ([^,]+), ([^)]+)\)$/);
+    if(!m) return;
+    const price=XBENTO_BASE_PRICE + getXbentoOptionPrice('main',m[1])+getXbentoOptionPrice('side',m[2])+getXbentoOptionPrice('rice',m[3]);
+    item.price=price;
+  });
+  updateCart();
+}
+
+function fetchBubbleOptions(){
+  fetch('/api/bubble_options').then(r=>r.json()).then(data=>{
+    bubbleOptions=data;
+    populateBubbleSelectors();
+    updateMilkTeaDisplay();
+    updateBubbleCartPrices();
+  });
+}
+
+function fetchXbentoOptions(){
+  fetch('/api/xbento_options').then(r=>r.json()).then(data=>{
+    xbentoOptions=data;
+    populateXbentoSelectors();
+    updateXbentoDisplay();
+    updateXbentoCartPrices();
+  });
 }
 
 const FORM_KEY = 'orderForm';
@@ -2606,7 +2708,8 @@ function changeBubbleQty(delta) {
   if (!type || !flavor || !topping) return;
 
   const fullName = `Bubble Tea (${type}, ${flavor}, ${topping})`;
-  setQty(fullName, milkTeaPrice, val, DEFAULT_PACKAGING_FEE);
+  const price = getBubbleTeaPrice();
+  setQty(fullName, price, val, DEFAULT_PACKAGING_FEE);
   if (bubbleSetControls) bubbleSetControls.update();
 }
 
@@ -2623,14 +2726,9 @@ function changeXbentoQty(delta) {
 
   val = Math.max(0, Math.min(20, val + delta));
   qtySel.value = val;  // ✅ 只有当所有项都选择后再更新数量
-
-  let basePrice = 14;
-  if (rice.includes("Fried rice")) {
-    basePrice += 5;
-  }
-
+  const price=getXbentoPrice();
   const fullName = `Xbento (${main}, ${side}, ${rice})`;
-  setQty(fullName, basePrice, val, DEFAULT_PACKAGING_FEE);
+  setQty(fullName, price, val, DEFAULT_PACKAGING_FEE);
   if (xbentoSetControls) xbentoSetControls.update();
 }
 
@@ -2765,6 +2863,11 @@ function setDragonQty() {
     fieldIds: ['bubbleType','bubbleFlavor','bubbleTopping']
   });
   bubbleSetControls.update();
+  ['bubbleType','bubbleFlavor','bubbleTopping'].forEach(id=>{
+    document.getElementById(id).addEventListener('change', () => {
+      updateMilkTeaDisplay();
+    });
+  });
 
   xbentoSetControls = initNewSetControls({
     qtyId: 'xBentoQty',
@@ -2773,6 +2876,11 @@ function setDragonQty() {
     fieldIds: ['xBentoMain','xBentoSide','xBentoRice']
   });
   xbentoSetControls.update();
+  ['xBentoMain','xBentoSide','xBentoRice'].forEach(id=>{
+    document.getElementById(id).addEventListener('change',()=>{
+      updateXbentoDisplay();
+    });
+  });
 
   // 🧋 奶茶按钮加减
   document.querySelector('.qty-plus[data-target="bubbleTeaQty"]').addEventListener('click', () => {
@@ -4271,12 +4379,26 @@ function fetchStatus(){
     .then(updateStatus);
 }
 fetchStatus();
+fetchBubbleOptions();
+fetchXbentoOptions();
 const socket = io();
 socket.on('setting_update', updateStatus);
 socket.on('time_update', updateTimes);
 socket.on('milktea_price_update', data => {
   milkTeaPrice = parseFloat(data.price || data);
   updateMilkTeaDisplay();
+});
+socket.on('bubble_options_update', data => {
+  bubbleOptions = data;
+  populateBubbleSelectors();
+  updateMilkTeaDisplay();
+  updateBubbleCartPrices();
+});
+socket.on('xbento_options_update', data => {
+  xbentoOptions = data;
+  populateXbentoSelectors();
+  updateXbentoDisplay();
+  updateXbentoCartPrices();
 });
 const overlay = document.getElementById('closed-overlay');
 if(overlay){

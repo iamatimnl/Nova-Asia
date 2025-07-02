@@ -66,6 +66,142 @@
         <button type="submit">保存</button>
     </form>
 
+    <h2>Bubble Tea Opties</h2>
+
+    <h3>Base</h3>
+    <ul>
+    {% for o in base_options %}
+        <li>
+            <form action="/dashboard/bubble_options/{{ o.id }}" method="post" style="display:inline;">
+                <input type="text" name="name" value="{{ o.name }}">
+                <input type="number" step="0.01" name="price" value="{{ o.price }}">
+                <button type="submit">Opslaan</button>
+            </form>
+            <form action="/dashboard/bubble_options/{{ o.id }}/delete" method="post" style="display:inline;">
+                <button type="submit">Verwijder</button>
+            </form>
+        </li>
+    {% endfor %}
+    </ul>
+    <form action="/dashboard/bubble_options/add" method="post">
+        <input type="hidden" name="category" value="base">
+        <input type="text" name="name" placeholder="Naam">
+        <input type="number" step="0.01" name="price" placeholder="Prijs">
+        <button type="submit">Toevoegen</button>
+    </form>
+
+    <h3>Smaak</h3>
+    <ul>
+    {% for o in smaak_options %}
+        <li>
+            <form action="/dashboard/bubble_options/{{ o.id }}" method="post" style="display:inline;">
+                <input type="text" name="name" value="{{ o.name }}">
+                <input type="number" step="0.01" name="price" value="{{ o.price }}">
+                <button type="submit">Opslaan</button>
+            </form>
+            <form action="/dashboard/bubble_options/{{ o.id }}/delete" method="post" style="display:inline;">
+                <button type="submit">Verwijder</button>
+            </form>
+        </li>
+    {% endfor %}
+    </ul>
+    <form action="/dashboard/bubble_options/add" method="post">
+        <input type="hidden" name="category" value="smaak">
+        <input type="text" name="name" placeholder="Naam">
+        <input type="number" step="0.01" name="price" placeholder="Prijs">
+        <button type="submit">Toevoegen</button>
+    </form>
+
+    <h3>Topping</h3>
+    <ul>
+    {% for o in topping_options %}
+        <li>
+            <form action="/dashboard/bubble_options/{{ o.id }}" method="post" style="display:inline;">
+                <input type="text" name="name" value="{{ o.name }}">
+                <input type="number" step="0.01" name="price" value="{{ o.price }}">
+                <button type="submit">Opslaan</button>
+            </form>
+            <form action="/dashboard/bubble_options/{{ o.id }}/delete" method="post" style="display:inline;">
+                <button type="submit">Verwijder</button>
+            </form>
+        </li>
+    {% endfor %}
+    </ul>
+    <form action="/dashboard/bubble_options/add" method="post">
+        <input type="hidden" name="category" value="topping">
+        <input type="text" name="name" placeholder="Naam">
+        <input type="number" step="0.01" name="price" placeholder="Prijs">
+        <button type="submit">Toevoegen</button>
+    </form>
+
+    <h2>Xbento Opties</h2>
+
+    <h3>Main</h3>
+    <ul>
+    {% for o in xbento_main %}
+        <li>
+            <form action="/dashboard/xbento_options/{{ o.id }}" method="post" style="display:inline;">
+                <input type="text" name="name" value="{{ o.name }}">
+                <input type="number" step="0.01" name="price" value="{{ o.price }}">
+                <button type="submit">Opslaan</button>
+            </form>
+            <form action="/dashboard/xbento_options/{{ o.id }}/delete" method="post" style="display:inline;">
+                <button type="submit">Verwijder</button>
+            </form>
+        </li>
+    {% endfor %}
+    </ul>
+    <form action="/dashboard/xbento_options/add" method="post">
+        <input type="hidden" name="category" value="main">
+        <input type="text" name="name" placeholder="Naam">
+        <input type="number" step="0.01" name="price" placeholder="Prijs">
+        <button type="submit">Toevoegen</button>
+    </form>
+
+    <h3>Side</h3>
+    <ul>
+    {% for o in xbento_side %}
+        <li>
+            <form action="/dashboard/xbento_options/{{ o.id }}" method="post" style="display:inline;">
+                <input type="text" name="name" value="{{ o.name }}">
+                <input type="number" step="0.01" name="price" value="{{ o.price }}">
+                <button type="submit">Opslaan</button>
+            </form>
+            <form action="/dashboard/xbento_options/{{ o.id }}/delete" method="post" style="display:inline;">
+                <button type="submit">Verwijder</button>
+            </form>
+        </li>
+    {% endfor %}
+    </ul>
+    <form action="/dashboard/xbento_options/add" method="post">
+        <input type="hidden" name="category" value="side">
+        <input type="text" name="name" placeholder="Naam">
+        <input type="number" step="0.01" name="price" placeholder="Prijs">
+        <button type="submit">Toevoegen</button>
+    </form>
+
+    <h3>Rice</h3>
+    <ul>
+    {% for o in xbento_rice %}
+        <li>
+            <form action="/dashboard/xbento_options/{{ o.id }}" method="post" style="display:inline;">
+                <input type="text" name="name" value="{{ o.name }}">
+                <input type="number" step="0.01" name="price" value="{{ o.price }}">
+                <button type="submit">Opslaan</button>
+            </form>
+            <form action="/dashboard/xbento_options/{{ o.id }}/delete" method="post" style="display:inline;">
+                <button type="submit">Verwijder</button>
+            </form>
+        </li>
+    {% endfor %}
+    </ul>
+    <form action="/dashboard/xbento_options/add" method="post">
+        <input type="hidden" name="category" value="rice">
+        <input type="text" name="name" placeholder="Naam">
+        <input type="number" step="0.01" name="price" placeholder="Prijs">
+        <button type="submit">Toevoegen</button>
+    </form>
+
     <script>
         document.getElementById('settingForm').addEventListener('submit', function(e) {
             e.preventDefault();  // 防止页面刷新
