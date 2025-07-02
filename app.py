@@ -180,6 +180,13 @@ def build_maps_link(street: str, house_number: str, postcode: str, city: str) ->
     return f"https://www.google.com/maps?q={quote(address)}"
 
 
+def get_bubble_options_dict():
+    opts = {'base': [], 'smaak': [], 'topping': []}
+    for o in BubbleOption.query.order_by(BubbleOption.id).all():
+        opts[o.category].append({'id': o.id, 'name': o.name, 'price': o.price})
+    return opts
+
+
 # Socket.IO for real-time updates
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
@@ -257,6 +264,14 @@ class MenuItem(db.Model):
     section = db.relationship('MenuSection', backref=db.backref('items', lazy=True))
 
 
+class BubbleOption(db.Model):
+    __tablename__ = 'bubble_options'
+    id = db.Column(db.Integer, primary_key=True)
+    category = db.Column(db.String(20))  # base, smaak, topping
+    name = db.Column(db.String(100), nullable=False)
+    price = db.Column(db.Float, default=0.0)
+
+
 with app.app_context():
     db.create_all()
     defaults = {
@@ -276,6 +291,18 @@ with app.app_context():
         if not Setting.query.filter_by(key=k).first():
             db.session.add(Setting(key=k, value=v))
     db.session.commit()
+
+    if BubbleOption.query.count() == 0:
+        defaults_base = ['Green Tea', 'Milk Tea', 'Milkshake']
+        defaults_smaak = ['Mango', 'Appel', 'Matcha', 'Brown Sugar']
+        defaults_topping = ['Appel Popping', 'Perzik Popping', 'Tapioca']
+        for n in defaults_base:
+            db.session.add(BubbleOption(category='base', name=n, price=0.0))
+        for n in defaults_smaak:
+            db.session.add(BubbleOption(category='smaak', name=n, price=0.0))
+        for n in defaults_topping:
+            db.session.add(BubbleOption(category='topping', name=n, price=0.0))
+        db.session.commit()
 
 
 class User(UserMixin):
@@ -483,6 +510,10 @@ def api_menu():
     ]
     return jsonify(data)
 
+@app.route('/api/bubble_options')
+def api_bubble_options():
+    return jsonify(get_bubble_options_dict())
+
 # ----- Review API -----
 @app.route('/api/reviews', methods=['GET', 'POST'])
 def reviews_api():
@@ -535,6 +566,9 @@ def dashboard():
         return s.value if s else default
 
     sections = MenuSection.query.all()
+    bases = BubbleOption.query.filter_by(category='base').all()
+    smaken = BubbleOption.query.filter_by(category='smaak').all()
+    toppings = BubbleOption.query.filter_by(category='topping').all()
     return render_template(
         'dashboard.html',
         is_open=get_value('is_open', 'true'),
@@ -550,6 +584,9 @@ def dashboard():
         time_interval=get_value('time_interval', '15'),
         milktea_price=get_value('milktea_price', '5'),
         sections=sections,
+        base_options=bases,
+        smaak_options=smaken,
+        topping_options=toppings,
     )
 
 
@@ -697,6 +734,48 @@ def update_milktea_price():
     db.session.commit()
     socketio.emit('milktea_price_update', {'price': price_val})
     return jsonify({'success': True})
+
+
+@app.route('/dashboard/bubble_options/add', methods=['POST'])
+@login_required
+def add_bubble_option():
+    name = request.form.get('name', '').strip()
+    category = request.form.get('category')
+    price = request.form.get('price', '0')
+    try:
+        price_val = float(price)
+    except ValueError:
+        price_val = 0.0
+    if name and category in ['base', 'smaak', 'topping']:
+        opt = BubbleOption(name=name, category=category, price=price_val)
+        db.session.add(opt)
+        db.session.commit()
+        socketio.emit('bubble_options_update', get_bubble_options_dict())
+    return redirect(url_for('dashboard'))
+
+
+@app.route('/dashboard/bubble_options/<int:opt_id>', methods=['POST'])
+@login_required
+def update_bubble_option(opt_id):
+    opt = BubbleOption.query.get_or_404(opt_id)
+    opt.name = request.form.get('name', opt.name)
+    try:
+        opt.price = float(request.form.get('price', opt.price))
+    except ValueError:
+        pass
+    db.session.commit()
+    socketio.emit('bubble_options_update', get_bubble_options_dict())
+    return redirect(url_for('dashboard'))
+
+
+@app.route('/dashboard/bubble_options/<int:opt_id>/delete', methods=['POST'])
+@login_required
+def delete_bubble_option(opt_id):
+    opt = BubbleOption.query.get_or_404(opt_id)
+    db.session.delete(opt)
+    db.session.commit()
+    socketio.emit('bubble_options_update', get_bubble_options_dict())
+    return redirect(url_for('dashboard'))
 
 
 
