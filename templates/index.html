@@ -4341,6 +4341,20 @@ function inRange(startStr, endStr){
   return nowMin >= sMin || nowMin < eMin;
 }
 
+function parseTime(timeStr, startStr){
+  if(!timeStr) return null;
+  const d = new Date();
+  const [h, m] = timeStr.split(':').map(Number);
+  d.setHours(h, m, 0, 0);
+  if(startStr){
+    const [sh, sm] = startStr.split(':').map(Number);
+    if(h*60 + m <= sh*60 + sm){
+      d.setDate(d.getDate() + 1);
+    }
+  }
+  return d;
+}
+
 function updateStatus(settings){
   const banner = document.getElementById('status-banner');
   const hoursEl = document.getElementById('hours-info');
@@ -4419,7 +4433,17 @@ function updateStatus(settings){
     if(storeOpen){
       const within = afhalen.checked ? pickupWithinHours : deliveryWithinHours;
       if(!within){
-        message = 'Let op: u bestelt buiten openingstijden, maar vooruitbestellen is toegestaan.';
+        const closingTime = parseTime(settings.close_time, settings.open_time);
+        const pickupEnd = parseTime(settings.pickup_end, settings.pickup_start);
+        const deliveryEnd = parseTime(settings.delivery_end, settings.delivery_start);
+        const lastTime = new Date(Math.max(pickupEnd ? pickupEnd.getTime() : 0, deliveryEnd ? deliveryEnd.getTime() : 0));
+        const now = new Date();
+        if(closingTime && lastTime && now > closingTime && now > lastTime){
+          storeOpen = false;
+          message = 'Closed for today. Please order tomorrow';
+        }else{
+          message = 'Let op: u bestelt buiten openingstijden, maar vooruitbestellen is toegestaan.';
+        }
       }
     }
   }
