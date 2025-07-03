@@ -65,6 +65,10 @@ with app.app_context():
         if "rating" not in cols:
             with db.engine.begin() as conn:
                 conn.execute(text("ALTER TABLE reviews ADD COLUMN rating INTEGER"))
+        idx_names = [i["name"] for i in inspector.get_indexes("orders")]
+        if "idx_orders_created_at" not in idx_names:
+            with db.engine.begin() as conn:
+                conn.execute(text("CREATE INDEX idx_orders_created_at ON orders (created_at)"))
     except Exception as e:
         print(f"DB init error: {e}")
 
@@ -1009,6 +1013,72 @@ def pos_orders_today():
         return jsonify(order_dicts)
 
     return render_template("pos_orders.html", orders=orders)
+
+
+@app.route('/pos/orders_by_date')
+@login_required
+def pos_orders_by_date():
+    date_str = request.args.get('date')
+    try:
+        qdate = datetime.strptime(date_str, '%Y-%m-%d').date()
+    except Exception:
+        return jsonify([])
+
+    start_local = datetime.combine(qdate, datetime.min.time(), tzinfo=NL_TZ)
+    end_local = datetime.combine(qdate, datetime.max.time(), tzinfo=NL_TZ)
+    start = start_local.astimezone(UTC).replace(tzinfo=None)
+    end = end_local.astimezone(UTC).replace(tzinfo=None)
+    orders = Order.query.filter(Order.created_at >= start, Order.created_at <= end).order_by(Order.created_at.desc()).all()
+    for o in orders:
+        try:
+            o.items_dict = json.loads(o.items or '{}')
+        except Exception:
+            try:
+                import ast
+                o.items_dict = ast.literal_eval(o.items)
+            except Exception:
+                o.items_dict = {}
+        o.created_at_local = to_nl(o.created_at)
+        o.maps_link = build_maps_link(o.street, o.house_number, o.postcode, o.city)
+
+    order_dicts = orders_to_dicts(orders)
+    if request.args.get('json'):
+        return jsonify(order_dicts)
+    return render_template('pos_orders.html', orders=orders)
+
+
+@app.route('/pos/orders_range')
+@login_required
+def pos_orders_range():
+    start_str = request.args.get('start')
+    end_str = request.args.get('end')
+    try:
+        sdate = datetime.strptime(start_str, '%Y-%m-%d').date()
+        edate = datetime.strptime(end_str, '%Y-%m-%d').date()
+    except Exception:
+        return jsonify([])
+
+    start_local = datetime.combine(sdate, datetime.min.time(), tzinfo=NL_TZ)
+    end_local = datetime.combine(edate, datetime.max.time(), tzinfo=NL_TZ)
+    start = start_local.astimezone(UTC).replace(tzinfo=None)
+    end = end_local.astimezone(UTC).replace(tzinfo=None)
+    orders = Order.query.filter(Order.created_at >= start, Order.created_at <= end).order_by(Order.created_at.desc()).all()
+    for o in orders:
+        try:
+            o.items_dict = json.loads(o.items or '{}')
+        except Exception:
+            try:
+                import ast
+                o.items_dict = ast.literal_eval(o.items)
+            except Exception:
+                o.items_dict = {}
+        o.created_at_local = to_nl(o.created_at)
+        o.maps_link = build_maps_link(o.street, o.house_number, o.postcode, o.city)
+
+    order_dicts = orders_to_dicts(orders)
+    if request.args.get('json'):
+        return jsonify(order_dicts)
+    return render_template('pos_orders.html', orders=orders)
 @app.route('/login', methods=["GET", "POST"])
 def login():
     if request.method == "POST":
