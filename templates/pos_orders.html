@@ -28,8 +28,6 @@ th:last-child {
   animation: highlightBlink 6s ease-in-out;
   animation-iteration-count: 10;
 }
-tr.completed { background-color: #c8e6c9; }
-tr.cancelled { background-color: #e0e0e0; }
 @keyframes highlightBlink {
   0%,100% { background-color: green; }
   50% { background-color: blue; }
@@ -174,9 +172,6 @@ function insertSorted(tbody,tr){
     function addRow(order, highlight=false) {
   const tbody = document.querySelector('table tbody');
   const tr = document.createElement('tr');
-  if (order.id) tr.dataset.id = order.id;
-  if (order.is_cancelled) tr.classList.add('cancelled');
-  else if (order.is_completed) tr.classList.add('completed');
   const isDelivery = ['delivery','bezorgen'].includes(order.order_type);
   const items = Object.entries(order.items || {}).map(([n,i]) => `<li>${n} x ${i.qty}</li>`).join('');
 
@@ -223,7 +218,7 @@ function insertSorted(tbody,tr){
   <td>${isDelivery ? (delivery || '-') : (pickup || '-')}</td>
   <td>${order.payment_method || '-'}</td>
   <td>${order.order_number || ''}</td>
-  <td><button onclick="orderComplete(this)" data-id="${order.id}" data-number="${order.order_number}" data-name="${order.customer_name || ''}" data-phone="${order.phone || ''}" data-email="${order.email || ''}" data-type="${isDelivery ? 'bezorg' : 'afhaal'}">${order.is_completed ? 'Undone' : '订单完成'}</button> <button onclick="editOrder(this)" data-id="${order.id}">编辑</button> <button onclick="cancelOrder(this)" data-id="${order.id}">取消</button> <span class="notify"></span></td>`;
+`;
 
   tr.dataset.sortKey = getSortKey(order);
   if(highlight){
@@ -267,55 +262,6 @@ function insertSorted(tbody,tr){
         pollTimer = null;
       }
     }
-
-  function orderComplete(btn){
-    const completed = btn.textContent.trim() !== 'Undone';
-    fetch(`/api/orders/${btn.dataset.id}/complete`, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({completed})
-    }).then(()=>{
-      const row = btn.closest('tr');
-      if(completed){
-        row.classList.add('completed');
-        row.classList.remove('cancelled');
-        btn.textContent='Undone';
-      }else{
-        row.classList.remove('completed');
-        btn.textContent='订单完成';
-      }
-    });
-  }
-
-  function cancelOrder(btn){
-    if(!confirm('确定取消该订单?')) return;
-    fetch(`/api/orders/${btn.dataset.id}/cancel`, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({cancel:true})
-    }).then(()=>{
-      const row = btn.closest('tr');
-      row.classList.remove('completed');
-      row.classList.add('cancelled');
-    });
-  }
-
-  function editOrder(btn){
-    const id = btn.dataset.id;
-    const row = btn.closest('tr');
-    const cells = row.children;
-    const data = {
-      customer_name: prompt('Naam', cells[2].textContent) || cells[2].textContent,
-      phone: prompt('Telefoon', cells[3].textContent) || cells[3].textContent,
-      email: prompt('Email', cells[4].textContent) || cells[4].textContent
-    };
-    fetch(`/api/orders/${id}`, {
-      method:'PUT', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(data)
-    }).then(()=>{
-      cells[2].textContent = data.customer_name;
-      cells[3].textContent = data.phone;
-      cells[4].textContent = data.email;
-    });
-  }
   </script>
 </body>
 </html>
