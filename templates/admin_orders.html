@@ -33,6 +33,11 @@
 <body>
   <h1 id="dayHeading">Vandaag</h1>
 
+  <div style="margin-bottom:15px;">
+    <label>Datum: <input type="date" id="datePicker"> <button id="dateBtn">Zoek</button></label>
+    <label style="margin-left:20px;">Van: <input type="date" id="startDate"> Tot: <input type="date" id="endDate"> <button id="rangeBtn">Zoek</button></label>
+  </div>
+
   <div class="download-buttons">
     <button onclick="downloadExcel()">📥 Download Excel</button>
     <button onclick="downloadPDF()">📄 Download PDF</button>
@@ -93,8 +98,8 @@
        }
 
 
-    function fetchOrders() {
-      fetch('/pos/orders_today?json=1')
+    function loadOrders(url) {
+      fetch(url)
         .then(r => r.json())
         .then(data => {
           const tbody = document.querySelector('#ordersTable tbody');
@@ -192,8 +197,22 @@
         })
         .catch(() => {});
     }
+    function fetchOrders(){
+      loadOrders('/pos/orders_today?json=1');
+    }
+    function fetchByDate(){
+      const d=document.getElementById('datePicker').value;
+      if(d) loadOrders(`/pos/orders_by_date?date=${d}&json=1`);
+    }
+    function fetchByRange(){
+      const s=document.getElementById('startDate').value;
+      const e=document.getElementById('endDate').value;
+      if(s&&e) loadOrders(`/pos/orders_range?start=${s}&end=${e}&json=1`);
+    }
 
     document.addEventListener('DOMContentLoaded', fetchOrders);
+    document.getElementById('dateBtn').addEventListener('click', fetchByDate);
+    document.getElementById('rangeBtn').addEventListener('click', fetchByRange);
 
     function orderComplete(btn) {
       const status = btn.nextElementSibling;
