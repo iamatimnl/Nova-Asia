@@ -264,14 +264,6 @@
   .orders-panel th, .orders-panel td { border:1px solid #ddd; padding:8px; text-align:left; }
   .orders-panel th { background:#f2f2f2; }
   .orders-panel ul { margin:0; padding-left:20px; }
-
-  .done-row {
-    background-color:#d4edda !important;
-  }
-  .done-btn:disabled {
-    opacity:0.6;
-    cursor:default;
-  }
   input, select, textarea {
     border:1px solid rgba(255,255,255,0.4);
     border-radius:8px;
@@ -1092,13 +1084,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   updateCart();
   toggleAddress();
   updateTodayBadge();
-  document.querySelectorAll('.orders-panel tbody tr').forEach(tr => {
-    setupDoneButton(tr, {
-      order_type: tr.dataset.type,
-      email: tr.dataset.email,
-      phone: tr.dataset.phone
-    });
-  });
   // 🔊 自动解锁 AudioContext
   if (audioCtx.state === 'suspended') {
     audioCtx.resume().catch(() => {});
@@ -1337,8 +1322,8 @@ function submitOrder() {
     summary  // ✅ 加入结账明细
   };
 
-  // ✅ 提交到后端（改为本地 Flask 路由）
-  fetch('/submit_order', {
+  // ✅ 提交到后端
+  fetch('https://flask-order-api.onrender.com/submit_order', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
@@ -1621,47 +1606,17 @@ function formatCurrency(value){
         <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
         <td>${isDelivery ? (delivery || '-') : (pickup || '-')}</td>
         <td>${order.payment_method || ''}</td>
-        <td>${order.order_number || '-'}</td>
-        <td><button class="done-btn">Done</button></td>`;
-
-      tr.dataset.type = order.order_type || (isDelivery ? 'delivery' : 'pickup');
-      tr.dataset.email = order.email || '';
-      tr.dataset.phone = order.phone || '';
-
-      tr.dataset.sortKey = getSortKey(order);
-      setupDoneButton(tr, order);
+        <td>${order.order_number || '-'}</td>`;
+      
+    tr.dataset.sortKey = getSortKey(order);
     if(highlight){
       tr.classList.add('new-order');
       setTimeout(()=>tr.classList.remove('new-order'),10000);
     }
-  insertSorted(tbody, tr);
-  updateTodayBadge();
-  return tr;
-}
-
- function sendDoneNotifications(order){
-   const isDelivery = ['delivery','bezorgen'].includes(order.order_type);
-   const msg = isDelivery ? 'Your order is underway.' : 'Your order is ready for pickup.';
-   if(order.email && window.Email && typeof window.Email.send==='function'){
-     try{ window.Email.send({ to: order.email, subject: 'Order Update', body: msg }); }catch(e){ console.error(e); }
-   }
-   const map = window.telegramChatIds || window.phoneChatMap || {};
-   const chatId = map[order.phone];
-   if(chatId && typeof sendTelegramNotification==='function'){
-     try{ sendTelegramNotification(chatId, msg); }catch(e){ console.error(e); }
-   }
- }
-
- function setupDoneButton(tr, order){
-   const btn = tr.querySelector('.done-btn');
-   if(!btn) return;
-   btn.addEventListener('click', () => {
-     if(!confirm('Are you sure you want to mark this order as done and send the notification?')) return;
-     tr.classList.add('done-row');
-     btn.disabled = true;
-     sendDoneNotifications(order);
-   });
- }
+    insertSorted(tbody, tr);
+    updateTodayBadge();
+    return tr;
+  }
 
   // Socket 监听新订单
   socket.on('new_order', order => {
