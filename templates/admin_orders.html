@@ -131,6 +131,8 @@
 
           data.forEach(order => {
             const tr = document.createElement('tr');
+            tr.dataset.id = order.id;
+            tr.dataset.order = JSON.stringify(order);
             if (order.is_cancelled) tr.classList.add('cancelled');
             else if (order.is_completed) tr.classList.add('completed');
             const isDelivery = ['delivery', 'bezorgen'].includes((order.order_type || '').toLowerCase());
@@ -168,12 +170,15 @@
               <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
               <td>${isDelivery ? (order.delivery_time || order.deliveryTime || '-') : (order.pickup_time || order.pickupTime || '-')}</td>
               <td>${order.payment_method || ''}</td>
-              <td><button onclick="orderComplete(this)" 
+              <td><button onclick="toggleComplete(this)"
                 data-number="${order.order_number}"
                 data-name="${order.customer_name || ''}"
                 data-phone="${order.phone || ''}"
                 data-email="${order.email || ''}"
-                data-type="${isDelivery ? 'bezorg' : 'afhaal'}">订单完成</button> <span class="notify"></span></td>
+                data-type="${isDelivery ? 'bezorg' : 'afhaal'}">${order.is_completed ? 'Undone' : '订单完成'}</button>
+                <button onclick="editOrder(this)">编辑</button>
+                <button onclick="cancelOrder(this)">取消</button>
+                <span class="notify"></span></td>
             `;
             tbody.appendChild(tr);
           });
@@ -210,8 +215,61 @@
           status.textContent = '通知发送失败';
         }
       }).catch(() => {
-        status.textContent = '通知发送失败';
-      });
+      status.textContent = '通知发送失败';
+    });
+    }
+
+    function toggleComplete(btn) {
+      const tr = btn.closest('tr');
+      const id = tr.dataset.id;
+      const done = !tr.classList.contains('completed');
+      fetch(`/api/orders/${id}/status`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({is_completed: done})
+      }).then(()=>{ if(done) orderComplete(btn); fetchOrders(); });
+    }
+
+    function cancelOrder(btn) {
+      const id = btn.closest('tr').dataset.id;
+      fetch(`/api/orders/${id}/status`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({is_cancelled: true})
+      }).then(()=>fetchOrders());
+    }
+
+    function editOrder(btn) {
+      const tr = btn.closest('tr');
+      const id = tr.dataset.id;
+      const data = JSON.parse(tr.dataset.order || '{}');
+      const name = prompt('Naam', data.customer_name || '');
+      if(name===null) return;
+      const phone = prompt('Telefoon', data.phone || '');
+      if(phone===null) return;
+      const email = prompt('Email', data.email || '');
+      if(email===null) return;
+      const street = prompt('Straat', data.street || '');
+      if(street===null) return;
+      const number = prompt('Huisnummer', data.house_number || '');
+      if(number===null) return;
+      const postcode = prompt('Postcode', data.postcode || '');
+      if(postcode===null) return;
+      const city = prompt('Plaats', data.city || '');
+      if(city===null) return;
+      const pickup = prompt('Afhaaltijd', data.pickup_time || '');
+      if(pickup===null) return;
+      const delivery = prompt('Bezorgtijd', data.delivery_time || '');
+      if(delivery===null) return;
+      fetch(`/api/orders/${id}`, {
+        method:'PUT',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          customer_name:name, phone, email,
+          street, house_number:number, postcode, city,
+          pickup_time:pickup, delivery_time:delivery
+        })
+      }).then(()=>fetchOrders());
     }
   </script>
 </body>

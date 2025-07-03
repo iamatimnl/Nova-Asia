@@ -55,6 +55,12 @@ with app.app_context():
         if "opmerking" not in cols:
             with db.engine.begin() as conn:
                 conn.execute(text("ALTER TABLE orders ADD COLUMN opmerking TEXT"))
+        if "is_completed" not in cols:
+            with db.engine.begin() as conn:
+                conn.execute(text("ALTER TABLE orders ADD COLUMN is_completed BOOLEAN DEFAULT FALSE"))
+        if "is_cancelled" not in cols:
+            with db.engine.begin() as conn:
+                conn.execute(text("ALTER TABLE orders ADD COLUMN is_cancelled BOOLEAN DEFAULT FALSE"))
         cols = {c["name"] for c in inspector.get_columns("reviews")}
         if "rating" not in cols:
             with db.engine.begin() as conn:
@@ -72,12 +78,15 @@ def to_nl(dt: datetime) -> datetime:
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=UTC)
     return dt.astimezone(NL_TZ)
-def generate_excel_today():
+def generate_excel_today(include_cancelled: bool = False):
     today = datetime.now(NL_TZ).date()
     start_local = datetime.combine(today, datetime.min.time(), tzinfo=NL_TZ)
     start = start_local.astimezone(UTC).replace(tzinfo=None)
 
-    orders = Order.query.filter(Order.created_at >= start).order_by(Order.created_at.desc()).all()
+    q = Order.query.filter(Order.created_at >= start)
+    if not include_cancelled:
+        q = q.filter(Order.is_cancelled == False)
+    orders = q.order_by(Order.created_at.desc()).all()
     data = []
     for o in orders:
         try:
@@ -86,6 +95,7 @@ def generate_excel_today():
             items = {}
 
         summary = ", ".join(f"{k} x {v.get('qty')}" for k, v in items.items())
+        status = "Geannuleerd" if o.is_cancelled else ("Voltooid" if o.is_completed else "Open")
         data.append({
             "Datum": to_nl(o.created_at).strftime("%Y-%m-%d"),
             "Tijd": to_nl(o.created_at).strftime("%H:%M"),
@@ -96,6 +106,7 @@ def generate_excel_today():
             "Betaalwijze": o.payment_method,
             "Totaal": f"€{o.totaal:.2f}",
             "Items": summary,
+            "Status": status,
         })
 
     df = pd.DataFrame(data)
@@ -105,18 +116,21 @@ def generate_excel_today():
     return output
 
 
-def generate_pdf_today():
+def generate_pdf_today(include_cancelled: bool = False):
     today = datetime.now(NL_TZ).date()
     start_local = datetime.combine(today, datetime.min.time(), tzinfo=NL_TZ)
     start = start_local.astimezone(UTC).replace(tzinfo=None)
 
-    orders = Order.query.filter(Order.created_at >= start).order_by(Order.created_at.desc()).all()
+    q = Order.query.filter(Order.created_at >= start)
+    if not include_cancelled:
+        q = q.filter(Order.is_cancelled == False)
+    orders = q.order_by(Order.created_at.desc()).all()
 
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=A4)
     elements = []
 
-    data = [["Datum", "Tijd", "Naam", "Totaal", "Items"]]
+    data = [["Datum", "Tijd", "Naam", "Totaal", "Items", "Status"]]
     for o in orders:
         try:
             items = json.loads(o.items or "{}")
@@ -124,12 +138,14 @@ def generate_pdf_today():
             items = {}
 
         summary = ", ".join(f"{k} x {v.get('qty')}" for k, v in items.items())
+        status = "Geannuleerd" if o.is_cancelled else ("Voltooid" if o.is_completed else "Open")
         data.append([
             to_nl(o.created_at).strftime("%Y-%m-%d"),
             to_nl(o.created_at).strftime("%H:%M"),
             o.customer_name,
             f"€{o.totaal:.2f}",
-            summary
+            summary,
+            status
         ])
 
     table = Table(data, repeatRows=1)
@@ -150,7 +166,8 @@ def generate_pdf_today():
 @app.route("/admin/orders/download/pdf")
 @login_required
 def download_pdf():
-    output = generate_pdf_today()
+    include_cancelled = request.args.get('include_cancelled') == '1'
+    output = generate_pdf_today(include_cancelled)
     return send_file(
         output,
         mimetype='application/pdf',
@@ -160,7 +177,8 @@ def download_pdf():
 @app.route("/admin/orders/download/excel")
 @login_required
 def download_excel():
-    output = generate_excel_today()
+    include_cancelled = request.args.get('include_cancelled') == '1'
+    output = generate_excel_today(include_cancelled)
     return send_file(
         output,
         mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -227,6 +245,8 @@ class Order(db.Model):
     fooi = db.Column(db.Float, default=0.0)
     discount_code = db.Column(db.String(50))  # ✅ 新增
     discount_amount = db.Column(db.Float, default=0.0)  # ✅ 新增
+    is_completed = db.Column(db.Boolean, default=False)
+    is_cancelled = db.Column(db.Boolean, default=False)
 
 
 
@@ -532,6 +552,30 @@ def api_bubble_options():
 @app.route('/api/xbento_options')
 def api_xbento_options():
     return jsonify(get_xbento_options_dict())
+
+@app.route('/api/orders/<int:order_id>/status', methods=['POST'])
+@login_required
+def update_order_status(order_id: int):
+    data = request.get_json() or {}
+    order = Order.query.get_or_404(order_id)
+    if 'is_completed' in data:
+        order.is_completed = bool(data['is_completed'])
+    if 'is_cancelled' in data:
+        order.is_cancelled = bool(data['is_cancelled'])
+    db.session.commit()
+    return jsonify({'success': True, 'is_completed': order.is_completed, 'is_cancelled': order.is_cancelled})
+
+@app.route('/api/orders/<int:order_id>', methods=['PUT'])
+@login_required
+def edit_order(order_id: int):
+    order = Order.query.get_or_404(order_id)
+    data = request.get_json() or {}
+    allowed = ['customer_name','phone','email','street','house_number','postcode','city','pickup_time','delivery_time','order_type','items']
+    for f in allowed:
+        if f in data:
+            setattr(order, f, data[f])
+    db.session.commit()
+    return jsonify({'success': True})
 
 # ----- Review API -----
 @app.route('/api/reviews', methods=['GET', 'POST'])
@@ -877,6 +921,8 @@ def admin_orders():
             "items": items,
             "total": o.totaal or 0,  # 显示数据库值，如果为空则为0
             "totaal": o.totaal or 0,
+            "is_completed": o.is_completed,
+            "is_cancelled": o.is_cancelled,
         })
 
     return render_template("admin_orders.html", order_data=order_data)
@@ -954,7 +1000,9 @@ def pos_orders_today():
             "total": totaal,   # ✅ 关键是这里：使用数据库中的 totaal
             "totaal": totaal,
             "fooi": o.fooi or 0,
-            "order_number": o.order_number  # ✅ 加上这行
+            "order_number": o.order_number,  # ✅ 加上这行
+            "is_completed": o.is_completed,
+            "is_cancelled": o.is_cancelled
         })
 
     if request.args.get("json"):
