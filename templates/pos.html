@@ -519,6 +519,12 @@
   50% { background-color: #fff; }
 }
 
+/* 📋 Hide order buttons when orders panel is open */
+body.today-open .today-btn,
+body.today-open .today-toggle {
+  display: none !important;
+}
+
 /* 桌面显示长按钮，确保隐藏圆按钮 */
 @media (min-width: 768px) {
   .today-btn { display: block; }
@@ -1094,7 +1100,9 @@ document.addEventListener('DOMContentLoaded',()=>{
 function toggleToday(){
   const panel=document.getElementById('todayOrders');
   panel.classList.toggle('visible');
-  if(panel.classList.contains('visible')){
+  const open = panel.classList.contains('visible');
+  document.body.classList.toggle('today-open', open);
+  if(open){
     fetchOrders();
     newOrderCount = 0;
     hasNewOrder = false;
@@ -1131,6 +1139,7 @@ function showTodayOrders(){
   const panel=document.getElementById('todayOrders');
   if(!panel.classList.contains('visible')){
     panel.classList.add('visible');
+    document.body.classList.add('today-open');
     fetchOrders();
   }
 }
