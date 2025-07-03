@@ -514,8 +514,6 @@
   animation: highlightBlink 1s ease-in-out;
   animation-iteration-count: 10;
 }
-tr.completed { background-color: #c8e6c9; }
-tr.cancelled { background-color: #e0e0e0; }
 @keyframes highlightBlink {
   0%,100% { background-color: #eaffea; }
   50% { background-color: #fff; }
@@ -1571,8 +1569,6 @@ function formatCurrency(value){
 
     const tr = document.createElement('tr');
     if (order.id) tr.dataset.id = order.id;
-    if (order.is_cancelled) tr.classList.add('cancelled');
-    else if (order.is_completed) tr.classList.add('completed');
     const isDelivery = ['delivery', 'bezorgen'].includes(order.order_type);
     const items = Object.entries(order.items || {}).map(([n, i]) => `<li>${n} x ${i.qty}</li>`).join('');
     let fooi = parseFloat(order.fooi ?? order.tip);
@@ -1612,14 +1608,11 @@ function formatCurrency(value){
         <td>${order.payment_method || ''}</td>
         <td>${order.order_number || '-'}</td>
         <td><button onclick="orderComplete(this)"
-          data-id="${order.id}"
           data-number="${order.order_number}"
           data-name="${order.customer_name || ''}"
           data-phone="${order.phone || ''}"
           data-email="${order.email || ''}"
-          data-type="${isDelivery ? 'bezorg' : 'afhaal'}">${order.is_completed ? 'Undone' : '订单完成'}</button>
-          <button onclick="editOrder(this)" data-id="${order.id}">编辑</button>
-          <button onclick="cancelOrder(this)" data-id="${order.id}">取消</button>
+          data-type="${isDelivery ? 'bezorg' : 'afhaal'}">订单完成</button>
           <span class="notify"></span></td>`;
       
     tr.dataset.sortKey = getSortKey(order);
