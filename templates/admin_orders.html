@@ -55,6 +55,7 @@
           <th>Adres</th>
           <th>Tijdslot</th>
           <th>Betaling</th>
+          <th>Actie</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -161,6 +162,12 @@
               <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
               <td>${isDelivery ? (order.delivery_time || order.deliveryTime || '-') : (order.pickup_time || order.pickupTime || '-')}</td>
               <td>${order.payment_method || ''}</td>
+              <td><button onclick="orderComplete(this)" 
+                data-number="${order.order_number}"
+                data-name="${order.customer_name || ''}"
+                data-phone="${order.phone || ''}"
+                data-email="${order.email || ''}"
+                data-type="${isDelivery ? 'bezorg' : 'afhaal'}">订单完成</button> <span class="notify"></span></td>
             `;
             tbody.appendChild(tr);
           });
@@ -176,6 +183,30 @@
     }
 
     document.addEventListener('DOMContentLoaded', fetchOrders);
+
+    function orderComplete(btn) {
+      const status = btn.nextElementSibling;
+      const payload = {
+        order_number: btn.dataset.number,
+        name: btn.dataset.name,
+        phone: btn.dataset.phone,
+        email: btn.dataset.email,
+        order_type: btn.dataset.type
+      };
+      fetch('https://flask-order-api.onrender.com/api/order_complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(r => {
+        if (r.ok) {
+          status.textContent = '通知已发送';
+        } else {
+          status.textContent = '通知发送失败';
+        }
+      }).catch(() => {
+        status.textContent = '通知发送失败';
+      });
+    }
   </script>
 </body>
 </html>
