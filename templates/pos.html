@@ -1569,6 +1569,9 @@ function formatCurrency(value){
 
     const tr = document.createElement('tr');
     if (order.id) tr.dataset.id = order.id;
+    tr.dataset.order = JSON.stringify(order);
+    if(order.is_cancelled) tr.classList.add('cancelled');
+    else if(order.is_completed) tr.classList.add('completed');
     const isDelivery = ['delivery', 'bezorgen'].includes(order.order_type);
     const items = Object.entries(order.items || {}).map(([n, i]) => `<li>${n} x ${i.qty}</li>`).join('');
     let fooi = parseFloat(order.fooi ?? order.tip);
@@ -1607,12 +1610,14 @@ function formatCurrency(value){
         <td>${isDelivery ? (delivery || '-') : (pickup || '-')}</td>
         <td>${order.payment_method || ''}</td>
         <td>${order.order_number || '-'}</td>
-        <td><button onclick="orderComplete(this)"
+        <td><button onclick="toggleComplete(this)"
           data-number="${order.order_number}"
           data-name="${order.customer_name || ''}"
           data-phone="${order.phone || ''}"
           data-email="${order.email || ''}"
-          data-type="${isDelivery ? 'bezorg' : 'afhaal'}">订单完成</button>
+          data-type="${isDelivery ? 'bezorg' : 'afhaal'}">${order.is_completed ? 'Undone' : '订单完成'}</button>
+          <button onclick="editOrder(this)">编辑</button>
+          <button onclick="cancelOrder(this)">取消</button>
           <span class="notify"></span></td>`;
       
     tr.dataset.sortKey = getSortKey(order);
