@@ -182,13 +182,71 @@ def download_pdf():
 @login_required
 def download_excel():
     include_cancelled = request.args.get('include_cancelled') == '1'
-    output = generate_excel_today(include_cancelled)
+    date = request.args.get('date')
+    start = request.args.get('start')
+    end = request.args.get('end')
+
+    if date:
+        output = generate_excel_by_date(date, include_cancelled)
+    elif start and end:
+        output = generate_excel_by_range(start, end, include_cancelled)
+    else:
+        output = generate_excel_today(include_cancelled)
+
     return send_file(
         output,
         mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         as_attachment=True,
-        download_name='bestellingen_vandaag.xlsx'
+        download_name='bestellingen.xlsx'
     )
+def generate_excel_today(include_cancelled=False):
+    today = datetime.date.today()
+    return generate_excel_by_date(today.isoformat(), include_cancelled)
+def generate_excel_by_date(date, include_cancelled=False):
+    query = Order.query.filter(func.date(Order.created_at) == date)
+    if not include_cancelled:
+        query = query.filter(Order.is_cancelled == False)
+    orders = query.order_by(Order.created_at.asc()).all()
+    return build_excel(orders)
+def generate_excel_by_range(start, end, include_cancelled=False):
+    query = Order.query.filter(
+        func.date(Order.created_at) >= start,
+        func.date(Order.created_at) <= end
+    )
+    if not include_cancelled:
+        query = query.filter(Order.is_cancelled == False)
+    orders = query.order_by(Order.created_at.asc()).all()
+    return build_excel(orders)
+def build_excel(orders):
+    order_dicts = orders_to_dicts(orders)
+
+    if not order_dicts:
+        df = pd.DataFrame([{"Melding": "Geen bestellingen gevonden."}])
+    else:
+        df = pd.DataFrame(order_dicts)
+
+    # Omzet overzicht berekenen
+    total = sum(float(o['totaal']) for o in order_dicts if not o['is_cancelled'])
+    pin = sum(float(o['totaal']) for o in order_dicts if 'pin' in (o['payment_method'] or '').lower() and not o['is_cancelled'])
+    online = sum(float(o['totaal']) for o in order_dicts if 'online' in (o['payment_method'] or '').lower() and not o['is_cancelled'])
+    contant = sum(float(o['totaal']) for o in order_dicts if 'contant' in (o['payment_method'] or '').lower() and not o['is_cancelled'])
+    credit = sum(float(o['totaal']) for o in order_dicts if 'rekening' in (o['payment_method'] or '').lower() and not o['is_cancelled'])
+
+    omzet_data = {
+        'Omschrijving': ['Totale omzet', 'Pin betaling', 'Online betaling', 'Contant', 'Op rekening'],
+        'Bedrag': [total, pin, online, contant, credit]
+    }
+    omzet_df = pd.DataFrame(omzet_data)
+
+    # Excel schrijven
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df.to_excel(writer, index=False, sheet_name='Bestellingen')
+        omzet_df.to_excel(writer, index=False, sheet_name='Omzet Overzicht')
+    output.seek(0)
+
+    return output
+
 
 
 
