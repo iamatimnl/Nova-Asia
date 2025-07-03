@@ -765,17 +765,7 @@
   inset: 0;
   z-index: 2000;
   display: none;
-  background: rgba(0,0,0,0.5);
-  align-items: center;
-  justify-content: center;
-}
-
-#closed-popup {
-  background: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  text-align: center;
-  max-width: 90%;
+  background: rgba(0,0,0,0);
 }
   .feedback.error {
     background: #c55;
@@ -1278,12 +1268,7 @@ input:focus, select:focus, textarea:focus {
 
 </head>
 <body>
-<div id="closed-overlay">
-  <div id="closed-popup">
-    <p id="closed-text"></p>
-    <button id="closed-ok">OK</button>
-  </div>
-</div>
+<div id="closed-overlay"></div>
 <div class="feedback" id="feedback"></div>
 <div class="navbar-container" id="navbar-container">
 <nav class="navbar" id="navbar">
@@ -3396,30 +3381,6 @@ function beep(){
 }
 document.body.addEventListener('click',()=>{if(audioCtx.state==='suspended') audioCtx.resume();},{once:true});
 
-function setButtonsDisabled(dis){
-  document.querySelectorAll('button').forEach(btn=>{
-    if(btn.id !== 'closed-ok') btn.disabled = dis;
-  });
-}
-
-function showClosedPopup(){
-  const overlay=document.getElementById('closed-overlay');
-  const popup=document.getElementById('closed-popup');
-  const text=document.getElementById('closed-text');
-  if(overlay&&popup){
-    if(text) text.textContent = closedMessage || 'Momenteel gesloten';
-    overlay.style.display='flex';
-    popup.style.display='block';
-    setButtonsDisabled(true);
-  }
-}
-
-function hideClosedPopup(){
-  const popup=document.getElementById('closed-popup');
-  if(popup) popup.style.display='none';
-  setButtonsDisabled(false);
-}
-
 function scrollToField(id) {
   const el = document.getElementById(id);
   if (el) {
@@ -3457,7 +3418,7 @@ function generateOrderNumber() {
 
 function checkout() {
   if(!storeOpen){
-    showClosedPopup();
+    showFeedback(closedMessage, true);
     window.scrollTo({top: 0, behavior: 'smooth'});
     return;
   }
@@ -3587,7 +3548,7 @@ function checkout() {
     if (qty > 0) itemsToSend[extras[id].label] = { price: 0, qty };
   });
 
-  fetch('/api/orders', {
+  fetch('https://flask-order-api.onrender.com/submit_order', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -4430,7 +4391,6 @@ function updateStatus(settings){
   if(storeOpen){
     banner.textContent = message;
     if(overlayEl) overlayEl.style.display = 'none';
-    hideClosedPopup();
     if(checkoutBtn) checkoutBtn.disabled = false;
     if(sliderTrack){
       sliderTrack.style.pointerEvents = 'auto';
@@ -4438,8 +4398,7 @@ function updateStatus(settings){
     }
   }else{
     banner.textContent = message;
-    if(overlayEl) overlayEl.style.display = 'flex';
-    showClosedPopup();
+    if(overlayEl) overlayEl.style.display = 'block';
     window.scrollTo({top: 0, behavior: 'smooth'});
     if(checkoutBtn) checkoutBtn.disabled = true;
     if(sliderTrack){
@@ -4490,21 +4449,9 @@ socket.on('xbento_options_update', data => {
 const overlay = document.getElementById('closed-overlay');
 if(overlay){
   overlay.addEventListener('click', () => {
-    showClosedPopup();
+    showFeedback(closedMessage, true);
   });
 }
-const okBtn = document.getElementById('closed-ok');
-if(okBtn){
-  okBtn.addEventListener('click', hideClosedPopup);
-}
-document.addEventListener('click', e => {
-  const popup = document.getElementById('closed-popup');
-  if(!storeOpen && popup && !popup.contains(e.target)){
-    showClosedPopup();
-    e.stopPropagation();
-    e.preventDefault();
-  }
-}, true);
 </script>
 
 <div id="reviewsModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:1000;">
