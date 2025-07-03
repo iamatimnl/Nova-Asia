@@ -203,9 +203,6 @@ def download_excel():
         as_attachment=True,
         download_name='bestellingen.xlsx'
     )
-def generate_excel_today(include_cancelled=False):
-    today = datetime.date.today()
-    return generate_excel_by_date(today.isoformat(), include_cancelled)
 def generate_excel_by_date(date, include_cancelled=False):
     query = Order.query.filter(func.date(Order.created_at) == date)
     if not include_cancelled:
