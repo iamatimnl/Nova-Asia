@@ -1322,8 +1322,8 @@ function submitOrder() {
     summary  // ✅ 加入结账明细
   };
 
-  // ✅ 提交到后端
-  fetch('https://flask-order-api.onrender.com/submit_order', {
+  // ✅ 提交到后端（改为本地 Flask 路由）
+  fetch('/submit_order', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
