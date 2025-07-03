@@ -200,6 +200,46 @@ def build_maps_link(street: str, house_number: str, postcode: str, city: str) ->
         return None
     address = f"{street} {house_number}, {postcode} {city}"
     return f"https://www.google.com/maps?q={quote(address)}"
+def orders_to_dicts(orders):
+    result = []
+    for o in orders:
+        try:
+            o.items_dict = json.loads(o.items or '{}')
+        except Exception:
+            try:
+                import ast
+                o.items_dict = ast.literal_eval(o.items)
+            except Exception:
+                o.items_dict = {}
+        totaal = o.totaal or 0
+        result.append({
+            "id": o.id,
+            "order_type": o.order_type,
+            "customer_name": o.customer_name,
+            "phone": o.phone,
+            "email": o.email,
+            "payment_method": o.payment_method,
+            "pickup_time": o.pickup_time,
+            "delivery_time": o.delivery_time,
+            "pickupTime": o.pickup_time,
+            "deliveryTime": o.delivery_time,
+            "postcode": o.postcode,
+            "house_number": o.house_number,
+            "street": o.street,
+            "city": o.city,
+            "maps_link": build_maps_link(o.street, o.house_number, o.postcode, o.city),
+            "opmerking": o.opmerking,
+            "created_date": to_nl(o.created_at).strftime("%Y-%m-%d"),
+            "created_at": to_nl(o.created_at).strftime("%H:%M"),
+            "items": o.items_dict,
+            "total": totaal,
+            "totaal": totaal,
+            "fooi": o.fooi or 0,
+            "order_number": o.order_number,
+            "is_completed": o.is_completed,
+            "is_cancelled": o.is_cancelled
+        })
+    return result
 
 
 def get_bubble_options_dict():
