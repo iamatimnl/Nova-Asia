@@ -1606,7 +1606,14 @@ function formatCurrency(value){
         <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
         <td>${isDelivery ? (delivery || '-') : (pickup || '-')}</td>
         <td>${order.payment_method || ''}</td>
-        <td>${order.order_number || '-'}</td>`;
+        <td>${order.order_number || '-'}</td>
+        <td><button onclick="orderComplete(this)"
+          data-number="${order.order_number}"
+          data-name="${order.customer_name || ''}"
+          data-phone="${order.phone || ''}"
+          data-email="${order.email || ''}"
+          data-type="${isDelivery ? 'bezorg' : 'afhaal'}">订单完成</button>
+          <span class="notify"></span></td>`;
       
     tr.dataset.sortKey = getSortKey(order);
     if(highlight){
