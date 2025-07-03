@@ -33,6 +33,15 @@ th:last-child {
   50% { background-color: blue; }
 }
 
+  .done-row {
+    background-color: #d4edda !important;
+  }
+
+  .done-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+
   </style>
 </head>
 <body>
@@ -53,16 +62,16 @@ th:last-child {
       <th>Tijdslot</th>
       <th>Betaling</th>
       <th>Bestelnummer</th>
+      <th>Done</th>
     </tr>
   </thead>
   <tbody>
   {% for order in orders %}
-    <tr>
+    {% set is_delivery = order.order_type in ['delivery', 'bezorgen'] %}
+    <tr data-type="{{ 'delivery' if is_delivery else 'pickup' }}" data-email="{{ order.email or '' }}" data-phone="{{ order.phone or '' }}">
       <td>{{ order.created_at_local.strftime('%Y-%m-%d') }}</td>
       <td>{{ order.created_at_local.strftime('%H:%M') }}</td>
       <td>{{ order.order_number or '' }}</td>
-      
-      {% set is_delivery = order.order_type in ['delivery', 'bezorgen'] %}
       <td><span class="{{ 'type-bezorging' if is_delivery else 'type-afhalen' }}">{{ 'Bezorging' if is_delivery else 'Afhalen' }}</span></td>
 
       <td>{{ order.customer_name or '' }}</td>
@@ -100,6 +109,7 @@ th:last-child {
       </td>
 
       <td>{{ order.payment_method or '-' }}</td>
+      <td><button class="done-btn">Done</button></td>
     </tr>
   {% endfor %}
   </tbody>
@@ -166,6 +176,30 @@ function insertSorted(tbody,tr){
   tbody.appendChild(tr);
 }
 
+function sendDoneNotifications(order){
+  const isDelivery=['delivery','bezorgen'].includes(order.order_type);
+  const msg=isDelivery? 'Your order is underway.' : 'Your order is ready for pickup.';
+  if(order.email && window.Email && typeof window.Email.send==='function'){
+    try{ window.Email.send({ to: order.email, subject: 'Order Update', body: msg }); }catch(e){ console.error(e); }
+  }
+  const map=window.telegramChatIds || window.phoneChatMap || {};
+  const chatId=map[order.phone];
+  if(chatId && typeof sendTelegramNotification==='function'){
+    try{ sendTelegramNotification(chatId, msg); }catch(e){ console.error(e); }
+  }
+}
+
+function setupDoneButton(tr, order){
+  const btn=tr.querySelector('.done-btn');
+  if(!btn) return;
+  btn.addEventListener('click',()=>{
+    if(!confirm('Are you sure you want to mark this order as done and send the notification?')) return;
+    tr.classList.add('done-row');
+    btn.disabled=true;
+    sendDoneNotifications(order);
+  });
+}
+
      
 
 
@@ -173,6 +207,9 @@ function insertSorted(tbody,tr){
   const tbody = document.querySelector('table tbody');
   const tr = document.createElement('tr');
   const isDelivery = ['delivery','bezorgen'].includes(order.order_type);
+  tr.dataset.type = order.order_type || (isDelivery ? 'delivery' : 'pickup');
+  tr.dataset.email = order.email || '';
+  tr.dataset.phone = order.phone || '';
   const items = Object.entries(order.items || {}).map(([n,i]) => `<li>${n} x ${i.qty}</li>`).join('');
 
   // 安全获取 subtotal
@@ -218,6 +255,7 @@ function insertSorted(tbody,tr){
   <td>${isDelivery ? (delivery || '-') : (pickup || '-')}</td>
   <td>${order.payment_method || '-'}</td>
   <td>${order.order_number || ''}</td>
+  <td><button class="done-btn">Done</button></td>
 `;
 
   tr.dataset.sortKey = getSortKey(order);
@@ -227,6 +265,7 @@ function insertSorted(tbody,tr){
     beep();
   }
   insertSorted(tbody, tr);
+  setupDoneButton(tr, order);
   return tr;
 }
 
@@ -262,6 +301,13 @@ function insertSorted(tbody,tr){
         pollTimer = null;
       }
     }
+    document.querySelectorAll('table tbody tr').forEach(tr=>{
+      setupDoneButton(tr, {
+        order_type: tr.dataset.type,
+        email: tr.dataset.email,
+        phone: tr.dataset.phone
+      });
+    });
   </script>
 </body>
 </html>
