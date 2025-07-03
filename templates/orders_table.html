@@ -45,8 +45,6 @@
     color: green;
     font-weight: bold;
   }
-  .completed { background-color: #c8e6c9; }
-  .cancelled { background-color: #e0e0e0; }
   
   table.orders-table {
     width: 100%;
@@ -97,8 +95,7 @@ th:last-child {
     </thead>
     <tbody>
     {% for order in orders %}
-      <tr class="{% if order.is_cancelled %}cancelled{% elif order.is_completed %}completed{% endif %}">
-        {% set row_id = order.id %}
+      <tr>
         <td>{{ order.created_at_local.strftime('%Y-%m-%d') }}</td>
         <td>{{ order.created_at_local.strftime('%H:%M') }}</td>
         {% set is_delivery = order.order_type in ['delivery', 'bezorgen'] %}
@@ -139,20 +136,13 @@ th:last-child {
         </td>
         <td>{{ order.payment_method }}</td>
         <td>{{ order.order_number or '' }}</td>
-        <td>
-          <button onclick="orderComplete(this)"
-            data-id="{{ row_id }}"
-            data-number="{{ order.order_number }}"
-            data-name="{{ order.customer_name or '' }}"
-            data-phone="{{ order.phone or '' }}"
-            data-email="{{ order.email or '' }}"
-            data-type="{{ 'bezorg' if is_delivery else 'afhaal' }}">
-            {{ 'Undone' if order.is_completed else '订单完成' }}
-          </button>
-          <button onclick="editOrder(this)" data-id="{{ row_id }}">编辑</button>
-          <button onclick="cancelOrder(this)" data-id="{{ row_id }}">取消</button>
-          <span class="notify"></span>
-        </td>
+        <td><button onclick="orderComplete(this)"
+          data-number="{{ order.order_number }}"
+          data-name="{{ order.customer_name or '' }}"
+          data-phone="{{ order.phone or '' }}"
+          data-email="{{ order.email or '' }}"
+          data-type="{{ 'bezorg' if is_delivery else 'afhaal' }}">订单完成</button>
+          <span class="notify"></span></td>
       </tr>
     {% endfor %}
     </tbody>
@@ -162,73 +152,25 @@ th:last-child {
 <script>
   function orderComplete(btn) {
     const status = btn.nextElementSibling;
-    const completed = btn.textContent.trim() !== 'Undone';
-    fetch(`/api/orders/${btn.dataset.id}/complete`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ completed })
-    }).then(r => r.json()).then(() => {
-      const row = btn.closest('tr');
-      if (completed) {
-        row.classList.add('completed');
-        btn.textContent = 'Undone';
-        const payload = {
-          order_number: btn.dataset.number,
-          name: btn.dataset.name,
-          phone: btn.dataset.phone,
-          email: btn.dataset.email,
-          order_type: btn.dataset.type
-        };
-        fetch('https://flask-order-api.onrender.com/api/order_complete', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        }).then(() => { status.textContent = ''; }).catch(() => {});
-      } else {
-        row.classList.remove('completed');
-        btn.textContent = '订单完成';
-      }
-    });
-  }
-
-  function cancelOrder(btn) {
-    if (!confirm('确定取消该订单?')) return;
-    fetch(`/api/orders/${btn.dataset.id}/cancel`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ cancel: true })
-    }).then(() => {
-      const row = btn.closest('tr');
-      row.classList.remove('completed');
-      row.classList.add('cancelled');
-    });
-  }
-
-  function editOrder(btn) {
-    const id = btn.dataset.id;
-    const row = btn.closest('tr');
-    const cells = row.children;
-    const data = {
-      customer_name: prompt('Naam', cells[3].textContent) || cells[3].textContent,
-      phone: prompt('Telefoon', cells[4].textContent) || cells[4].textContent,
-      email: prompt('Email', cells[5].textContent) || cells[5].textContent,
-      street: prompt('Straat', cells[10].textContent.split(' ')[0]) || cells[10].textContent.split(' ')[0],
-      house_number: prompt('Huisnummer', cells[10].textContent.split(' ')[1] || '') || cells[10].textContent.split(' ')[1] || '',
-      postcode: prompt('Postcode', '') || '',
-      city: prompt('Stad', '') || '',
-      pickup_time: cells[11].textContent,
-      delivery_time: cells[11].textContent,
-      order_type: cells[2].textContent.toLowerCase() === 'bezorgen' ? 'bezorgen' : 'afhalen'
+    const payload = {
+      order_number: btn.dataset.number,
+      name: btn.dataset.name,
+      phone: btn.dataset.phone,
+      email: btn.dataset.email,
+      order_type: btn.dataset.type
     };
-    fetch(`/api/orders/${id}`, {
-      method: 'PUT',
+    fetch('https://flask-order-api.onrender.com/api/order_complete', {
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    }).then(() => {
-      cells[3].textContent = data.customer_name;
-      cells[4].textContent = data.phone;
-      cells[5].textContent = data.email;
-      cells[10].textContent = `${data.street} ${data.house_number}`;
+      body: JSON.stringify(payload)
+    }).then(r => {
+      if (r.ok) {
+        status.textContent = '通知已发送';
+      } else {
+        status.textContent = '通知发送失败';
+      }
+    }).catch(() => {
+      status.textContent = '通知发送失败';
     });
   }
 </script>
