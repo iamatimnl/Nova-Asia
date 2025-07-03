@@ -498,6 +498,8 @@
   white-space: nowrap;
   padding: 8px;
 }
+  .done-row { background-color: #d4edda; }
+  .done-btn { padding: 4px 8px; cursor: pointer; }
 /* 默认隐藏圆按钮 */
 .today-toggle {
   display: none;
@@ -1606,7 +1608,8 @@ function formatCurrency(value){
         <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
         <td>${isDelivery ? (delivery || '-') : (pickup || '-')}</td>
         <td>${order.payment_method || ''}</td>
-        <td>${order.order_number || '-'}</td>`;
+        <td>${order.order_number || '-'}</td>
+        <td><button class="done-btn" data-email="${order.email||''}" data-phone="${order.phone||''}" data-type="${isDelivery?'delivery':'pickup'}" onclick="markDone(this)">Done</button></td>`;
       
     tr.dataset.sortKey = getSortKey(order);
     if(highlight){
