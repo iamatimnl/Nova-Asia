@@ -30,7 +30,8 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Table, TableStyle
 from reportlab.lib import colors
-from datetime import date
+from datetime import datetime
+
 
 from sqlalchemy import func
 
