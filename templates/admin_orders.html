@@ -26,6 +26,8 @@
       font-size: 14px;
       cursor: pointer;
     }
+    .completed { background-color: #c8e6c9; }
+    .cancelled { background-color: #e0e0e0; }
   </style>
 </head>
 <body>
@@ -129,6 +131,8 @@
 
           data.forEach(order => {
             const tr = document.createElement('tr');
+            if (order.is_cancelled) tr.classList.add('cancelled');
+            else if (order.is_completed) tr.classList.add('completed');
             const isDelivery = ['delivery', 'bezorgen'].includes((order.order_type || '').toLowerCase());
             const items = Object.entries(order.items || {}).map(([n, i]) => `<li>${n} x ${i.qty}</li>`).join('');
             let fooi = parseFloat(order.fooi);
@@ -140,12 +144,14 @@
               tot = parseFloat(tot.replace(/[^\d,.-]/g, '').replace(',', '.'));
             }
 
-            total += tot;
-            const method = String(order.payment_method || '').toLowerCase();
-            if (method.includes('pin')) pin += tot;
-            else if (method.includes('online')) online += tot;
-            else if (method.includes('contant')) contant += tot;
-            else if (method.includes('rekening')) credit += tot;
+            if (!order.is_cancelled) {
+              total += tot;
+              const method = String(order.payment_method || '').toLowerCase();
+              if (method.includes('pin')) pin += tot;
+              else if (method.includes('online')) online += tot;
+              else if (method.includes('contant')) contant += tot;
+              else if (method.includes('rekening')) credit += tot;
+            }
 
             tr.innerHTML = `
               <td>${order.id || ''}</td>
