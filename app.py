@@ -30,6 +30,9 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Table, TableStyle
 from reportlab.lib import colors
+import smtplib
+import requests
+import re
 
 import traceback
 
@@ -214,6 +217,57 @@ def build_maps_link(street: str, house_number: str, postcode: str, city: str) ->
         return None
     address = f"{street} {house_number}, {postcode} {city}"
     return f"https://www.google.com/maps?q={quote(address)}"
+
+def get_telegram_chat_id(phone: str) -> str | None:
+    """Lookup Telegram chat ID by phone number."""
+    phone_digits = re.sub(r"\D", "", phone or "")
+    mapping = {}
+    data = os.getenv("TELEGRAM_CONTACTS")
+    if data:
+        try:
+            mapping = json.loads(data)
+        except Exception:
+            pass
+    else:
+        path = os.path.join(BASE_DIR, "telegram_contacts.json")
+        if os.path.exists(path):
+            try:
+                with open(path) as f:
+                    mapping = json.load(f)
+            except Exception:
+                pass
+    return mapping.get(phone_digits)
+
+def send_email(to_addr: str, subject: str, body: str) -> bool:
+    server = os.getenv("SMTP_SERVER")
+    username = os.getenv("SMTP_USERNAME")
+    password = os.getenv("SMTP_PASSWORD")
+    from_addr = os.getenv("FROM_EMAIL", username)
+    port = int(os.getenv("SMTP_PORT", "587"))
+    if not (server and username and password and from_addr and to_addr):
+        return False
+    try:
+        with smtplib.SMTP(server, port, timeout=10) as smtp:
+            smtp.starttls()
+            smtp.login(username, password)
+            msg = f"Subject: {subject}\nFrom: {from_addr}\nTo: {to_addr}\n\n{body}"
+            smtp.sendmail(from_addr, [to_addr], msg)
+        return True
+    except Exception as e:
+        print("Email send failed", e)
+        return False
+
+def send_telegram(chat_id: str, text: str) -> bool:
+    token = os.getenv("TELEGRAM_BOT_TOKEN")
+    if not (token and chat_id):
+        return False
+    try:
+        url = f"https://api.telegram.org/bot{token}/sendMessage"
+        requests.post(url, data={"chat_id": chat_id, "text": text}, timeout=5)
+        return True
+    except Exception as e:
+        print("Telegram send failed", e)
+        return False
 
 
 def get_bubble_options_dict():
@@ -1001,6 +1055,20 @@ def pos_orders_today():
         return jsonify(order_dicts)
 
     return render_template("pos_orders.html", orders=orders)
+
+@app.route('/pos/order_done/<int:order_id>', methods=['POST'])
+@login_required
+def order_done(order_id):
+    order = Order.query.get_or_404(order_id)
+    is_pickup = order.order_type in ['afhalen', 'pickup']
+    message = 'Your order is ready for pickup.' if is_pickup else 'Your order has been delivered.'
+    if order.email and '@' in order.email:
+        send_email(order.email, 'Order update', message)
+    chat_id = get_telegram_chat_id(order.phone)
+    if chat_id:
+        send_telegram(chat_id, message)
+    socketio.emit('order_done', {'id': order_id})
+    return jsonify({'status': 'ok'})
 @app.route('/login', methods=["GET", "POST"])
 def login():
     if request.method == "POST":

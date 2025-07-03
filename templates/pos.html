@@ -498,6 +498,10 @@
   white-space: nowrap;
   padding: 8px;
 }
+.done-btn{
+  padding:4px 8px;
+  border-radius:4px;
+}
 /* 默认隐藏圆按钮 */
 .today-toggle {
   display: none;
@@ -517,6 +521,10 @@
 @keyframes highlightBlink {
   0%,100% { background-color: #eaffea; }
   50% { background-color: #fff; }
+}
+/* ✅ Mark order as done */
+.order-done {
+  background-color: #c8f7c5 !important;
 }
 
 /* 桌面显示长按钮，确保隐藏圆按钮 */
@@ -1088,6 +1096,10 @@ document.addEventListener('DOMContentLoaded',()=>{
   if (audioCtx.state === 'suspended') {
     audioCtx.resume().catch(() => {});
   }
+  document.querySelectorAll('.orders-panel .done-btn').forEach(btn => {
+    const tr = btn.closest('tr');
+    if(tr) attachDoneHandler(tr, btn.dataset.id);
+  });
 
 });
 
@@ -1562,6 +1574,20 @@ function formatCurrency(value){
     tbody.appendChild(tr);
   }
 
+  function attachDoneHandler(tr, id){
+    const btn = tr.querySelector('.done-btn');
+    if(!btn) return;
+    btn.addEventListener('click', () => {
+      if(!confirm('Are you sure you want to mark this order as done and send the notification?')) return;
+      fetch(`/pos/order_done/${id}`, {method: 'POST'})
+        .then(r => r.json())
+        .then(() => {
+          tr.classList.add('order-done');
+          btn.disabled = true;
+        });
+    });
+  }
+
   // 添加订单到表格
   function addRow(order, highlight=false) {
     const tbody = document.querySelector('.orders-panel tbody');
@@ -1606,14 +1632,16 @@ function formatCurrency(value){
         <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
         <td>${isDelivery ? (delivery || '-') : (pickup || '-')}</td>
         <td>${order.payment_method || ''}</td>
-        <td>${order.order_number || '-'}</td>`;
-      
+        <td>${order.order_number || '-'}</td>
+        <td><button class="done-btn" data-id="${order.id}">Done</button></td>`;
+
     tr.dataset.sortKey = getSortKey(order);
     if(highlight){
       tr.classList.add('new-order');
       setTimeout(()=>tr.classList.remove('new-order'),10000);
     }
     insertSorted(tbody, tr);
+    attachDoneHandler(tr, order.id);
     updateTodayBadge();
     return tr;
   }
@@ -1634,6 +1662,11 @@ function formatCurrency(value){
     updateTodayBadge();
   }
 });
+
+  socket.on('order_done', data => {
+    const row = document.querySelector(`tr[data-id="${data.id}"]`);
+    if(row) row.classList.add('order-done');
+  });
 
   // 断线后启用轮询
   socket.on('disconnect', () => {
