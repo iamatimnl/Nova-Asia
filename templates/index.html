@@ -1882,7 +1882,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-section">
     <div class="menu-row menu-item" data-name="Zalm Bowl" data-price="15" data-packaging="0.2">
       <div class="menu-img">
-        <img src="{{ url_for('static', filename='images/zwp.png') }}" alt="Zalm Bowl">
+        <img src="{{ url_for('static', filename='images/zalm-pokebowl.png') }}" alt="Zalm Bowl">
       </div>
       <div class="menu-content">
         <h3>Zalm Bowl</h3>
@@ -1897,7 +1897,7 @@ input:focus, select:focus, textarea:focus {
     </div>
     <div class="menu-row menu-item" data-name="Tuna Bowl" data-price="15" data-packaging="0.2">
       <div class="menu-img">
-        <img src="{{ url_for('static', filename='images/tup.png') }}" alt="Tuna Bowl">
+        <img src="{{ url_for('static', filename='images/tunapo.png') }}" alt="Tuna Bowl">
       </div>
       <div class="menu-content">
         <h3>Tuna Bowl</h3>
@@ -1977,7 +1977,7 @@ input:focus, select:focus, textarea:focus {
 
     <div class="menu-row menu-item" data-name="Teriyaki Beef Bowl" data-price="15.5" data-packaging="0.2">
       <div class="menu-img">
-        <img src="{{ url_for('static', filename='images/nrp.png') }}" alt="Teriyaki Beef Bowl">
+        <img src="{{ url_for('static', filename='images/teriyaki-beef-bowl.png') }}" alt="Teriyaki Beef Bowl">
       </div>
       <div class="menu-content">
         <h3>Teriyaki Beef Bowl</h3>
@@ -2273,7 +2273,7 @@ input:focus, select:focus, textarea:focus {
 
 <div class="menu-row menu-item" data-name="Beef sashimi" data-packaging="0.2" data-price="10">
 <div class="menu-img">
-<img alt="Beef sashimi" src="{{ url_for('static', filename='images/suy.png') }}"/>
+<img alt="Beef sashimi" src="{{ url_for('static', filename='images/beef-crispy.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>Beef sashimi</h3>
@@ -3548,8 +3548,7 @@ function checkout() {
     if (qty > 0) itemsToSend[extras[id].label] = { price: 0, qty };
   });
 
-  // Submit order to the local Flask endpoint instead of the old Render URL
-  fetch('/submit_order', {
+  fetch('https://flask-order-api.onrender.com/submit_order', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -3659,14 +3658,11 @@ function checkout() {
       close.setDate(close.getDate() + 1);
     }
 
-    // only include Dashboard start time if it is not in the past
-    const includeStart = open.getTime() >= now.getTime();
-    if (includeStart) {
-      const firstOpt = document.createElement('option');
-      firstOpt.value = oStr;
-      firstOpt.textContent = oStr;
-      select.appendChild(firstOpt);
-    }
+    // always include configured start time as the first option
+    const firstOpt = document.createElement('option');
+    firstOpt.value = oStr;
+    firstOpt.textContent = oStr;
+    select.appendChild(firstOpt);
 
     let start = now > open ? now : open;
     start = new Date(start);
