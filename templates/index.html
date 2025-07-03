@@ -151,16 +151,13 @@
   }
 
   .menu-item {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    align-items: center;
-    padding: 16px;
-    margin-bottom: 12px;
+    position: relative;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
     border-radius: 16px;
-    background: var(--off-white);
-    border: 1px solid #e0e0e0;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    margin: 10px auto;
+    width: 80%;
+    max-width: none;
   }
 
   img {
@@ -169,12 +166,11 @@
   }
 
   .menu-item img {
+    position: absolute;
+    inset: 0;
     width: 100%;
-    max-width: 120px;
-    height: auto;
+    height: 100%;
     object-fit: cover;
-    border-radius: 12px;
-    flex-shrink: 0;
   }
 
 
@@ -189,35 +185,52 @@
     font-size: 1rem;
     white-space: normal;
     word-break: break-word;
+    position: relative;
+    z-index: 1;
   }
 
   .menu-item .menu-content {
+    position: absolute;
+    inset: 0;
     display: flex;
     flex-direction: column;
-    flex: 1;
+    align-items: center;
     padding: 8px;
   }
 
   .menu-item h3,
   .menu-item p {
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    padding: 4px 8px;
     margin: 2px 0;
   }
 
   .qty-box {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     align-items: center;
     gap: 6px;
-    margin-top: 8px;
+    padding: 4px;
+    width: calc(100% - 16px);
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
   }
 
-.menu-item select,
-.menu-item button {
-  margin-top: 8px;
-  padding: 6px 8px;
-  font-size: 0.85rem;
-  height: 36px;
+.menu-item select {
+  max-width: 160px;
+  width: 60%;
+  margin: 2px 0;
+  padding: 4px 6px;
+  font-size: 0.6rem;
   border-radius: 10px;
   border: 1px solid #ccc;
+  background: rgba(255, 255, 255, 0.7);
+  box-sizing: border-box;
 }
 /* Ensure Omakase preference dropdowns keep full width */
 #omakasePrefs select {
@@ -236,6 +249,7 @@
     font-size: 0.85rem;
     border-radius: 10px;
     border: 1px solid #ccc;
+    background: rgba(255, 255, 255, 0.7);
   }
 
   .bubble-option {
@@ -253,18 +267,35 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    flex: 0 0 auto; /* prevent flexbox from squashing width/height */
     border-radius: 50%;
-    border: none;
-    background: #e5e5ea;
-    color: #333;
+    border: 1px solid var(--accent-color);
+    background: #fff;
+    color: var(--accent-color);
     transition: background 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   }
-  .menu-item button:hover { background: #dcdce0; }
-  .add-button { background: #b3d4ff; color: #333; }
-  .add-button:hover { background: #a3c8ff; }
-  .remove-button { background: #ffd6d6; color: #333; }
-  .remove-button:hover { background: #ffc2c2; }
 
+/* 保留颜色差异 */
+.add-button {
+  background: var(--accent-color);
+  color: white;
+  border: none;
+}
+
+.add-button:hover {
+  background: #0051a8;
+}
+
+.remove-button {
+  background: var(--sakura);
+  color: white;
+  border: none;
+}
+
+.remove-button:hover {
+  background: #ff7b94;
+}
 
 .new-set-button {
   all: unset !important; /* 重置所有默认和遗留样式 */
@@ -1257,14 +1288,18 @@ input:focus, select:focus, textarea:focus {
 <div class="navbar-container" id="navbar-container">
 <nav class="navbar" id="navbar">
 <div class="nav-categories">
-<a href="#customer-info">Klant</a>
+<a href="#delivery-options">delivery-options</a>
+<a href="#checkbox-group">checkbox-group</a>
+<a href="#bubble">Bubble Tea</a>
 <a href="#bento">Bento Box</a>
+<a href="#Ramen">Ramen</a>
+<a href="#Pokebowl">Pokebowl</a>
 <a href="#sushi">Special Sushi Rolls</a>
 <a href="#sashimi">Sashimi</a>
-<a href="#bubble">Bubble Tea</a>
-<a href="#dessert">Dessert</a>
+<a href="#Crispy-rice-sandwich">Crispy Rice</a>
 <a href="#snack">Snack</a>
-<a href="#vegan">Vegan</a>
+<a href="#dessert">Dessert</a>
+<a href="javascript:void(0)" id="openReviews" class="review-link">Review</a>
 </div>
 <div class="indicator" id="indicator"></div>
 </nav>
@@ -4543,7 +4578,6 @@ document.addEventListener('click', e => {
 
 </body>
 </html>
-
 
 
 
