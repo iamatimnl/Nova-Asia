@@ -131,6 +131,13 @@
     color: white;
   }
 
+  .home-btn {
+    position: absolute;
+    right: 0px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
   .indicator {
   position: absolute;
   left: 3px;
@@ -1366,6 +1373,7 @@ input:focus, select:focus, textarea:focus {
 <a href="#dessert">Dessert</a>
 <a href="javascript:void(0)" id="openReviews" class="review-link">Review</a>
 </div>
+<a href="#" class="home-btn" id="homeBtn" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">Home</a>
 <div class="indicator" id="indicator"></div>
 </nav>
 </div>
