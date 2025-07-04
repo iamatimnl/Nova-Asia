@@ -69,7 +69,7 @@
   -webkit-backdrop-filter: blur(16px);
 
 
-  border: 1px solid rgba(128, 85, 51, 0.06);
+  border: 1px solid rgba(128, 85, 51, 0.1);
   border-radius: 26px;
 
   
@@ -180,7 +180,12 @@
     top: 1px; /* ✅ 滑块更贴边 */
     left: 1px;
     height: calc(100% - 3px); /* ✅ 滑块更饱满 */
-    border-radius: 26px; /* ✅ 滑块圆角匹配移动端
+    border-radius: 26px; /* ✅ 滑块圆角匹配移动端轨道 */
+    box-shadow:
+      inset 0 1px 1px rgba(255, 255, 255, 0.4),
+      0 2px 4px rgba(166, 113, 68, 0.3),
+      0 4px 8px rgba(0, 0, 0, 0.15);
+  }
 
 }
 
@@ -4837,7 +4842,6 @@ document.addEventListener('click', e => {
 
 </body>
 </html>
-
 
 
 
