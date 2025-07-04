@@ -547,11 +547,10 @@
   z-index: 999;
   box-shadow:
     inset 0 1px 1px rgba(255, 255, 255, 0.4),
-    0 2px 4px rgba(10, 132, 255, 0.4),
-    0 4px 12px rgba(0, 0, 0, 0.2);
-
-  
+    0 2px 4px rgba(166, 113, 68, 0.4), /* 焦糖浅阴影 */
+    0 4px 12px rgba(0, 0, 0, 0.2); /* 底部软黑投影 */
 }
+
 
 /* logo floating above the cart button */
 #back-to-top-logo {
@@ -1178,15 +1177,16 @@ input:focus, select:focus, textarea:focus {
   position: relative;
   overflow: hidden;
 }
+
 .order-type-track {
   position: relative;
   width: 100%;
   height: 100%;
   padding: 0 8px;
   box-sizing: border-box;
-  background-color:linear-gradient(to right, rgba(10,132,255,0.15), rgba(255,255,255,0.05));
-
+  background: linear-gradient(to right, rgba(198, 113, 68, 0.15), rgba(245, 225, 201, 0.05)); /* 焦糖渐变 */
 }
+
 .order-type-button {
   position: absolute;
   left: 8px;
@@ -1206,9 +1206,8 @@ input:focus, select:focus, textarea:focus {
   user-select: none;
   box-shadow:
     inset 0 1px 1px rgba(255, 255, 255, 0.4),
-    0 2px 4px rgba(10, 132, 255, 0.4),
+    0 2px 4px rgba(166, 113, 68, 0.4), /* 焦糖浅阴影 */
     0 4px 12px rgba(0, 0, 0, 0.2);
-
 }
 
 .order-type-text {
