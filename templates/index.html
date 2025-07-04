@@ -1396,8 +1396,8 @@ input:focus, select:focus, textarea:focus {
 <input id="pickupName" type="text"/>
 <label>Telefoonnummer:</label>
 <input id="pickupPhone" type="tel"/>
-<label>Email (optioneel):</label>
-<input id="pickupEmail" type="email"/>
+<label>Email:</label>
+<input id="pickupEmail" type="email" required/>
 <label>Tijd van afhalen:</label>
 <select id="pickup_time"></select>
 <label>Betaalmethode:</label>
@@ -1413,8 +1413,8 @@ input:focus, select:focus, textarea:focus {
 <input id="deliveryName" type="text"/>
 <label>Telefoonnummer:</label>
 <input id="deliveryPhone" type="tel"/>
-<label>Email (optioneel):</label>
-<input id="deliveryEmail" type="email"/>
+<label>Email:</label>
+<input id="deliveryEmail" type="email" required/>
 <label>Adres:</label>
 <input id="deliveryAddress" type="text"/>
 <label>Huisnummer:</label>
@@ -3506,10 +3506,12 @@ function getFirstMissingField() {
   if (type === 'afhalen') {
     if (!document.getElementById('pickupName').value.trim()) return 'pickupName';
     if (!document.getElementById('pickupPhone').value.trim()) return 'pickupPhone';
+    if (!document.getElementById('pickupEmail').value.trim()) return 'pickupEmail';
     if (!document.getElementById('pickup_time').value) return 'pickup_time';
   } else {
     if (!document.getElementById('deliveryName').value.trim()) return 'deliveryName';
     if (!document.getElementById('deliveryPhone').value.trim()) return 'deliveryPhone';
+    if (!document.getElementById('deliveryEmail').value.trim()) return 'deliveryEmail';
     if (!document.getElementById('deliveryAddress').value.trim()) return 'deliveryAddress';
     if (!document.getElementById('deliveryHouseNumber').value.trim()) return 'deliveryHouseNumber';
     if (!document.getElementById('deliveryPostcode').value.trim()) return 'deliveryPostcode';
@@ -4367,10 +4369,12 @@ sliderTrack.addEventListener('touchmove', (e) => {
       if (type === 'afhalen') {
         return document.getElementById('pickupName').value.trim() &&
                document.getElementById('pickupPhone').value.trim() &&
+               document.getElementById('pickupEmail').value.trim() &&
                document.getElementById('pickup_time').value;
       }
       return document.getElementById('deliveryName').value.trim() &&
              document.getElementById('deliveryPhone').value.trim() &&
+             document.getElementById('deliveryEmail').value.trim() &&
              document.getElementById('deliveryAddress').value.trim() &&
              document.getElementById('deliveryHouseNumber').value.trim() &&
              document.getElementById('deliveryPostcode').value.trim() &&
