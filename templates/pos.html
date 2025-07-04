@@ -601,6 +601,11 @@ body.today-open .today-toggle {
         <input id="discountValue" type="number" value="0" min="0" step="0.01" />
         <span id="summaryDiscount">€0,00</span>
       </div>
+      <div>
+        Eigen Invoer:
+        <input id="customPrice" type="number" min="0" step="0.01" />
+        <button id="addCustomPrice" type="button">Toevoegen</button>
+      </div>
       <div>BTW (9%): <span id="summaryBtw">€0,00</span></div>
       <div><strong>Totaal: <span id="total">€0,00</span></strong></div>
       <label for="remark" style="display:block;margin-top:10px;">Opmerking:</label>
@@ -610,10 +615,10 @@ body.today-open .today-toggle {
       <section id="customer-info">
         <div class="delivery-options">
           <h2>Klantgegevens</h2>
-        <label for="custName">Naam*</label>
-        <input id="custName" type="text" placeholder="Naam" required />
-        <label for="custPhone">Telefoonnummer*</label>
-        <input id="custPhone" type="tel" placeholder="Telefoonnummer" required />
+        <label for="custName">Naam</label>
+        <input id="custName" type="text" placeholder="Naam" />
+        <label for="custPhone">Telefoonnummer</label>
+        <input id="custPhone" type="tel" placeholder="Telefoonnummer" />
         <div class="order-type-switch">
           <label class="order-btn">
             <input type="radio" id="typePickup" name="orderType" value="pickup" checked />
@@ -898,8 +903,16 @@ function updateCart(){
       }
     });
     const rowTotal=item.qty*item.price;
-    li.textContent=`${name} - €${rowTotal.toFixed(2)} `;
-    li.appendChild(sel);
+    const displayName=item.displayName||name;
+    li.textContent=`${displayName} - €${rowTotal.toFixed(2)} `;
+    if(item.custom){
+      const delBtn=document.createElement('button');
+      delBtn.textContent='🗑';
+      delBtn.addEventListener('click',()=>{ delete cart[name]; updateCart(); });
+      li.appendChild(delBtn);
+    }else{
+      li.appendChild(sel);
+    }
     if(item.prefs){
       const title=document.createElement('div');
       title.textContent='Voorkeur:';
@@ -943,6 +956,16 @@ function updateCart(){
 
   const badge=document.getElementById('cartCount');
   if(badge) badge.textContent=count;
+}
+
+function addCustomPrice(){
+  const input=document.getElementById('customPrice');
+  const val=parseFloat(input.value);
+  if(isNaN(val)||val<=0) return;
+  const key='custom_'+Date.now();
+  cart[key]={price:val,qty:1,custom:true,displayName:'Eigen Invoer'};
+  input.value='';
+  updateCart();
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
@@ -1054,6 +1077,10 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
   document.getElementById('discountType').addEventListener('change',updateCart);
   document.getElementById('discountValue').addEventListener('input',updateCart);
+  const addCustomBtn=document.getElementById('addCustomPrice');
+  if(addCustomBtn){
+    addCustomBtn.addEventListener('click',addCustomPrice);
+  }
   const toggleTodayBtn = document.getElementById('toggleToday');
   if (toggleTodayBtn) {
     toggleTodayBtn.addEventListener('click', toggleToday);
@@ -1226,31 +1253,12 @@ function generateOrderNumber(){
   return `NV${date}-${rand}`;
 }
 function submitOrder() {
-  const name = document.getElementById('custName').value.trim();
+  const name = document.getElementById('custName').value.trim() || 'Guest';
   const phone = document.getElementById('custPhone').value.trim();
-  if (!name || !phone) {
-    alert('Vul naam en telefoon in.');
-    return;
-  }
 
   const delivery = document.getElementById('typeDelivery').checked;
 
-  if (!delivery) {
-    if (!document.getElementById('pickup_time').value) {
-      alert('Pickup tijd is verplicht.');
-      return;
-    }
-  } else {
-    if (
-      !document.getElementById('postcode').value ||
-      !document.getElementById('houseNumber').value ||
-      !document.getElementById('street').value ||
-      !document.getElementById('city').value
-    ) {
-      alert('Adresgegevens zijn verplicht.');
-      return;
-    }
-  }
+
 
   if (Object.keys(cart).length === 0) {
     alert('Geen producten geselecteerd.');
