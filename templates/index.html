@@ -5,9 +5,10 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0" name="viewport"/>
 <title>Nova Asia Bestellen</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Quicksand:wght@400;700&family=Noto+Sans:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
 <style>
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: 'Noto Sans', 'Open Sans', sans-serif;
     padding: 20px;
     max-width: 1200px;
     margin: auto;
@@ -17,22 +18,34 @@
     text-align: center;
   }
 
-    :root {
-    --primary-color: #f2f2f7; /* 主背景，高级浅灰 */
-    --section-alt-bg: #e5e5ea; /* 卡片灰色 */
-    --secondary-color: #2c2c2e; /* 文字深灰 */
-    --accent-color: #30b158; /* 苹果深绿，带轻奢气质 */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', 'Quicksand', sans-serif;
+  }
 
-    --accent-gradient-start: #0a84ff; /* 渐变开始 iOS 蓝 */
-    --accent-gradient-mid: #30db5b; /* 渐变中间柔和绿 */
-    --accent-gradient-end: #34c759; /* 渐变结束 iOS 绿 */
-    --off-white: #ffffff; /* 局部白色 */
-  --sakura: #ff4f70; /* 点缀樱花粉 */
-  --gold: #c8a95c; /* 轻奢金色 */
+    :root {
+    --primary-color: #FFFDF9; /* 奶白主背景 */
+    --section-alt-bg: #E6E6FA; /* 薰衣草紫 */
+    --secondary-color: #2c2c2e; /* 深灰文字 */
+    --accent-color: #FADADD; /* 樱花粉主按钮 */
+    --accent-secondary: #AEEEEE; /* 薄荷蓝次按钮 */
+    --accent-tertiary: #B4E7D9; /* 薄荷绿背景块 */
+    --accent-highlight: #FFF5A5; /* 鹅黄强调 */
+    --accent-gradient-start: #FADADD; /* 渐变开始粉色 */
+    --accent-gradient-mid: #AEEEEE; /* 渐变中蓝色 */
+    --accent-gradient-end: #B4E7D9; /* 渐变结束绿色 */
+    --off-white: #FFFDF9; /* 局部白色 */
+    --sakura: #ff4f70; /* 点缀樱花粉 */
+    --gold: #c8a95c; /* 轻奢金色 */
 }
 
   .stars {
     color: var(--gold);
+  }
+
+  button,
+  input,
+  select {
+    border-radius: 12px;
   }
 
     /* Hide horizontal scroll bar in all modern browsers */
@@ -944,6 +957,7 @@ input:focus, select:focus, textarea:focus {
   border: none;
   padding: 16px;
   width: 100%;
+  border-radius: 12px;
 }
 
 /* 进一步压缩 checkout-panel 高度并确保按钮可见 */
@@ -988,7 +1002,7 @@ input:focus, select:focus, textarea:focus {
   border: none;
   padding: 16px;
   width: 100%;
-  border-radius: 6px;
+  border-radius: 12px;
 }
 .desktop-only {
   display: block;
