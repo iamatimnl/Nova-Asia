@@ -5,9 +5,12 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0" name="viewport"/>
 <title>Nova Asia Bestellen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Poppins:wght@600&display=swap" rel="stylesheet">
 <style>
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: 'Noto Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     padding: 20px;
     max-width: 1200px;
     margin: auto;
@@ -17,22 +20,32 @@
     text-align: center;
   }
 
-    :root {
-    --primary-color: #f2f2f7; /* 主背景，高级浅灰 */
-    --section-alt-bg: #e5e5ea; /* 卡片灰色 */
-    --secondary-color: #2c2c2e; /* 文字深灰 */
-    --accent-color: #30b158; /* 苹果深绿，带轻奢气质 */
+  :root {
+    --primary-color: #FFFDF9; /* Creamy white background */
+    --section-alt-bg: #E6E6FA; /* Lavender purple blocks */
+    --secondary-color: #333333; /* Dark text */
+    --accent-color: #FADADD; /* Light pink accents */
 
-    --accent-gradient-start: #0a84ff; /* 渐变开始 iOS 蓝 */
-    --accent-gradient-mid: #30db5b; /* 渐变中间柔和绿 */
-    --accent-gradient-end: #34c759; /* 渐变结束 iOS 绿 */
-    --off-white: #ffffff; /* 局部白色 */
-  --sakura: #ff4f70; /* 点缀樱花粉 */
-  --gold: #c8a95c; /* 轻奢金色 */
-}
+    --accent-gradient-start: #FADADD; /* Pastel gradient start */
+    --accent-gradient-mid: #FFF5A5; /* Soft yellow middle */
+    --accent-gradient-end: #B4E7D9; /* Mint green end */
+    --off-white: #FFFDF9; /* Matching background */
+    --sakura: #FADADD; /* Pink for remove buttons */
+    --gold: #AEEEEE; /* Sky blue labels */
+  }
 
   .stars {
     color: var(--gold);
+  }
+
+  button {
+    transition: transform 0.1s ease, filter 0.1s ease, box-shadow 0.1s ease;
+    touch-action: manipulation;
+  }
+  button:active {
+    transform: scale(0.94);
+    filter: brightness(0.85);
+    box-shadow: inset 0 3px 6px rgba(0,0,0,0.35);
   }
 
     /* Hide horizontal scroll bar in all modern browsers */
@@ -145,7 +158,10 @@
   h3,
   h4,
   h5,
-  h6,
+  h6 {
+    text-align: center;
+    font-family: 'Poppins', 'Noto Sans', sans-serif;
+  }
   p {
     text-align: center;
   }
@@ -284,7 +300,7 @@
 }
 
 .add-button:hover {
-  background: #0051a8;
+  background: #f6c8d0;
 }
 
 .remove-button {
@@ -294,12 +310,12 @@
 }
 
 .remove-button:hover {
-  background: #ff7b94;
+  background: #f4a7b8;
 }
 
 .new-set-button {
   all: unset !important; /* 重置所有默认和遗留样式 */
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important; /* 强制蓝色渐变 */
+  background: linear-gradient(135deg, #FADADD 0%, #B4E7D9 100%) !important; /* Pastel gradient */
   color: white !important;
   border: none !important;
   border-radius: 16px !important;
