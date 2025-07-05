@@ -9,108 +9,110 @@
     :root {
       --primary-color: #FAF8F1;
       --section-alt-bg: #F0E2C3;
-      --accent-tertiary: #FEEACE;
-      --off-white: #F0ECE6;
-
       --accent-color: #4E342E;
-      --accent-secondary: #A47148;
-
-      --secondary-color: #4A4A4A;
-
       --accent-highlight: #E1C16E;
-      --sakura: #D48B8B;
-      --gold: #C8A95C;
-
-      --accent-gradient-start: #E09142;
-      --accent-gradient-mid: #6A2E14;
-      --accent-gradient-end: #4E342E;
+      --accent-secondary: #A47148;
     }
 
     body {
       font-family: 'Noto Sans', 'Open Sans', sans-serif;
       background: var(--primary-color);
-      color: var(--secondary-color);
-      padding: 20px;
-      max-width: 800px;
-      margin: auto;
-      text-align: center;
-    }
-
-    button,
-    input,
-    select {
-      border-radius: 12px;
       color: var(--accent-color);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      overflow: hidden;
     }
 
-    .pagination button {
-      margin: 5px;
-      padding: 8px 16px;
-      border: none;
-      background: var(--accent-color);
-      color: white;
-      border-radius: 8px;
-      cursor: pointer;
+    header {
+      padding: 20px;
+      text-align: center;
+      font-size: 1.5rem;
     }
 
-    .pagination button:hover {
-      background: var(--accent-secondary);
-    }
-
-    .pagination button:disabled {
-      background: gray;
-      cursor: default;
+    .review-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 15px;
     }
 
     .review-item {
       background: var(--section-alt-bg);
       border-radius: 12px;
       padding: 16px;
-      margin-bottom: 20px;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .review-item.visible {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     .review-stars span {
-      font-size: 1.5rem;
+      font-size: 1.2rem;
       margin-right: 4px;
     }
 
     .review-stars .filled { color: var(--accent-highlight); }
     .review-stars .empty { color: lightgray; }
 
-    .review-link {
-      display: inline-block;
-      margin-top: 20px;
-      padding: 10px 20px;
-      background: var(--accent-color);
-      color: white;
-      border-radius: 8px;
-      text-decoration: none;
-      cursor: pointer;
+    .bottom-buttons {
+      position: fixed;
+      bottom: 30px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-around;
+      pointer-events: none; /* 只允许点击按钮，背景不响应 */
     }
 
-    .review-link:hover { background: var(--accent-secondary); }
+    .circle-button {
+      width: 60px;
+      height: 60px;
+      background: var(--accent-color);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      pointer-events: auto; /* 允许点击 */
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      transition: background 0.3s;
+    }
+
+    .circle-button:hover {
+      background: var(--accent-secondary);
+    }
+
   </style>
 </head>
 <body>
 
-<h1>Reviews</h1>
-<div id="reviewList">Bezig met laden...</div>
+<header>Reviews</header>
 
-<div class="pagination">
-  <button id="prevPage">Vorige</button>
-  <button id="nextPage">Volgende</button>
+<!-- Review 列表 -->
+<div class="review-list" id="reviewList">Bezig met laden...</div>
+
+<!-- 固定底部 iOS 风格圆形按钮 -->
+<div class="bottom-buttons">
+  <div class="circle-button" onclick="scrollToTop()">⬆️</div> <!-- 回到顶部 -->
+  <div class="circle-button" onclick="goHome()">🏠</div>       <!-- 返回首页 -->
 </div>
 
-<!-- 返回首页按钮 -->
-<a href="/" class="review-link">Terug naar Home</a>
-
-
 <script>
-let currentPage = 1;
-const perPage = 5;
+window.addEventListener('load', loadReviews);
 
 async function loadReviews() {
-  const response = await fetch(`/api/reviews?page=${currentPage}&per_page=${perPage}`);
+  const response = await fetch(`/api/reviews?page=1&per_page=100`);
   const data = await response.json();
 
   const reviewList = document.getElementById('reviewList');
@@ -131,9 +133,7 @@ async function loadReviews() {
     reviewList.appendChild(div);
   });
 
-  document.getElementById('prevPage').disabled = currentPage === 1;
-  const totalPages = Math.ceil(data.total / perPage);
-  document.getElementById('nextPage').disabled = currentPage >= totalPages;
+  observeReviews();
 }
 
 function renderStars(rating) {
@@ -148,19 +148,31 @@ function renderStars(rating) {
   return stars;
 }
 
-document.getElementById('prevPage').addEventListener('click', () => {
-  if (currentPage > 1) {
-    currentPage--;
-    loadReviews();
-  }
-});
+function observeReviews() {
+  const options = { threshold: 0.1 };
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, options);
 
-document.getElementById('nextPage').addEventListener('click', () => {
-  currentPage++;
-  loadReviews();
-});
+  document.querySelectorAll('.review-item').forEach(item => observer.observe(item));
+}
 
-window.addEventListener('load', loadReviews);
+// 平滑滚动回到顶部
+function scrollToTop() {
+  document.getElementById('reviewList').scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+}
+
+// 返回首页
+function goHome() {
+  window.location.href = '/';
+}
 </script>
 
 </body>
