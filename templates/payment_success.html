@@ -53,12 +53,23 @@
   <p>支付已成功，感谢您的订单。</p>
   <p id="order-number"></p>
   <a href="/" class="btn-home">返回首页</a>
+
   <script>
+    // ✅ 清空购物车和表单
+    sessionStorage.removeItem('novaCart');
+    sessionStorage.removeItem('orderForm');
+
+    // ✅ 显示订单号（如果存在）
     const urlParams = new URLSearchParams(window.location.search);
     const orderId = urlParams.get('order_id');
     if (orderId) {
       document.getElementById('order-number').innerText = `Uw ordernummer: #${orderId}`;
     }
+
+    // ✅ 自动跳转回首页
+    setTimeout(function () {
+      window.location.href = '/';
+    }, 1000);
   </script>
 </body>
 </html>
