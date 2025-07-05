@@ -7,19 +7,23 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Quicksand:wght@400;700&family=Noto+Sans:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary-color: #F5F1E6;
+      --primary-color: #FAF8F1;
       --section-alt-bg: #F0E2C3;
-      --secondary-color: #2C2C2E;
+      --accent-tertiary: #FEEACE;
+      --off-white: #F0ECE6;
+
       --accent-color: #4E342E;
       --accent-secondary: #A47148;
-      --accent-tertiary: #D8C3A5;
+
+      --secondary-color: #4A4A4A;
+
       --accent-highlight: #E1C16E;
+      --sakura: #D48B8B;
+      --gold: #C8A95C;
+
       --accent-gradient-start: #E09142;
       --accent-gradient-mid: #6A2E14;
       --accent-gradient-end: #4E342E;
-      --off-white: #FFFFFF;
-      --sakura: #D48B8B;
-      --gold: #C8A95C;
     }
 
     body {
@@ -41,7 +45,19 @@
     input,
     select {
       border-radius: 12px;
-      color: #4E342E;
+      color: var(--accent-color);
+    }
+
+    button {
+      background: var(--accent-color);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: var(--accent-secondary);
     }
 
     .star-container span {
@@ -58,11 +74,15 @@
       display: inline-block;
       margin-top: 20px;
       padding: 10px 20px;
-      background: #4E342E;
+      background: var(--accent-color);
       color: white;
       border-radius: 8px;
       text-decoration: none;
       cursor: pointer;
+    }
+
+    .review-link:hover {
+      background: var(--accent-secondary);
     }
   </style>
 </head>
