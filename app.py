@@ -719,43 +719,69 @@ def edit_order(order_id: int):
 @app.route('/api/reviews', methods=['GET', 'POST'])
 def reviews_api():
     if request.method == 'POST':
-        data = request.get_json() or {}
-        order_number = str(data.get('order_number') or '').strip()
-        name = str(data.get('customer_name') or '').strip()
-        content = str(data.get('content') or '').strip()
-        rating = int(data.get('rating') or 0)
+        data = request.json
+        if not data:
+            return jsonify({'error': 'Geen data ontvangen.'}), 400
 
-        if not order_number or not name or not content or rating not in range(1, 6):
-            return jsonify({'status': 'fail', 'error': 'missing_fields'}), 400
+        name = data.get('customer_name')
+        content = data.get('content')
+        rating = data.get('rating')
+        order_number = data.get('order_number')
 
-        if not Order.query.filter_by(order_number=order_number).first():
-            return jsonify({'status': 'fail', 'error': 'invalid_order'}), 400
+        if not (name and content and order_number and isinstance(rating, int)):
+            return jsonify({'error': 'Ongeldige data.'}), 400
 
-        if Review.query.filter_by(order_number=order_number).first():
-            return jsonify({'status': 'fail', 'error': 'already_reviewed'}), 400
+        # 检查订单号是否已存在评论，防止重复
+        existing_review = Review.query.filter_by(order_number=order_number).first()
+        if existing_review:
+            return jsonify({'error': 'U heeft al een review ingediend voor dit ordernummer.'}), 400
 
-        review = Review(order_number=order_number, customer_name=name, content=content, rating=rating)
-        db.session.add(review)
+        new_review = Review(
+            customer_name=name,
+            content=content,
+            rating=rating,
+            order_number=order_number
+        )
+        db.session.add(new_review)
         db.session.commit()
-        socketio.emit('new_review', {
-            'order_number': order_number,
-            'customer_name': name,
-            'content': content,
-            'rating': rating,
-            'created_at': review.created_at.isoformat()
-        })
-        return jsonify({'status': 'ok'}), 201
 
-    reviews = Review.query.order_by(Review.created_at.desc()).all()
-    return jsonify([
+        # SocketIO 实时推送（如果你已启用）
+        socketio.emit('new_review', {
+            'customer_name': new_review.customer_name,
+            'content': new_review.content,
+            'rating': new_review.rating
+        })
+
+        return jsonify({'message': 'Review succesvol ontvangen.'}), 200
+
+    # GET 请求：获取评论，支持分页
+    try:
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 5))
+    except ValueError:
+        page = 1
+        per_page = 5
+
+    query = Review.query.order_by(Review.created_at.desc())
+    pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+
+    reviews = [
         {
             'customer_name': r.customer_name,
             'content': r.content,
             'rating': r.rating,
             'created_at': r.created_at.isoformat()
         }
-        for r in reviews
-    ])
+        for r in pagination.items
+    ]
+
+    return jsonify({
+        'reviews': reviews,
+        'total': pagination.total,
+        'page': page,
+        'per_page': per_page
+    })
+
 
 
 # Mijn Nova Asia 管理后台
