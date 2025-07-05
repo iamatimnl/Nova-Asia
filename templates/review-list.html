@@ -9,9 +9,9 @@
     :root {
       --primary-color: #FAF8F1;
       --section-alt-bg: #F0E2C3;
-      --accent-color: #4E342E;
+      --accent-color: rgba(255, 255, 255, 0.3);
       --accent-highlight: #E1C16E;
-      --accent-secondary: #A47148;
+      --accent-secondary: rgba(255, 255, 255, 0.5);
     }
 
     body {
@@ -26,44 +26,12 @@
       height: 100vh;
     }
 
-    header {
-      padding: 20px;
-      text-align: center;
-      font-size: 1.5rem;
-    }
-
-    /* 卡片面板，初始位置高于底部按钮 */
-    .review-panel {
-      position: fixed;
-      bottom: 120px; /* 按钮高度 + 间距 */
-      left: 0;
-      right: 0;
-      height: 80vh;
-      background: white;
-      border-top-left-radius: 20px;
-      border-top-right-radius: 20px;
-      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
-      transform: translateY(50%); /* 初始半隐藏 */
-      transition: transform 0.3s ease;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .handle {
-      width: 60px;
-      height: 6px;
-      background: #ccc;
-      border-radius: 3px;
-      margin: 10px auto;
-      cursor: grab;
-    }
-
-    .review-list {
+    .scroll-container {
       flex: 1;
       overflow-y: auto;
       padding: 20px;
       display: flex;
-      flex-direction: column-reverse;
+      flex-direction: column;
       gap: 15px;
     }
 
@@ -89,7 +57,6 @@
     .review-stars .filled { color: var(--accent-highlight); }
     .review-stars .empty { color: lightgray; }
 
-    /* 底部按钮，固定，置顶显示 */
     .bottom-buttons {
       position: fixed;
       bottom: 30px;
@@ -104,21 +71,37 @@
     .circle-button {
       width: 60px;
       height: 60px;
-      background: var(--accent-color);
+      background: rgba(255, 255, 255, 0.3);
       border-radius: 50%;
       display: flex;
       justify-content: center;
       align-items: center;
-      color: white;
-      font-size: 24px;
       cursor: pointer;
       pointer-events: auto;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      transition: background 0.3s;
+      transition: background 0.3s, transform 0.1s;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
 
     .circle-button:hover {
-      background: var(--accent-secondary);
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    .circle-button:active {
+      transform: scale(0.9);
+    }
+
+    .circle-button svg {
+      width: 28px;
+      height: 28px;
+      fill: white;
+    }
+
+    header {
+      padding: 20px;
+      text-align: center;
+      font-size: 1.5rem;
     }
   </style>
 </head>
@@ -126,16 +109,24 @@
 
 <header>Reviews</header>
 
-<!-- Review 面板 -->
-<div class="review-panel" id="reviewPanel">
-  <div class="handle" id="handle"></div>
-  <div class="review-list" id="reviewList">Bezig met laden...</div>
-</div>
+<!-- 滚动区域 -->
+<div class="scroll-container" id="reviewList">Bezig met laden...</div>
 
 <!-- 底部按钮 -->
 <div class="bottom-buttons">
-  <div class="circle-button" onclick="scrollToTop()">⬆️</div>
-  <div class="circle-button" onclick="goHome()">🏠</div>
+  <!-- 回到顶部按钮 -->
+  <div class="circle-button" onclick="scrollToTop()" title="Scroll to Top">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <path d="M12 4l-8 8h6v8h4v-8h6z"/>
+    </svg>
+  </div>
+
+  <!-- Home 按钮 -->
+  <div class="circle-button" onclick="goHome()" title="Home">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <path d="M12 3l9 9h-3v9h-12v-9h-3l9-9z"/>
+    </svg>
+  </div>
 </div>
 
 <script>
@@ -152,7 +143,11 @@ async function loadReviews() {
   }
 
   reviewList.innerHTML = '';
-  data.reviews.forEach(r => {
+
+  // 数据自动倒序
+  const reviews = data.reviews.reverse();
+
+  reviews.forEach(r => {
     const div = document.createElement('div');
     div.className = 'review-item';
     div.innerHTML = `
@@ -191,46 +186,7 @@ function observeReviews() {
   document.querySelectorAll('.review-item').forEach(item => observer.observe(item));
 }
 
-// 滑动手势
-let startY = 0, currentY = 0, panelY = 0, isDragging = false;
-const panel = document.getElementById('reviewPanel');
-const handle = document.getElementById('handle');
-
-handle.addEventListener('touchstart', (e) => {
-  startY = e.touches[0].clientY;
-  isDragging = true;
-  panel.style.transition = 'none';
-});
-
-handle.addEventListener('touchmove', (e) => {
-  if (!isDragging) return;
-  currentY = e.touches[0].clientY;
-  let diff = currentY - startY;
-  let translateY = panelY + diff;
-
-  if (translateY < 0) translateY = 0;
-
-  panel.style.transform = `translateY(${translateY}px)`;
-});
-
-handle.addEventListener('touchend', () => {
-  isDragging = false;
-  panel.style.transition = 'transform 0.3s ease';
-
-  let finalTranslate = parseInt(panel.style.transform.replace('translateY(', '').replace('px)', ''));
-
-  if (finalTranslate > window.innerHeight * 0.3) {
-    // 收起到按钮上方
-    panel.style.transform = `translateY(50%)`;
-    panelY = (window.innerHeight * 0.5) - 120; // 卡片初始位置 = 半屏 - 按钮高度
-  } else {
-    // 完全展开
-    panel.style.transform = `translateY(0px)`;
-    panelY = 0;
-  }
-});
-
-// 回到顶部
+// 平滑回到顶部
 function scrollToTop() {
   document.getElementById('reviewList').scrollTo({
     top: 0,
