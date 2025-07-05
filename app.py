@@ -462,6 +462,11 @@ def review_page():
     order_number = request.args.get('order') or ''
     return render_template('review.html', order_number=order_number)
 
+# Payment success page
+@app.route('/payment-success')
+def payment_success_page():
+    return render_template('payment_success.html')
+
 # POS
 @app.route('/pos', methods=["GET", "POST"])
 @login_required
