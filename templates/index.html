@@ -28,7 +28,7 @@
     --secondary-color: #2C2C2E; /* 深灰文字 */
     --accent-color: #4E342E; /* 焦糖色主按钮（更日系） */
     --accent-secondary: #A47148; /* 木质棕次按钮 */
-    --accent-tertiary: #D8C3A5; /* 奶茶色背景块 */
+    --accent-tertiary: #feeace; /* 奶茶色背景块 */
     --accent-highlight: #E1C16E; /* 温柔浅金强调 */
     --accent-gradient-start: #E09142; /* 奶茶浅色带点金 */
     --accent-gradient-mid:#6A2E14 ; /* 焦糖偏金高光 */
@@ -64,7 +64,7 @@
  
   height: 64px;
 
-  background: rgba(255, 232, 205, 0.513); /* ✅ 可以适当提高透明度，增加轻盈感 */
+  background: rgba(255, 232, 205, 0.413); /* ✅ 可以适当提高透明度，增加轻盈感 */
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 
@@ -72,7 +72,7 @@
 
   border-radius: 26px;
 
-  box-shadow: inset 0 2px 6px rgba(102, 68, 34, 0.3); /* 温暖内阴影 */    
+ 
 
   overflow-x: auto;
   overflow-y: hidden;
@@ -3742,11 +3742,12 @@ function generateOrderNumber() {
 }
 
 function checkout() {
-  if(!storeOpen){
+  if (!storeOpen) {
     showClosedPopup();
-    window.scrollTo({top: 0, behavior: 'smooth'});
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     return;
   }
+
   const paidItems = Object.values(cart).filter(item => item.price > 0 && item.qty > 0);
   if (paidItems.length === 0) {
     alert('U moet ten minste één gerecht selecteren om te bestellen.');
@@ -3779,11 +3780,11 @@ function checkout() {
   if (sliderText && sliderButton && sliderTrack) {
     sliderText.innerText = 'Bezig met verwerken…';
     sliderButton.innerHTML = `
-<svg class="spinner" width="24" height="24" viewBox="0 0 44 44" fill="none" stroke="white">
-  <circle cx="22" cy="22" r="20" stroke-width="4" stroke-linecap="round" stroke-dasharray="125" stroke-dashoffset="0">
-    <animateTransform attributeName="transform" type="rotate" from="0 22 22" to="360 22 22" dur="1s" repeatCount="indefinite" />
-  </circle>
-</svg>`;
+      <svg class="spinner" width="24" height="24" viewBox="0 0 44 44" fill="none" stroke="white">
+        <circle cx="22" cy="22" r="20" stroke-width="4" stroke-linecap="round" stroke-dasharray="125" stroke-dashoffset="0">
+          <animateTransform attributeName="transform" type="rotate" from="0 22 22" to="360 22 22" dur="1s" repeatCount="indefinite" />
+        </circle>
+      </svg>`;
     sliderTrack.style.pointerEvents = 'none';
   }
 
@@ -3791,12 +3792,13 @@ function checkout() {
     .map(([name, item]) => {
       let line = `${name} x ${item.qty}`;
       if (item.prefs) {
-        const prefsText = item.prefs.map((p, i) => `${i + 1}. ${p}`).join('\\n   ');
-        line += `\\n   Voorkeur:\n   ${prefsText}`;
+        const prefsText = item.prefs.map((p, i) => `${i + 1}. ${p}`).join('\n   ');
+        line += `\n   Voorkeur:\n   ${prefsText}`;
       }
       return line;
     })
     .join('\n');
+
   orderSummary += `\nStokjes nodig: ${chopstickCount}`;
   orderSummary += `\nSojasaus: ${soyCount}`;
   orderSummary += `\nWasabi: ${wasabiCount}`;
@@ -3906,34 +3908,32 @@ function checkout() {
   })
     .then(res => res.json())
     .then(data => {
-  if (data.status === 'ok') {
-  beep();
-  showFeedback('Bestelling succesvol verzonden! Bestelnummer: ' + orderNumber);
-  for (const k in cart) delete cart[k];
-  sessionStorage.removeItem(FORM_KEY);
-  updateCart();
+      if (data.status === 'ok') {
+        beep();
 
-  // ✅ 按钮文字显示成功，灯照效果保留
-  sliderText.innerText = 'Gelukt!';
+        if (paymentMethod === 'online' && data.paymentLink) {
+          // ✅ 在线支付直接跳转
+          window.location.href = data.paymentLink;
+          return;
+        }
 
-  // ✅ 圆形滑块图标显示 SVG 勾勾，不会显示问号
-  sliderButton.innerHTML = `
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="20 6 9 17 4 12"></polyline>
-    </svg>`;
+        // ✅ 只有非在线支付才显示成功信息
+        showFeedback('Bestelling succesvol verzonden! Bestelnummer: ' + orderNumber);
+        for (const k in cart) delete cart[k];
+        sessionStorage.removeItem(FORM_KEY);
+        updateCart();
 
-  // ✅ 滑块锁定，防止重复滑动
-  sliderTrack.style.pointerEvents = 'none';
+        sliderText.innerText = 'Gelukt!';
+        sliderButton.innerHTML = `
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>`;
 
-  if (paymentMethod === 'online' && data.paymentLink) {
-    // 在线支付立即跳转
-    window.location.href = data.paymentLink;
-  } else {
-    // 普通支付 1.5 秒后跳转
-    setTimeout(() => { window.location.href = '/'; }, 1500);
-  }
-}  
-   else {
+        sliderTrack.style.pointerEvents = 'none';
+
+        setTimeout(() => { window.location.href = '/'; }, 1500);
+
+      } else {
         showFeedback('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.', true);
         if (sliderText && sliderButton && sliderTrack) {
           sliderText.innerText = 'Schuif om te betalen';
@@ -3952,7 +3952,6 @@ function checkout() {
       }
     });
 }
-
 
 
 </script>
