@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reviews</title>
+  <style>
+    body { font-family: sans-serif; background: #F5F1E6; padding: 20px; max-width: 800px; margin: auto; }
+    .review-item { background: #F0E2C3; border-radius: 12px; padding: 16px; margin-bottom: 20px; }
+    .review-stars span { font-size: 1.5rem; margin-right: 4px; }
+    .review-stars .filled { color: #E1C16E; }
+    .review-stars .empty { color: lightgray; }
+    .pagination button { margin: 5px; padding: 8px 16px; border: none; background: #4E342E; color: white; border-radius: 8px; cursor: pointer; }
+    .pagination button:disabled { background: gray; cursor: default; }
+    .review-link { display: inline-block; margin-top: 20px; padding: 10px 20px; background: #4E342E; color: white; border-radius: 8px; text-decoration: none; cursor: pointer; }
+    .review-link:hover { background: #A47148; }
+  </style>
+</head>
+<body>
+
+<h1>Reviews</h1>
+<div id="reviewList">Bezig met laden...</div>
+
+<div class="pagination">
+  <button id="prevPage">Vorige</button>
+  <button id="nextPage">Volgende</button>
+</div>
+
+<!-- 返回首页按钮 -->
+<a href="index.html" class="review-link">Terug naar Home</a>
+
+<script>
+let currentPage = 1;
+const perPage = 5;
+
+async function loadReviews() {
+  const response = await fetch(`/api/reviews?page=${currentPage}&per_page=${perPage}`);
+  const data = await response.json();
+
+  const reviewList = document.getElementById('reviewList');
+  if (data.reviews.length === 0) {
+    reviewList.innerHTML = 'Nog geen reviews.';
+    return;
+  }
+
+  reviewList.innerHTML = '';
+  data.reviews.forEach(r => {
+    const div = document.createElement('div');
+    div.className = 'review-item';
+    div.innerHTML = `
+      <strong>${r.customer_name}</strong><br>
+      <div class="review-stars">${renderStars(r.rating)}</div>
+      <p>${r.content}</p>
+    `;
+    reviewList.appendChild(div);
+  });
+
+  document.getElementById('prevPage').disabled = currentPage === 1;
+  const totalPages = Math.ceil(data.total / perPage);
+  document.getElementById('nextPage').disabled = currentPage >= totalPages;
+}
+
+function renderStars(rating) {
+  let stars = '';
+  for (let i = 1; i <= 5; i++) {
+    if (i <= rating) {
+      stars += '<span class="filled">★</span>';
+    } else {
+      stars += '<span class="empty">☆</span>';
+    }
+  }
+  return stars;
+}
+
+document.getElementById('prevPage').addEventListener('click', () => {
+  if (currentPage > 1) {
+    currentPage--;
+    loadReviews();
+  }
+});
+
+document.getElementById('nextPage').addEventListener('click', () => {
+  currentPage++;
+  loadReviews();
+});
+
+window.addEventListener('load', loadReviews);
+</script>
+
+</body>
+</html>
