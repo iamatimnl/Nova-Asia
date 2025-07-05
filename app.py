@@ -489,7 +489,11 @@ def home():
 @app.route('/review-list')
 def review_list_page():
     return render_template('review-list.html')
-
+# Review submission page
+@app.route('/review')
+def review_page():
+    order_number = request.args.get('order') or ''
+    return render_template('review.html', order_number=order_number)
 
 # Payment success page
 @app.route('/payment-success')
