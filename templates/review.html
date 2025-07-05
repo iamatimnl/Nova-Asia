@@ -53,29 +53,44 @@
     .star-container .selected {
       color: var(--gold);
     }
+
+    .review-link {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #4E342E;
+      color: white;
+      border-radius: 8px;
+      text-decoration: none;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
 
- 
 <h1>Laat uw review achter</h1>
+
 <form id="reviewForm">
   <label>Naam:</label><br>
   <input type="text" name="customer_name" id="reviewName" required><br>
   <div class="star-container" id="starContainer">
-  <span data-value="1">☆</span>
-  <span data-value="2">☆</span>
-  <span data-value="3">☆</span>
-  <span data-value="4">☆</span>
-  <span data-value="5">☆</span>
-</div>
-<input type="hidden" id="rating" name="rating" value="0">
+    <span data-value="1">☆</span>
+    <span data-value="2">☆</span>
+    <span data-value="3">☆</span>
+    <span data-value="4">☆</span>
+    <span data-value="5">☆</span>
+  </div>
+  <input type="hidden" id="rating" name="rating" value="0">
   <label>Review:</label><br>
   <textarea name="content" id="reviewContent" required></textarea><br>
   <input type="hidden" name="order_number" id="orderNumber" value="{{ order_number }}">
   <button type="submit">Verstuur</button>
 </form>
+
 <div id="reviewMessage"></div>
+
+<a href="/review-list" class="review-link">Bekijk alle reviews</a>
+
 <script>
 const stars = document.querySelectorAll('#starContainer span');
 stars.forEach(s => {
@@ -85,22 +100,55 @@ stars.forEach(s => {
     stars.forEach(st => {
       if (parseInt(st.dataset.value) <= val) {
         st.classList.add('selected');
-        st.textContent = '★'; // 选中后实心星星
+        st.textContent = '★';
       } else {
         st.classList.remove('selected');
-        st.textContent = '☆'; // 未选中空心星星
+        st.textContent = '☆';
       }
     });
   });
 });
 
-// 页面加载时初始化（清空）
 window.addEventListener('load', () => {
   document.getElementById('rating').value = 0;
   stars.forEach(st => { 
     st.classList.remove('selected'); 
     st.textContent = '☆'; 
   });
+});
+
+// 📝 提交评论
+document.getElementById('reviewForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const data = {
+    customer_name: document.getElementById('reviewName').value,
+    content: document.getElementById('reviewContent').value,
+    order_number: document.getElementById('orderNumber').value,
+    rating: parseInt(document.getElementById('rating').value || '0')
+  };
+
+  const resp = await fetch('/api/reviews', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+
+  const msg = document.getElementById('reviewMessage');
+  if (resp.ok) {
+    msg.textContent = 'Bedankt voor uw review!';
+    document.getElementById('reviewForm').reset();
+    document.getElementById('rating').value = 0;
+    stars.forEach(st => { st.classList.remove('selected'); st.textContent = '☆'; });
+
+    // 自动跳转去评论列表
+    setTimeout(() => {
+      window.location.href = '/review-list';
+    }, 1500);
+  } else {
+    const d = await resp.json();
+    msg.textContent = d.error || 'Fout bij versturen.';
+  }
 });
 </script>
 
