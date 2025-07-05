@@ -20,16 +20,41 @@
       color: var(--accent-color);
       margin: 0;
       padding: 0;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
-      overflow: hidden;
+      height: 100vh;
     }
 
     header {
       padding: 20px;
       text-align: center;
       font-size: 1.5rem;
+    }
+
+    .review-panel {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80vh;
+      background: white;
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+      transform: translateY(70%);
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .handle {
+      width: 60px;
+      height: 6px;
+      background: #ccc;
+      border-radius: 3px;
+      margin: 10px auto;
+      cursor: grab;
     }
 
     .review-list {
@@ -70,7 +95,7 @@
       right: 0;
       display: flex;
       justify-content: space-around;
-      pointer-events: none; /* 只允许点击按钮，背景不响应 */
+      pointer-events: none;
     }
 
     .circle-button {
@@ -84,7 +109,7 @@
       color: white;
       font-size: 24px;
       cursor: pointer;
-      pointer-events: auto; /* 允许点击 */
+      pointer-events: auto;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       transition: background 0.3s;
     }
@@ -92,20 +117,22 @@
     .circle-button:hover {
       background: var(--accent-secondary);
     }
-
   </style>
 </head>
 <body>
 
 <header>Reviews</header>
 
-<!-- Review 列表 -->
-<div class="review-list" id="reviewList">Bezig met laden...</div>
+<!-- Review 面板 -->
+<div class="review-panel" id="reviewPanel">
+  <div class="handle" id="handle"></div>
+  <div class="review-list" id="reviewList">Bezig met laden...</div>
+</div>
 
-<!-- 固定底部 iOS 风格圆形按钮 -->
+<!-- 底部按钮 -->
 <div class="bottom-buttons">
-  <div class="circle-button" onclick="scrollToTop()">⬆️</div> <!-- 回到顶部 -->
-  <div class="circle-button" onclick="goHome()">🏠</div>       <!-- 返回首页 -->
+  <div class="circle-button" onclick="scrollToTop()">⬆️</div>
+  <div class="circle-button" onclick="goHome()">🏠</div>
 </div>
 
 <script>
@@ -161,7 +188,48 @@ function observeReviews() {
   document.querySelectorAll('.review-item').forEach(item => observer.observe(item));
 }
 
-// 平滑滚动回到顶部
+// 滑动手势
+let startY = 0, currentY = 0, panelY = 0, isDragging = false;
+const panel = document.getElementById('reviewPanel');
+const handle = document.getElementById('handle');
+
+handle.addEventListener('touchstart', (e) => {
+  startY = e.touches[0].clientY;
+  isDragging = true;
+  panel.style.transition = 'none';
+});
+
+handle.addEventListener('touchmove', (e) => {
+  if (!isDragging) return;
+  currentY = e.touches[0].clientY;
+  let diff = currentY - startY;
+  let translateY = panelY + diff;
+
+  // 限制不能上拉超过顶部
+  if (translateY < 0) translateY = 0;
+
+  panel.style.transform = `translateY(${translateY}px)`;
+});
+
+handle.addEventListener('touchend', () => {
+  isDragging = false;
+  panel.style.transition = 'transform 0.3s ease';
+
+  let finalTranslate = parseInt(panel.style.transform.replace('translateY(', '').replace('px)', ''));
+
+  // 阀值判断
+  if (finalTranslate > window.innerHeight * 0.3) {
+    // 超过30%视窗高度，收起
+    panel.style.transform = `translateY(70%)`;
+    panelY = window.innerHeight * 0.7;
+  } else {
+    // 否则展开
+    panel.style.transform = `translateY(0px)`;
+    panelY = 0;
+  }
+});
+
+// 回到顶部
 function scrollToTop() {
   document.getElementById('reviewList').scrollTo({
     top: 0,
