@@ -22,21 +22,31 @@
     font-family: 'Poppins', 'Quicksand', sans-serif;
   }
 
-    :root {
-    --primary-color: #F5F1E6; /* 奶白主背景（更温柔） */
-    --section-alt-bg: #F0E2C3; /* 奶茶浅金背景，取代亮金色 */
-    --secondary-color: #2C2C2E; /* 深灰文字 */
-    --accent-color: #4E342E; /* 焦糖色主按钮（更日系） */
+ :root {
+    /* 🌿 主背景色 - 和风奶白 */
+    --primary-color: #FAF8F1; /* 和风白主背景（轻柔、干净） */
+
+    /* 🌸 局部背景色（标签、卡片、背景块） */
+    --section-alt-bg: #F0E2C3; /* 奶茶浅金背景块 */
+    --accent-tertiary: #FEEACE; /* 奶茶色标签、小块背景 */
+    --off-white: #F0ECE6; /* 真正的局部白色（卡片、按钮背景） */
+
+    /* 🖌️ 按钮色 */
+    --accent-color: #4E342E; /* 焦糖色主按钮 */
     --accent-secondary: #A47148; /* 木质棕次按钮 */
-    --accent-tertiary: #feeace; /* 奶茶色背景块 */
-    --accent-highlight: #E1C16E; /* 温柔浅金强调 */
-    --accent-gradient-start: #E09142; /* 奶茶浅色带点金 */
-    --accent-gradient-mid:#6A2E14 ; /* 焦糖偏金高光 */
-    --accent-gradient-end:#4E342E ; /* 深焦糖+一点点红铜感 */
-     /* 渐变结束深焦糖色 */
-    --off-white: #FFFFFF; /* 局部白色 */
-    --sakura: #D48B8B; /* 点缀樱花粉（更高级） */
-    --gold: #C8A95C; /* 柔和日式金色 */
+
+    /* 📝 文字色 */
+    --secondary-color: #4A4A4A; /* 深灰正文文字，避免死黑 */
+
+    /* ✨ 点缀色 */
+    --accent-highlight: #E1C16E; /* 浅金强调，hover、价格标签 */
+    --sakura: #D48B8B; /* 樱花粉点缀，小标签、hover图标 */
+    --gold: #C8A95C; /* 柔和金色，用于小图标、hover描边 */
+
+    /* 🌈 渐变色 */
+    --accent-gradient-start: #E09142; /* 奶茶金渐变起点 */
+    --accent-gradient-mid: #6A2E14; /* 焦糖高光 */
+    --accent-gradient-end: #4E342E; /* 深焦糖收尾 */
 }
 
 
@@ -64,7 +74,7 @@
  
   height: 64px;
 
-  background: rgba(255, 232, 205, 0.413); /* ✅ 可以适当提高透明度，增加轻盈感 */
+  background: #f6e2c7c0;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 
@@ -95,11 +105,7 @@
   padding: 0;
   box-sizing: border-box;
 
-  background: linear-gradient(
-    to right,
-    rgba(166, 113, 68, 0.12),
-    rgba(245, 225, 201, 0.05)
-  ); /* ✅ 焦糖渐变轨道 */
+ 
   border-radius: 26px;
 }
 
@@ -121,7 +127,7 @@
     color: var(--accent-color);
     text-decoration: none;
     font-weight: bold;
-    border-radius: 24px;
+    border-radius: 26px;
     transition: all 0.3s ease;
     position: relative;
     z-index: 2;
@@ -168,13 +174,13 @@
     width: 100%; /* ✅ 移动端缩小药丸宽度 */
     top: 0px;
     height: 42px; /* ✅ 移动端稍微降低高度 */
-    border-radius: 24px; /* ✅ 移动端圆角更柔和 */
-    background: #ffe9cb99;
-    backdrop-filter: blur(30px);  
+    border-radius: 26px; /* ✅ 移动端圆角更柔和 */
+     background: #f6e2c7bd;
+    backdrop-filter: blur(12px);  
   }
 
   .navbar {
-    border-radius: 24px;
+    border-radius: 26px;
   }
 
   .navbar a {
@@ -186,7 +192,7 @@
     top: 1px; /* ✅ 滑块更贴边 */
     left: 2px;
     height: calc(100% - 3px); /* ✅ 滑块更饱满 */
-    border-radius: 24px; /* ✅ 滑块圆角匹配移动端轨道 */
+    border-radius: 26px; /* ✅ 滑块圆角匹配移动端轨道 */
    
   }
 
@@ -1272,7 +1278,9 @@ input:focus, select:focus, textarea:focus {
  
   border-radius: 26px;
    
-  background: #f6e2c7;
+
+  background: #f6e2c7bd;
+  backdrop-filter: blur(12px); 
 
 }
 
