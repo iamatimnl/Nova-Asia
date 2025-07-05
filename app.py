@@ -486,11 +486,10 @@ def load_user(user_id: str):
 def home():
     return render_template('index.html')
 
-# Review submission page
-@app.route('/review')
-def review_page():
-    order_number = request.args.get('order') or ''
-    return render_template('review.html', order_number=order_number)
+@app.route('/review-list')
+def review_list_page():
+    return render_template('review-list.html')
+
 
 # Payment success page
 @app.route('/payment-success')
