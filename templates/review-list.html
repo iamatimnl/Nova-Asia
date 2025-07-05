@@ -32,9 +32,10 @@
       font-size: 1.5rem;
     }
 
+    /* 卡片面板，初始位置高于底部按钮 */
     .review-panel {
       position: fixed;
-      bottom: 0;
+      bottom: 120px; /* 按钮高度 + 间距 */
       left: 0;
       right: 0;
       height: 80vh;
@@ -42,7 +43,7 @@
       border-top-left-radius: 20px;
       border-top-right-radius: 20px;
       box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
-      transform: translateY(70%);
+      transform: translateY(50%); /* 初始半隐藏 */
       transition: transform 0.3s ease;
       display: flex;
       flex-direction: column;
@@ -88,6 +89,7 @@
     .review-stars .filled { color: var(--accent-highlight); }
     .review-stars .empty { color: lightgray; }
 
+    /* 底部按钮，固定，置顶显示 */
     .bottom-buttons {
       position: fixed;
       bottom: 30px;
@@ -96,6 +98,7 @@
       display: flex;
       justify-content: space-around;
       pointer-events: none;
+      z-index: 10;
     }
 
     .circle-button {
@@ -205,7 +208,6 @@ handle.addEventListener('touchmove', (e) => {
   let diff = currentY - startY;
   let translateY = panelY + diff;
 
-  // 限制不能上拉超过顶部
   if (translateY < 0) translateY = 0;
 
   panel.style.transform = `translateY(${translateY}px)`;
@@ -217,13 +219,12 @@ handle.addEventListener('touchend', () => {
 
   let finalTranslate = parseInt(panel.style.transform.replace('translateY(', '').replace('px)', ''));
 
-  // 阀值判断
   if (finalTranslate > window.innerHeight * 0.3) {
-    // 超过30%视窗高度，收起
-    panel.style.transform = `translateY(70%)`;
-    panelY = window.innerHeight * 0.7;
+    // 收起到按钮上方
+    panel.style.transform = `translateY(50%)`;
+    panelY = (window.innerHeight * 0.5) - 120; // 卡片初始位置 = 半屏 - 按钮高度
   } else {
-    // 否则展开
+    // 完全展开
     panel.style.transform = `translateY(0px)`;
     panelY = 0;
   }
