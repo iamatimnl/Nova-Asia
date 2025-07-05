@@ -170,7 +170,7 @@
     height: 42px; /* ✅ 移动端稍微降低高度 */
     border-radius: 24px; /* ✅ 移动端圆角更柔和 */
     background: #ffe9cb99;
-    backdrop-filter: blur(16px);  
+    backdrop-filter: blur(30px);  
   }
 
   .navbar {
@@ -1381,24 +1381,22 @@ input:focus, select:focus, textarea:focus {
 <a href="#delivery-options">Bestelwijze</a>
 <a href="#checkbox-group">Extra's</a>
 <a href="#bubble">Bubble Tea</a>
-<a href="#bento">Bento</a>
+<a href="#bento">Bento Box</a>
 <a href="#Ramen">Ramen</a>
 <a href="#Pokebowl">Pokebowl</a>
-<a href="#sushi">Sushi Rolls</a>
+<a href="#sushi">Special Sushi Rolls</a>
 <a href="#sashimi">Sashimi</a>
 <a href="#Crispy-rice-sandwich">Crispy Rice</a>
-<a href="#snack">Snacks</a>
+<a href="#snack">Snack</a>
 <a href="#dessert">Dessert</a>
-<a href="javascript:void(0)" id="openReviews" class="review-link">Reviews</a>
-<a href="#" class="home-btn" id="homeBtn" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">Home</a>
-
+<a href="javascript:void(0)" id="openReviews" class="review-link">Review</a>
 </div>
 <a href="#" class="home-btn" id="homeBtn" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">Home</a>
 <div class="indicator" id="indicator"></div>
 </nav>
 </div>
 <h1>Nova Asia Online Bestellen</h1>
-<section id="Delivery-options">
+<section id="delivery-options">
 <div class="delivery-options">
 <h2>Kies uw bestelmethode</h2>
 <div id="status-banner"></div>
@@ -1459,17 +1457,18 @@ input:focus, select:focus, textarea:focus {
 </section>
 <section id="checkbox-group">
 <div class="checkbox-group">
-<h2>Draag bij aan duurzaamheid en voorkom verspilling 🌱</h2>
-<p style="margin-top: -12px; font-size: 0.95rem; color: #555; text-align: center;">
-    Geef aan hoeveel u nodig heeft:
-  </p>
+<h2>Extra's </h2>
+<p style="margin-top: -12px; font-size: 0.95rem; color: #6A994E; text-align: center;">
+    Geef aan wat u nodig heeft. Voorkom verspilling, denk aan het milieu. 🌱
+</p>
 <div class="supply-row">
-<img alt="Stokjes" class="supply-img photo" src="{{ url_for('static', filename='images/chopsticks.png') }}"/>
-<div class="supply-content">
-<label for="chopstickCount">Aantal stokjes</label>
-<select class="supply-select" id="chopstickCount"></select>
+    <img alt="Stokjes" class="supply-img photo" src="{{ url_for('static', filename='images/chopsticks.png') }}"/>
+    <div class="supply-content">
+        <label for="chopstickCount">Aantal stokjes</label>
+        <select class="supply-select" id="chopstickCount"></select>
+    </div>
 </div>
-</div>
+
 <!-- Sojasaus -->
 <div class="supply-row">
 <img alt="Sojasaus" class="supply-img photo" src="{{ url_for('static', filename='images/soja saus.webp') }}"/>
