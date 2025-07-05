@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bedankt voor uw bestelling!</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Quicksand:wght@400;700&family=Noto+Sans:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #F5F1E6;
+      --section-alt-bg: #F0E2C3;
+      --secondary-color: #2C2C2E;
+      --accent-color: #4E342E;
+      --accent-secondary: #A47148;
+      --accent-tertiary: #D8C3A5;
+      --accent-highlight: #E1C16E;
+      --accent-gradient-start: #E09142;
+      --accent-gradient-mid: #6A2E14;
+      --accent-gradient-end: #4E342E;
+      --off-white: #FFFFFF;
+      --sakura: #D48B8B;
+      --gold: #C8A95C;
+    }
+
+    body {
+      font-family: 'Noto Sans', 'Open Sans', sans-serif;
+      padding: 20px;
+      max-width: 1200px;
+      margin: auto;
+      background: var(--primary-color);
+      color: var(--secondary-color);
+      padding-top: 60px;
+      text-align: center;
+    }
+
+    h1 {
+      font-family: 'Poppins', 'Quicksand', sans-serif;
+    }
+
+    .btn-home {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: var(--accent-color);
+      color: var(--off-white);
+      text-decoration: none;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>✅ 支付成功 / Bedankt voor uw bestelling!</h1>
+  <p>支付已成功，感谢您的订单。</p>
+  <p id="order-number"></p>
+  <a href="/" class="btn-home">返回首页</a>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderId = urlParams.get('order_id');
+    if (orderId) {
+      document.getElementById('order-number').innerText = `Uw ordernummer: #${orderId}`;
+    }
+  </script>
+</body>
+</html>
