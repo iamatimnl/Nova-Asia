@@ -1138,7 +1138,7 @@ input:focus, select:focus, textarea:focus {
   width: 50%;
   max-width: 300px;
   height: 64px;
-  background: linear-gradient(to right, rgba(198, 113, 68, 0.35), rgba(245, 225, 201, 0.15)); /* 焦糖渐变 */
+  background: #4E342E;
   backdrop-filter: blur(12px);
   border-radius: 32px;
   padding: 0;
@@ -1155,23 +1155,23 @@ input:focus, select:focus, textarea:focus {
   width: 100%;
   margin-left: -20px;
   height: 100%;
-  border-radius: 32px;
-  background: linear-gradient(90deg, #E0B07E, #D8C3A5); /* 焦糖浅灰渐变 */
+  border-radius: 42px;
+  background: #4E342E;
   padding: 0 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   touch-action: pan-y;
-  box-shadow: 0 0 10px rgba(198, 113, 68, 0.6); /* 焦糖光环 */
+  
 }
 
 .slider-button {
-  width: 60px;
-  height: 60px;
-  background: #4E342E; /* 焦糖按钮 */
+  width: 61px;
+  height: 61px;
+  background: #FAF8F1;
   border-radius: 50%;
   position: absolute;
-  left: 0px;
+  left: 1px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 10;
@@ -1181,7 +1181,7 @@ input:focus, select:focus, textarea:focus {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #D8C3A5;
+  color: #C8A95C;
   font-size: 28px;
   font-weight: bold;
   cursor: pointer;
@@ -1216,12 +1216,12 @@ input:focus, select:focus, textarea:focus {
   font-weight: 600;
   background: linear-gradient(
     90deg,
-    rgba(0, 0, 0, 0.85) 0%,
-    rgba(0, 0, 0, 0.85) 40%,
-    rgba(255, 255, 255, 1) 45%,
-    rgba(255, 255, 255, 1) 55%,
-    rgba(0, 0, 0, 0.85) 60%,
-    rgba(0, 0, 0, 0.85) 100%
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 1) 40%,
+    rgba(0, 0, 0, 0.85) 45%,
+    rgba(0, 0, 0, 0.85) 55%,
+    rgba(255, 255, 255, 1) 60%,
+    rgba(255, 255, 255, 1) 100%
   );
   background-size: 200% auto;
   background-position: 100% 0;
@@ -1229,7 +1229,7 @@ input:focus, select:focus, textarea:focus {
   -webkit-background-clip: text;
   color: black;
   -webkit-text-fill-color: transparent;
-  animation: ios-shine 5s linear infinite;
+  animation: ios-shine 2s linear infinite;
 }
 
 .spinner {
@@ -1550,7 +1550,7 @@ input:focus, select:focus, textarea:focus {
     <!-- 移动端滑动确认按钮 -->
     <div class="slider-container mobile-only">
       <div class="slider-track" id="sliderTrack">
-        <div class="slider-button" id="sliderButton">→</div>
+        <div class="slider-button" id="sliderButton">➜</div>
         <span class="slider-text" id="sliderText">Schuif om te bestellen</span>
       </div>
     </div>
