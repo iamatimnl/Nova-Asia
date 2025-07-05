@@ -4,13 +4,54 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Review</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Quicksand:wght@400;700&family=Noto+Sans:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    .star-container span{
-      font-size:2rem;
-      cursor:pointer;
+    :root {
+      --primary-color: #F5F1E6;
+      --section-alt-bg: #F0E2C3;
+      --secondary-color: #2C2C2E;
+      --accent-color: #4E342E;
+      --accent-secondary: #A47148;
+      --accent-tertiary: #D8C3A5;
+      --accent-highlight: #E1C16E;
+      --accent-gradient-start: #E09142;
+      --accent-gradient-mid: #6A2E14;
+      --accent-gradient-end: #4E342E;
+      --off-white: #FFFFFF;
+      --sakura: #D48B8B;
+      --gold: #C8A95C;
     }
-    .star-container .selected{
-      color:gold;
+
+    body {
+      font-family: 'Noto Sans', 'Open Sans', sans-serif;
+      padding: 20px;
+      max-width: 1200px;
+      margin: auto;
+      background: var(--primary-color);
+      color: var(--secondary-color);
+      padding-top: 60px;
+      text-align: center;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Poppins', 'Quicksand', sans-serif;
+    }
+
+    button,
+    input,
+    select {
+      border-radius: 12px;
+      color: #4E342E;
+    }
+
+    .star-container span {
+      font-size: 2rem;
+      cursor: pointer;
+      color: lightgray;
+    }
+
+    .star-container .selected {
+      color: var(--gold);
     }
   </style>
 </head>
@@ -20,11 +61,11 @@
   <label>Naam:</label><br>
   <input type="text" name="customer_name" id="reviewName" required><br>
   <div class="star-container" id="starContainer">
-    <span data-value="1">☆</span>
-    <span data-value="2">☆</span>
-    <span data-value="3">☆</span>
-    <span data-value="4">☆</span>
-    <span data-value="5">☆</span>
+    <span data-value="1">⭐️</span>
+    <span data-value="2">⭐️</span>
+    <span data-value="3">⭐️</span>
+    <span data-value="4">⭐️</span>
+    <span data-value="5">⭐️</span>
   </div>
   <input type="hidden" id="rating" name="rating" value="0">
   <label>Review:</label><br>
@@ -41,9 +82,11 @@ stars.forEach(s => {
     const val = parseInt(s.dataset.value);
     document.getElementById('rating').value = val;
     stars.forEach(st => {
-      st.textContent = st.dataset.value <= val ? '★' : '☆';
-      if (st.dataset.value <= val) st.classList.add('selected');
-      else st.classList.remove('selected');
+      if (parseInt(st.dataset.value) <= val) {
+        st.classList.add('selected');
+      } else {
+        st.classList.remove('selected');
+      }
     });
   });
 });
@@ -65,7 +108,7 @@ form.addEventListener('submit', async (e) => {
     msg.textContent = 'Bedankt voor uw review!';
     form.reset();
     document.getElementById('rating').value = 0;
-    stars.forEach(st => { st.textContent = '☆'; st.classList.remove('selected'); });
+    stars.forEach(st => { st.classList.remove('selected'); });
   } else {
     const d = await resp.json();
     msg.textContent = d.error || 'Fout bij versturen';
