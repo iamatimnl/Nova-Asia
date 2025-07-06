@@ -4679,7 +4679,12 @@ function parseTime(timeStr, startStr){
   return d;
 }
 
-function updateStatus(settings){
+// 全局存储最新设置
+let currentSettings = {};
+
+function updateStatus(settings) {
+  currentSettings = settings; // 每次保存最新设置
+
   const banner = document.getElementById('status-banner');
   const hoursEl = document.getElementById('hours-info');
   const checkoutBtn = document.querySelector('.checkout-btn');
@@ -4689,119 +4694,99 @@ function updateStatus(settings){
   const afhalen = document.getElementById('afhalen');
   const bezorgen = document.getElementById('bezorgen');
 
-  if(settings.milktea_price){
+  if (settings.milktea_price) {
     milkTeaPrice = parseFloat(settings.milktea_price);
     updateMilkTeaDisplay();
   }
 
   const closedDays = (settings.closed_days || '').split(',').filter(d => d);
   const allClosed = closedDays.length === 7;
-  const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const todayName = dayNames[new Date().getDay()];
 
   const hoursText = `Daily ${settings.open_time} - ${settings.close_time}`;
   let closedText = '';
-  if(allClosed){
+  if (allClosed) {
     closedText = ', Closed All Week';
-  }else if(closedDays.length){
+  } else if (closedDays.length) {
     closedText = ', Closed on ' + closedDays.join(', ');
   }
   hoursEl.textContent = hoursText + closedText;
+
   pickupOpenTime = settings.pickup_start || pickupOpenTime;
   pickupCloseTime = settings.pickup_end || pickupCloseTime;
   deliveryOpenTime = settings.delivery_start || deliveryOpenTime;
   deliveryCloseTime = settings.delivery_end || deliveryCloseTime;
   timeInterval = parseInt(settings.time_interval || timeInterval);
+
   populateTimeOptions('pickup_time', 30, pickupOpenTime, pickupCloseTime);
   populateTimeOptions('delivery_time', 45, deliveryOpenTime, deliveryCloseTime);
 
   const websiteOn = settings.is_open !== 'false' && !allClosed;
   const dayOpen = closedDays.indexOf(todayName) === -1;
+
   pickupAvailable = websiteOn && dayOpen && settings.pickup_enabled !== 'false';
   deliveryAvailable = websiteOn && dayOpen && settings.delivery_enabled !== 'false';
-  const pickupTimes = getSelectTimes('pickup_time', pickupOpenTime);
-  const deliveryTimes = getSelectTimes('delivery_time', deliveryOpenTime);
-  const now = new Date();
-  const pickupTooEarly = pickupTimes.earliest && now < pickupTimes.earliest;
-  const pickupTooLate = pickupTimes.latest && now > pickupTimes.latest;
-  const deliveryTooEarly = deliveryTimes.earliest && now < deliveryTimes.earliest;
-  const deliveryTooLate = deliveryTimes.latest && now > deliveryTimes.latest;
 
-  const pickupOrderable = pickupAvailable && !pickupTooLate;
-  const deliveryOrderable = deliveryAvailable && !deliveryTooLate;
+  const now = new Date();
+  const pickupSel = document.getElementById('pickup_time');
+  const deliverySel = document.getElementById('delivery_time');
+
+  // 🚨 绝对清空取餐菜单
+  if (pickupSel && pickupSel.options.length) {
+    const last = pickupSel.options[pickupSel.options.length - 1].value;
+    if (now > parseTime(last, pickupOpenTime)) {
+      pickupSel.innerHTML = '';
+      pickupSel.value = '';
+    }
+  }
+
+  // 🚨 绝对清空配送菜单
+  if (deliverySel && deliverySel.options.length) {
+    const last = deliverySel.options[deliverySel.options.length - 1].value;
+    if (now > parseTime(last, deliveryOpenTime)) {
+      deliverySel.innerHTML = '';
+      deliverySel.value = '';
+    }
+  }
 
   let message = '';
-  if(allClosed){
-    storeOpen = false;
-    message = 'This week the store is closed.';
-  }else if(!websiteOn){
-    storeOpen = false;
-    message = 'De website is momenteel gesloten';
-  }else if(!pickupOrderable && !deliveryOrderable){
-    storeOpen = false;
-    message = 'Afhaal en bezorg zijn beide onmogelijk.';
-  }else if(afhalen.checked){
-    if(!pickupOrderable){
-      if(deliveryOrderable){
-        message = 'Afhaal is onmogelijk, maar bezorg is nog beschikbaar.';
-        bezorgen.checked = true;
-        afhalen.checked = false;
-        toggleOrderType();
-        storeOpen = true;
-      }else{
-        storeOpen = false;
-        message = 'Afhaal en bezorg zijn beide onmogelijk.';
-      }
-    }else{
-      storeOpen = true;
-      if(pickupTooEarly){
-        message = 'U bestelt buiten openingstijden. Vooruitbestellen is mogelijk.';
-      }
-    }
-  }else{
-    if(!deliveryOrderable){
-      if(pickupOrderable){
-        message = 'Bezorg is onmogelijk, maar afhaal is nog beschikbaar.';
-        afhalen.checked = true;
-        bezorgen.checked = false;
-        toggleOrderType();
-        storeOpen = true;
-      }else{
-        storeOpen = false;
-        message = 'Afhaal en bezorg zijn beide onmogelijk.';
-      }
-    }else{
-      storeOpen = true;
-      if(deliveryTooEarly){
-        message = 'U bestelt buiten openingstijden. Vooruitbestellen is mogelijk.';
-      }
-    }
+  let storeOpen = true;
+
+  if (afhalen.checked && pickupSel.options.length === 0) {
+    message = 'Afhaal is gesloten';
   }
 
-  closedMessage = message;
-  businessHours = hoursEl.textContent;
-
-  if(storeOpen){
-    banner.textContent = message;
-    if(overlayEl) overlayEl.style.display = 'none';
-    hideClosedPopup();
-    if(checkoutBtn) checkoutBtn.disabled = false;
-    if(sliderTrack){
-      sliderTrack.style.pointerEvents = 'auto';
-      if(sliderText) sliderText.textContent = 'Schuif om te bestellen';
-    }
-  }else{
-    banner.textContent = message;
-    if(overlayEl) overlayEl.style.display = 'flex';
-    showClosedPopup();
-    window.scrollTo({top: 0, behavior: 'smooth'});
-    if(checkoutBtn) checkoutBtn.disabled = true;
-    if(sliderTrack){
-      sliderTrack.style.pointerEvents = 'none';
-      if(sliderText) sliderText.textContent = 'Momenteel gesloten';
-    }
+  if (bezorgen.checked && deliverySel.options.length === 0) {
+    message = 'Bezorging is gesloten';
   }
+
+  if (pickupSel.options.length === 0 && deliverySel.options.length === 0) {
+    message = 'Momenteel gesloten';
+    storeOpen = false;
+  }
+
+  banner.textContent = message;
   banner.style.display = 'block';
+
+  if (storeOpen) {
+    if (overlayEl) overlayEl.style.display = 'none';
+    hideClosedPopup();
+    if (checkoutBtn) checkoutBtn.disabled = false;
+    if (sliderTrack) {
+      sliderTrack.style.pointerEvents = 'auto';
+      if (sliderText) sliderText.textContent = 'Schuif om te bestellen';
+    }
+  } else {
+    if (overlayEl) overlayEl.style.display = 'flex';
+    showClosedPopup();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (checkoutBtn) checkoutBtn.disabled = true;
+    if (sliderTrack) {
+      sliderTrack.style.pointerEvents = 'none';
+      if (sliderText) sliderText.textContent = 'Momenteel gesloten';
+    }
+  }
 }
 
 function updateTimes(settings){
@@ -4859,6 +4844,20 @@ document.addEventListener('click', e => {
     e.preventDefault();
   }
 }, true);
+
+
+  // 页面加载时：监听后台时间推送
+socket.on('time_update', (settings) => {
+  currentSettings = settings;
+  updateStatus(currentSettings);
+});
+
+// 页面加载时：每分钟自动刷新检查
+setInterval(() => {
+  updateStatus(currentSettings);
+}, 60000);
+
+  
 </script>
 
 <div id="reviewsModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:1000;">
@@ -4900,6 +4899,10 @@ document.addEventListener('click', e => {
       if(modal.style.display !== 'none') loadReviews();
     });
   }
+  
+
+
+  
 </script>
 
 
