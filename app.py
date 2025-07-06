@@ -345,6 +345,43 @@ def get_xbento_options_dict():
     return opts
 
 
+def _parse_minutes(t: str) -> int:
+    h, m = [int(x) for x in t.split(':')]
+    return h * 60 + m
+
+
+def _in_range(start: str, end: str, now_min: int) -> bool:
+    s = _parse_minutes(start)
+    e = _parse_minutes(end)
+    if s <= e:
+        return s <= now_min < e
+    return now_min >= s or now_min < e
+
+
+def order_type_open(order_type: str) -> bool:
+    settings = {s.key: s.value for s in Setting.query.all()}
+    website_on = settings.get('is_open', 'true') != 'false'
+    if not website_on:
+        return False
+    closed_days = [d for d in (settings.get('closed_days') or '').split(',') if d]
+    day_name = datetime.now(NL_TZ).strftime('%A')
+    if day_name in closed_days:
+        return False
+    if order_type == 'afhalen':
+        if settings.get('pickup_enabled', 'true') == 'false':
+            return False
+        start = settings.get('pickup_start', '00:00')
+        end = settings.get('pickup_end', '00:00')
+    else:
+        if settings.get('delivery_enabled', 'true') == 'false':
+            return False
+        start = settings.get('delivery_start', '00:00')
+        end = settings.get('delivery_end', '00:00')
+    now = datetime.now(NL_TZ)
+    now_min = now.hour * 60 + now.minute
+    return _in_range(start, end, now_min)
+
+
 # Socket.IO for real-time updates
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
@@ -547,9 +584,13 @@ def api_orders():
         data = request.get_json() or {}
         order_number = data.get("order_number") or data.get("orderNumber")
 
+        order_type = data.get("orderType") or data.get("order_type")
+        if not order_type_open(order_type or ''):
+            return jsonify({"status": "fail", "error": "Store gesloten voor dit type"}), 403
+
         # 1. 构造订单对象（初始字段）
         order = Order(
-            order_type=data.get("orderType") or data.get("order_type"),
+            order_type=order_type,
             customer_name=data.get("name") or data.get("customer_name"),
             phone=data.get("phone"),
             email=data.get("customerEmail") or data.get("email"),
