@@ -23,6 +23,10 @@
       overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
     }
+    html, body {
+  margin: 0;
+  padding: 0;
+}
 
     h1 {
   padding: 12px 16px;
@@ -80,8 +84,8 @@
 }
 
 .circle-button {
-  min-width: 50px;
-  height: 50px;
+  min-width: 64px;
+  height: 64px;
   background: #83564cde;
   border-radius: 50%;
   display: flex;
@@ -96,22 +100,24 @@
 }
 
 .circle-button:hover {
-  background: rgb(50, 50, 50);
+  background: #83564c;
 }
 
 .circle-button:active {
-  transform: scale(0.9);
+  background: #83564c;
+  transform: scale(0.92);
 }
 
+
 .circle-button svg {
-  width: 50px;
-  height: 50px;
-  fill: #fff;
+  width: 64px;
+  height: 64px;
+  fill: #E8E5DF;
 }
 
 .circle-button span {
   font-size: 0.75rem;
-  color: #fff;
+  color: #E8E5DF;
   margin-top: 5px;
 }
 
