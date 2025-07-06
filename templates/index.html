@@ -3975,6 +3975,17 @@ function checkout() {
     return num.toString().padStart(2, '0');
   }
 
+  function getSelectTimes(selectId, startStr){
+    const sel = document.getElementById(selectId);
+    if(!sel || sel.options.length === 0) return {};
+    const first = sel.options[0].value;
+    const last = sel.options[sel.options.length-1].value;
+    return {
+      earliest: parseTime(first, startStr),
+      latest: parseTime(last, startStr)
+    };
+  }
+
   function populateTimeOptions(selectId, offsetMinutes, openStr, closeStr) {
     const select = document.getElementById(selectId);
     if (!select) return;
@@ -4697,8 +4708,16 @@ function updateStatus(settings){
   const dayOpen = closedDays.indexOf(todayName) === -1;
   pickupAvailable = websiteOn && dayOpen && settings.pickup_enabled !== 'false';
   deliveryAvailable = websiteOn && dayOpen && settings.delivery_enabled !== 'false';
-  const pickupWithinHours = inRange(settings.pickup_start, settings.pickup_end);
-  const deliveryWithinHours = inRange(settings.delivery_start, settings.delivery_end);
+  const pickupTimes = getSelectTimes('pickup_time', pickupOpenTime);
+  const deliveryTimes = getSelectTimes('delivery_time', deliveryOpenTime);
+  const now = new Date();
+  const pickupTooEarly = pickupTimes.earliest && now < pickupTimes.earliest;
+  const pickupTooLate = pickupTimes.latest && now > pickupTimes.latest;
+  const deliveryTooEarly = deliveryTimes.earliest && now < deliveryTimes.earliest;
+  const deliveryTooLate = deliveryTimes.latest && now > deliveryTimes.latest;
+
+  const pickupOrderable = pickupAvailable && !pickupTooLate;
+  const deliveryOrderable = deliveryAvailable && !deliveryTooLate;
 
   let message = '';
   if(allClosed){
@@ -4707,45 +4726,43 @@ function updateStatus(settings){
   }else if(!websiteOn){
     storeOpen = false;
     message = 'De website is momenteel gesloten';
-  }else if(!pickupAvailable && !deliveryAvailable){
+  }else if(!pickupOrderable && !deliveryOrderable){
     storeOpen = false;
-    message = 'Vandaag zijn er geen bestellingen mogelijk';
-  }else if(afhalen.checked && !pickupAvailable){
-    message = 'Vandaag is afhalen niet mogelijk.';
-    if(deliveryAvailable){
-      bezorgen.checked = true;
-      afhalen.checked = false;
-      toggleOrderType();
-      storeOpen = deliveryAvailable;
+    message = 'Afhaal en bezorg zijn beide onmogelijk.';
+  }else if(afhalen.checked){
+    if(!pickupOrderable){
+      if(deliveryOrderable){
+        message = 'Afhaal is onmogelijk, maar bezorg is nog beschikbaar.';
+        bezorgen.checked = true;
+        afhalen.checked = false;
+        toggleOrderType();
+        storeOpen = true;
+      }else{
+        storeOpen = false;
+        message = 'Afhaal en bezorg zijn beide onmogelijk.';
+      }
     }else{
-      storeOpen = false;
-    }
-  }else if(bezorgen.checked && !deliveryAvailable){
-    message = 'Vandaag is bezorging niet mogelijk.';
-    if(pickupAvailable){
-      afhalen.checked = true;
-      bezorgen.checked = false;
-      toggleOrderType();
-      storeOpen = pickupAvailable;
-    }else{
-      storeOpen = false;
+      storeOpen = true;
+      if(pickupTooEarly){
+        message = 'U bestelt buiten openingstijden. Vooruitbestellen is mogelijk.';
+      }
     }
   }else{
-    storeOpen = afhalen.checked ? pickupAvailable : deliveryAvailable;
-    if(storeOpen){
-      const within = afhalen.checked ? pickupWithinHours : deliveryWithinHours;
-      if(!within){
-        const closingTime = parseTime(settings.close_time, settings.open_time);
-        const pickupEnd = parseTime(settings.pickup_end, settings.pickup_start);
-        const deliveryEnd = parseTime(settings.delivery_end, settings.delivery_start);
-        const lastTime = new Date(Math.max(pickupEnd ? pickupEnd.getTime() : 0, deliveryEnd ? deliveryEnd.getTime() : 0));
-        const now = new Date();
-        if(closingTime && lastTime && now > closingTime && now > lastTime){
-          storeOpen = false;
-          message = 'Closed for today. Please order tomorrow';
-        }else{
-          message = 'Let op: u bestelt buiten openingstijden, maar vooruitbestellen is toegestaan.';
-        }
+    if(!deliveryOrderable){
+      if(pickupOrderable){
+        message = 'Bezorg is onmogelijk, maar afhaal is nog beschikbaar.';
+        afhalen.checked = true;
+        bezorgen.checked = false;
+        toggleOrderType();
+        storeOpen = true;
+      }else{
+        storeOpen = false;
+        message = 'Afhaal en bezorg zijn beide onmogelijk.';
+      }
+    }else{
+      storeOpen = true;
+      if(deliveryTooEarly){
+        message = 'U bestelt buiten openingstijden. Vooruitbestellen is mogelijk.';
       }
     }
   }
