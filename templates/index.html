@@ -4074,11 +4074,9 @@ function checkout() {
 
     if (afhalen.checked && !pickupAvailable) {
       showFeedback('Vandaag is afhalen niet mogelijk.', true);
-      bezorgen.checked = true;
     }
     if (bezorgen.checked && !deliveryAvailable) {
       showFeedback('Vandaag is bezorging niet mogelijk.', true);
-      afhalen.checked = true;
     }
 
     if (afhalen.checked) {
@@ -4726,8 +4724,8 @@ function updateStatus(settings){
   const deliveryTooEarly = deliveryTimes.earliest && now < deliveryTimes.earliest;
   const deliveryTooLate = deliveryTimes.latest && now > deliveryTimes.latest;
 
-  const pickupOrderable = pickupAvailable && !pickupTooLate;
-  const deliveryOrderable = deliveryAvailable && !deliveryTooLate;
+  const pickupAvailableNow = pickupAvailable && !pickupTooEarly && !pickupTooLate;
+  const deliveryAvailableNow = deliveryAvailable && !deliveryTooEarly && !deliveryTooLate;
 
   let message = '';
   if(allClosed){
@@ -4736,16 +4734,19 @@ function updateStatus(settings){
   }else if(!websiteOn){
     storeOpen = false;
     message = 'De website is momenteel gesloten';
-  }else if(!pickupOrderable && !deliveryOrderable){
-    storeOpen = false;
-    message = 'Afhaal en bezorg zijn beide onmogelijk.';
+  }else if(!pickupAvailableNow && !deliveryAvailableNow){
+    // both order types currently unavailable
+    if(pickupTooEarly || deliveryTooEarly){
+      storeOpen = true;
+      message = 'U bestelt buiten openingstijden. Vooruitbestellen is mogelijk.';
+    }else{
+      storeOpen = false;
+      message = 'Afhaal en bezorg zijn beide onmogelijk.';
+    }
   }else if(afhalen.checked){
-    if(!pickupOrderable){
-      if(deliveryOrderable){
+    if(!pickupAvailableNow){
+      if(deliveryAvailableNow){
         message = 'Afhaal is onmogelijk, maar bezorg is nog beschikbaar.';
-        bezorgen.checked = true;
-        afhalen.checked = false;
-        toggleOrderType();
         storeOpen = true;
       }else{
         storeOpen = false;
@@ -4758,12 +4759,9 @@ function updateStatus(settings){
       }
     }
   }else{
-    if(!deliveryOrderable){
-      if(pickupOrderable){
+    if(!deliveryAvailableNow){
+      if(pickupAvailableNow){
         message = 'Bezorg is onmogelijk, maar afhaal is nog beschikbaar.';
-        afhalen.checked = true;
-        bezorgen.checked = false;
-        toggleOrderType();
         storeOpen = true;
       }else{
         storeOpen = false;
