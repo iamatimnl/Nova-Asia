@@ -42,13 +42,12 @@
 
     .readable-content {
       opacity: 0;
-      transform: translateY(50px);
-      transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-      background: var(--accent-color);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      margin: 10px 0;
+      transform: scale(0.85) translateY(20px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      background: rgba(196, 144, 75, 0.719);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       padding: 20px;
       border-radius: 12px;
       will-change: opacity, transform;
@@ -56,7 +55,7 @@
 
     .readable-content.visible {
       opacity: 1;
-      transform: translateY(0);
+      transform: scale(1) translateY(0);
     }
 
     .review-stars span {
@@ -67,65 +66,73 @@
     .review-stars .filled { color: var(--accent-highlight); }
     .review-stars .empty { color: lightgray; }
 
-    .bottom-buttons {
-      position: fixed;
-      bottom: 30px;
-      left: 0;
-      right: 0;
-      display: flex;
-      justify-content: space-around;
-      pointer-events: none;
-      z-index: 10;
-    }
+   .bottom-buttons {
+  position: fixed;
+  bottom: 30px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  z-index: 10;
+}
 
-    .circle-button {
-      width: 60px;
-      height: 60px;
-      background: rgba(255, 255, 255, 0.4);
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      pointer-events: auto;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      transition: background 0.3s, transform 0.1s;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-    }
+.circle-button {
+  min-width: 80px;
+  height: 80px;
+  background: rgba(50, 50, 50, 0.7);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: background 0.3s, transform 0.1s;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+}
 
-    .circle-button:hover {
-      background: rgba(255, 255, 255, 0.6);
-    }
+.circle-button:hover {
+  background: rgba(50, 50, 50, 0.9);
+}
 
-    .circle-button:active {
-      transform: scale(0.9);
-    }
+.circle-button:active {
+  transform: scale(0.9);
+}
 
-    .circle-button svg {
-      width: 28px;
-      height: 28px;
-      fill: white;
-    }
+.circle-button svg {
+  width: 36px;
+  height: 36px;
+  fill: #fff;
+}
+
+.circle-button span {
+  font-size: 0.75rem;
+  color: #fff;
+  margin-top: 5px;
+}
+
   </style>
 </head>
 <body>
 
-<h1 id="reviewHeader">Reviews</h1>
+<h1 id="reviewHeader">Reviews (0)</h1>
 
 <div class="scroll-container" id="reviewList">Bezig met laden...</div>
 
 <div class="bottom-buttons">
   <div class="circle-button" onclick="scrollToTop()" title="Scroll to Top">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-      <path d="M12 4l-8 8h6v8h4v-8h6z"/>
+      <path d="M12 4l-8 8h6v8h4v-8h6z" />
     </svg>
+    <span>Top</span>
   </div>
 
   <div class="circle-button" onclick="goHome()" title="Home">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-      <path d="M12 3l9 9h-3v9h-12v-9h-3l9-9z"/>
+      <path d="M12 3l9 9h-3v9h-12v-9h-3l9-9z" />
     </svg>
+    <span>Home</span>
   </div>
 </div>
 
@@ -141,11 +148,11 @@ async function loadReviews() {
 
   if (data.reviews.length === 0) {
     reviewList.innerHTML = 'Nog geen reviews.';
+    reviewHeader.innerText = 'Reviews (0)';
     return;
   }
 
-  reviewHeader.textContent = `Reviews (${data.reviews.length})`;
-
+  reviewHeader.innerText = `Reviews (${data.reviews.length})`;
   reviewList.innerHTML = '';
   const reviews = data.reviews.reverse();
 
@@ -182,13 +189,11 @@ function observeReviews() {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
         entry.target.classList.add('visible');
-      } else {
-        entry.target.classList.remove('visible');
       }
     });
   }, {
     root: null,
-    rootMargin: '-20% 0px 0px 0px',
+    rootMargin: '0px 0px -20% 0px',
     threshold: 0
   });
 
