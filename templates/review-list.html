@@ -27,11 +27,10 @@
     h1 {
       padding: 20px;
       font-size: 24px;
-      background-color: #4E342E;
+      background-color: #83564cde;
       position: sticky;
       top: 0;
       z-index: 1;
-      color: white;
     }
 
     .scroll-container {
@@ -44,7 +43,7 @@
     .readable-content {
       opacity: 0;
       transform: scale(0.85) translateY(20px);
-      transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+      transition: opacity 0.4s ease, transform 0.4s ease;
       background: #F0E2C3;
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
@@ -67,51 +66,52 @@
     .review-stars .filled { color: var(--accent-highlight); }
     .review-stars .empty { color: lightgray; }
 
-    .bottom-buttons {
-      position: fixed;
-      bottom: 30px;
-      left: 0;
-      right: 0;
-      display: flex;
-      justify-content: space-around;
-      z-index: 10;
-    }
+   .bottom-buttons {
+  position: fixed;
+  bottom: 30px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  z-index: 10;
+}
 
-    .circle-button {
-      min-width: 80px;
-      height: 80px;
-      background: #4E342E;
-      border-radius: 50%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-      transition: background 0.3s, transform 0.1s;
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
-    }
+.circle-button {
+  min-width: 36px;
+  height: 36px;
+  background: #83564cde;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: background 0.3s, transform 0.1s;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+}
 
-    .circle-button:hover {
-      background: rgb(50, 50, 50);
-    }
+.circle-button:hover {
+  background: rgb(50, 50, 50);
+}
 
-    .circle-button:active {
-      transform: scale(0.9);
-    }
+.circle-button:active {
+  transform: scale(0.9);
+}
 
-    .circle-button svg {
-      width: 24px;
-      height: 24px;
-      fill: #fff;
-    }
+.circle-button svg {
+  width: 24px;
+  height: 24px;
+  fill: #fff;
+}
 
-    .circle-button span {
-      font-size: 0.75rem;
-      color: #fff;
-      margin-top: 5px;
-    }
+.circle-button span {
+  font-size: 0.75rem;
+  color: #fff;
+  margin-top: 5px;
+}
+
   </style>
 </head>
 <body>
@@ -201,8 +201,7 @@ function observeReviews() {
 }
 
 function scrollToTop() {
-  const container = document.getElementById('reviewList');
-  container.scrollTo({
+  window.scrollTo({
     top: 0,
     behavior: 'smooth'
   });
