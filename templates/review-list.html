@@ -7,11 +7,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Quicksand:wght@400;700&family=Noto+Sans:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary-color: #FAF8F1;
-      --section-alt-bg: #F0E2C3;
-      --accent-color: rgba(255, 255, 255, 0.3);
-      --accent-highlight: #E1C16E;
-      --accent-secondary: rgba(255, 255, 255, 0.5);
+      --primary-color: #F5F3EE;
+      --section-alt-bg: #EDE7DC;
+      --accent-color: rgba(255, 255, 255, 0.4);
+      --accent-highlight: #D8B15B;
+      --accent-secondary: rgba(255, 255, 255, 0.6);
     }
 
     body {
@@ -42,21 +42,21 @@
 
     .readable-content {
       opacity: 0;
-      transform: scale(0.85) translateY(20px);
-      transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-      background: rgba(187, 127, 64, 0.35);
-      backdrop-filter: blur(39px);
-      -webkit-backdrop-filter: blur(39px);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12), inset 0 0 0.5px rgba(255, 255, 255, 0.35), inset 0 1px 2px rgba(255, 255, 255, 0.1);
+      transform: translateY(50px);
+      transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+      background: var(--accent-color);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       margin: 10px 0;
       padding: 20px;
-      border-radius: 20px;
+      border-radius: 12px;
       will-change: opacity, transform;
     }
 
     .readable-content.visible {
       opacity: 1;
-      transform: scale(1) translateY(0);
+      transform: translateY(0);
     }
 
     .review-stars span {
@@ -90,8 +90,8 @@
       pointer-events: auto;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       transition: background 0.3s, transform 0.1s;
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
 
     .circle-button:hover {
@@ -105,13 +105,13 @@
     .circle-button svg {
       width: 28px;
       height: 28px;
-      fill: #333;
+      fill: white;
     }
   </style>
 </head>
 <body>
 
-<h1>Reviews</h1>
+<h1 id="reviewHeader">Reviews</h1>
 
 <div class="scroll-container" id="reviewList">Bezig met laden...</div>
 
@@ -137,10 +137,14 @@ async function loadReviews() {
   const data = await response.json();
 
   const reviewList = document.getElementById('reviewList');
+  const reviewHeader = document.getElementById('reviewHeader');
+
   if (data.reviews.length === 0) {
     reviewList.innerHTML = 'Nog geen reviews.';
     return;
   }
+
+  reviewHeader.textContent = `Reviews (${data.reviews.length})`;
 
   reviewList.innerHTML = '';
   const reviews = data.reviews.reverse();
@@ -192,7 +196,7 @@ function observeReviews() {
 }
 
 function scrollToTop() {
-  document.getElementById('reviewList').scrollTo({
+  window.scrollTo({
     top: 0,
     behavior: 'smooth'
   });
