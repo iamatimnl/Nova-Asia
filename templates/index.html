@@ -4728,6 +4728,7 @@ function updateStatus(settings) {
 
   const now = new Date();
   const todayDate = now.toISOString().slice(0, 10);
+
   const pickupTooEarly = pickupTimes.earliest && now < pickupTimes.earliest;
   const pickupTooLate = pickupTimes.latest && now > pickupTimes.latest;
   const deliveryTooEarly = deliveryTimes.earliest && now < deliveryTimes.earliest;
