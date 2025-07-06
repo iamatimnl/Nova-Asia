@@ -3959,8 +3959,7 @@ function checkout() {
         setTimeout(() => { window.location.href = '/'; }, 1500);
 
       } else {
-  const errorMsg = data.error || 'Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.';
-  showFeedback(errorMsg, true);
+        showFeedback('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.', true);
         if (sliderText && sliderButton && sliderTrack) {
           sliderText.innerText = 'Schuif om te betalen';
           sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
