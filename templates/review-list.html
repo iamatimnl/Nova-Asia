@@ -31,11 +31,13 @@
     h1 {
   padding: 12px 16px;
   font-size: 20px;
-  background-color: #dfc68394;
+  background-color: rgba(255, 255, 255, 0.8);
   position: fixed; /* 固定顶部 */
   margin-top: 0;
+  text-align: center;
   left: 0;
   right: 0;
+  color:#3f220b ;
   z-index: 1000; /* 确保在最上层 */
 }
 
@@ -59,6 +61,15 @@
       border-radius: 12px;
       will-change: opacity, transform;
     }
+    
+
+/* 网页端适配 */
+@media (min-width: 768px) {
+  .readable-content {
+    width: 40%;       /* 宽屏时缩小卡片 */
+    max-width: 500px; /* 最大宽度限制 */
+  }
+}
 
     .readable-content.visible {
       opacity: 1;
@@ -81,7 +92,7 @@
   display: flex;
   justify-content: space-around;
   z-index: 10;
-  padding: 10px 0; /* 给一点上下 padding，看起来不会太挤 */
+  padding: 6px 0; /* 给一点上下 padding，看起来不会太挤 */
   background: rgba(255, 255, 255, 0.5); /* 建议加一点背景，防止滚动时按钮和内容混在一起 */
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -130,7 +141,7 @@
 <body>
 
 <h1 id="reviewHeader">Reviews (0)</h1>
-<div class="scroll-container" id="reviewList">Bezig met laden...</div>
+<div class="scroll-container" id="reviewList"></div>
 
 <div class="bottom-buttons">
   <div class="circle-button" onclick="scrollToTop()" title="Scroll to Top">
@@ -201,6 +212,8 @@ function observeReviews() {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
         entry.target.classList.add('visible');
+      } else {
+        entry.target.classList.remove('visible'); // 核心：移除，允许反复触发动画
       }
     });
   }, {
@@ -211,6 +224,7 @@ function observeReviews() {
 
   items.forEach((item) => observer.observe(item));
 }
+
 
 function scrollToTop() {
   window.scrollTo({
