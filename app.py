@@ -584,9 +584,34 @@ def api_orders():
         data = request.get_json() or {}
         order_number = data.get("order_number") or data.get("orderNumber")
 
+        # ===== 新时间判断逻辑开始 =====
+        from datetime import datetime
+
         order_type = data.get("orderType") or data.get("order_type")
-        if not order_type_open(order_type or ''):
-            return jsonify({"status": "fail", "error": "Store gesloten voor dit type"}), 403
+        settings = {s.key: s.value for s in Setting.query.all()}
+        now = datetime.now(NL_TZ)
+
+        if order_type == 'afhalen':
+            start_str = settings.get('pickup_start', '00:00')
+            end_str = settings.get('pickup_end', '23:59')
+            gesloten_message = "Afhalen is gesloten voor vandaag."
+        else:
+            start_str = settings.get('delivery_start', '00:00')
+            end_str = settings.get('delivery_end', '23:59')
+            gesloten_message = "Bezorging is gesloten voor vandaag."
+
+        start_hour, start_minute = map(int, start_str.split(':'))
+        end_hour, end_minute = map(int, end_str.split(':'))
+
+        start_today = now.replace(hour=start_hour, minute=start_minute, second=0, microsecond=0)
+        end_today = now.replace(hour=end_hour, minute=end_minute, second=0, microsecond=0)
+
+        if now < start_today:
+            return jsonify({"status": "fail", "error": "U bestelt buiten openingstijden. Vooruitbestellen is mogelijk."}), 403
+
+        if now > end_today:
+            return jsonify({"status": "fail", "error": gesloten_message}), 403
+        # ===== 新时间判断逻辑结束 =====
 
         # 1. 构造订单对象（初始字段）
         order = Order(
@@ -605,8 +630,8 @@ def api_orders():
             items=json.dumps(data.get("items", {})),
             order_number=order_number,
             fooi=float(data.get("tip") or data.get("fooi") or 0),
-            discount_code=data.get("discount_code") or data.get("discountCode"),  # ✅ 加入折扣码
-            discount_amount=data.get("discount_amount")  # ✅ 加入折扣金额
+            discount_code=data.get("discount_code") or data.get("discountCode"),
+            discount_amount=data.get("discount_amount")
         )
 
         # 2. 计算 subtotal / totaal
@@ -628,14 +653,14 @@ def api_orders():
             or data.get("customerEmail")
             or order.email
         )
-        discount_amount = data.get("discount_amount") or 0  # ✅ 加入 discount_amount 获取
+        discount_amount = data.get("discount_amount") or 0
 
         if discount_code and customer_email:
             disc = DiscountCode(
                 code=discount_code,
                 customer_email=customer_email,
                 discount_percentage=3.0,
-                discount_amount=discount_amount,  # ✅ 必须加入
+                discount_amount=discount_amount,
                 is_used=False,
             )
             db.session.add(disc)
@@ -657,7 +682,6 @@ def api_orders():
         import traceback
         traceback.print_exc()
         return jsonify({"status": "fail", "error": str(e)}), 500
-
 
 
 @app.route('/submit_order', methods=["POST"])
