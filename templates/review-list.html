@@ -73,14 +73,18 @@
     .review-stars .filled { color: var(--accent-highlight); }
     .review-stars .empty { color: lightgray; }
 
-   .bottom-buttons {
+  .bottom-buttons {
   position: fixed;
-  bottom: 30px;
+  bottom: 0; /* 改成 0，彻底贴底 */
   left: 0;
   right: 0;
   display: flex;
   justify-content: space-around;
   z-index: 10;
+  padding: 10px 0; /* 给一点上下 padding，看起来不会太挤 */
+  background: rgba(255, 255, 255, 0.5); /* 建议加一点背景，防止滚动时按钮和内容混在一起 */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .circle-button {
