@@ -594,10 +594,12 @@ def api_orders():
         if order_type == 'afhalen':
             start_str = settings.get('pickup_start', '00:00')
             end_str = settings.get('pickup_end', '23:59')
+            gekozen = data.get("pickup_time") or data.get("pickupTime") or ""
             gesloten_message = "Afhalen is gesloten voor vandaag."
         else:
             start_str = settings.get('delivery_start', '00:00')
             end_str = settings.get('delivery_end', '23:59')
+            gekozen = data.get("delivery_time") or data.get("deliveryTime") or ""
             gesloten_message = "Bezorging is gesloten voor vandaag."
 
         start_hour, start_minute = map(int, start_str.split(':'))
@@ -606,8 +608,19 @@ def api_orders():
         start_today = now.replace(hour=start_hour, minute=start_minute, second=0, microsecond=0)
         end_today = now.replace(hour=end_hour, minute=end_minute, second=0, microsecond=0)
 
+        chosen_dt = None
+        if gekozen:
+            try:
+                ch, cm = map(int, gekozen.split(':'))
+                chosen_dt = now.replace(hour=ch, minute=cm, second=0, microsecond=0)
+            except Exception:
+                pass
+
         if now < start_today:
-            return jsonify({"status": "fail", "error": "U bestelt buiten openingstijden. Vooruitbestellen is mogelijk."}), 403
+            if chosen_dt:
+                return jsonify({"status": "fail", "error": "U bestelt buiten openingstijden. Vooruitbestellen is mogelijk."}), 403
+            else:
+                return jsonify({"status": "fail", "error": "Vandaag is gesloten, morgen kan niet vooraf besteld worden."}), 403
 
         if now > end_today:
             return jsonify({"status": "fail", "error": gesloten_message}), 403
