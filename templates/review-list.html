@@ -17,34 +17,44 @@
     body {
       font-family: 'Noto Sans', 'Open Sans', sans-serif;
       background: var(--primary-color);
-      color: var(--accent-color);
+      color: #333;
       margin: 0;
       padding: 0;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    h1 {
+      padding: 20px;
+      font-size: 24px;
+      background-color: #ffffff;
+      position: sticky;
+      top: 0;
+      z-index: 1;
     }
 
     .scroll-container {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px;
       display: flex;
       flex-direction: column;
       gap: 15px;
+      padding: 20px;
     }
 
-    .review-item {
-      background: var(--section-alt-bg);
-      border-radius: 12px;
-      padding: 16px;
+    .readable-content {
       opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
+      transform: translateY(50px);
+      transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+      background: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      margin: 10px 0;
+      padding: 20px;
+      border-radius: 12px;
+      will-change: opacity, transform;
     }
 
-    .review-item.visible {
+    .readable-content.visible {
       opacity: 1;
       transform: translateY(0);
     }
@@ -58,74 +68,72 @@
     .review-stars .empty { color: lightgray; }
 
     .bottom-buttons {
-      position: fixed;
-      bottom: 30px;
-      left: 0;
-      right: 0;
-      display: flex;
-      justify-content: space-around;
-      pointer-events: none;
-      z-index: 10;
-    }
+  position: fixed;
+  bottom: 30px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  z-index: 10;
+}
 
-    .circle-button {
-      width: 60px;
-      height: 60px;
-      background: rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      pointer-events: auto;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      transition: background 0.3s, transform 0.1s;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-    }
+.circle-button {
+  min-width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: background 0.3s, transform 0.1s;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+}
 
-    .circle-button:hover {
-      background: rgba(255, 255, 255, 0.5);
-    }
+.circle-button:hover {
+  background: rgba(255, 255, 255, 1);
+}
 
-    .circle-button:active {
-      transform: scale(0.9);
-    }
+.circle-button:active {
+  transform: scale(0.9);
+}
 
-    .circle-button svg {
-      width: 28px;
-      height: 28px;
-      fill: white;
-    }
+.circle-button svg {
+  width: 36px;
+  height: 36px;
+  fill: #333;
+}
 
-    header {
-      padding: 20px;
-      text-align: center;
-      font-size: 1.5rem;
-    }
+.circle-button span {
+  font-size: 0.75rem;
+  color: #333;
+  margin-top: 5px;
+}
+
   </style>
 </head>
 <body>
 
-<header>Reviews</header>
+<h1>Reviews</h1>
 
-<!-- 滚动区域 -->
 <div class="scroll-container" id="reviewList">Bezig met laden...</div>
 
-<!-- 底部按钮 -->
 <div class="bottom-buttons">
-  <!-- 回到顶部按钮 -->
   <div class="circle-button" onclick="scrollToTop()" title="Scroll to Top">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-      <path d="M12 4l-8 8h6v8h4v-8h6z"/>
+      <path d="M12 4l-8 8h6v8h4v-8h6z" />
     </svg>
+    <span>Top</span>
   </div>
 
-  <!-- Home 按钮 -->
   <div class="circle-button" onclick="goHome()" title="Home">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-      <path d="M12 3l9 9h-3v9h-12v-9h-3l9-9z"/>
+      <path d="M12 3l9 9h-3v9h-12v-9h-3l9-9z" />
     </svg>
+    <span>Home</span>
   </div>
 </div>
 
@@ -143,13 +151,11 @@ async function loadReviews() {
   }
 
   reviewList.innerHTML = '';
-
-  // 数据自动倒序
   const reviews = data.reviews.reverse();
 
   reviews.forEach(r => {
     const div = document.createElement('div');
-    div.className = 'review-item';
+    div.className = 'readable-content';
     div.innerHTML = `
       <strong>${r.customer_name}</strong><br>
       <div class="review-stars">${renderStars(r.rating)}</div>
@@ -174,19 +180,25 @@ function renderStars(rating) {
 }
 
 function observeReviews() {
-  const options = { threshold: 0.1 };
+  const items = document.querySelectorAll('.readable-content');
+
   const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
+    entries.forEach((entry) => {
       if (entry.isIntersecting) {
         entry.target.classList.add('visible');
+      } else {
+        entry.target.classList.remove('visible');
       }
     });
-  }, options);
+  }, {
+    root: null,
+    rootMargin: '-20% 0px 0px 0px',
+    threshold: 0
+  });
 
-  document.querySelectorAll('.review-item').forEach(item => observer.observe(item));
+  items.forEach((item) => observer.observe(item));
 }
 
-// 平滑回到顶部
 function scrollToTop() {
   document.getElementById('reviewList').scrollTo({
     top: 0,
@@ -194,7 +206,6 @@ function scrollToTop() {
   });
 }
 
-// 返回首页
 function goHome() {
   window.location.href = '/';
 }
