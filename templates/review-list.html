@@ -25,13 +25,16 @@
     }
 
     h1 {
-      padding: 20px;
-      font-size: 24px;
-      background-color: #83564cde;
-      position: sticky;
-      top: 0;
-      z-index: 1;
-    }
+  padding: 12px 16px;
+  font-size: 20px;
+  background-color: #83564cde;
+  position: fixed; /* 固定顶部 */
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000; /* 确保在最上层 */
+}
+
 
     .scroll-container {
       display: flex;
@@ -77,8 +80,8 @@
 }
 
 .circle-button {
-  min-width: 36px;
-  height: 36px;
+  min-width: 50px;
+  height: 50px;
   background: #83564cde;
   border-radius: 50%;
   display: flex;
@@ -101,8 +104,8 @@
 }
 
 .circle-button svg {
-  width: 24px;
-  height: 24px;
+  width: 50px;
+  height: 50px;
   fill: #fff;
 }
 
