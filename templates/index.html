@@ -3681,7 +3681,8 @@ let pickupCloseTime = '23:59';
 let deliveryOpenTime = '12:00';
 let deliveryCloseTime = '23:59';
 let timeInterval = 15;
-function showFeedback(msg, isError=false) {
+
+function showFeedback(msg, isError = false) {
   const el = document.getElementById('feedback');
   el.textContent = msg;
   if (isError) el.classList.add('error');
@@ -3691,7 +3692,7 @@ function showFeedback(msg, isError=false) {
 }
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-function beep(){
+function beep() {
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
   osc.type = 'sine';
@@ -3702,29 +3703,29 @@ function beep(){
   osc.start();
   osc.stop(audioCtx.currentTime + 0.2);
 }
-document.body.addEventListener('click',()=>{if(audioCtx.state==='suspended') audioCtx.resume();},{once:true});
+document.body.addEventListener('click', () => { if (audioCtx.state === 'suspended') audioCtx.resume(); }, { once: true });
 
-function setButtonsDisabled(dis){
-  document.querySelectorAll('button').forEach(btn=>{
-    if(btn.id !== 'closed-ok') btn.disabled = dis;
+function setButtonsDisabled(dis) {
+  document.querySelectorAll('button').forEach(btn => {
+    if (btn.id !== 'closed-ok') btn.disabled = dis;
   });
 }
 
-function showClosedPopup(){
-  const overlay=document.getElementById('closed-overlay');
-  const popup=document.getElementById('closed-popup');
-  const text=document.getElementById('closed-text');
-  if(overlay&&popup){
-    if(text) text.textContent = closedMessage || 'Momenteel gesloten';
-    overlay.style.display='flex';
-    popup.style.display='block';
+function showClosedPopup() {
+  const overlay = document.getElementById('closed-overlay');
+  const popup = document.getElementById('closed-popup');
+  const text = document.getElementById('closed-text');
+  if (overlay && popup) {
+    if (text) text.textContent = closedMessage || 'Momenteel gesloten';
+    overlay.style.display = 'flex';
+    popup.style.display = 'block';
     setButtonsDisabled(true);
   }
 }
 
-function hideClosedPopup(){
-  const popup=document.getElementById('closed-popup');
-  if(popup) popup.style.display='none';
+function hideClosedPopup() {
+  const popup = document.getElementById('closed-popup');
+  if (popup) popup.style.display = 'none';
   setButtonsDisabled(false);
 }
 
@@ -3737,6 +3738,41 @@ function scrollToField(id) {
     setTimeout(() => { el.style.borderColor = ''; }, 2000);
   }
 }
+
+// 时间格式转换为分钟
+function timeToMinutes(t) {
+  const parts = t.split(':');
+  return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+}
+
+// 当前时间检查函数
+function checkOrderAvailability() {
+  const now = new Date();
+  const currentTime = now.getHours() * 60 + now.getMinutes();
+
+  const pickupOpen = timeToMinutes(pickupOpenTime);
+  const pickupClose = timeToMinutes(pickupCloseTime);
+  const deliveryOpen = timeToMinutes(deliveryOpenTime);
+  const deliveryClose = timeToMinutes(deliveryCloseTime);
+
+  pickupAvailable = (currentTime >= pickupOpen && currentTime <= pickupClose);
+  deliveryAvailable = (currentTime >= deliveryOpen && currentTime <= deliveryClose);
+
+  if (currentTime < pickupOpen && pickupAvailable) {
+    showFeedback('U bestelt buiten openingstijden. Vooruitbestellen is mogelijk.');
+  } else if (currentTime < deliveryOpen && deliveryAvailable) {
+    showFeedback('U bestelt buiten openingstijden. Vooruitbestellen is mogelijk.');
+  } else if (!pickupAvailable && deliveryAvailable) {
+    showFeedback('Afhaal is onmogelijk, maar bezorg is nog beschikbaar.', true);
+  } else if (!pickupAvailable && !deliveryAvailable) {
+    closedMessage = 'Afhaal en bezorg zijn beide onmogelijk.';
+    showClosedPopup();
+  } else if (!deliveryAvailable && pickupAvailable) {
+    showFeedback('Bezorg is onmogelijk, maar afhaal is nog beschikbaar.', true);
+  }
+}
+</script>
+
 
 function getFirstMissingField() {
   const type = document.querySelector('input[name="orderType"]:checked').value;
