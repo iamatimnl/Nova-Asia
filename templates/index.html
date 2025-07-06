@@ -3958,8 +3958,8 @@ function checkout() {
 
         setTimeout(() => { window.location.href = '/'; }, 1500);
 
-      } else {
-        showFeedback('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.', true);
+      } showFeedback('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.', true);
+
         if (sliderText && sliderButton && sliderTrack) {
           sliderText.innerText = 'Schuif om te betalen';
           sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
@@ -4074,9 +4074,11 @@ function checkout() {
 
     if (afhalen.checked && !pickupAvailable) {
       showFeedback('Vandaag is afhalen niet mogelijk.', true);
+      bezorgen.checked = true;
     }
     if (bezorgen.checked && !deliveryAvailable) {
       showFeedback('Vandaag is bezorging niet mogelijk.', true);
+      afhalen.checked = true;
     }
 
     if (afhalen.checked) {
@@ -4729,8 +4731,8 @@ function updateStatus(settings) {
   const deliveryTooEarly = deliveryTimes.earliest && now < deliveryTimes.earliest;
   const deliveryTooLate = deliveryTimes.latest && now > deliveryTimes.latest;
 
-  const pickupAvailableNow = pickupAvailable && !pickupTooEarly && !pickupTooLate;
-  const deliveryAvailableNow = deliveryAvailable && !deliveryTooEarly && !deliveryTooLate;
+  const pickupOrderable = pickupAvailable && !pickupTooLate;
+  const deliveryOrderable = deliveryAvailable && !deliveryTooLate;
 
   let message = '';
 
@@ -4740,27 +4742,64 @@ function updateStatus(settings) {
   } else if (!websiteOn) {
     storeOpen = false;
     message = 'De website is momenteel gesloten';
-  } else if (afhalen.checked) {
-    if (!pickupAvailableNow) {
-      storeOpen = deliveryAvailableNow;
-      message = deliveryAvailableNow ? 'Afhalen is gesloten voor vandaag.' : 'Afhaal en bezorg zijn beide onmogelijk.';
-    } else if (pickupTooEarly) {
-      storeOpen = true;
-      message = 'U bestelt buiten openingstijden. Vooruitbestellen is mogelijk.';
+  } else if (!pickupOrderable && !deliveryOrderable) {
+    storeOpen = false;
+    if (pickupTooLate && deliveryTooLate) {
+      message = 'Vandaag afhalen en bezorgen zijn niet meer mogelijk.';
     } else {
-      storeOpen = true;
-      message = '';
+      message = 'Afhaal en bezorg zijn beide onmogelijk.';
     }
-  } else if (bezorgen.checked) {
-    if (!deliveryAvailableNow) {
-      storeOpen = pickupAvailableNow;
-      message = pickupAvailableNow ? 'Bezorging is gesloten voor vandaag.' : 'Afhaal en bezorg zijn beide onmogelijk.';
-    } else if (deliveryTooEarly) {
-      storeOpen = true;
-      message = 'U bestelt buiten openingstijden. Vooruitbestellen is mogelijk.';
+  } else if (afhalen.checked) {
+    if (!pickupOrderable) {
+      if (deliveryOrderable) {
+        message = 'Afhalen is niet meer mogelijk, maar bezorgen is nog beschikbaar.';
+        bezorgen.checked = true;
+        afhalen.checked = false;
+        toggleOrderType();
+        storeOpen = true;
+      } else {
+        storeOpen = false;
+        if (pickupTooLate && deliveryTooLate) {
+          message = 'Vandaag afhalen en bezorgen zijn niet meer mogelijk.';
+        } else {
+          message = 'Afhaal en bezorg zijn beide onmogelijk.';
+        }
+      }
     } else {
       storeOpen = true;
-      message = '';
+      if (pickupTooEarly) {
+        message = 'U bestelt buiten openingstijden. Vooruitbestellen is mogelijk.';
+      } else if (pickupTooLate) {
+        message = 'Vandaag afhalen is niet meer mogelijk.';
+      } else {
+        message = '';
+      }
+    }
+  } else { // bezorgen.checked
+    if (!deliveryOrderable) {
+      if (pickupOrderable) {
+        message = 'Bezorgen is niet meer mogelijk, maar afhalen is nog beschikbaar.';
+        afhalen.checked = true;
+        bezorgen.checked = false;
+        toggleOrderType();
+        storeOpen = true;
+      } else {
+        storeOpen = false;
+        if (pickupTooLate && deliveryTooLate) {
+          message = 'Vandaag afhalen en bezorgen zijn niet meer mogelijk.';
+        } else {
+          message = 'Afhaal en bezorg zijn beide onmogelijk.';
+        }
+      }
+    } else {
+      storeOpen = true;
+      if (deliveryTooEarly) {
+        message = 'U bestelt buiten openingstijden. Vooruitbestellen is mogelijk.';
+      } else if (deliveryTooLate) {
+        message = 'Vandaag bezorgen we niet meer.';
+      } else {
+        message = '';
+      }
     }
   }
 
@@ -4787,7 +4826,6 @@ function updateStatus(settings) {
       if (sliderText) sliderText.textContent = 'Momenteel gesloten';
     }
   }
-
   banner.style.display = 'block';
 }
 
