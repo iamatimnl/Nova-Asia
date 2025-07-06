@@ -4846,16 +4846,7 @@ document.addEventListener('click', e => {
 }, true);
 
 
-  // 页面加载时：监听后台时间推送
-socket.on('time_update', (settings) => {
-  currentSettings = settings;
-  updateStatus(currentSettings);
-});
 
-// 页面加载时：每分钟自动刷新检查
-setInterval(() => {
-  updateStatus(currentSettings);
-}, 60000);
 
   
 </script>
@@ -4905,6 +4896,21 @@ setInterval(() => {
   
 </script>
 
+<script>
+// ✅ socket 初始化
+const socket = io();
+
+// ✅ 监听后端推送
+socket.on('setting_update', (settings) => {
+  currentSettings = settings;
+  updateStatus(currentSettings);
+});
+
+// ✅ 每 60 秒自动刷新，防止前端页面卡住
+setInterval(() => {
+  updateStatus(currentSettings);
+}, 60000);
+</script>
 
 
 
