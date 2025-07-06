@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 
 <html lang="nl">
@@ -3666,7 +3667,6 @@ let businessHours = '';
 let closedMessage = '';
 let pickupAvailable = true;
 let deliveryAvailable = true;
-let currentSettings = null;
 let pickupOpenTime = '12:00';
 let pickupCloseTime = '23:59';
 let deliveryOpenTime = '12:00';
@@ -3890,7 +3890,7 @@ function checkout() {
     if (qty > 0) itemsToSend[extras[id].label] = { price: 0, qty };
   });
 
-  fetch('/submit_order', {
+  fetch('https://flask-order-api.onrender.com/submit_order', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -4081,9 +4081,6 @@ function checkout() {
     }
     updatePriceBreakdown(currentSubtotal, currentPackaging);
     storeOpen = afhalen.checked ? pickupAvailable : deliveryAvailable;
-    if(currentSettings){
-      updateStatus(currentSettings);
-    }
   }
 
   // 初始化执行一次
@@ -4661,7 +4658,6 @@ function parseTime(timeStr, startStr){
 }
 
 function updateStatus(settings){
-  currentSettings = settings;
   const banner = document.getElementById('status-banner');
   const hoursEl = document.getElementById('hours-info');
   const checkoutBtn = document.querySelector('.checkout-btn');
@@ -4703,16 +4699,6 @@ function updateStatus(settings){
   deliveryAvailable = websiteOn && dayOpen && settings.delivery_enabled !== 'false';
   const pickupWithinHours = inRange(settings.pickup_start, settings.pickup_end);
   const deliveryWithinHours = inRange(settings.delivery_start, settings.delivery_end);
-
-  const pickupOpenNow = pickupAvailable && pickupWithinHours;
-  const deliveryOpenNow = deliveryAvailable && deliveryWithinHours;
-
-  let notice = '';
-  if(pickupOpenNow && !deliveryOpenNow){
-    notice = 'Bezorg is nu gesloten. U kunt afhalen!';
-  }else if(deliveryOpenNow && !pickupOpenNow){
-    notice = 'Afhaal is nu gesloten. U kunt laten bezorgen!';
-  }
 
   let message = '';
   if(allClosed){
@@ -4762,10 +4748,6 @@ function updateStatus(settings){
         }
       }
     }
-  }
-
-  if(storeOpen && notice){
-    message = notice;
   }
 
   closedMessage = message;
@@ -4898,70 +4880,3 @@ document.addEventListener('click', e => {
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
