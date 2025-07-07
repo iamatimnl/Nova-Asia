@@ -445,6 +445,12 @@
   line-height: 1.4;
 }
 
+.sold-out-msg {
+  color: red;
+  font-weight: bold;
+  margin: 4px 0;
+}
+
 
 
 /* Generic button press feedback */
@@ -1688,6 +1694,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Bubble Tea</h3>
 <p>€ 5.00</p>
+<p id="bubbleSoldOut" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="bubble-option">
 <select id="bubbleType">
 <option value="">Base</option>
@@ -4828,6 +4835,20 @@ function updateStatus(settings) {
   const overlayEl = document.getElementById('closed-overlay');
   const afhalen = document.getElementById('afhalen');
   const bezorgen = document.getElementById('bezorgen');
+  const bubbleSoldOutMsg = document.getElementById('bubbleSoldOut');
+  const bubbleSection = document.getElementById('bubble');
+
+  if (bubbleSoldOutMsg && bubbleSection) {
+    const soldout = settings.milktea_soldout === 'true';
+    bubbleSoldOutMsg.classList.toggle('hidden', !soldout);
+    bubbleSection.querySelectorAll('select, button').forEach(el => {
+      el.disabled = soldout;
+    });
+    if (soldout) {
+      document.getElementById('bubbleTeaQty').value = 0;
+      if (bubbleSetControls) bubbleSetControls.update();
+    }
+  }
 
   if (settings.milktea_price) {
     milkTeaPrice = parseFloat(settings.milktea_price);

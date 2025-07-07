@@ -82,6 +82,13 @@
         <button type="button" id="update_milktea_btn">更新价格</button>
         <br><br>
 
+        <label>奶茶售罄:</label>
+        <select id="milktea_soldout_select">
+            <option value="false" {% if milktea_soldout != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if milktea_soldout == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select>
+        <br><br>
+
         <button type="submit">保存</button>
     </form>
 
@@ -258,6 +265,7 @@
             const delivery_start = document.getElementById('delivery_start_input').value;
             const delivery_end = document.getElementById('delivery_end_input').value;
             const time_interval = document.getElementById('interval_select').value;
+            const milktea_soldout = document.getElementById('milktea_soldout_select').value;
 
             fetch('/dashboard/update', {
                 method: 'POST',
@@ -273,7 +281,8 @@
                     pickup_end: pickup_end,
                     delivery_start: delivery_start,
                     delivery_end: delivery_end,
-                    time_interval: time_interval
+                    time_interval: time_interval,
+                    milktea_soldout: milktea_soldout
                 })
             })
             .then(response => response.json())
