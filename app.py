@@ -69,6 +69,9 @@ with app.app_context():
         if "rating" not in cols:
             with db.engine.begin() as conn:
                 conn.execute(text("ALTER TABLE reviews ADD COLUMN rating INTEGER"))
+        if "reply" not in cols:
+            with db.engine.begin() as conn:
+                conn.execute(text("ALTER TABLE reviews ADD COLUMN reply TEXT"))
         idx_names = [i["name"] for i in inspector.get_indexes("orders")]
         if "idx_orders_created_at" not in idx_names:
             with db.engine.begin() as conn:
@@ -432,6 +435,7 @@ class Review(db.Model):
     customer_name = db.Column(db.String(100), nullable=False)
     content = db.Column(db.Text, nullable=False)
     rating = db.Column(db.Integer, default=0)
+    reply = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class DiscountCode(db.Model):
@@ -848,9 +852,11 @@ def reviews_api():
 
     reviews = [
         {
+            'id': r.id,
             'customer_name': r.customer_name,
             'content': r.content,
             'rating': r.rating,
+            'reply': r.reply,
             'created_at': r.created_at.isoformat()
         }
         for r in pagination.items
@@ -862,6 +868,28 @@ def reviews_api():
         'page': page,
         'per_page': per_page
     })
+
+
+@app.route('/api/reviews/<int:review_id>/reply', methods=['POST'])
+@login_required
+def review_reply(review_id: int):
+    data = request.get_json() or {}
+    reply_text = data.get('reply', '')
+    rev = Review.query.get_or_404(review_id)
+    rev.reply = reply_text
+    db.session.commit()
+    socketio.emit('review_reply', {'id': rev.id, 'reply': rev.reply})
+    return jsonify({'success': True, 'reply': rev.reply})
+
+
+@app.route('/api/reviews/<int:review_id>', methods=['DELETE'])
+@login_required
+def delete_review(review_id: int):
+    rev = Review.query.get_or_404(review_id)
+    db.session.delete(rev)
+    db.session.commit()
+    socketio.emit('delete_review', {'id': review_id})
+    return jsonify({'success': True})
 
 
 
@@ -1180,6 +1208,12 @@ def admin_orders():
         })
 
     return render_template("admin_orders.html", order_data=order_data)
+
+
+@app.route('/admin/review-list')
+@login_required
+def admin_review_list():
+    return render_template('admin/review-list.html')
 @app.route('/pos/orders_today')
 @login_required
 def pos_orders_today():
