@@ -1411,20 +1411,28 @@ input:focus, select:focus, textarea:focus {
     animation: fadeIn 0.3s ease;
 }
 
-.popup-btn {
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #ff9e8a; /* 柔和主色 */
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
+.wapp-section {
+    background: #f0e2c3;
+    padding: 20px;
+    margin: 20px;
+    border-radius: 12px;
+    border: 1px solid #e09142;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-family: 'Noto Sans', 'Open Sans', sans-serif;
 }
 
-.popup-btn:active {
-    background-color: #ff8269;
+.wapp-section h3 {
+    margin-top: 0;
+    color: #3f220b;
 }
+
+.wapp-section p {
+    color: #3f220b;
+}
+
+
+
+
 
 @keyframes fadeIn {
     from { opacity: 0; transform: scale(0.95); }
@@ -1479,21 +1487,17 @@ input:focus, select:focus, textarea:focus {
 <a href="#Crispy-rice-sandwich">Crispy Rice</a>
 <a href="#snack">Snack</a>
 <a href="#dessert">Dessert</a>
-<a href="#" onclick="showInstallGuide()">Wapp</a>
+<a href="#wapp">Wapp</a>
+
+
+
 <a href="/review-list" class="review-link">Review</a>
+
 </div>
 <a href="#" class="home-btn" id="homeBtn" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">Home</a>
 <div class="indicator" id="indicator"></div>
 </nav>
 </div>
-<div id="install-guide" style="display:none;" class="install-popup-overlay">
-    <div class="install-popup">
-        <h3>Voeg toe aan beginscherm</h3>
-        <p>Klik op het deel-icoon onderaan Safari (vierkant met pijl omhoog) en kies <strong>'Voeg toe aan beginscherm'</strong>.</p>
-        <button onclick="closeGuide()" class="popup-btn">OK</button>
-    </div>
-</div>
-
 <h1>Nova Asia Online Bestellen</h1>
 <section id="delivery-options">
 <div class="delivery-options">
@@ -2872,6 +2876,39 @@ input:focus, select:focus, textarea:focus {
 </div>
 </div>
 </section>
+<!-- iPhone 主屏幕提示 -->
+<section id="wapp" class="menu-tip-section">
+    <div class="menu-row menu-item" style="background: #f0e2c3; border: 2px dashed #e09142;">
+        <div class="menu-img">
+            <img alt="iPhone Tip" loading="lazy" src="{{ url_for('static', filename='images/iphone-tip.png') }}">
+        </div>
+        <div class="menu-content">
+            <h3>Voeg toe aan beginscherm (iPhone)</h3>
+            <p>Klik op het deel-icoon onderaan Safari (vierkant met pijl omhoog) en kies <strong>'Voeg toe aan beginscherm'</strong>.</p>
+        </div>
+    </div>
+</section>
+
+
+<!-- 网页端书签提示 -->
+<section class="menu-tip-section">
+    <div class="menu-row menu-item" style="background: #f0e2c3; border: 2px dashed #e09142;">
+        <div class="menu-img">
+            <img alt="Bookmark Tip" loading="lazy" src="{{ url_for('static', filename='images/bookmark-tip.png') }}">
+        </div>
+        <div class="menu-content">
+            <h3>Voeg toe aan bladwijzers (Desktop)</h3>
+            <p>Tip: Voeg deze pagina toe aan je bladwijzers voor snelle toegang.</p>
+            <p><strong>• Windows:</strong> Druk op CTRL + D<br>
+               <strong>• Mac:</strong> Druk op CMD + D<br>
+               Of sleep het slot-icoon uit de adresbalk naar je bureaublad.</p>
+        </div>
+    </div>
+</section>
+
+
+
+
 <script>
 const cart = {};
 const extras = {
@@ -2966,19 +3003,9 @@ function loadCart() {
   }
 }
 
-function showInstallGuide() {
-    var userAgent = navigator.userAgent || navigator.vendor || window.opera;
-    var isIOS = /iPhone|iPad|iPod/i.test(userAgent);
-    var isSafari = /^((?!chrome|android).)*safari/i.test(userAgent);
 
-    if (isIOS && isSafari) {
-        // iPhone Safari，显示添加到主屏幕弹窗
-        document.getElementById('install-guide').style.display = 'flex';
-    } else {
-        // 其他设备显示收藏书签提示
-        alert("Tip: Voeg deze pagina toe aan je bladwijzers voor snelle toegang.\n\n• Windows: Druk op CTRL + D\n• Mac: Druk op CMD + D\n\nOf sleep het slot-icoon uit de adresbalk naar je bureaublad.");
-    }
-}
+
+
 
 
 
