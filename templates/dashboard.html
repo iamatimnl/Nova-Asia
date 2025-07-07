@@ -3,8 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <title>Mijn Nova Asia - Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='macos.css') }}">
 </head>
 <body>
+<div class="window">
+    <div class="title-bar">
+        <div class="window-controls">
+            <span class="close"></span>
+            <span class="minimize"></span>
+            <span class="maximize"></span>
+        </div>
+        <span class="title">Dashboard</span>
+    </div>
+    <div class="content-wrapper">
+        <nav class="sidebar">
+            <ul>
+                <li><a href="#settings">Instellingen</a></li>
+                <li><a href="#bubble">Bubble Tea</a></li>
+                <li><a href="#xbento">Xbento</a></li>
+            </ul>
+        </nav>
+        <main class="main">
     <h1>Mijn Nova Asia - Dashboard</h1>
 
     <form id="settingForm">
@@ -282,6 +301,9 @@
             }).catch(() => alert('Request failed'));
         });
     </script>
+</main>
+    </div>
+</div>
 </body>
 </html>
 
