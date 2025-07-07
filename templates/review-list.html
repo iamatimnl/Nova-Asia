@@ -14,18 +14,20 @@
       --accent-secondary: rgba(255, 255, 255, 0.6);
     }
 
-    body {
-      font-family: 'Noto Sans', 'Open Sans', sans-serif;
-      background: var(--primary-color);
-      color: #333;
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden;
-      -webkit-overflow-scrolling: touch;
-    }
-    html, body {
+   body {
+  font-family: 'Noto Sans', 'Open Sans', sans-serif;
+  background: var(--primary-color);
+  color: #333;
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto;  /* ✅ 添加这一行 */
+  -webkit-overflow-scrolling: touch; /* ✅ 弹性滚动开启 */
+}
+
+html, body {
+  overscroll-behavior: auto;  /* ✅ 允许超滚动拖拽回弹 */
+  height: 100%;               /* ✅ 避免部分设备无法全屏滚动 */
 }
 
     h1 {
@@ -216,20 +218,17 @@ function observeReviews() {
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-      } else {
-        entry.target.classList.remove('visible'); // 核心：移除，允许反复触发动画
-      }
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        } else {
+            entry.target.classList.remove('visible'); // 支持反复动画
+        }
     });
-  }, {
+}, {
     root: null,
-    rootMargin: '0px 0px -20% 0px',
-    threshold: 0
-  });
-
-  items.forEach((item) => observer.observe(item));
-}
+    rootMargin: '0px',
+    threshold: 0.1 // 至少10%进入视口才触发
+});
 
 
 function scrollToTop() {
