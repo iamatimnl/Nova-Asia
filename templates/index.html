@@ -1200,7 +1200,7 @@ input:focus, select:focus, textarea:focus {
 .slider-button {
   width: 61px;
   height: 61px;
-  background: #FAF8F1;
+  background: linear-gradient(145deg, #ffffff, #f0f0f0); /* 渐变白色 */
   border-radius: 50%;
   position: absolute;
   left: 1px;
@@ -1208,17 +1208,17 @@ input:focus, select:focus, textarea:focus {
   transform: translateY(-50%);
   z-index: 10;
   transition: left 0.3s ease, box-shadow 0.3s ease, transform 0.1s ease;
-  font-weight: 600;
-  font-size: 2rem;
+  font-weight: bold;
+  font-size: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #4E342E;
-  font-size: 28px;
-  font-weight: bold;
   cursor: pointer;
   touch-action: pan-y;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* 增加轻微阴影更立体 */
 }
+
 
 .slider-button:active {
   transform: translateY(-50%) scale(0.95);
@@ -1388,6 +1388,54 @@ input:focus, select:focus, textarea:focus {
   /* prevent text wrapping */
 }
 
+.install-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4); /* 背景半透明 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.install-popup {
+    background: #fdf7f2; /* 奶茶色 */
+    padding: 20px 30px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    max-width: 300px;
+    text-align: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.popup-btn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #ff9e8a; /* 柔和主色 */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.popup-btn:active {
+    background-color: #ff8269;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+
+
+
+
+
 
 /* 响应式控制 */
 .desktop-only {
@@ -1431,12 +1479,21 @@ input:focus, select:focus, textarea:focus {
 <a href="#Crispy-rice-sandwich">Crispy Rice</a>
 <a href="#snack">Snack</a>
 <a href="#dessert">Dessert</a>
+<a href="#" onclick="showInstallGuide()">Wapp</a>
 <a href="/review-list" class="review-link">Review</a>
 </div>
 <a href="#" class="home-btn" id="homeBtn" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">Home</a>
 <div class="indicator" id="indicator"></div>
 </nav>
 </div>
+<div id="install-guide" style="display:none;" class="install-popup-overlay">
+    <div class="install-popup">
+        <h3>Voeg toe aan beginscherm</h3>
+        <p>Klik op het deel-icoon onderaan Safari (vierkant met pijl omhoog) en kies <strong>'Voeg toe aan beginscherm'</strong>.</p>
+        <button onclick="closeGuide()" class="popup-btn">OK</button>
+    </div>
+</div>
+
 <h1>Nova Asia Online Bestellen</h1>
 <section id="delivery-options">
 <div class="delivery-options">
@@ -2908,6 +2965,23 @@ function loadCart() {
     Object.keys(data).forEach(k => { cart[k] = data[k]; });
   }
 }
+
+function showInstallGuide() {
+    var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    var isIOS = /iPhone|iPad|iPod/i.test(userAgent);
+    var isSafari = /^((?!chrome|android).)*safari/i.test(userAgent);
+
+    if (isIOS && isSafari) {
+        // iPhone Safari，显示添加到主屏幕弹窗
+        document.getElementById('install-guide').style.display = 'flex';
+    } else {
+        // 其他设备显示收藏书签提示
+        alert("Tip: Voeg deze pagina toe aan je bladwijzers voor snelle toegang.\n\n• Windows: Druk op CTRL + D\n• Mac: Druk op CMD + D\n\nOf sleep het slot-icoon uit de adresbalk naar je bureaublad.");
+    }
+}
+
+
+
 
 function populateBubbleSelectors(){
   const baseSel=document.getElementById('bubbleType');
