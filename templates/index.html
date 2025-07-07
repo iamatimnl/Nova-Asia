@@ -855,42 +855,49 @@
   top: 80px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--accent-color);
-  color: white;
+  background: var(--accent-color); /* 焦糖色主按钮 */
+  color: var(--off-white); /* 卡片、按钮背景的局部白 */
   padding: 10px 20px;
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   display: none;
 }
+
 #status-banner {
   font-weight: bold;
   margin-bottom: 8px;
-  color: #4E342E;
+  color: var(--accent-color); /* 焦糖色，醒目但柔和 */
 }
+
 #hours-info {
   margin-bottom: 8px;
+  color: var(--secondary-color); /* 深灰正文色，更柔和 */
 }
+
 #closed-overlay {
   position: fixed;
   inset: 0;
   z-index: 2000;
   display: none;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5); /* 保持半透明黑色适合作为遮罩 */
   align-items: center;
   justify-content: center;
 }
 
 #closed-popup {
-  background: #fff;
+  background: var(--off-white); /* 卡片白色背景 */
   padding: 20px;
   border-radius: 12px;
   text-align: center;
   max-width: 90%;
+  color: var(--secondary-color); /* 正文颜色 */
 }
-  .feedback.error {
-    background: #c55;
-  }
+
+.feedback.error {
+  background: var(--sakura); /* 错误反馈使用樱花粉，符合整体和风感 */
+}
+
 
 input, select, textarea {
   border: 1px solid #ccc;
