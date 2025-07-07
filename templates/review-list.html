@@ -243,6 +243,125 @@ function goHome() {
   window.location.href = '/';
 }
 </script>
+<script>
+window.addEventListener('load', loadReviews);
+
+let originalReviews = [];
+let isLooping = false;
+
+async function loadReviews() {
+  const response = await fetch(`/api/reviews?page=1&per_page=100`);
+  const data = await response.json();
+
+  if (data.reviews.length === 0) {
+    document.getElementById('reviewList').innerHTML = 'Nog geen reviews.';
+    document.getElementById('reviewHeader').innerText = 'Reviews (0)';
+    return;
+  }
+
+  document.getElementById('reviewHeader').innerText = `Reviews (${data.reviews.length})`;
+
+  // 原始评论数据
+  originalReviews = data.reviews.reverse();
+
+  setupInfiniteLoop();
+}
+
+function setupInfiniteLoop() {
+  const reviewList = document.getElementById('reviewList');
+
+  // 插入评论 (三份)
+  reviewList.innerHTML = '';
+
+  const buildReviews = (reviews) => {
+    const fragment = document.createDocumentFragment();
+    reviews.forEach(r => {
+      const div = document.createElement('div');
+      div.className = 'readable-content';
+      div.innerHTML = `
+        <strong>${r.customer_name}</strong><br>
+        <div class="review-stars">${renderStars(r.rating)}</div>
+        <p>${r.content}</p>
+      `;
+      fragment.appendChild(div);
+    });
+    return fragment;
+  }
+
+  // 前置克隆
+  reviewList.appendChild(buildReviews(originalReviews));
+  // 中间原始
+  reviewList.appendChild(buildReviews(originalReviews));
+  // 后置克隆
+  reviewList.appendChild(buildReviews(originalReviews));
+
+  // 滚动到中间
+  setTimeout(() => {
+    reviewList.scrollTop = reviewList.scrollHeight / 3;
+    observeInfiniteScroll();
+  }, 100);
+}
+
+function observeInfiniteScroll() {
+  const reviewList = document.getElementById('reviewList');
+
+  reviewList.addEventListener('scroll', () => {
+    if (isLooping) return;
+
+    const scrollTop = reviewList.scrollTop;
+    const scrollHeight = reviewList.scrollHeight;
+    const containerHeight = reviewList.clientHeight;
+
+    if (scrollTop <= 50) {
+      // 快到顶部，重置到中间
+      isLooping = true;
+      reviewList.scrollTop = scrollTop + scrollHeight / 3;
+      setTimeout(() => { isLooping = false; }, 50);
+    }
+
+    if (scrollTop + containerHeight >= scrollHeight - 50) {
+      // 快到底部，重置到中间
+      isLooping = true;
+      reviewList.scrollTop = scrollTop - scrollHeight / 3;
+      setTimeout(() => { isLooping = false; }, 50);
+    }
+  });
+
+  observeReviews();
+}
+
+function renderStars(rating) {
+  let stars = '';
+  for (let i = 1; i <= 5; i++) {
+    if (i <= rating) {
+      stars += '<span class="filled">★</span>';
+    } else {
+      stars += '<span class="empty">☆</span>';
+    }
+  }
+  return stars;
+}
+
+function observeReviews() {
+  const items = document.querySelectorAll('.readable-content');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      } else {
+        entry.target.classList.remove('visible');
+      }
+    });
+  }, {
+    root: null,
+    rootMargin: '0px 0px -20% 0px',
+    threshold: 0
+  });
+
+  items.forEach((item) => observer.observe(item));
+}
+</script>
 
 </body>
 </html>
