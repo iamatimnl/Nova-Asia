@@ -30,8 +30,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Table, TableStyle
 from reportlab.lib import colors
-from datetime import datetime, timedelta
-from flask import request, jsonify
+
 
 
 from sqlalchemy import func
@@ -576,42 +575,6 @@ def pos():
 
     # 之前会在此向 POS 页面推送今日订单信息，现已不再需要
     return render_template("pos.html")
-
-
-
-@app.route('/api/get_available_times', methods=['GET'])
-def get_available_times():
-    order_type = request.args.get('order_type', 'afhalen')
-    settings = {s.key: s.value for s in Setting.query.all()}
-    now = datetime.now(NL_TZ)
-
-    preparation_time = 20  # 你可以做成后台可调参数
-    interval = int(settings.get('time_interval', 15))
-
-    if order_type == 'afhalen':
-        start_str = settings.get('pickup_start', '11:00')
-        end_str = settings.get('pickup_end', '20:00')
-    else:
-        start_str = settings.get('delivery_start', '12:00')
-        end_str = settings.get('delivery_end', '20:00')
-
-    start_hour, start_minute = map(int, start_str.split(':'))
-    end_hour, end_minute = map(int, end_str.split(':'))
-
-    open_time = now.replace(hour=start_hour, minute=start_minute, second=0, microsecond=0)
-    close_time = now.replace(hour=end_hour, minute=end_minute, second=0, microsecond=0)
-
-    earliest_possible_time = now + timedelta(minutes=preparation_time)
-    current_time = max(open_time, earliest_possible_time)
-
-    time_slots = []
-    while current_time <= close_time:
-        time_slots.append(current_time.strftime('%H:%M'))
-        current_time += timedelta(minutes=interval)
-
-    return jsonify(time_slots)
-
-
 
 
 # 接收前端订单提交
@@ -1378,7 +1341,6 @@ def logout():
 # 启动
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000)
-
 
 
 
