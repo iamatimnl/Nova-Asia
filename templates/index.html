@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 
 <html lang="nl">
@@ -4930,50 +4931,6 @@ document.addEventListener('click', e => {
 </script>
 
 
-<script>
-    let selectedOrderType = 'afhalen';  // 默认取餐
-
-    function loadAvailableTimes(orderType) {
-        fetch(`/api/get_available_times?order_type=${orderType}`)
-            .then(response => response.json())
-            .then(times => {
-                updateTimeSelector(times, orderType);
-            });
-    }
-
-    function updateTimeSelector(times, orderType) {
-        let timeSelect = document.getElementById(orderType === 'afhalen' ? 'pickup_time' : 'delivery_time');
-        timeSelect.innerHTML = '';
-        times.forEach(time => {
-            let option = document.createElement('option');
-            option.value = time;
-            option.text = time;
-            timeSelect.appendChild(option);
-        });
-    }
-
-    // 每 1 分钟自动刷新时间段
-    setInterval(() => {
-        loadAvailableTimes(selectedOrderType);
-    }, 60000);
-
-    // WebSocket 收到时间更新时，立即刷新
-    socket.on('time_update', function (data) {
-        loadAvailableTimes(selectedOrderType);
-    });
-
-    // 切换订单类型时，立即刷新
-    function toggleOrderType() {
-        let pickupRadio = document.getElementById('afhalen');
-        selectedOrderType = pickupRadio.checked ? 'afhalen' : 'bezorgen';
-        loadAvailableTimes(selectedOrderType);
-    }
-
-    // 页面加载时，先加载默认时间
-    document.addEventListener('DOMContentLoaded', function () {
-        loadAvailableTimes(selectedOrderType);
-    });
-</script>
 
 
 
