@@ -3810,6 +3810,8 @@ let pickupCloseTime = '23:59';
 let deliveryOpenTime = '12:00';
 let deliveryCloseTime = '23:59';
 let timeInterval = 15;
+let pickupAddress = '';
+let allowedPostcodes = [];
 function showFeedback(msg, isError=false) {
   const el = document.getElementById('feedback');
   el.textContent = msg;
@@ -3986,9 +3988,7 @@ function checkout() {
 
     const postcodeClean = postcodeRaw.replace(/\s+/g, '');
     const postcode = postcodeClean.slice(0, 4);
-    const allowedPostcodes = ['2341', '2342', '2343', '2333', '2334', '2231', '2232', '2361', '2235'];
-
-    if (!allowedPostcodes.includes(postcode)) {
+    if (allowedPostcodes.length && !allowedPostcodes.includes(postcode)) {
       alert(`🚫 Wij bezorgen helaas niet in dit postcodegebied (${postcode}).`);
       const postcodeField = document.getElementById('deliveryPostcode');
       postcodeField.style.borderColor = 'red';
@@ -4231,9 +4231,10 @@ function checkout() {
 
     if (afhalen.checked) {
       transferValues(bezorgenFields, afhalenFields);
+      const map = encodeURIComponent(pickupAddress);
       infoBox.innerHTML = `Adres voor afhalen:
-  <a href="https://www.google.com/maps?q=Sjoukje+Dijkstralaan+83,+2134+CN+Hoofddorp" target="_blank" style="color: var(--accent-color); text-decoration: underline;">
-    Sjoukje Dijkstralaan 83, 2134 CN Hoofddorp
+  <a href="https://www.google.com/maps?q=${map}" target="_blank" style="color: var(--accent-color); text-decoration: underline;">
+    ${pickupAddress}
   </a><br>
   📞: <a href="tel:0633399366" style="color: var(--accent-color); text-decoration: underline;">0622599566</a>`;
 
@@ -4242,7 +4243,7 @@ function checkout() {
       populateTimeOptions('pickup_time', 30, pickupOpenTime, pickupCloseTime);
     } else {
       transferValues(afhalenFields, bezorgenFields);
-      infoBox.textContent = 'Wij bezorgen in de volgende postcodegebieden:\n2341, 2342, 2343, 2333, 2334, 2231, 2232, 2361, 2235';
+      infoBox.textContent = 'Wij bezorgen in de volgende postcodegebieden:\n' + allowedPostcodes.join(', ');
 
       bezorgenFields.classList.remove('hidden');
       afhalenFields.classList.add('hidden');
@@ -4256,7 +4257,6 @@ function checkout() {
   toggleOrderType();
 </script>
 <script>
-  const allowedPostcodes = ['2341', '2342', '2343', '2333', '2334', '2231', '2232', '2361', '2235'];
   const postcodeInput = document.getElementById('deliveryPostcode');
 
   postcodeInput.addEventListener('blur', function () {
@@ -4281,7 +4281,7 @@ function checkout() {
 
     // 区域检查
     const postcode = raw.slice(0, 4); // 取前4位数字
-    if (!allowedPostcodes.includes(postcode)) {
+    if (allowedPostcodes.length && !allowedPostcodes.includes(postcode)) {
       this.style.borderColor = 'red';
       hint.textContent = `🚫 Wij bezorgen niet in dit postcodegebied (${postcode}).`;
     } else {
@@ -4837,6 +4837,8 @@ function updateStatus(settings) {
   const bezorgen = document.getElementById('bezorgen');
   const bubbleSoldOutMsg = document.getElementById('bubbleSoldOut');
   const bubbleSection = document.getElementById('bubble');
+  pickupAddress = settings.pickup_address || pickupAddress;
+  allowedPostcodes = (settings.delivery_postcodes || '').split(',').map(s => s.trim()).filter(Boolean);
 
   if (bubbleSoldOutMsg && bubbleSection) {
     const soldout = settings.milktea_soldout === 'true';
@@ -4972,6 +4974,7 @@ function updateStatus(settings) {
     }
   }
   banner.style.display = 'block';
+  toggleOrderType();
 }
 
 
