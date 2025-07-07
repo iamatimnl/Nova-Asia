@@ -891,8 +891,10 @@ def dashboard():
         delivery_enabled=get_value('delivery_enabled', 'true'),
         pickup_start=get_value('pickup_start', '11:00'),
         pickup_end=get_value('pickup_end', '21:00'),
+        pickup_address=get_value('pickup_address', ''),
         delivery_start=get_value('delivery_start', '11:00'),
         delivery_end=get_value('delivery_end', '21:00'),
+        delivery_postcodes=get_value('delivery_postcodes', ''),
         time_interval=get_value('time_interval', '15'),
         milktea_soldout=get_value('milktea_soldout', 'false'),
         milktea_price=get_value('milktea_price', '5'),
@@ -919,8 +921,10 @@ def update_setting():
     delivery_enabled_val = data.get('delivery_enabled', 'true')
     pickup_start_val = data.get('pickup_start', '11:00')
     pickup_end_val = data.get('pickup_end', '21:00')
+    pickup_address_val = data.get('pickup_address', '')
     delivery_start_val = data.get('delivery_start', '11:00')
     delivery_end_val = data.get('delivery_end', '21:00')
+    delivery_postcodes_val = data.get('delivery_postcodes', '')
     time_interval_val = data.get('time_interval', '15')
     milktea_soldout_val = data.get('milktea_soldout', 'false')
 
@@ -933,8 +937,10 @@ def update_setting():
         ('delivery_enabled', delivery_enabled_val),
         ('pickup_start', pickup_start_val),
         ('pickup_end', pickup_end_val),
+        ('pickup_address', pickup_address_val),
         ('delivery_start', delivery_start_val),
         ('delivery_end', delivery_end_val),
+        ('delivery_postcodes', delivery_postcodes_val),
         ('time_interval', time_interval_val),
         ('milktea_soldout', milktea_soldout_val),
     ]:

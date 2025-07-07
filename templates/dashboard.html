@@ -57,6 +57,9 @@
         <label>Afhalen tijden:</label>
         <input type="time" id="pickup_start_input" value="{{ pickup_start }}"> -
         <input type="time" id="pickup_end_input" value="{{ pickup_end }}">
+        <br>
+        <label>Afhaal adres:</label>
+        <input type="text" id="pickup_address_input" value="{{ pickup_address }}" style="width: 250px;">
         <br><br>
 
         <label>Bezorging aan/uit:</label>
@@ -68,6 +71,10 @@
         <label>Bezorg tijden:</label>
         <input type="time" id="delivery_start_input" value="{{ delivery_start }}"> -
         <input type="time" id="delivery_end_input" value="{{ delivery_end }}">
+        <br>
+        <label>Bezorggebied postcodes:</label>
+        <div id="postcodesContainer"></div>
+        <button type="button" id="addPostcodeBtn">Toevoegen</button>
         <br><br>
         <label>Tijd interval:</label>
         <select id="interval_select">
@@ -251,6 +258,27 @@
     </form>
 
     <script>
+        const postcodesContainer = document.getElementById('postcodesContainer');
+        const addPostcodeBtn = document.getElementById('addPostcodeBtn');
+
+        function addPostcodeInput(val=''){
+            const div = document.createElement('div');
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = val;
+            input.className = 'postcode-input';
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.textContent = 'X';
+            btn.addEventListener('click', ()=>div.remove());
+            div.appendChild(input);
+            div.appendChild(btn);
+            postcodesContainer.appendChild(div);
+        }
+
+        '{{ delivery_postcodes }}'.split(',').map(s=>s.trim()).filter(Boolean).forEach(addPostcodeInput);
+        addPostcodeBtn.addEventListener('click', ()=>addPostcodeInput());
+
         document.getElementById('settingForm').addEventListener('submit', function(e) {
             e.preventDefault();  // 防止页面刷新
 
@@ -262,8 +290,13 @@
             const delivery_enabled = document.getElementById('delivery_enabled_select').value;
             const pickup_start = document.getElementById('pickup_start_input').value;
             const pickup_end = document.getElementById('pickup_end_input').value;
+            const pickup_address = document.getElementById('pickup_address_input').value.trim();
             const delivery_start = document.getElementById('delivery_start_input').value;
             const delivery_end = document.getElementById('delivery_end_input').value;
+            const delivery_postcodes = Array.from(postcodesContainer.querySelectorAll('.postcode-input'))
+                  .map(input => input.value.trim())
+                  .filter(Boolean)
+                  .join(',');
             const time_interval = document.getElementById('interval_select').value;
             const milktea_soldout = document.getElementById('milktea_soldout_select').value;
 
@@ -279,8 +312,10 @@
                     delivery_enabled: delivery_enabled,
                     pickup_start: pickup_start,
                     pickup_end: pickup_end,
+                    pickup_address: pickup_address,
                     delivery_start: delivery_start,
                     delivery_end: delivery_end,
+                    delivery_postcodes: delivery_postcodes,
                     time_interval: time_interval,
                     milktea_soldout: milktea_soldout
                 })
