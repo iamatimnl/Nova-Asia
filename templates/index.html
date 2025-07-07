@@ -4001,11 +4001,12 @@ function checkout() {
   function populateTimeOptions(selectId, offsetMinutes, openStr, closeStr) {
     const select = document.getElementById(selectId);
     if (!select) return;
-    const prev = select.value; // keep current selection
+
+    const prev = select.value; // 保留当前选中值
     select.innerHTML = '';
 
     const now = new Date();
-    now.setMinutes(now.getMinutes() + offsetMinutes);
+    now.setMinutes(now.getMinutes() + offsetMinutes); // 现在时间 + 制作时间缓冲
 
     const oStr = openStr || '00:00';
     const cStr = closeStr || '23:59';
@@ -4014,46 +4015,64 @@ function checkout() {
 
     const open = new Date();
     open.setHours(oh, om, 0, 0);
+
     const close = new Date();
     close.setHours(ch, cm, 0, 0);
+
+    // 处理跨夜情况
     if (ch * 60 + cm <= oh * 60 + om) {
-      close.setDate(close.getDate() + 1);
+        close.setDate(close.getDate() + 1);
     }
 
-    // only include Dashboard start time if it is not in the past
+    // 只有营业开始时间还有效，才显示开始时间
     const includeStart = open.getTime() >= now.getTime();
     if (includeStart) {
-      const firstOpt = document.createElement('option');
-      firstOpt.value = oStr;
-      firstOpt.textContent = oStr;
-      select.appendChild(firstOpt);
+        const firstOpt = document.createElement('option');
+        firstOpt.value = oStr;
+        firstOpt.textContent = oStr;
+        select.appendChild(firstOpt);
     }
 
     let start = now > open ? now : open;
     start = new Date(start);
     start.setMinutes(Math.ceil(start.getMinutes() / timeInterval) * timeInterval, 0, 0);
+
     for (let t = new Date(start); t <= close; t.setMinutes(t.getMinutes() + timeInterval)) {
-      const hh = pad(t.getHours());
-      const mm = pad(t.getMinutes());
-      const timeStr = `${hh}:${mm}`;
-      if (timeStr === oStr || timeStr === cStr) continue; // avoid duplicates
-      const opt = document.createElement('option');
-      opt.value = timeStr;
-      opt.textContent = timeStr;
-      select.appendChild(opt);
+        const hh = pad(t.getHours());
+        const mm = pad(t.getMinutes());
+        const timeStr = `${hh}:${mm}`;
+
+        if (timeStr === oStr || timeStr === cStr) continue; // 避免重复
+
+        const opt = document.createElement('option');
+        opt.value = timeStr;
+        opt.textContent = timeStr;
+        select.appendChild(opt);
     }
 
-    // ensure the configured end time appears as the last option
-    const lastOpt = document.createElement('option');
-    lastOpt.value = cStr;
-    lastOpt.textContent = cStr;
-    select.appendChild(lastOpt);
+    // 只有当前时间还没超过结束时间，才显示结束时间选项
+    if (now <= close) {
+        const lastOpt = document.createElement('option');
+        lastOpt.value = cStr;
+        lastOpt.textContent = cStr;
+        select.appendChild(lastOpt);
+    }
 
+    // 如果所有时间都被过滤掉，显示 "无可用时间"
+    if (select.options.length === 0) {
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = 'Geen beschikbare tijd meer'; // 无可用时间
+        select.appendChild(opt);
+    }
+
+    // 保留用户上一次选择的时间（如果还存在）
     if (prev) {
-      const option = Array.from(select.options).find(o => o.value === prev);
-      if (option) select.value = prev;
+        const option = Array.from(select.options).find(o => o.value === prev);
+        if (option) select.value = prev;
     }
-  }
+}
+
 
   function toggleOrderType() {
     const afhalen = document.getElementById('afhalen');
@@ -4728,11 +4747,8 @@ function updateStatus(settings) {
   const deliveryTimes = getSelectTimes('delivery_time', deliveryOpenTime);
 
   const now = new Date();
-  const todayDate = now.toISOString().slice(0, 10);
 
-  const pickupTooEarly = pickupTimes.earliest && now < pickupTimes.earliest;
   const pickupTooLate = pickupTimes.latest && now > pickupTimes.latest;
-  const deliveryTooEarly = deliveryTimes.earliest && now < deliveryTimes.earliest;
   const deliveryTooLate = deliveryTimes.latest && now > deliveryTimes.latest;
 
   const pickupOrderable = pickupAvailable && !pickupTooLate;
@@ -4763,14 +4779,7 @@ function updateStatus(settings) {
       }
     } else {
       storeOpen = true;
-      if (pickupTooEarly) {
-        const pickupDate = pickupTimes.earliest ? pickupTimes.earliest.toISOString().slice(0, 10) : null;
-        if (pickupDate === todayDate) {
-          message = 'U bestelt buiten openingstijden. Vooruitbestellen is mogelijk.';
-        } else {
-          message = 'Vandaag afhalen is niet meer mogelijk.';
-        }
-      } else if (pickupTooLate) {
+      if (pickupTooLate) {
         message = 'Vandaag afhalen is niet meer mogelijk.';
       } else {
         message = '';
@@ -4790,14 +4799,7 @@ function updateStatus(settings) {
       }
     } else {
       storeOpen = true;
-      if (deliveryTooEarly) {
-        const deliveryDate = deliveryTimes.earliest ? deliveryTimes.earliest.toISOString().slice(0, 10) : null;
-        if (deliveryDate === todayDate) {
-          message = 'U bestelt buiten openingstijden. Vooruitbestellen is mogelijk.';
-        } else {
-          message = 'Vandaag bezorgen we niet meer.';
-        }
-      } else if (deliveryTooLate) {
+      if (deliveryTooLate) {
         message = 'Vandaag bezorgen we niet meer.';
       } else {
         message = '';
