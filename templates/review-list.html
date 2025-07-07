@@ -50,18 +50,22 @@
     }
 
     .readable-content {
-      opacity: 0;
-      transform: scale(0.85) translateY(20px);
-      transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 2s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity: 0;
+    transform: scale(0.92) translateY(40px);
+    transition: 
+        opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+        transform 0.6s cubic-bezier(0.175, 0.885, 0.320, 1.275);
 
-      background: #F0E2C3;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      padding: 20px;
-      border-radius: 12px;
-      will-change: opacity, transform;
-    }
+    background: rgba(240, 226, 195, 0.8); /* 奶茶半透明 */
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    padding: 20px;
+    border-radius: 16px;
+    will-change: opacity, transform;
+}
+
     
 
 /* 网页端适配 */
