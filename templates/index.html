@@ -3958,9 +3958,8 @@ function checkout() {
 
         setTimeout(() => { window.location.href = '/'; }, 1500);
 
-      } else {
-  const errorMsg = data.error || 'Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.';
-  showFeedback(errorMsg, true);
+      } showFeedback('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.', true);
+
         if (sliderText && sliderButton && sliderTrack) {
           sliderText.innerText = 'Schuif om te betalen';
           sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
@@ -4679,12 +4678,7 @@ function parseTime(timeStr, startStr){
   return d;
 }
 
-// 全局存储最新设置
-let currentSettings = {};
-
 function updateStatus(settings) {
-  currentSettings = settings; // 每次保存最新设置
-
   const banner = document.getElementById('status-banner');
   const hoursEl = document.getElementById('hours-info');
   const checkoutBtn = document.querySelector('.checkout-btn');
@@ -4728,48 +4722,92 @@ function updateStatus(settings) {
   pickupAvailable = websiteOn && dayOpen && settings.pickup_enabled !== 'false';
   deliveryAvailable = websiteOn && dayOpen && settings.delivery_enabled !== 'false';
 
+  const pickupTimes = getSelectTimes('pickup_time', pickupOpenTime);
+  const deliveryTimes = getSelectTimes('delivery_time', deliveryOpenTime);
+
   const now = new Date();
-  const pickupSel = document.getElementById('pickup_time');
-  const deliverySel = document.getElementById('delivery_time');
+  const pickupTooEarly = pickupTimes.earliest && now < pickupTimes.earliest;
+  const pickupTooLate = pickupTimes.latest && now > pickupTimes.latest;
+  const deliveryTooEarly = deliveryTimes.earliest && now < deliveryTimes.earliest;
+  const deliveryTooLate = deliveryTimes.latest && now > deliveryTimes.latest;
 
-  // 🚨 绝对清空取餐菜单
-  if (pickupSel && pickupSel.options.length) {
-    const last = pickupSel.options[pickupSel.options.length - 1].value;
-    if (now > parseTime(last, pickupOpenTime)) {
-      pickupSel.innerHTML = '';
-      pickupSel.value = '';
-    }
-  }
-
-  // 🚨 绝对清空配送菜单
-  if (deliverySel && deliverySel.options.length) {
-    const last = deliverySel.options[deliverySel.options.length - 1].value;
-    if (now > parseTime(last, deliveryOpenTime)) {
-      deliverySel.innerHTML = '';
-      deliverySel.value = '';
-    }
-  }
+  const pickupOrderable = pickupAvailable && !pickupTooLate;
+  const deliveryOrderable = deliveryAvailable && !deliveryTooLate;
 
   let message = '';
-  let storeOpen = true;
 
-  if (afhalen.checked && pickupSel.options.length === 0) {
-    message = 'Afhaal is gesloten';
-  }
-
-  if (bezorgen.checked && deliverySel.options.length === 0) {
-    message = 'Bezorging is gesloten';
-  }
-
-  if (pickupSel.options.length === 0 && deliverySel.options.length === 0) {
-    message = 'Momenteel gesloten';
+  if (allClosed) {
     storeOpen = false;
+    message = 'This week the store is closed.';
+  } else if (!websiteOn) {
+    storeOpen = false;
+    message = 'De website is momenteel gesloten';
+  } else if (!pickupOrderable && !deliveryOrderable) {
+    storeOpen = false;
+    if (pickupTooLate && deliveryTooLate) {
+      message = 'Vandaag afhalen en bezorgen zijn niet meer mogelijk.';
+    } else {
+      message = 'Afhaal en bezorg zijn beide onmogelijk.';
+    }
+  } else if (afhalen.checked) {
+    if (!pickupOrderable) {
+      if (deliveryOrderable) {
+        message = 'Afhalen is niet meer mogelijk, maar bezorgen is nog beschikbaar.';
+        bezorgen.checked = true;
+        afhalen.checked = false;
+        toggleOrderType();
+        storeOpen = true;
+      } else {
+        storeOpen = false;
+        if (pickupTooLate && deliveryTooLate) {
+          message = 'Vandaag afhalen en bezorgen zijn niet meer mogelijk.';
+        } else {
+          message = 'Afhaal en bezorg zijn beide onmogelijk.';
+        }
+      }
+    } else {
+      storeOpen = true;
+      if (pickupTooEarly) {
+        message = 'U bestelt buiten openingstijden. Vooruitbestellen is mogelijk.';
+      } else if (pickupTooLate) {
+        message = 'Vandaag afhalen is niet meer mogelijk.';
+      } else {
+        message = '';
+      }
+    }
+  } else { // bezorgen.checked
+    if (!deliveryOrderable) {
+      if (pickupOrderable) {
+        message = 'Bezorgen is niet meer mogelijk, maar afhalen is nog beschikbaar.';
+        afhalen.checked = true;
+        bezorgen.checked = false;
+        toggleOrderType();
+        storeOpen = true;
+      } else {
+        storeOpen = false;
+        if (pickupTooLate && deliveryTooLate) {
+          message = 'Vandaag afhalen en bezorgen zijn niet meer mogelijk.';
+        } else {
+          message = 'Afhaal en bezorg zijn beide onmogelijk.';
+        }
+      }
+    } else {
+      storeOpen = true;
+      if (deliveryTooEarly) {
+        message = 'U bestelt buiten openingstijden. Vooruitbestellen is mogelijk.';
+      } else if (deliveryTooLate) {
+        message = 'Vandaag bezorgen we niet meer.';
+      } else {
+        message = '';
+      }
+    }
   }
 
-  banner.textContent = message;
-  banner.style.display = 'block';
+  closedMessage = message;
+  businessHours = hoursEl.textContent;
 
   if (storeOpen) {
+    banner.textContent = message;
     if (overlayEl) overlayEl.style.display = 'none';
     hideClosedPopup();
     if (checkoutBtn) checkoutBtn.disabled = false;
@@ -4778,6 +4816,7 @@ function updateStatus(settings) {
       if (sliderText) sliderText.textContent = 'Schuif om te bestellen';
     }
   } else {
+    banner.textContent = message;
     if (overlayEl) overlayEl.style.display = 'flex';
     showClosedPopup();
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -4787,7 +4826,9 @@ function updateStatus(settings) {
       if (sliderText) sliderText.textContent = 'Momenteel gesloten';
     }
   }
+  banner.style.display = 'block';
 }
+
 
 function updateTimes(settings){
   pickupOpenTime = settings.pickup_start || pickupOpenTime;
@@ -4844,11 +4885,6 @@ document.addEventListener('click', e => {
     e.preventDefault();
   }
 }, true);
-
-
-
-
-  
 </script>
 
 <div id="reviewsModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:1000;">
@@ -4890,27 +4926,8 @@ document.addEventListener('click', e => {
       if(modal.style.display !== 'none') loadReviews();
     });
   }
-  
-
-
-  
 </script>
 
-<script>
-// ✅ socket 初始化
-const socket = io();
-
-// ✅ 监听后端推送
-socket.on('setting_update', (settings) => {
-  currentSettings = settings;
-  updateStatus(currentSettings);
-});
-
-// ✅ 每 60 秒自动刷新，防止前端页面卡住
-setInterval(() => {
-  updateStatus(currentSettings);
-}, 60000);
-</script>
 
 
 
