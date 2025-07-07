@@ -4722,92 +4722,47 @@ function updateStatus(settings) {
   pickupAvailable = websiteOn && dayOpen && settings.pickup_enabled !== 'false';
   deliveryAvailable = websiteOn && dayOpen && settings.delivery_enabled !== 'false';
 
-  const pickupTimes = getSelectTimes('pickup_time', pickupOpenTime);
-  const deliveryTimes = getSelectTimes('delivery_time', deliveryOpenTime);
-
   const now = new Date();
-  const pickupTooEarly = pickupTimes.earliest && now < pickupTimes.earliest;
-  const pickupTooLate = pickupTimes.latest && now > pickupTimes.latest;
-  const deliveryTooEarly = deliveryTimes.earliest && now < deliveryTimes.earliest;
-  const deliveryTooLate = deliveryTimes.latest && now > deliveryTimes.latest;
+  const pickupSel = document.getElementById('pickup_time');
+  const deliverySel = document.getElementById('delivery_time');
 
-  const pickupOrderable = pickupAvailable && !pickupTooLate;
-  const deliveryOrderable = deliveryAvailable && !deliveryTooLate;
+  if (pickupSel && pickupSel.options.length) {
+    const last = pickupSel.options[pickupSel.options.length - 1].value;
+    if (now > parseTime(last, pickupOpenTime)) {
+      pickupSel.innerHTML = '';
+    }
+  }
+
+  if (deliverySel && deliverySel.options.length) {
+    const last = deliverySel.options[deliverySel.options.length - 1].value;
+    if (now > parseTime(last, deliveryOpenTime)) {
+      deliverySel.innerHTML = '';
+    }
+  }
+
+  const pickupEmpty = !pickupSel || pickupSel.options.length === 0;
+  const deliveryEmpty = !deliverySel || deliverySel.options.length === 0;
 
   let message = '';
-
-  if (allClosed) {
+  if (pickupEmpty && deliveryEmpty) {
     storeOpen = false;
-    message = 'This week the store is closed.';
-  } else if (!websiteOn) {
-    storeOpen = false;
-    message = 'De website is momenteel gesloten';
-  } else if (!pickupOrderable && !deliveryOrderable) {
-    storeOpen = false;
-    if (pickupTooLate && deliveryTooLate) {
-      message = 'Vandaag afhalen en bezorgen zijn niet meer mogelijk.';
-    } else {
-      message = 'Afhaal en bezorg zijn beide onmogelijk.';
-    }
-  } else if (afhalen.checked) {
-    if (!pickupOrderable) {
-      if (deliveryOrderable) {
-        message = 'Afhalen is niet meer mogelijk, maar bezorgen is nog beschikbaar.';
-        bezorgen.checked = true;
-        afhalen.checked = false;
-        toggleOrderType();
-        storeOpen = true;
-      } else {
-        storeOpen = false;
-        if (pickupTooLate && deliveryTooLate) {
-          message = 'Vandaag afhalen en bezorgen zijn niet meer mogelijk.';
-        } else {
-          message = 'Afhaal en bezorg zijn beide onmogelijk.';
-        }
-      }
-    } else {
-      storeOpen = true;
-      if (pickupTooEarly) {
-        message = 'U bestelt buiten openingstijden. Vooruitbestellen is mogelijk.';
-      } else if (pickupTooLate) {
-        message = 'Vandaag afhalen is niet meer mogelijk.';
-      } else {
-        message = '';
-      }
-    }
-  } else { // bezorgen.checked
-    if (!deliveryOrderable) {
-      if (pickupOrderable) {
-        message = 'Bezorgen is niet meer mogelijk, maar afhalen is nog beschikbaar.';
-        afhalen.checked = true;
-        bezorgen.checked = false;
-        toggleOrderType();
-        storeOpen = true;
-      } else {
-        storeOpen = false;
-        if (pickupTooLate && deliveryTooLate) {
-          message = 'Vandaag afhalen en bezorgen zijn niet meer mogelijk.';
-        } else {
-          message = 'Afhaal en bezorg zijn beide onmogelijk.';
-        }
-      }
-    } else {
-      storeOpen = true;
-      if (deliveryTooEarly) {
-        message = 'U bestelt buiten openingstijden. Vooruitbestellen is mogelijk.';
-      } else if (deliveryTooLate) {
-        message = 'Vandaag bezorgen we niet meer.';
-      } else {
-        message = '';
-      }
+    message = 'Momenteel gesloten';
+  } else {
+    storeOpen = true;
+    if (pickupEmpty) {
+      message = 'Afhaal is gesloten';
+    } else if (deliveryEmpty) {
+      message = 'Bezorging is gesloten';
     }
   }
 
   closedMessage = message;
   businessHours = hoursEl.textContent;
 
+  banner.textContent = message;
+  banner.style.display = message ? 'block' : 'none';
+
   if (storeOpen) {
-    banner.textContent = message;
     if (overlayEl) overlayEl.style.display = 'none';
     hideClosedPopup();
     if (checkoutBtn) checkoutBtn.disabled = false;
@@ -4816,7 +4771,6 @@ function updateStatus(settings) {
       if (sliderText) sliderText.textContent = 'Schuif om te bestellen';
     }
   } else {
-    banner.textContent = message;
     if (overlayEl) overlayEl.style.display = 'flex';
     showClosedPopup();
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -4826,7 +4780,6 @@ function updateStatus(settings) {
       if (sliderText) sliderText.textContent = 'Momenteel gesloten';
     }
   }
-  banner.style.display = 'block';
 }
 
 
