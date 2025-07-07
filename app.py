@@ -894,6 +894,7 @@ def dashboard():
         delivery_start=get_value('delivery_start', '11:00'),
         delivery_end=get_value('delivery_end', '21:00'),
         time_interval=get_value('time_interval', '15'),
+        milktea_soldout=get_value('milktea_soldout', 'false'),
         milktea_price=get_value('milktea_price', '5'),
         sections=sections,
         base_options=bases,
@@ -921,6 +922,7 @@ def update_setting():
     delivery_start_val = data.get('delivery_start', '11:00')
     delivery_end_val = data.get('delivery_end', '21:00')
     time_interval_val = data.get('time_interval', '15')
+    milktea_soldout_val = data.get('milktea_soldout', 'false')
 
     for key, val in [
         ('is_open', is_open_val),
@@ -934,6 +936,7 @@ def update_setting():
         ('delivery_start', delivery_start_val),
         ('delivery_end', delivery_end_val),
         ('time_interval', time_interval_val),
+        ('milktea_soldout', milktea_soldout_val),
     ]:
         s = Setting.query.filter_by(key=key).first()
         if not s:
