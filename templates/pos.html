@@ -710,6 +710,26 @@ const extras = {
 let milkTeaPrice = 0;
 let bubbleOptions = {base: [], smaak: [], topping: []};
 let xbentoOptions = {main: [], side: [], rice: [], groente: []};
+const xbowlBases=[
+  {name:'Sushi rijst',price:4},
+  {name:'IJsbergsla',price:5},
+  {name:'Tempura crispy rijst',price:6}
+];
+const xbowlMains=[
+  {name:'Zalm',price:9},
+  {name:'Tonijn',price:9},
+  {name:'Gamba',price:8},
+  {name:'Crispy chicken',price:8},
+  {name:'Spicy crispy chicken',price:8},
+  {name:'Teriyaki beef',price:9},
+  {name:'Teriyaki chicken',price:9},
+  {name:'Ribeye',price:9},
+  {name:'Unagi',price:9},
+  {name:'Spicy tuna',price:9},
+  {name:'Krabstick',price:8}
+];
+const xbowlToppings=['Komkommer','Avocado','Sojabonen','Mais','Zeewiersalade','Masago','Inari','Tamago'];
+const XBOWL_TOPPING_PRICE=1.5;
 
 function getOptionPrice(cat,name){
   const opt=(bubbleOptions[cat]||[]).find(o=>o.name===name);
@@ -754,6 +774,99 @@ function updateXbentoDisplay(){
     const p=item.querySelector('p');
     if(p) p.textContent=`€${price.toFixed(2)}`;
   }
+}
+
+function getXBowlSelections(){
+  const baseSel=document.getElementById('xBowlBase');
+  const baseOpt=baseSel?baseSel.selectedOptions[0]:null;
+  const mains=Array.from(document.querySelectorAll('#xBowlMains select')).map(s=>s.selectedOptions[0]).filter(o=>o&&o.value);
+  const toppings=Array.from(document.querySelectorAll('#xBowlToppings select')).map(s=>s.value).filter(v=>v);
+  return{baseOpt,mains,toppings};
+}
+
+function updateXBowlDisplay(){
+  const {baseOpt,mains,toppings}=getXBowlSelections();
+  let price=0;
+  if(baseOpt&&baseOpt.dataset.price) price+=parseFloat(baseOpt.dataset.price);
+  mains.forEach(o=>{price+=parseFloat(o.dataset.price||0);});
+  price+=toppings.length*XBOWL_TOPPING_PRICE;
+  const item=document.querySelector('.menu-item[data-name="X-Bowl"]');
+  if(item){
+    item.dataset.price=price;
+    const p=document.getElementById('xBowlPrice');
+    if(p) p.textContent=price?`€ ${price.toFixed(2)}`:'Prijs afhankelijk van keuzes';
+  }
+}
+
+function getXBowlName(){
+  const {baseOpt,mains,toppings}=getXBowlSelections();
+  if(!baseOpt||!baseOpt.value||mains.length===0) return '';
+  const mainNames=mains.map(o=>o.value).join(', ');
+  const topNames=toppings.join(', ');
+  return `X-Bowl (${baseOpt.value} | ${mainNames}${topNames?' | '+topNames:''})`;
+}
+
+function updateXBowlControls(){
+  const wrap=document.getElementById('xBowlNewWrap');
+  const qty=parseInt(document.getElementById('xBowlQty').value||0);
+  if(isXbowlValid()&&qty>0) wrap.classList.remove('hidden');
+  else wrap.classList.add('hidden');
+}
+
+function changeXbowlQty(delta){
+  const sel=document.getElementById('xBowlQty');
+  let val=parseInt(sel.value||0);
+  const name=getXBowlName();
+  if(!name) return;
+  val=Math.max(0,Math.min(20,val+delta));
+  sel.value=val;
+  updateXBowlDisplay();
+  const price=parseFloat(document.querySelector('.menu-item[data-name="X-Bowl"]').dataset.price||0);
+  setQty(name,price,val,0.2);
+  updateXBowlControls();
+}
+
+function createXBowlMainSelect(){
+  const div=document.createElement('div');
+  const sel=document.createElement('select');
+  sel.innerHTML='<option value="">Hoofdingredient</option>';
+  xbowlMains.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.dataset.price=o.price;opt.textContent=o.name;sel.appendChild(opt);});
+  const del=document.createElement('button');del.type='button';del.textContent='❌';
+  del.addEventListener('click',()=>{div.remove();ensureXBowlMain();updateXBowlDisplay();updateXBowlControls();});
+  sel.addEventListener('change',()=>{if(sel.value&&div===document.querySelector('#xBowlMains').lastElementChild){if(confirm('Wil je extra portie?')){document.getElementById('xBowlMains').appendChild(createXBowlMainSelect());}}updateXBowlDisplay();updateXBowlControls();});
+  div.appendChild(sel);div.appendChild(del);return div;
+}
+
+function createXBowlToppingSelect(){
+  const div=document.createElement('div');
+  const sel=document.createElement('select');
+  sel.innerHTML='<option value="">Topping</option>';
+  xbowlToppings.forEach(n=>{const opt=document.createElement('option');opt.value=n;opt.textContent=n;sel.appendChild(opt);});
+  const del=document.createElement('button');del.type='button';del.textContent='❌';
+  del.addEventListener('click',()=>{div.remove();ensureXBowlTopping();updateXBowlDisplay();updateXBowlControls();});
+  sel.addEventListener('change',()=>{if(sel.value&&div===document.querySelector('#xBowlToppings').lastElementChild){if(confirm('Wil je extra topping toevoegen?')){document.getElementById('xBowlToppings').appendChild(createXBowlToppingSelect());}}updateXBowlDisplay();updateXBowlControls();});
+  div.appendChild(sel);div.appendChild(del);return div;
+}
+
+function ensureXBowlMain(){
+  const wrap=document.getElementById('xBowlMains');
+  if(!wrap.querySelector('select')) wrap.appendChild(createXBowlMainSelect());
+}
+
+function ensureXBowlTopping(){
+  const wrap=document.getElementById('xBowlToppings');
+  if(!wrap.querySelector('select')) wrap.appendChild(createXBowlToppingSelect());
+}
+
+function clearXBowlSet(){
+  document.getElementById('xBowlBase').value='';
+  document.getElementById('xBowlMains').innerHTML='';
+  document.getElementById('xBowlToppings').innerHTML='';
+  document.getElementById('xBowlQty').value=0;
+  ensureXBowlMain();
+  ensureXBowlTopping();
+  updateXBowlDisplay();
+  updateXBowlControls();
 }
 
 function applyCrispyPrices(prices){
@@ -882,6 +995,12 @@ function isRamenValid(code){
   return document.getElementById(code+'Base').value && document.getElementById(code+'Smaak').value;
 }
 
+function isXbowlValid(){
+  const base=document.getElementById('xBowlBase').value;
+  const hasMain=Array.from(document.querySelectorAll('#xBowlMains select')).some(s=>s.value);
+  return base&&hasMain;
+}
+
 function changeRamenQty(code,delta){
   const sel=document.getElementById(code+'Qty');
   let val=parseInt(sel.value||0);
@@ -1004,11 +1123,11 @@ function addCustomPrice(){
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
-  const skip=['bubbleTeaQty','bubbleType','bubbleFlavor','bubbleTopping','xBentoMain','xBentoSide','xBentoRice','xBentoVeg',
+  const skip=['bubbleTeaQty','bubbleType','bubbleFlavor','bubbleTopping','xBentoMain','xBentoSide','xBentoRice','xBentoVeg','xBowlBase','xBowlQty',
     'ebiBase','ebiSmaak','ebiQty','chickenBase','chickenSmaak','chickenQty','beefBase','beefSmaak','beefQty',
     'ribeyeBase','ribeyeSmaak','ribeyeQty','chasiuBase','chasiuSmaak','chasiuQty'];
   document.querySelectorAll('.menu-item select').forEach(sel=>{
-    if(!skip.includes(sel.id)){
+    if(!skip.includes(sel.id) && !sel.closest('#xBowlMains') && !sel.closest('#xBowlToppings')){
       populateSelect(sel);
       const parent=sel.closest('.menu-item');
       const name=parent.dataset.name;
@@ -1024,7 +1143,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
   });
 
-  ['bubbleTeaQty','xBentoQty'].forEach(id=>{
+  ['bubbleTeaQty','xBentoQty','xBowlQty'].forEach(id=>{
     const s=document.getElementById(id);
     for(let i=0;i<=20;i++){const opt=document.createElement('option');opt.value=i;opt.text=i;s.appendChild(opt);} s.value=0;
   });
@@ -1047,9 +1166,17 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(!document.getElementById('xBentoMain').value||!document.getElementById('xBentoSide').value||!document.getElementById('xBentoRice').value||!document.getElementById('xBentoVeg').value){alert('🍱 Kies eerst hoofdgerecht, bijgerecht, rijstsoort en groente voor je Xbento.');return;}changeXbentoQty(-1);});
   document.getElementById('xBentoQty').addEventListener('change',()=>{if(!document.getElementById('xBentoMain').value||!document.getElementById('xBentoSide').value||!document.getElementById('xBentoRice').value||!document.getElementById('xBentoVeg').value){alert('🍱 Kies eerst hoofdgerecht, bijgerecht, rijstsoort en groente voor je Xbento.');document.getElementById('xBentoQty').value=0;return;}changeXbentoQty(0);});
 
+  ensureXBowlMain();
+  ensureXBowlTopping();
+  document.getElementById('xBowlBase').addEventListener('change',()=>{updateXBowlDisplay();updateXBowlControls();});
+  document.getElementById('xBowlNew').addEventListener('click',clearXBowlSet);
+  document.querySelector('.qty-plus[data-target="xBowlQty"]').addEventListener('click',()=>{if(!isXbowlValid()){alert('🥗 Basis en hoofdingrediënt vereist.');return;}changeXbowlQty(1);});
+  document.querySelector('.qty-minus[data-target="xBowlQty"]').addEventListener('click',()=>{if(!isXbowlValid()){alert('🥗 Basis en hoofdingrediënt vereist.');return;}changeXbowlQty(-1);});
+  document.getElementById('xBowlQty').addEventListener('change',()=>{if(!isXbowlValid()){alert('🥗 Basis en hoofdingrediënt vereist.');document.getElementById('xBowlQty').value=0;return;}changeXbowlQty(0);});
+
   const ramenIds=['ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty'];
   document.querySelectorAll('.qty-plus').forEach(btn=>{
-    if(['bubbleTeaQty','xBentoQty',...ramenIds].includes(btn.dataset.target)) return;
+    if(['bubbleTeaQty','xBentoQty','xBowlQty',...ramenIds].includes(btn.dataset.target)) return;
     btn.addEventListener('click',()=>{
       const sel=document.getElementById(btn.dataset.target);
       let val=parseInt(sel.value);
@@ -1066,7 +1193,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     });
   });
   document.querySelectorAll('.qty-minus').forEach(btn=>{
-    if(['bubbleTeaQty','xBentoQty',...ramenIds].includes(btn.dataset.target)) return;
+    if(['bubbleTeaQty','xBentoQty','xBowlQty',...ramenIds].includes(btn.dataset.target)) return;
     btn.addEventListener('click',()=>{
       const sel=document.getElementById(btn.dataset.target);
       let val=parseInt(sel.value);

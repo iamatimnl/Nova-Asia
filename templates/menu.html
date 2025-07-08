@@ -652,22 +652,20 @@
       </div>
       <div class="menu-content">
         <h3>X-Bowl (Vrije samenstelling)</h3>
-        <p>Prijs afhankelijk van keuzes</p>
+        <p id="xBowlPrice">Prijs afhankelijk van keuzes</p>
         <div class="bubble-option">
           <select id="xBowlBase">
             <option value="">Basis</option>
-            <option value="Zalm" data-price="15">Zalm</option>
-            <option value="Tonijn" data-price="15">Tonijn</option>
-            <option value="Kip" data-price="15">Kip</option>
-            <option value="Vega" data-price="13">Vega</option>
+            <option value="Sushi rijst" data-price="4">Sushi rijst</option>
+            <option value="IJsbergsla" data-price="5">IJsbergsla</option>
+            <option value="Tempura crispy rijst" data-price="6">Tempura crispy rijst</option>
           </select>
         </div>
-        <div class="bubble-option">
-          <select id="xBowlSauce">
-            <option value="">Saus</option>
-            <option value="Teriyaki" data-price="0">Teriyaki</option>
-            <option value="Spicy" data-price="0">Spicy</option>
-          </select>
+        <div id="xBowlMains"></div>
+        <div id="xBowlToppings"></div>
+        <div class="new-set-wrap hidden" id="xBowlNewWrap">
+          <span class="new-set-msg">Toegevoegd. Nieuw selecteren?</span>
+          <button type="button" class="new-set-button" id="xBowlNew">druk op</button>
         </div>
         <div class="qty-box">
           <label for="xBowlQty">Aantal</label>
