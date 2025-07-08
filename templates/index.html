@@ -2922,6 +2922,7 @@ input:focus, select:focus, textarea:focus {
 
 <script>
 const cart = {};
+const soldOutMap = {};
 const extras = {
   chopstickCount: {
     label: 'Stokjes',
@@ -2956,6 +2957,20 @@ let finalTotal = 0;
 let currentDiscount = 0;
 let bubbleSetControls;
 let xbentoSetControls;
+
+function getBaseName(name){
+  const idx = name.indexOf(' (');
+  return idx >= 0 ? name.slice(0, idx) : name;
+}
+
+function isSoldOut(name){
+  return soldOutMap[getBaseName(name)];
+}
+
+function removeSoldOutItems(){
+  Object.keys(cart).forEach(n=>{ if(isSoldOut(n)) delete cart[n]; });
+  saveCart();
+}
 
 function getOptionPrice(cat, name){
   const opt = (bubbleOptions[cat]||[]).find(o=>o.name===name);
@@ -3012,6 +3027,7 @@ function loadCart() {
     const data = JSON.parse(stored);
     Object.keys(data).forEach(k => { cart[k] = data[k]; });
   }
+  removeSoldOutItems();
 }
 
 
@@ -3598,6 +3614,9 @@ function createSelect(current, onChange) {
 }
 
 function setQty(name, price, qty, packaging = DEFAULT_PACKAGING_FEE, prefs = null) {
+  if (isSoldOut(name)) {
+    qty = 0;
+  }
   if (qty === 0) {
     delete cart[name];
   } else {
@@ -3616,6 +3635,10 @@ function updateCart() {
   let packagingTotal = 0;
 
   Object.entries(cart).forEach(([name, item]) => {
+    if (isSoldOut(name)) {
+      delete cart[name];
+      return;
+    }
     const li = document.createElement('li');
     const sel = createSelect(item.qty, val => {
       const menuItem = document.querySelector(`[data-name="${name}"]`);
@@ -3736,6 +3759,7 @@ document.addEventListener('DOMContentLoaded', () => {
       sel.addEventListener('change', () => changeDragonQty(0));
     } else {
       sel.addEventListener('change', () => {
+        if (isSoldOut(name)) { sel.value = 0; removeSoldOutItems(); updateCart(); return; }
         setQty(name, price, parseInt(sel.value), pack);
       });
     }
@@ -3749,6 +3773,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (val < 20) val++;
       sel.value = val;
       const parent = sel.closest('.menu-item');
+      if (isSoldOut(parent.dataset.name)) { sel.value = 0; removeSoldOutItems(); updateCart(); return; }
       const pack = parseFloat(parent.dataset.packaging || DEFAULT_PACKAGING_FEE);
       if (parent.dataset.name === 'Bento Sushi Omakase') {
         changeOmakaseQty(0);
@@ -3768,6 +3793,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (val > 0) val--;
       sel.value = val;
       const parent = sel.closest('.menu-item');
+      if (isSoldOut(parent.dataset.name)) { sel.value = 0; removeSoldOutItems(); updateCart(); return; }
       const pack = parseFloat(parent.dataset.packaging || DEFAULT_PACKAGING_FEE);
       if (parent.dataset.name === 'Bento Sushi Omakase') {
         changeOmakaseQty(0);
@@ -4852,6 +4878,7 @@ function updateStatus(settings) {
 
   if (bubbleSoldOutMsg && bubbleSection) {
     const soldout = settings.milktea_soldout === 'true';
+    soldOutMap['Bubble Tea'] = soldout;
     bubbleSoldOutMsg.classList.toggle('hidden', !soldout);
     bubbleSection.querySelectorAll('select, button').forEach(el => {
       el.disabled = soldout;
@@ -4879,6 +4906,7 @@ function updateStatus(settings) {
     const itemEl = document.querySelector(`[data-name="${cfg.name}"]`);
     if (!itemEl) return;
     const soldout = settings[cfg.key] === 'true';
+    soldOutMap[cfg.name] = soldout;
     const msgEl = document.getElementById(cfg.msg);
     if (msgEl) msgEl.classList.toggle('hidden', !soldout);
     itemEl.querySelectorAll('select, button').forEach(el => { el.disabled = soldout; });
@@ -4886,6 +4914,8 @@ function updateStatus(settings) {
       document.getElementById(cfg.qty).value = 0;
     }
   });
+  removeSoldOutItems();
+  updateCart();
 
   if (settings.milktea_price) {
     milkTeaPrice = parseFloat(settings.milktea_price);
