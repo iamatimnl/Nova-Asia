@@ -149,6 +149,84 @@
         </select>
         <br><br>
 
+        <h3>Pokebowl uitverkocht</h3>
+        <label>Zalm Bowl:</label>
+        <select id="soldout_zalm_bowl_select">
+            <option value="false" {% if soldout_zalm_bowl != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_zalm_bowl == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Tuna Bowl:</label>
+        <select id="soldout_tuna_bowl_select">
+            <option value="false" {% if soldout_tuna_bowl != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_tuna_bowl == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Ebi Fry Bowl:</label>
+        <select id="soldout_ebi_fry_bowl_select">
+            <option value="false" {% if soldout_ebi_fry_bowl != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_ebi_fry_bowl == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Chicken Karaage Bowl:</label>
+        <select id="soldout_chicken_karaage_bowl_select">
+            <option value="false" {% if soldout_chicken_karaage_bowl != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_chicken_karaage_bowl == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Spicy Chicken Bowl:</label>
+        <select id="soldout_spicy_chicken_bowl_select">
+            <option value="false" {% if soldout_spicy_chicken_bowl != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_spicy_chicken_bowl == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Teriyaki Chicken Bowl:</label>
+        <select id="soldout_teriyaki_chicken_bowl_select">
+            <option value="false" {% if soldout_teriyaki_chicken_bowl != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_teriyaki_chicken_bowl == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Teriyaki Beef Bowl:</label>
+        <select id="soldout_teriyaki_beef_bowl_select">
+            <option value="false" {% if soldout_teriyaki_beef_bowl != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_teriyaki_beef_bowl == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>California Bowl:</label>
+        <select id="soldout_california_bowl_select">
+            <option value="false" {% if soldout_california_bowl != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_california_bowl == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Vega Bowl:</label>
+        <select id="soldout_vega_bowl_select">
+            <option value="false" {% if soldout_vega_bowl != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_vega_bowl == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Meatlover Bowl:</label>
+        <select id="soldout_meatlover_bowl_select">
+            <option value="false" {% if soldout_meatlover_bowl != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_meatlover_bowl == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Rainbow Bowl:</label>
+        <select id="soldout_rainbow_bowl_select">
+            <option value="false" {% if soldout_rainbow_bowl != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_rainbow_bowl == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Spicy Tuna Bowl:</label>
+        <select id="soldout_spicy_tuna_bowl_select">
+            <option value="false" {% if soldout_spicy_tuna_bowl != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_spicy_tuna_bowl == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Flamed Zalm Bowl:</label>
+        <select id="soldout_flamed_zalm_bowl_select">
+            <option value="false" {% if soldout_flamed_zalm_bowl != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_flamed_zalm_bowl == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Flamed Tuna Bowl:</label>
+        <select id="soldout_flamed_tuna_bowl_select">
+            <option value="false" {% if soldout_flamed_tuna_bowl != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_flamed_tuna_bowl == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>X-Bowl:</label>
+        <select id="soldout_x_bowl_select">
+            <option value="false" {% if soldout_x_bowl != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_x_bowl == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select>
+        <br><br>
+
         <h3>Ramen uitverkocht</h3>
         <label>Ebi Furai:</label>
         <select id="soldout_ebi_ramen_select">
@@ -390,6 +468,21 @@
             const soldout_veggie_bento = document.getElementById('soldout_veggie_bento_select').value;
             const soldout_sushi_bento = document.getElementById('soldout_sushi_bento_select').value;
             const soldout_xbento = document.getElementById('soldout_xbento_select').value;
+            const soldout_zalm_bowl = document.getElementById('soldout_zalm_bowl_select').value;
+            const soldout_tuna_bowl = document.getElementById('soldout_tuna_bowl_select').value;
+            const soldout_ebi_fry_bowl = document.getElementById('soldout_ebi_fry_bowl_select').value;
+            const soldout_chicken_karaage_bowl = document.getElementById('soldout_chicken_karaage_bowl_select').value;
+            const soldout_spicy_chicken_bowl = document.getElementById('soldout_spicy_chicken_bowl_select').value;
+            const soldout_teriyaki_chicken_bowl = document.getElementById('soldout_teriyaki_chicken_bowl_select').value;
+            const soldout_teriyaki_beef_bowl = document.getElementById('soldout_teriyaki_beef_bowl_select').value;
+            const soldout_california_bowl = document.getElementById('soldout_california_bowl_select').value;
+            const soldout_vega_bowl = document.getElementById('soldout_vega_bowl_select').value;
+            const soldout_meatlover_bowl = document.getElementById('soldout_meatlover_bowl_select').value;
+            const soldout_rainbow_bowl = document.getElementById('soldout_rainbow_bowl_select').value;
+            const soldout_spicy_tuna_bowl = document.getElementById('soldout_spicy_tuna_bowl_select').value;
+            const soldout_flamed_zalm_bowl = document.getElementById('soldout_flamed_zalm_bowl_select').value;
+            const soldout_flamed_tuna_bowl = document.getElementById('soldout_flamed_tuna_bowl_select').value;
+            const soldout_x_bowl = document.getElementById('soldout_x_bowl_select').value;
             const soldout_ebi_ramen = document.getElementById('soldout_ebi_ramen_select').value;
             const soldout_chicken_ramen = document.getElementById('soldout_chicken_ramen_select').value;
             const soldout_beef_ramen = document.getElementById('soldout_beef_ramen_select').value;
@@ -424,6 +517,21 @@
                     soldout_veggie_bento: soldout_veggie_bento,
                     soldout_sushi_bento: soldout_sushi_bento,
                     soldout_xbento: soldout_xbento,
+                    soldout_zalm_bowl: soldout_zalm_bowl,
+                    soldout_tuna_bowl: soldout_tuna_bowl,
+                    soldout_ebi_fry_bowl: soldout_ebi_fry_bowl,
+                    soldout_chicken_karaage_bowl: soldout_chicken_karaage_bowl,
+                    soldout_spicy_chicken_bowl: soldout_spicy_chicken_bowl,
+                    soldout_teriyaki_chicken_bowl: soldout_teriyaki_chicken_bowl,
+                    soldout_teriyaki_beef_bowl: soldout_teriyaki_beef_bowl,
+                    soldout_california_bowl: soldout_california_bowl,
+                    soldout_vega_bowl: soldout_vega_bowl,
+                    soldout_meatlover_bowl: soldout_meatlover_bowl,
+                    soldout_rainbow_bowl: soldout_rainbow_bowl,
+                    soldout_spicy_tuna_bowl: soldout_spicy_tuna_bowl,
+                    soldout_flamed_zalm_bowl: soldout_flamed_zalm_bowl,
+                    soldout_flamed_tuna_bowl: soldout_flamed_tuna_bowl,
+                    soldout_x_bowl: soldout_x_bowl,
                     soldout_ebi_ramen: soldout_ebi_ramen,
                     soldout_chicken_ramen: soldout_chicken_ramen,
                     soldout_beef_ramen: soldout_beef_ramen,

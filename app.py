@@ -507,6 +507,21 @@ with app.app_context():
         "soldout_veggie_bento": "false",
         "soldout_sushi_bento": "false",
         "soldout_xbento": "false",
+        "soldout_zalm_bowl": "false",
+        "soldout_tuna_bowl": "false",
+        "soldout_ebi_fry_bowl": "false",
+        "soldout_chicken_karaage_bowl": "false",
+        "soldout_spicy_chicken_bowl": "false",
+        "soldout_teriyaki_chicken_bowl": "false",
+        "soldout_teriyaki_beef_bowl": "false",
+        "soldout_california_bowl": "false",
+        "soldout_vega_bowl": "false",
+        "soldout_meatlover_bowl": "false",
+        "soldout_rainbow_bowl": "false",
+        "soldout_spicy_tuna_bowl": "false",
+        "soldout_flamed_zalm_bowl": "false",
+        "soldout_flamed_tuna_bowl": "false",
+        "soldout_x_bowl": "false",
         "soldout_ebi_ramen": "false",
         "soldout_chicken_ramen": "false",
         "soldout_beef_ramen": "false",
@@ -953,6 +968,21 @@ def dashboard():
         soldout_veggie_bento=get_value('soldout_veggie_bento', 'false'),
         soldout_sushi_bento=get_value('soldout_sushi_bento', 'false'),
         soldout_xbento=get_value('soldout_xbento', 'false'),
+        soldout_zalm_bowl=get_value('soldout_zalm_bowl', 'false'),
+        soldout_tuna_bowl=get_value('soldout_tuna_bowl', 'false'),
+        soldout_ebi_fry_bowl=get_value('soldout_ebi_fry_bowl', 'false'),
+        soldout_chicken_karaage_bowl=get_value('soldout_chicken_karaage_bowl', 'false'),
+        soldout_spicy_chicken_bowl=get_value('soldout_spicy_chicken_bowl', 'false'),
+        soldout_teriyaki_chicken_bowl=get_value('soldout_teriyaki_chicken_bowl', 'false'),
+        soldout_teriyaki_beef_bowl=get_value('soldout_teriyaki_beef_bowl', 'false'),
+        soldout_california_bowl=get_value('soldout_california_bowl', 'false'),
+        soldout_vega_bowl=get_value('soldout_vega_bowl', 'false'),
+        soldout_meatlover_bowl=get_value('soldout_meatlover_bowl', 'false'),
+        soldout_rainbow_bowl=get_value('soldout_rainbow_bowl', 'false'),
+        soldout_spicy_tuna_bowl=get_value('soldout_spicy_tuna_bowl', 'false'),
+        soldout_flamed_zalm_bowl=get_value('soldout_flamed_zalm_bowl', 'false'),
+        soldout_flamed_tuna_bowl=get_value('soldout_flamed_tuna_bowl', 'false'),
+        soldout_x_bowl=get_value('soldout_x_bowl', 'false'),
         soldout_ebi_ramen=get_value('soldout_ebi_ramen', 'false'),
         soldout_chicken_ramen=get_value('soldout_chicken_ramen', 'false'),
         soldout_beef_ramen=get_value('soldout_beef_ramen', 'false'),
@@ -997,6 +1027,21 @@ def update_setting():
     soldout_veggie_bento_val = data.get('soldout_veggie_bento', 'false')
     soldout_sushi_bento_val = data.get('soldout_sushi_bento', 'false')
     soldout_xbento_val = data.get('soldout_xbento', 'false')
+    soldout_zalm_bowl_val = data.get('soldout_zalm_bowl', 'false')
+    soldout_tuna_bowl_val = data.get('soldout_tuna_bowl', 'false')
+    soldout_ebi_fry_bowl_val = data.get('soldout_ebi_fry_bowl', 'false')
+    soldout_chicken_karaage_bowl_val = data.get('soldout_chicken_karaage_bowl', 'false')
+    soldout_spicy_chicken_bowl_val = data.get('soldout_spicy_chicken_bowl', 'false')
+    soldout_teriyaki_chicken_bowl_val = data.get('soldout_teriyaki_chicken_bowl', 'false')
+    soldout_teriyaki_beef_bowl_val = data.get('soldout_teriyaki_beef_bowl', 'false')
+    soldout_california_bowl_val = data.get('soldout_california_bowl', 'false')
+    soldout_vega_bowl_val = data.get('soldout_vega_bowl', 'false')
+    soldout_meatlover_bowl_val = data.get('soldout_meatlover_bowl', 'false')
+    soldout_rainbow_bowl_val = data.get('soldout_rainbow_bowl', 'false')
+    soldout_spicy_tuna_bowl_val = data.get('soldout_spicy_tuna_bowl', 'false')
+    soldout_flamed_zalm_bowl_val = data.get('soldout_flamed_zalm_bowl', 'false')
+    soldout_flamed_tuna_bowl_val = data.get('soldout_flamed_tuna_bowl', 'false')
+    soldout_x_bowl_val = data.get('soldout_x_bowl', 'false')
     soldout_ebi_ramen_val = data.get('soldout_ebi_ramen', 'false')
     soldout_chicken_ramen_val = data.get('soldout_chicken_ramen', 'false')
     soldout_beef_ramen_val = data.get('soldout_beef_ramen', 'false')
@@ -1028,6 +1073,21 @@ def update_setting():
         ('soldout_veggie_bento', soldout_veggie_bento_val),
         ('soldout_sushi_bento', soldout_sushi_bento_val),
         ('soldout_xbento', soldout_xbento_val),
+        ('soldout_zalm_bowl', soldout_zalm_bowl_val),
+        ('soldout_tuna_bowl', soldout_tuna_bowl_val),
+        ('soldout_ebi_fry_bowl', soldout_ebi_fry_bowl_val),
+        ('soldout_chicken_karaage_bowl', soldout_chicken_karaage_bowl_val),
+        ('soldout_spicy_chicken_bowl', soldout_spicy_chicken_bowl_val),
+        ('soldout_teriyaki_chicken_bowl', soldout_teriyaki_chicken_bowl_val),
+        ('soldout_teriyaki_beef_bowl', soldout_teriyaki_beef_bowl_val),
+        ('soldout_california_bowl', soldout_california_bowl_val),
+        ('soldout_vega_bowl', soldout_vega_bowl_val),
+        ('soldout_meatlover_bowl', soldout_meatlover_bowl_val),
+        ('soldout_rainbow_bowl', soldout_rainbow_bowl_val),
+        ('soldout_spicy_tuna_bowl', soldout_spicy_tuna_bowl_val),
+        ('soldout_flamed_zalm_bowl', soldout_flamed_zalm_bowl_val),
+        ('soldout_flamed_tuna_bowl', soldout_flamed_tuna_bowl_val),
+        ('soldout_x_bowl', soldout_x_bowl_val),
         ('soldout_ebi_ramen', soldout_ebi_ramen_val),
         ('soldout_chicken_ramen', soldout_chicken_ramen_val),
         ('soldout_beef_ramen', soldout_beef_ramen_val),
