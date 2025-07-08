@@ -226,6 +226,21 @@
             <option value="true" {% if soldout_chicken_crispy_rice_sandwich == 'true' %}selected{% endif %}>Uitverkocht</option>
         </select><br>
 
+        <h3>Crispy Rice Sandwich prijs (€)</h3>
+        <label>Zalm:</label>
+        <input type="number" step="0.01" id="price_zalm_crispy_rice_sandwich_input" value="{{ price_zalm_crispy_rice_sandwich }}"><br>
+        <label>Spicytuna:</label>
+        <input type="number" step="0.01" id="price_spicytuna_crispy_rice_sandwich_input" value="{{ price_spicytuna_crispy_rice_sandwich }}"><br>
+        <label>Ebi:</label>
+        <input type="number" step="0.01" id="price_ebi_crispy_rice_sandwich_input" value="{{ price_ebi_crispy_rice_sandwich }}"><br>
+        <label>Beef:</label>
+        <input type="number" step="0.01" id="price_beef_crispy_rice_sandwich_input" value="{{ price_beef_crispy_rice_sandwich }}"><br>
+        <label>California:</label>
+        <input type="number" step="0.01" id="price_california_crispy_rice_sandwich_input" value="{{ price_california_crispy_rice_sandwich }}"><br>
+        <label>Chicken:</label>
+        <input type="number" step="0.01" id="price_chicken_crispy_rice_sandwich_input" value="{{ price_chicken_crispy_rice_sandwich }}"><br>
+        <button type="button" id="update_crispy_prices_btn">更新价格</button>
+        
         <h3>Snack uitverkocht</h3>
         <label>Karaage:</label>
         <select id="soldout_karaage_select">
@@ -788,6 +803,24 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({price: price})
+            }).then(r => r.json()).then(d => {
+                alert(d.success ? 'Prijs bijgewerkt!' : 'Fout bij bijwerken');
+            }).catch(() => alert('Request failed'));
+        });
+
+        document.getElementById('update_crispy_prices_btn').addEventListener('click', function(){
+            const data = {
+                zalm: parseFloat(document.getElementById('price_zalm_crispy_rice_sandwich_input').value || '0'),
+                spicytuna: parseFloat(document.getElementById('price_spicytuna_crispy_rice_sandwich_input').value || '0'),
+                ebi: parseFloat(document.getElementById('price_ebi_crispy_rice_sandwich_input').value || '0'),
+                beef: parseFloat(document.getElementById('price_beef_crispy_rice_sandwich_input').value || '0'),
+                california: parseFloat(document.getElementById('price_california_crispy_rice_sandwich_input').value || '0'),
+                chicken: parseFloat(document.getElementById('price_chicken_crispy_rice_sandwich_input').value || '0')
+            };
+            fetch('/update_crispy_prices', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
             }).then(r => r.json()).then(d => {
                 alert(d.success ? 'Prijs bijgewerkt!' : 'Fout bij bijwerken');
             }).catch(() => alert('Request failed'));

@@ -755,6 +755,26 @@ function updateXbentoDisplay(){
   }
 }
 
+function applyCrispyPrices(prices){
+  const map={
+    'Zalm crispy rice sandwich': parseFloat(prices.price_zalm_crispy_rice_sandwich),
+    'Spicytuna crispy rice sandwich': parseFloat(prices.price_spicytuna_crispy_rice_sandwich),
+    'Ebi crispy rice sandwich': parseFloat(prices.price_ebi_crispy_rice_sandwich),
+    'Beef crispy rice sandwich': parseFloat(prices.price_beef_crispy_rice_sandwich),
+    'California crispy rice sandwich': parseFloat(prices.price_california_crispy_rice_sandwich),
+    'Chicken crispy rice sandwich': parseFloat(prices.price_chicken_crispy_rice_sandwich)
+  };
+  Object.entries(map).forEach(([name,price])=>{
+    if(isNaN(price)) return;
+    const el=document.querySelector(`.menu-item[data-name="${name}"]`);
+    if(el){
+      el.dataset.price=price;
+      const pe=el.querySelector('p');
+      if(pe) pe.textContent=`€${price.toFixed(2)}`;
+    }
+  });
+}
+
 function changeBubbleQty(delta){
   const sel=document.getElementById('bubbleTeaQty');
   let val=parseInt(sel.value||0);
@@ -1515,7 +1535,10 @@ function formatCurrency(value){
     if(r.ok){ const d=await r.json(); applyMenuPrices(d); }
   }
   loadMenu();
-  fetch('/api/settings').then(r=>r.json()).then(s=>{ if(s.milktea_price){ milkTeaPrice=parseFloat(s.milktea_price); updateMilkTeaDisplay(); }});
+  fetch('/api/settings').then(r=>r.json()).then(s=>{
+    if(s.milktea_price){ milkTeaPrice=parseFloat(s.milktea_price); updateMilkTeaDisplay(); }
+    applyCrispyPrices(s);
+  });
   fetchBubbleOptions();
   fetchXbentoOptions();
   socket.on('menu_update', applyMenuPrices);
@@ -1534,6 +1557,9 @@ function formatCurrency(value){
     populateXbentoSelectors();
     updateXbentoDisplay();
     updateXbentoCartPrices();
+  });
+  socket.on('crispy_price_update', data => {
+    applyCrispyPrices(data);
   });
 
   let pollTimer;

@@ -3141,6 +3141,26 @@ function updateXbentoDisplay(){
   }
 }
 
+function applyCrispyPrices(prices){
+  const map={
+    'Zalm crispy rice sandwich': parseFloat(prices.price_zalm_crispy_rice_sandwich),
+    'Spicytuna crispy rice sandwich': parseFloat(prices.price_spicytuna_crispy_rice_sandwich),
+    'Ebi crispy rice sandwich': parseFloat(prices.price_ebi_crispy_rice_sandwich),
+    'Beef crispy rice sandwich': parseFloat(prices.price_beef_crispy_rice_sandwich),
+    'California crispy rice sandwich': parseFloat(prices.price_california_crispy_rice_sandwich),
+    'Chicken crispy rice sandwich': parseFloat(prices.price_chicken_crispy_rice_sandwich)
+  };
+  Object.entries(map).forEach(([name,price])=>{
+    if(isNaN(price)) return;
+    const el=document.querySelector(`.menu-item[data-name="${name}"]`);
+    if(el){
+      el.dataset.price=price;
+      const pe=el.querySelector('p');
+      if(pe) pe.textContent=`€ ${price.toFixed(2)}`;
+    }
+  });
+}
+
 function saveCart() {
   sessionStorage.setItem('novaCart', JSON.stringify(cart));
 }
@@ -4979,6 +4999,7 @@ function parseTime(timeStr, startStr){
 
 function updateStatus(settings) {
   currentSettings = settings;
+  applyCrispyPrices(settings);
   const banner = document.getElementById('status-banner');
   const hoursEl = document.getElementById('hours-info');
   const checkoutBtn = document.querySelector('.checkout-btn');
@@ -5351,6 +5372,9 @@ socket.on('xbento_options_update', data => {
   populateXbentoSelectors();
   updateXbentoDisplay();
   updateXbentoCartPrices();
+});
+socket.on('crispy_price_update', data => {
+  applyCrispyPrices(data);
 });
 const overlay = document.getElementById('closed-overlay');
 if(overlay){
