@@ -497,6 +497,12 @@ with app.app_context():
         "time_interval": "15",
         "milktea_soldout": "false",
         "milktea_price": "5",
+        "price_zalm_crispy_rice_sandwich": "7",
+        "price_spicytuna_crispy_rice_sandwich": "7",
+        "price_ebi_crispy_rice_sandwich": "7",
+        "price_beef_crispy_rice_sandwich": "7.5",
+        "price_california_crispy_rice_sandwich": "7.5",
+        "price_chicken_crispy_rice_sandwich": "7",
         "soldout_chicken_bento": "false",
         "soldout_meatlover_bento": "false",
         "soldout_zalm_lover_bento": "false",
@@ -989,6 +995,12 @@ def dashboard():
         time_interval=get_value('time_interval', '15'),
         milktea_soldout=get_value('milktea_soldout', 'false'),
         milktea_price=get_value('milktea_price', '5'),
+        price_zalm_crispy_rice_sandwich=get_value('price_zalm_crispy_rice_sandwich', '7'),
+        price_spicytuna_crispy_rice_sandwich=get_value('price_spicytuna_crispy_rice_sandwich', '7'),
+        price_ebi_crispy_rice_sandwich=get_value('price_ebi_crispy_rice_sandwich', '7'),
+        price_beef_crispy_rice_sandwich=get_value('price_beef_crispy_rice_sandwich', '7.5'),
+        price_california_crispy_rice_sandwich=get_value('price_california_crispy_rice_sandwich', '7.5'),
+        price_chicken_crispy_rice_sandwich=get_value('price_chicken_crispy_rice_sandwich', '7'),
         soldout_chicken_bento=get_value('soldout_chicken_bento', 'false'),
         soldout_meatlover_bento=get_value('soldout_meatlover_bento', 'false'),
         soldout_zalm_lover_bento=get_value('soldout_zalm_lover_bento', 'false'),
@@ -1332,6 +1344,38 @@ def update_milktea_price():
         setting.value = str(price_val)
     db.session.commit()
     socketio.emit('milktea_price_update', {'price': price_val})
+    return jsonify({'success': True})
+
+
+@app.route('/update_crispy_prices', methods=['POST'])
+@login_required
+def update_crispy_prices():
+    data = request.get_json() or {}
+    mapping = {
+        'zalm': 'price_zalm_crispy_rice_sandwich',
+        'spicytuna': 'price_spicytuna_crispy_rice_sandwich',
+        'ebi': 'price_ebi_crispy_rice_sandwich',
+        'beef': 'price_beef_crispy_rice_sandwich',
+        'california': 'price_california_crispy_rice_sandwich',
+        'chicken': 'price_chicken_crispy_rice_sandwich',
+    }
+    updated = {}
+    for k, setting_key in mapping.items():
+        if k in data:
+            try:
+                price_val = float(data[k])
+            except (TypeError, ValueError):
+                continue
+            setting = Setting.query.filter_by(key=setting_key).first()
+            if not setting:
+                setting = Setting(key=setting_key, value=str(price_val))
+                db.session.add(setting)
+            else:
+                setting.value = str(price_val)
+            updated[setting_key] = price_val
+    db.session.commit()
+    if updated:
+        socketio.emit('crispy_price_update', updated)
     return jsonify({'success': True})
 
 
