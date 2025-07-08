@@ -178,13 +178,13 @@
 <script>
 let originalReviews = [];
 let isLooping = false;
+let isJumpingScroll = false;
 
 window.addEventListener('load', loadReviews);
 
 async function loadReviews() {
   const response = await fetch(`/api/reviews?page=1&per_page=100`);
   const data = await response.json();
-
   const reviewHeader = document.getElementById('reviewHeader');
 
   if (data.reviews.length === 0) {
@@ -195,7 +195,6 @@ async function loadReviews() {
 
   reviewHeader.innerText = `Reviews (${data.reviews.length})`;
   originalReviews = data.reviews.reverse();
-
   setupInfiniteLoop();
 }
 
@@ -219,12 +218,12 @@ function setupInfiniteLoop() {
     return fragment;
   };
 
-  // 三段克隆
+  // 添加三份内容
   reviewList.appendChild(buildReviews(originalReviews));
   reviewList.appendChild(buildReviews(originalReviews));
   reviewList.appendChild(buildReviews(originalReviews));
 
-  // 定位到中间
+  // 定位到中间部分
   setTimeout(() => {
     reviewList.scrollTop = reviewList.scrollHeight / 3;
     observeInfiniteScroll();
@@ -241,9 +240,9 @@ function observeInfiniteScroll() {
     const scrollHeight = reviewList.scrollHeight;
     const containerHeight = reviewList.clientHeight;
 
-    if (scrollTop <= 50) {
+    if (scrollTop < 5) {
       smoothResetScroll(true);
-    } else if (scrollTop + containerHeight >= scrollHeight - 50) {
+    } else if (scrollTop + containerHeight > scrollHeight - 5) {
       smoothResetScroll(false);
     }
   });
@@ -254,6 +253,7 @@ function observeInfiniteScroll() {
 function smoothResetScroll(toTop = false) {
   const reviewList = document.getElementById('reviewList');
   isLooping = true;
+  isJumpingScroll = true;
 
   requestAnimationFrame(() => {
     reviewList.scrollTo({
@@ -262,7 +262,11 @@ function smoothResetScroll(toTop = false) {
         : reviewList.scrollTop - reviewList.scrollHeight / 3,
       behavior: 'auto'
     });
-    setTimeout(() => { isLooping = false; }, 30);
+
+    setTimeout(() => {
+      isLooping = false;
+      isJumpingScroll = false;
+    }, 50);
   });
 }
 
@@ -277,6 +281,8 @@ function renderStars(rating) {
 function observeReviews() {
   const items = document.querySelectorAll('.readable-content');
   const observer = new IntersectionObserver((entries) => {
+    if (isJumpingScroll) return;
+
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
         entry.target.classList.add('visible');
@@ -301,11 +307,11 @@ function goHome() {
   window.location.href = '/';
 }
 
+// 实时 socket 监听
 const socket = io();
 socket.on('new_review', loadReviews);
 socket.on('review_reply', loadReviews);
 socket.on('delete_review', loadReviews);
 </script>
-
 </body>
 </html>
