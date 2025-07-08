@@ -104,6 +104,14 @@
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
+.scroll-container {
+  overflow-anchor: none;
+}
+
+/* 修正卡片尺寸，避免滚动突变 */
+.readable-content {
+  min-height: 120px;
+}
 
 .circle-button {
   min-width: 56px;
@@ -168,109 +176,24 @@
 
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 <script>
+let originalReviews = [];
+let isLooping = false;
+
 window.addEventListener('load', loadReviews);
 
 async function loadReviews() {
   const response = await fetch(`/api/reviews?page=1&per_page=100`);
   const data = await response.json();
 
-  const reviewList = document.getElementById('reviewList');
   const reviewHeader = document.getElementById('reviewHeader');
 
   if (data.reviews.length === 0) {
-    reviewList.innerHTML = 'Nog geen reviews.';
+    document.getElementById('reviewList').innerHTML = 'Nog geen reviews.';
     reviewHeader.innerText = 'Reviews (0)';
     return;
   }
 
   reviewHeader.innerText = `Reviews (${data.reviews.length})`;
-  reviewList.innerHTML = '';
-  const reviews = data.reviews.reverse();
-
-  reviews.forEach(r => {
-    const div = document.createElement('div');
-    div.className = 'readable-content';
-    div.innerHTML = `
-      <strong>${r.customer_name}</strong><br>
-      <div class="review-stars">${renderStars(r.rating)}</div>
-      <p>${r.content}</p>
-      ${r.reply ? `<p><em>Antwoord: ${r.reply}</em></p>` : ''}
-    `;
-    reviewList.appendChild(div);
-  });
-
-  observeReviews();
-}
-
-function renderStars(rating) {
-  let stars = '';
-  for (let i = 1; i <= 5; i++) {
-    if (i <= rating) {
-      stars += '<span class="filled">★</span>';
-    } else {
-      stars += '<span class="empty">☆</span>';
-    }
-  }
-  return stars;
-}
-
-function observeReviews() {
-  const items = document.querySelectorAll('.readable-content');
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-      } else {
-        entry.target.classList.remove('visible'); // 核心：移除，允许反复触发动画
-      }
-    });
-  }, {
-    root: null,
-    rootMargin: '0px 0px -20% 0px',
-    threshold: 0
-  });
-
-  items.forEach((item) => observer.observe(item));
-}
-
-
-function scrollToTop() {
-  window.scrollTo({
-    top: 0,
-    behavior: 'smooth'
-  });
-}
-
-function goHome() {
-  window.location.href = '/';
-}
-
-// SocketIO real-time updates
-const socket = io();
-socket.on('new_review', loadReviews);
-socket.on('review_reply', loadReviews);
-socket.on('delete_review', loadReviews);
-</script>
-<script>
-window.addEventListener('load', loadReviews);
-
-let originalReviews = [];
-let isLooping = false;
-
-async function loadReviews() {
-  const response = await fetch(`/api/reviews?page=1&per_page=100`);
-  const data = await response.json();
-
-  if (data.reviews.length === 0) {
-    document.getElementById('reviewList').innerHTML = 'Nog geen reviews.';
-    document.getElementById('reviewHeader').innerText = 'Reviews (0)';
-    return;
-  }
-
-  document.getElementById('reviewHeader').innerText = `Reviews (${data.reviews.length})`;
-
-  // 原始评论数据
   originalReviews = data.reviews.reverse();
 
   setupInfiniteLoop();
@@ -278,8 +201,6 @@ async function loadReviews() {
 
 function setupInfiniteLoop() {
   const reviewList = document.getElementById('reviewList');
-
-  // 插入评论 (三份)
   reviewList.innerHTML = '';
 
   const buildReviews = (reviews) => {
@@ -291,20 +212,19 @@ function setupInfiniteLoop() {
         <strong>${r.customer_name}</strong><br>
         <div class="review-stars">${renderStars(r.rating)}</div>
         <p>${r.content}</p>
+        ${r.reply ? `<p><em>Antwoord: ${r.reply}</em></p>` : ''}
       `;
       fragment.appendChild(div);
     });
     return fragment;
-  }
+  };
 
-  // 前置克隆
+  // 三段克隆
   reviewList.appendChild(buildReviews(originalReviews));
-  // 中间原始
   reviewList.appendChild(buildReviews(originalReviews));
-  // 后置克隆
   reviewList.appendChild(buildReviews(originalReviews));
 
-  // 滚动到中间
+  // 定位到中间
   setTimeout(() => {
     reviewList.scrollTop = reviewList.scrollHeight / 3;
     observeInfiniteScroll();
@@ -322,54 +242,69 @@ function observeInfiniteScroll() {
     const containerHeight = reviewList.clientHeight;
 
     if (scrollTop <= 50) {
-      // 快到顶部，重置到中间
-      isLooping = true;
-      reviewList.scrollTop = scrollTop + scrollHeight / 3;
-      setTimeout(() => { isLooping = false; }, 50);
-    }
-
-    if (scrollTop + containerHeight >= scrollHeight - 50) {
-      // 快到底部，重置到中间
-      isLooping = true;
-      reviewList.scrollTop = scrollTop - scrollHeight / 3;
-      setTimeout(() => { isLooping = false; }, 50);
+      smoothResetScroll(true);
+    } else if (scrollTop + containerHeight >= scrollHeight - 50) {
+      smoothResetScroll(false);
     }
   });
 
   observeReviews();
 }
 
+function smoothResetScroll(toTop = false) {
+  const reviewList = document.getElementById('reviewList');
+  isLooping = true;
+
+  requestAnimationFrame(() => {
+    reviewList.scrollTo({
+      top: toTop
+        ? reviewList.scrollTop + reviewList.scrollHeight / 3
+        : reviewList.scrollTop - reviewList.scrollHeight / 3,
+      behavior: 'auto'
+    });
+    setTimeout(() => { isLooping = false; }, 30);
+  });
+}
+
 function renderStars(rating) {
   let stars = '';
   for (let i = 1; i <= 5; i++) {
-    if (i <= rating) {
-      stars += '<span class="filled">★</span>';
-    } else {
-      stars += '<span class="empty">☆</span>';
-    }
+    stars += `<span class="${i <= rating ? 'filled' : 'empty'}">${i <= rating ? '★' : '☆'}</span>`;
   }
   return stars;
 }
 
 function observeReviews() {
   const items = document.querySelectorAll('.readable-content');
-
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
         entry.target.classList.add('visible');
       } else {
-        entry.target.classList.remove('visible'); // 可选：只在进入时触发动画可省略这一行
+        entry.target.classList.remove('visible');
       }
     });
   }, {
     root: null,
-    rootMargin: '0px 0px -10% 0px', // 提前触发，底部还差 10% 就触发
-    threshold: 0.5 // 当一半区域可见时就触发
+    rootMargin: '0px 0px -10% 0px',
+    threshold: 0.5
   });
 
   items.forEach((item) => observer.observe(item));
 }
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goHome() {
+  window.location.href = '/';
+}
+
+const socket = io();
+socket.on('new_review', loadReviews);
+socket.on('review_reply', loadReviews);
+socket.on('delete_review', loadReviews);
 </script>
 
 </body>
