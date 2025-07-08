@@ -50,20 +50,20 @@
     }
 
     .readable-content {
-    opacity: 0;
-    transform: scale(0.92) translateY(40px);
-    transition: 
-    opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.4s cubic-bezier(0, 1.01, 0.39, 1.11);
+  opacity: 0;
+  transform: scale(0.88) translateY(50px); /* 初始更小并略下沉 */
+  transition: 
+    opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), 
+    transform 0.6s cubic-bezier(0.22, 1.12, 0.36, 1); /* 更自然弹性 */
 
-    background: rgb(252, 225, 166); /* 奶茶半透明 */
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+  background: rgba(252, 225, 166, 0.75); /* 半透明奶茶色 */
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    padding: 20px;
-    border-radius: 16px;
-    will-change: opacity, transform;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  padding: 20px;
+  border-radius: 20px;
+  will-change: opacity, transform;
 }
 
     
@@ -79,6 +79,7 @@
 
     .readable-content.visible {
       opacity: 1;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.18);
       transform: scale(1) translateY(0);
     }
 
@@ -358,13 +359,13 @@ function observeReviews() {
       if (entry.isIntersecting) {
         entry.target.classList.add('visible');
       } else {
-        entry.target.classList.remove('visible');
+        entry.target.classList.remove('visible'); // 可选：只在进入时触发动画可省略这一行
       }
     });
   }, {
     root: null,
-    rootMargin: '0px 0px -20% 0px',
-    threshold: 0
+    rootMargin: '0px 0px -10% 0px', // 提前触发，底部还差 10% 就触发
+    threshold: 0.5 // 当一半区域可见时就触发
   });
 
   items.forEach((item) => observer.observe(item));
