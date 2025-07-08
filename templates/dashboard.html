@@ -149,6 +149,34 @@
         </select>
         <br><br>
 
+        <h3>Ramen uitverkocht</h3>
+        <label>Ebi Furai:</label>
+        <select id="soldout_ebi_ramen_select">
+            <option value="false" {% if soldout_ebi_ramen != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_ebi_ramen == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Chicken:</label>
+        <select id="soldout_chicken_ramen_select">
+            <option value="false" {% if soldout_chicken_ramen != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_chicken_ramen == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Beef:</label>
+        <select id="soldout_beef_ramen_select">
+            <option value="false" {% if soldout_beef_ramen != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_beef_ramen == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Ribeye:</label>
+        <select id="soldout_ribeye_ramen_select">
+            <option value="false" {% if soldout_ribeye_ramen != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_ribeye_ramen == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Chasiu:</label>
+        <select id="soldout_chasiu_ramen_select">
+            <option value="false" {% if soldout_chasiu_ramen != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_chasiu_ramen == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select>
+        <br><br>
+
         <button type="submit">保存</button>
     </form>
 
@@ -362,6 +390,11 @@
             const soldout_veggie_bento = document.getElementById('soldout_veggie_bento_select').value;
             const soldout_sushi_bento = document.getElementById('soldout_sushi_bento_select').value;
             const soldout_xbento = document.getElementById('soldout_xbento_select').value;
+            const soldout_ebi_ramen = document.getElementById('soldout_ebi_ramen_select').value;
+            const soldout_chicken_ramen = document.getElementById('soldout_chicken_ramen_select').value;
+            const soldout_beef_ramen = document.getElementById('soldout_beef_ramen_select').value;
+            const soldout_ribeye_ramen = document.getElementById('soldout_ribeye_ramen_select').value;
+            const soldout_chasiu_ramen = document.getElementById('soldout_chasiu_ramen_select').value;
 
             fetch('/dashboard/update', {
                 method: 'POST',
@@ -390,7 +423,12 @@
                     soldout_lamskotelet_bento: soldout_lamskotelet_bento,
                     soldout_veggie_bento: soldout_veggie_bento,
                     soldout_sushi_bento: soldout_sushi_bento,
-                    soldout_xbento: soldout_xbento
+                    soldout_xbento: soldout_xbento,
+                    soldout_ebi_ramen: soldout_ebi_ramen,
+                    soldout_chicken_ramen: soldout_chicken_ramen,
+                    soldout_beef_ramen: soldout_beef_ramen,
+                    soldout_ribeye_ramen: soldout_ribeye_ramen,
+                    soldout_chasiu_ramen: soldout_chasiu_ramen
                 })
             })
             .then(response => response.json())

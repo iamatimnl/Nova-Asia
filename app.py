@@ -507,6 +507,11 @@ with app.app_context():
         "soldout_veggie_bento": "false",
         "soldout_sushi_bento": "false",
         "soldout_xbento": "false",
+        "soldout_ebi_ramen": "false",
+        "soldout_chicken_ramen": "false",
+        "soldout_beef_ramen": "false",
+        "soldout_ribeye_ramen": "false",
+        "soldout_chasiu_ramen": "false",
     }
     for k, v in defaults.items():
         if not Setting.query.filter_by(key=k).first():
@@ -948,6 +953,11 @@ def dashboard():
         soldout_veggie_bento=get_value('soldout_veggie_bento', 'false'),
         soldout_sushi_bento=get_value('soldout_sushi_bento', 'false'),
         soldout_xbento=get_value('soldout_xbento', 'false'),
+        soldout_ebi_ramen=get_value('soldout_ebi_ramen', 'false'),
+        soldout_chicken_ramen=get_value('soldout_chicken_ramen', 'false'),
+        soldout_beef_ramen=get_value('soldout_beef_ramen', 'false'),
+        soldout_ribeye_ramen=get_value('soldout_ribeye_ramen', 'false'),
+        soldout_chasiu_ramen=get_value('soldout_chasiu_ramen', 'false'),
         sections=sections,
         base_options=bases,
         smaak_options=smaken,
@@ -987,6 +997,11 @@ def update_setting():
     soldout_veggie_bento_val = data.get('soldout_veggie_bento', 'false')
     soldout_sushi_bento_val = data.get('soldout_sushi_bento', 'false')
     soldout_xbento_val = data.get('soldout_xbento', 'false')
+    soldout_ebi_ramen_val = data.get('soldout_ebi_ramen', 'false')
+    soldout_chicken_ramen_val = data.get('soldout_chicken_ramen', 'false')
+    soldout_beef_ramen_val = data.get('soldout_beef_ramen', 'false')
+    soldout_ribeye_ramen_val = data.get('soldout_ribeye_ramen', 'false')
+    soldout_chasiu_ramen_val = data.get('soldout_chasiu_ramen', 'false')
 
     for key, val in [
         ('is_open', is_open_val),
@@ -1013,6 +1028,11 @@ def update_setting():
         ('soldout_veggie_bento', soldout_veggie_bento_val),
         ('soldout_sushi_bento', soldout_sushi_bento_val),
         ('soldout_xbento', soldout_xbento_val),
+        ('soldout_ebi_ramen', soldout_ebi_ramen_val),
+        ('soldout_chicken_ramen', soldout_chicken_ramen_val),
+        ('soldout_beef_ramen', soldout_beef_ramen_val),
+        ('soldout_ribeye_ramen', soldout_ribeye_ramen_val),
+        ('soldout_chasiu_ramen', soldout_chasiu_ramen_val),
     ]:
         s = Setting.query.filter_by(key=key).first()
         if not s:
