@@ -1747,6 +1747,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Chicken Bento</h3>
 <p>€ 22.00</p>
+<p id="soldoutChickenBento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="chickenBentoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="chickenBentoCount" type="button">-</button>
@@ -1764,6 +1765,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Meatlover Bento</h3>
 <p>€ 25.00</p>
+<p id="soldoutMeatloverBento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="meatloverBentoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="meatloverBentoCount" type="button">-</button>
@@ -1780,6 +1782,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Zalm Lover Bento</h3>
 <p>€ 23.00</p>
+<p id="soldoutZalmLoverBento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="zalmLoverBentoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="zalmLoverBentoCount" type="button">-</button>
@@ -1796,6 +1799,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Ebi Lover Bento</h3>
 <p>€ 23.00</p>
+<p id="soldoutEbiLoverBento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="ebiLoverBentoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="ebiLoverBentoCount" type="button">-</button>
@@ -1812,6 +1816,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Surf &amp; Turf Bento</h3>
 <p>€ 25.00</p>
+<p id="soldoutSurfTurfBento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="surfTurfBentoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="surfTurfBentoCount" type="button">-</button>
@@ -1828,6 +1833,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Dimsum Bento</h3>
 <p>€ 15.00</p>
+<p id="soldoutDimsumBento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="dimsumBentoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="dimsumBentoCount" type="button">-</button>
@@ -1844,6 +1850,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Lamskotelet Bento</h3>
 <p>€ 28.00</p>
+<p id="soldoutLamskoteletBento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="lamsBentoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="lamsBentoCount" type="button">-</button>
@@ -1860,6 +1867,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Veggie Bento</h3>
 <p>€ 20.00</p>
+<p id="soldoutVeggieBento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="veggieBentoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="veggieBentoCount" type="button">-</button>
@@ -1875,6 +1883,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Bento Sushi Omakase</h3>
 <p>€ 22.00</p>
+<p id="soldoutSushiBento" class="sold-out-msg hidden">Uitverkocht!</p>
 <p class="menu-description">±16st Verrassing van de chef!</p>
 <div class="qty-box">
 <label for="sushiBentoCount">Aantal</label>
@@ -1894,6 +1903,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Xbento (stel zelf samen)</h3>
 <p>Vanaf € 25.00</p>
+<p id="soldoutXbento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="bubble-option">
 <select id="xBentoMain">
 <option value="">Hoofdgerecht</option>
@@ -4851,6 +4861,31 @@ function updateStatus(settings) {
       if (bubbleSetControls) bubbleSetControls.update();
     }
   }
+
+  const bentoConfig = [
+    {name: 'Chicken Bento', key: 'soldout_chicken_bento', qty: 'chickenBentoCount', msg: 'soldoutChickenBento'},
+    {name: 'Meatlover Bento', key: 'soldout_meatlover_bento', qty: 'meatloverBentoCount', msg: 'soldoutMeatloverBento'},
+    {name: 'Zalm Lover Bento', key: 'soldout_zalm_lover_bento', qty: 'zalmLoverBentoCount', msg: 'soldoutZalmLoverBento'},
+    {name: 'Ebi Lover Bento', key: 'soldout_ebi_lover_bento', qty: 'ebiLoverBentoCount', msg: 'soldoutEbiLoverBento'},
+    {name: 'Surf & Turf Bento', key: 'soldout_surf_turf_bento', qty: 'surfTurfBentoCount', msg: 'soldoutSurfTurfBento'},
+    {name: 'Dimsum Bento', key: 'soldout_dimsum_bento', qty: 'dimsumBentoCount', msg: 'soldoutDimsumBento'},
+    {name: 'Lamskotelet Bento', key: 'soldout_lamskotelet_bento', qty: 'lamsBentoCount', msg: 'soldoutLamskoteletBento'},
+    {name: 'Veggie Bento', key: 'soldout_veggie_bento', qty: 'veggieBentoCount', msg: 'soldoutVeggieBento'},
+    {name: 'Bento Sushi Omakase', key: 'soldout_sushi_bento', qty: 'sushiBentoCount', msg: 'soldoutSushiBento'},
+    {name: 'Xbento', key: 'soldout_xbento', qty: 'xBentoQty', msg: 'soldoutXbento'}
+  ];
+
+  bentoConfig.forEach(cfg => {
+    const itemEl = document.querySelector(`[data-name="${cfg.name}"]`);
+    if (!itemEl) return;
+    const soldout = settings[cfg.key] === 'true';
+    const msgEl = document.getElementById(cfg.msg);
+    if (msgEl) msgEl.classList.toggle('hidden', !soldout);
+    itemEl.querySelectorAll('select, button').forEach(el => { el.disabled = soldout; });
+    if (soldout && document.getElementById(cfg.qty)) {
+      document.getElementById(cfg.qty).value = 0;
+    }
+  });
 
   if (settings.milktea_price) {
     milkTeaPrice = parseFloat(settings.milktea_price);

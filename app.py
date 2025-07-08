@@ -495,6 +495,18 @@ with app.app_context():
         "delivery_start": "11:00",
         "delivery_end": "21:00",
         "time_interval": "15",
+        "milktea_soldout": "false",
+        "milktea_price": "5",
+        "soldout_chicken_bento": "false",
+        "soldout_meatlover_bento": "false",
+        "soldout_zalm_lover_bento": "false",
+        "soldout_ebi_lover_bento": "false",
+        "soldout_surf_turf_bento": "false",
+        "soldout_dimsum_bento": "false",
+        "soldout_lamskotelet_bento": "false",
+        "soldout_veggie_bento": "false",
+        "soldout_sushi_bento": "false",
+        "soldout_xbento": "false",
     }
     for k, v in defaults.items():
         if not Setting.query.filter_by(key=k).first():
@@ -926,6 +938,16 @@ def dashboard():
         time_interval=get_value('time_interval', '15'),
         milktea_soldout=get_value('milktea_soldout', 'false'),
         milktea_price=get_value('milktea_price', '5'),
+        soldout_chicken_bento=get_value('soldout_chicken_bento', 'false'),
+        soldout_meatlover_bento=get_value('soldout_meatlover_bento', 'false'),
+        soldout_zalm_lover_bento=get_value('soldout_zalm_lover_bento', 'false'),
+        soldout_ebi_lover_bento=get_value('soldout_ebi_lover_bento', 'false'),
+        soldout_surf_turf_bento=get_value('soldout_surf_turf_bento', 'false'),
+        soldout_dimsum_bento=get_value('soldout_dimsum_bento', 'false'),
+        soldout_lamskotelet_bento=get_value('soldout_lamskotelet_bento', 'false'),
+        soldout_veggie_bento=get_value('soldout_veggie_bento', 'false'),
+        soldout_sushi_bento=get_value('soldout_sushi_bento', 'false'),
+        soldout_xbento=get_value('soldout_xbento', 'false'),
         sections=sections,
         base_options=bases,
         smaak_options=smaken,
@@ -955,6 +977,16 @@ def update_setting():
     delivery_postcodes_val = data.get('delivery_postcodes', '')
     time_interval_val = data.get('time_interval', '15')
     milktea_soldout_val = data.get('milktea_soldout', 'false')
+    soldout_chicken_bento_val = data.get('soldout_chicken_bento', 'false')
+    soldout_meatlover_bento_val = data.get('soldout_meatlover_bento', 'false')
+    soldout_zalm_lover_bento_val = data.get('soldout_zalm_lover_bento', 'false')
+    soldout_ebi_lover_bento_val = data.get('soldout_ebi_lover_bento', 'false')
+    soldout_surf_turf_bento_val = data.get('soldout_surf_turf_bento', 'false')
+    soldout_dimsum_bento_val = data.get('soldout_dimsum_bento', 'false')
+    soldout_lamskotelet_bento_val = data.get('soldout_lamskotelet_bento', 'false')
+    soldout_veggie_bento_val = data.get('soldout_veggie_bento', 'false')
+    soldout_sushi_bento_val = data.get('soldout_sushi_bento', 'false')
+    soldout_xbento_val = data.get('soldout_xbento', 'false')
 
     for key, val in [
         ('is_open', is_open_val),
@@ -971,6 +1003,16 @@ def update_setting():
         ('delivery_postcodes', delivery_postcodes_val),
         ('time_interval', time_interval_val),
         ('milktea_soldout', milktea_soldout_val),
+        ('soldout_chicken_bento', soldout_chicken_bento_val),
+        ('soldout_meatlover_bento', soldout_meatlover_bento_val),
+        ('soldout_zalm_lover_bento', soldout_zalm_lover_bento_val),
+        ('soldout_ebi_lover_bento', soldout_ebi_lover_bento_val),
+        ('soldout_surf_turf_bento', soldout_surf_turf_bento_val),
+        ('soldout_dimsum_bento', soldout_dimsum_bento_val),
+        ('soldout_lamskotelet_bento', soldout_lamskotelet_bento_val),
+        ('soldout_veggie_bento', soldout_veggie_bento_val),
+        ('soldout_sushi_bento', soldout_sushi_bento_val),
+        ('soldout_xbento', soldout_xbento_val),
     ]:
         s = Setting.query.filter_by(key=key).first()
         if not s:

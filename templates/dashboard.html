@@ -96,6 +96,59 @@
         </select>
         <br><br>
 
+        <h3>Bento uitverkocht</h3>
+        <label>Chicken Bento:</label>
+        <select id="soldout_chicken_bento_select">
+            <option value="false" {% if soldout_chicken_bento != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_chicken_bento == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Meatlover Bento:</label>
+        <select id="soldout_meatlover_bento_select">
+            <option value="false" {% if soldout_meatlover_bento != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_meatlover_bento == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Zalm Lover Bento:</label>
+        <select id="soldout_zalm_lover_bento_select">
+            <option value="false" {% if soldout_zalm_lover_bento != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_zalm_lover_bento == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Ebi Lover Bento:</label>
+        <select id="soldout_ebi_lover_bento_select">
+            <option value="false" {% if soldout_ebi_lover_bento != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_ebi_lover_bento == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Surf & Turf Bento:</label>
+        <select id="soldout_surf_turf_bento_select">
+            <option value="false" {% if soldout_surf_turf_bento != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_surf_turf_bento == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Dimsum Bento:</label>
+        <select id="soldout_dimsum_bento_select">
+            <option value="false" {% if soldout_dimsum_bento != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_dimsum_bento == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Lamskotelet Bento:</label>
+        <select id="soldout_lamskotelet_bento_select">
+            <option value="false" {% if soldout_lamskotelet_bento != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_lamskotelet_bento == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Veggie Bento:</label>
+        <select id="soldout_veggie_bento_select">
+            <option value="false" {% if soldout_veggie_bento != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_veggie_bento == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Sushi Omakase Bento:</label>
+        <select id="soldout_sushi_bento_select">
+            <option value="false" {% if soldout_sushi_bento != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_sushi_bento == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Xbento:</label>
+        <select id="soldout_xbento_select">
+            <option value="false" {% if soldout_xbento != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_xbento == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select>
+        <br><br>
+
         <button type="submit">保存</button>
     </form>
 
@@ -299,6 +352,16 @@
                   .join(',');
             const time_interval = document.getElementById('interval_select').value;
             const milktea_soldout = document.getElementById('milktea_soldout_select').value;
+            const soldout_chicken_bento = document.getElementById('soldout_chicken_bento_select').value;
+            const soldout_meatlover_bento = document.getElementById('soldout_meatlover_bento_select').value;
+            const soldout_zalm_lover_bento = document.getElementById('soldout_zalm_lover_bento_select').value;
+            const soldout_ebi_lover_bento = document.getElementById('soldout_ebi_lover_bento_select').value;
+            const soldout_surf_turf_bento = document.getElementById('soldout_surf_turf_bento_select').value;
+            const soldout_dimsum_bento = document.getElementById('soldout_dimsum_bento_select').value;
+            const soldout_lamskotelet_bento = document.getElementById('soldout_lamskotelet_bento_select').value;
+            const soldout_veggie_bento = document.getElementById('soldout_veggie_bento_select').value;
+            const soldout_sushi_bento = document.getElementById('soldout_sushi_bento_select').value;
+            const soldout_xbento = document.getElementById('soldout_xbento_select').value;
 
             fetch('/dashboard/update', {
                 method: 'POST',
@@ -317,7 +380,17 @@
                     delivery_end: delivery_end,
                     delivery_postcodes: delivery_postcodes,
                     time_interval: time_interval,
-                    milktea_soldout: milktea_soldout
+                    milktea_soldout: milktea_soldout,
+                    soldout_chicken_bento: soldout_chicken_bento,
+                    soldout_meatlover_bento: soldout_meatlover_bento,
+                    soldout_zalm_lover_bento: soldout_zalm_lover_bento,
+                    soldout_ebi_lover_bento: soldout_ebi_lover_bento,
+                    soldout_surf_turf_bento: soldout_surf_turf_bento,
+                    soldout_dimsum_bento: soldout_dimsum_bento,
+                    soldout_lamskotelet_bento: soldout_lamskotelet_bento,
+                    soldout_veggie_bento: soldout_veggie_bento,
+                    soldout_sushi_bento: soldout_sushi_bento,
+                    soldout_xbento: soldout_xbento
                 })
             })
             .then(response => response.json())
