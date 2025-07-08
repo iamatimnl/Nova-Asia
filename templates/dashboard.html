@@ -170,6 +170,33 @@
             <option value="false" {% if soldout_chicken_roll != 'true' %}selected{% endif %}>Open</option>
             <option value="true" {% if soldout_chicken_roll == 'true' %}selected{% endif %}>Uitverkocht</option>
         </select><br>
+        <br>
+        <h3>Sashimi uitverkocht</h3>
+        <label>Salmon sashimi:</label>
+        <select id="soldout_salmon_sashimi_select">
+            <option value="false" {% if soldout_salmon_sashimi != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_salmon_sashimi == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Flamed salmon sashimi:</label>
+        <select id="soldout_flamed_salmon_sashimi_select">
+            <option value="false" {% if soldout_flamed_salmon_sashimi != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_flamed_salmon_sashimi == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Tonijn sashimi:</label>
+        <select id="soldout_tonijn_sashimi_select">
+            <option value="false" {% if soldout_tonijn_sashimi != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_tonijn_sashimi == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Flamed tonijn sashimi:</label>
+        <select id="soldout_flamed_tonijn_sashimi_select">
+            <option value="false" {% if soldout_flamed_tonijn_sashimi != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_flamed_tonijn_sashimi == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Beef sashimi:</label>
+        <select id="soldout_beef_sashimi_select">
+            <option value="false" {% if soldout_beef_sashimi != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_beef_sashimi == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
         <br><br>
 
         <h3>Pokebowl uitverkocht</h3>
@@ -494,6 +521,11 @@
             const soldout_dragon_roll = document.getElementById('soldout_dragon_roll_select').value;
             const soldout_beef_roll = document.getElementById('soldout_beef_roll_select').value;
             const soldout_chicken_roll = document.getElementById('soldout_chicken_roll_select').value;
+            const soldout_salmon_sashimi = document.getElementById('soldout_salmon_sashimi_select').value;
+            const soldout_flamed_salmon_sashimi = document.getElementById('soldout_flamed_salmon_sashimi_select').value;
+            const soldout_tonijn_sashimi = document.getElementById('soldout_tonijn_sashimi_select').value;
+            const soldout_flamed_tonijn_sashimi = document.getElementById('soldout_flamed_tonijn_sashimi_select').value;
+            const soldout_beef_sashimi = document.getElementById('soldout_beef_sashimi_select').value;
             const soldout_xbento = document.getElementById('soldout_xbento_select').value;
             const soldout_zalm_bowl = document.getElementById('soldout_zalm_bowl_select').value;
             const soldout_tuna_bowl = document.getElementById('soldout_tuna_bowl_select').value;
@@ -547,6 +579,11 @@
                     soldout_dragon_roll: soldout_dragon_roll,
                     soldout_beef_roll: soldout_beef_roll,
                     soldout_chicken_roll: soldout_chicken_roll,
+                    soldout_salmon_sashimi: soldout_salmon_sashimi,
+                    soldout_flamed_salmon_sashimi: soldout_flamed_salmon_sashimi,
+                    soldout_tonijn_sashimi: soldout_tonijn_sashimi,
+                    soldout_flamed_tonijn_sashimi: soldout_flamed_tonijn_sashimi,
+                    soldout_beef_sashimi: soldout_beef_sashimi,
                     soldout_xbento: soldout_xbento,
                     soldout_zalm_bowl: soldout_zalm_bowl,
                     soldout_tuna_bowl: soldout_tuna_bowl,

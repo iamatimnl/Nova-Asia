@@ -2478,6 +2478,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Salmon sashimi</h3>
 <p>€ 9.00</p>
+<p id="soldoutSalmonSashimi" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="salmonSashimiQty">Aantal</label>
 <button class="qty-minus remove-button" data-target="salmonSashimiQty" type="button">-</button>
@@ -2493,6 +2494,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Flamed salmon sashimi</h3>
 <p>€ 10.00</p>
+<p id="soldoutFlamedSalmonSashimi" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="flamedsalmonSashimiQty">Aantal</label>
 <button class="qty-minus remove-button" data-target="flamedsalmonSashimiQty" type="button">-</button>
@@ -2508,6 +2510,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Tonijn sashimi</h3>
 <p>€ 10.00</p>
+<p id="soldoutTonijnSashimi" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="tonijnSashimiQty">Aantal</label>
 <button class="qty-minus remove-button" data-target="tonijnSashimiQty" type="button">-</button>
@@ -2523,6 +2526,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Flamed tonijn sashimi</h3>
 <p>€ 10.50</p>
+<p id="soldoutFlamedTonijnSashimi" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="flamedtonijnSashimiQty">Aantal</label>
 <button class="qty-minus remove-button" data-target="flamedtonijnSashimiQty" type="button">-</button>
@@ -2539,6 +2543,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Beef sashimi</h3>
 <p>€ 10.00</p>
+<p id="soldoutBeefSashimi" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="beefSashimiQty">Aantal</label>
 <button class="qty-minus remove-button" data-target="beefSashimiQty" type="button">-</button>
@@ -2995,6 +3000,11 @@ const soldoutMap = {
   "Dragon Roll Omakase": "soldout_dragon_roll",
   "Beef Roll Omakase": "soldout_beef_roll",
   "Chicken Roll Omakase": "soldout_chicken_roll",
+  "Salmon sashimi": "soldout_salmon_sashimi",
+  "Flamed salmon sashimi": "soldout_flamed_salmon_sashimi",
+  "Tonijn sashimi": "soldout_tonijn_sashimi",
+  "Flamed tonijn sashimi": "soldout_flamed_tonijn_sashimi",
+  "Beef sashimi": "soldout_beef_sashimi",
   "Xbento": "soldout_xbento",
   "Zalm Bowl": "soldout_zalm_bowl",
   "Tuna Bowl": "soldout_tuna_bowl",
@@ -4954,6 +4964,26 @@ function updateStatus(settings) {
     }
   });
 
+  const sashimiConfig = [
+    {name: 'Salmon sashimi', key: 'soldout_salmon_sashimi', qty: 'salmonSashimiQty', msg: 'soldoutSalmonSashimi'},
+    {name: 'Flamed salmon sashimi', key: 'soldout_flamed_salmon_sashimi', qty: 'flamedsalmonSashimiQty', msg: 'soldoutFlamedSalmonSashimi'},
+    {name: 'Tonijn sashimi', key: 'soldout_tonijn_sashimi', qty: 'tonijnSashimiQty', msg: 'soldoutTonijnSashimi'},
+    {name: 'Flamed tonijn sashimi', key: 'soldout_flamed_tonijn_sashimi', qty: 'flamedtonijnSashimiQty', msg: 'soldoutFlamedTonijnSashimi'},
+    {name: 'Beef sashimi', key: 'soldout_beef_sashimi', qty: 'beefSashimiQty', msg: 'soldoutBeefSashimi'}
+  ];
+
+  sashimiConfig.forEach(cfg => {
+    const itemEl = document.querySelector(`[data-name="${cfg.name}"]`);
+    if (!itemEl) return;
+    const soldout = settings[cfg.key] === 'true';
+    const msgEl = document.getElementById(cfg.msg);
+    if (msgEl) msgEl.classList.toggle('hidden', !soldout);
+    itemEl.querySelectorAll('select, button').forEach(el => { el.disabled = soldout; });
+    if (soldout && document.getElementById(cfg.qty)) {
+      document.getElementById(cfg.qty).value = 0;
+    }
+  });
+
   const bentoConfig = [
     {name: 'Chicken Bento', key: 'soldout_chicken_bento', qty: 'chickenBentoCount', msg: 'soldoutChickenBento'},
     {name: 'Meatlover Bento', key: 'soldout_meatlover_bento', qty: 'meatloverBentoCount', msg: 'soldoutMeatloverBento'},
@@ -5152,6 +5182,10 @@ function updateStatus(settings) {
   }
   banner.style.display = 'block';
   toggleOrderType();
+  Object.keys(cart).forEach(name => {
+    if (isItemSoldOut(name)) delete cart[name];
+  });
+  updateCart();
 }
 
 

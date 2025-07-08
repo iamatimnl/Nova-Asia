@@ -510,6 +510,11 @@ with app.app_context():
         "soldout_dragon_roll": "false",
         "soldout_beef_roll": "false",
         "soldout_chicken_roll": "false",
+        "soldout_salmon_sashimi": "false",
+        "soldout_flamed_salmon_sashimi": "false",
+        "soldout_tonijn_sashimi": "false",
+        "soldout_flamed_tonijn_sashimi": "false",
+        "soldout_beef_sashimi": "false",
         "soldout_xbento": "false",
         "soldout_zalm_bowl": "false",
         "soldout_tuna_bowl": "false",
@@ -975,6 +980,11 @@ def dashboard():
         soldout_dragon_roll=get_value('soldout_dragon_roll', 'false'),
         soldout_beef_roll=get_value('soldout_beef_roll', 'false'),
         soldout_chicken_roll=get_value('soldout_chicken_roll', 'false'),
+        soldout_salmon_sashimi=get_value('soldout_salmon_sashimi', 'false'),
+        soldout_flamed_salmon_sashimi=get_value('soldout_flamed_salmon_sashimi', 'false'),
+        soldout_tonijn_sashimi=get_value('soldout_tonijn_sashimi', 'false'),
+        soldout_flamed_tonijn_sashimi=get_value('soldout_flamed_tonijn_sashimi', 'false'),
+        soldout_beef_sashimi=get_value('soldout_beef_sashimi', 'false'),
         soldout_xbento=get_value('soldout_xbento', 'false'),
         soldout_zalm_bowl=get_value('soldout_zalm_bowl', 'false'),
         soldout_tuna_bowl=get_value('soldout_tuna_bowl', 'false'),
@@ -1038,6 +1048,11 @@ def update_setting():
     soldout_dragon_roll_val = data.get('soldout_dragon_roll', 'false')
     soldout_beef_roll_val = data.get('soldout_beef_roll', 'false')
     soldout_chicken_roll_val = data.get('soldout_chicken_roll', 'false')
+    soldout_salmon_sashimi_val = data.get('soldout_salmon_sashimi', 'false')
+    soldout_flamed_salmon_sashimi_val = data.get('soldout_flamed_salmon_sashimi', 'false')
+    soldout_tonijn_sashimi_val = data.get('soldout_tonijn_sashimi', 'false')
+    soldout_flamed_tonijn_sashimi_val = data.get('soldout_flamed_tonijn_sashimi', 'false')
+    soldout_beef_sashimi_val = data.get('soldout_beef_sashimi', 'false')
     soldout_xbento_val = data.get('soldout_xbento', 'false')
     soldout_zalm_bowl_val = data.get('soldout_zalm_bowl', 'false')
     soldout_tuna_bowl_val = data.get('soldout_tuna_bowl', 'false')
@@ -1088,6 +1103,11 @@ def update_setting():
         ('soldout_dragon_roll', soldout_dragon_roll_val),
         ('soldout_beef_roll', soldout_beef_roll_val),
         ('soldout_chicken_roll', soldout_chicken_roll_val),
+        ('soldout_salmon_sashimi', soldout_salmon_sashimi_val),
+        ('soldout_flamed_salmon_sashimi', soldout_flamed_salmon_sashimi_val),
+        ('soldout_tonijn_sashimi', soldout_tonijn_sashimi_val),
+        ('soldout_flamed_tonijn_sashimi', soldout_flamed_tonijn_sashimi_val),
+        ('soldout_beef_sashimi', soldout_beef_sashimi_val),
         ('soldout_xbento', soldout_xbento_val),
         ('soldout_zalm_bowl', soldout_zalm_bowl_val),
         ('soldout_tuna_bowl', soldout_tuna_bowl_val),
