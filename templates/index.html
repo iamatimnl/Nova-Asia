@@ -2568,6 +2568,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Zalm crispy rice sandwich</h3>
 <p>€ 7.00</p>
+<p id="soldoutZalmCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="zalm-crispy-rice-sandwich">Aantal</label>
 <button class="qty-minus remove-button" data-target="zalm-crispy-rice-sandwich" type="button">-</button>
@@ -2585,6 +2586,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Ebi crispy rice sandwich</h3>
 <p>€ 7.00</p>
+<p id="soldoutEbiCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="ebiCrispyRiceSandwich">Aantal</label>
 <button class="qty-minus remove-button" data-target="ebiCrispyRiceSandwich" type="button">-</button>
@@ -2601,6 +2603,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Beef crispy rice sandwich</h3>
 <p>€ 7.50</p>
+<p id="soldoutBeefCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="beefCrispyRiceSandwich">Aantal</label>
 <button class="qty-minus remove-button" data-target="beefCrispyRiceSandwich" type="button">-</button>
@@ -2617,6 +2620,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>California crispy rice sandwich</h3>
 <p>€ 7.50</p>
+<p id="soldoutCaliforniaCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="californiaCrispyRiceSandwich">Aantal</label>
 <button class="qty-minus remove-button" data-target="californiaCrispyRiceSandwich" type="button">-</button>
@@ -2633,6 +2637,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Chicken crispy rice sandwich</h3>
 <p>€ 7.00</p>
+<p id="soldoutChickenCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="chickenCrispyRiceSandwich">Aantal</label>
 <button class="qty-minus remove-button" data-target="chickenCrispyRiceSandwich" type="button">-</button>
@@ -3005,6 +3010,11 @@ const soldoutMap = {
   "Tonijn sashimi": "soldout_tonijn_sashimi",
   "Flamed tonijn sashimi": "soldout_flamed_tonijn_sashimi",
   "Beef sashimi": "soldout_beef_sashimi",
+  "Zalm crispy rice sandwich": "soldout_zalm_crispy_rice_sandwich",
+  "Ebi crispy rice sandwich": "soldout_ebi_crispy_rice_sandwich",
+  "Beef crispy rice sandwich": "soldout_beef_crispy_rice_sandwich",
+  "California crispy rice sandwich": "soldout_california_crispy_rice_sandwich",
+  "Chicken crispy rice sandwich": "soldout_chicken_crispy_rice_sandwich",
   "Xbento": "soldout_xbento",
   "Zalm Bowl": "soldout_zalm_bowl",
   "Tuna Bowl": "soldout_tuna_bowl",
@@ -4973,6 +4983,26 @@ function updateStatus(settings) {
   ];
 
   sashimiConfig.forEach(cfg => {
+    const itemEl = document.querySelector(`[data-name="${cfg.name}"]`);
+    if (!itemEl) return;
+    const soldout = settings[cfg.key] === 'true';
+    const msgEl = document.getElementById(cfg.msg);
+    if (msgEl) msgEl.classList.toggle('hidden', !soldout);
+    itemEl.querySelectorAll('select, button').forEach(el => { el.disabled = soldout; });
+    if (soldout && document.getElementById(cfg.qty)) {
+      document.getElementById(cfg.qty).value = 0;
+    }
+  });
+
+  const crispyRiceConfig = [
+    {name: 'Zalm crispy rice sandwich', key: 'soldout_zalm_crispy_rice_sandwich', qty: 'zalm-crispy-rice-sandwich', msg: 'soldoutZalmCrispyRiceSandwich'},
+    {name: 'Ebi crispy rice sandwich', key: 'soldout_ebi_crispy_rice_sandwich', qty: 'ebiCrispyRiceSandwich', msg: 'soldoutEbiCrispyRiceSandwich'},
+    {name: 'Beef crispy rice sandwich', key: 'soldout_beef_crispy_rice_sandwich', qty: 'beefCrispyRiceSandwich', msg: 'soldoutBeefCrispyRiceSandwich'},
+    {name: 'California crispy rice sandwich', key: 'soldout_california_crispy_rice_sandwich', qty: 'californiaCrispyRiceSandwich', msg: 'soldoutCaliforniaCrispyRiceSandwich'},
+    {name: 'Chicken crispy rice sandwich', key: 'soldout_chicken_crispy_rice_sandwich', qty: 'chickenCrispyRiceSandwich', msg: 'soldoutChickenCrispyRiceSandwich'}
+  ];
+
+  crispyRiceConfig.forEach(cfg => {
     const itemEl = document.querySelector(`[data-name="${cfg.name}"]`);
     if (!itemEl) return;
     const soldout = settings[cfg.key] === 'true';
