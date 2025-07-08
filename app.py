@@ -541,6 +541,19 @@ with app.app_context():
         "soldout_beef_ramen": "false",
         "soldout_ribeye_ramen": "false",
         "soldout_chasiu_ramen": "false",
+        "soldout_karaage": "false",
+        "soldout_ebi_fry": "false",
+        "soldout_spicy_crispy_chicken": "false",
+        "soldout_chicken_loempia": "false",
+        "soldout_gyoza": "false",
+        "soldout_inktvis_ringen": "false",
+        "soldout_crispy_rijst": "false",
+        "soldout_yakitori": "false",
+        "soldout_mini_loempia": "false",
+        "soldout_edamame": "false",
+        "soldout_kimchi_komkommer": "false",
+        "soldout_kimchi_kool": "false",
+        "soldout_zeewiersalade": "false",
     }
     for k, v in defaults.items():
         if not Setting.query.filter_by(key=k).first():
@@ -1016,6 +1029,19 @@ def dashboard():
         soldout_beef_ramen=get_value('soldout_beef_ramen', 'false'),
         soldout_ribeye_ramen=get_value('soldout_ribeye_ramen', 'false'),
         soldout_chasiu_ramen=get_value('soldout_chasiu_ramen', 'false'),
+        soldout_karaage=get_value('soldout_karaage', 'false'),
+        soldout_ebi_fry=get_value('soldout_ebi_fry', 'false'),
+        soldout_spicy_crispy_chicken=get_value('soldout_spicy_crispy_chicken', 'false'),
+        soldout_chicken_loempia=get_value('soldout_chicken_loempia', 'false'),
+        soldout_gyoza=get_value('soldout_gyoza', 'false'),
+        soldout_inktvis_ringen=get_value('soldout_inktvis_ringen', 'false'),
+        soldout_crispy_rijst=get_value('soldout_crispy_rijst', 'false'),
+        soldout_yakitori=get_value('soldout_yakitori', 'false'),
+        soldout_mini_loempia=get_value('soldout_mini_loempia', 'false'),
+        soldout_edamame=get_value('soldout_edamame', 'false'),
+        soldout_kimchi_komkommer=get_value('soldout_kimchi_komkommer', 'false'),
+        soldout_kimchi_kool=get_value('soldout_kimchi_kool', 'false'),
+        soldout_zeewiersalade=get_value('soldout_zeewiersalade', 'false'),
         sections=sections,
         base_options=bases,
         smaak_options=smaken,
@@ -1089,6 +1115,19 @@ def update_setting():
     soldout_beef_ramen_val = data.get('soldout_beef_ramen', 'false')
     soldout_ribeye_ramen_val = data.get('soldout_ribeye_ramen', 'false')
     soldout_chasiu_ramen_val = data.get('soldout_chasiu_ramen', 'false')
+    soldout_karaage_val = data.get('soldout_karaage', 'false')
+    soldout_ebi_fry_val = data.get('soldout_ebi_fry', 'false')
+    soldout_spicy_crispy_chicken_val = data.get('soldout_spicy_crispy_chicken', 'false')
+    soldout_chicken_loempia_val = data.get('soldout_chicken_loempia', 'false')
+    soldout_gyoza_val = data.get('soldout_gyoza', 'false')
+    soldout_inktvis_ringen_val = data.get('soldout_inktvis_ringen', 'false')
+    soldout_crispy_rijst_val = data.get('soldout_crispy_rijst', 'false')
+    soldout_yakitori_val = data.get('soldout_yakitori', 'false')
+    soldout_mini_loempia_val = data.get('soldout_mini_loempia', 'false')
+    soldout_edamame_val = data.get('soldout_edamame', 'false')
+    soldout_kimchi_komkommer_val = data.get('soldout_kimchi_komkommer', 'false')
+    soldout_kimchi_kool_val = data.get('soldout_kimchi_kool', 'false')
+    soldout_zeewiersalade_val = data.get('soldout_zeewiersalade', 'false')
 
     for key, val in [
         ('is_open', is_open_val),
@@ -1149,6 +1188,19 @@ def update_setting():
         ('soldout_beef_ramen', soldout_beef_ramen_val),
         ('soldout_ribeye_ramen', soldout_ribeye_ramen_val),
         ('soldout_chasiu_ramen', soldout_chasiu_ramen_val),
+        ('soldout_karaage', soldout_karaage_val),
+        ('soldout_ebi_fry', soldout_ebi_fry_val),
+        ('soldout_spicy_crispy_chicken', soldout_spicy_crispy_chicken_val),
+        ('soldout_chicken_loempia', soldout_chicken_loempia_val),
+        ('soldout_gyoza', soldout_gyoza_val),
+        ('soldout_inktvis_ringen', soldout_inktvis_ringen_val),
+        ('soldout_crispy_rijst', soldout_crispy_rijst_val),
+        ('soldout_yakitori', soldout_yakitori_val),
+        ('soldout_mini_loempia', soldout_mini_loempia_val),
+        ('soldout_edamame', soldout_edamame_val),
+        ('soldout_kimchi_komkommer', soldout_kimchi_komkommer_val),
+        ('soldout_kimchi_kool', soldout_kimchi_kool_val),
+        ('soldout_zeewiersalade', soldout_zeewiersalade_val),
     ]:
         s = Setting.query.filter_by(key=key).first()
         if not s:

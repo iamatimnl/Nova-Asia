@@ -225,6 +225,73 @@
             <option value="false" {% if soldout_chicken_crispy_rice_sandwich != 'true' %}selected{% endif %}>Open</option>
             <option value="true" {% if soldout_chicken_crispy_rice_sandwich == 'true' %}selected{% endif %}>Uitverkocht</option>
         </select><br>
+
+        <h3>Snack uitverkocht</h3>
+        <label>Karaage:</label>
+        <select id="soldout_karaage_select">
+            <option value="false" {% if soldout_karaage != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_karaage == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Ebi Fry – 4 st:</label>
+        <select id="soldout_ebi_fry_select">
+            <option value="false" {% if soldout_ebi_fry != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_ebi_fry == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Spicy Crispy Chicken – 5 st:</label>
+        <select id="soldout_spicy_crispy_chicken_select">
+            <option value="false" {% if soldout_spicy_crispy_chicken != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_spicy_crispy_chicken == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Chicken Loempia – 2 st:</label>
+        <select id="soldout_chicken_loempia_select">
+            <option value="false" {% if soldout_chicken_loempia != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_chicken_loempia == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Gyoza – 5 st:</label>
+        <select id="soldout_gyoza_select">
+            <option value="false" {% if soldout_gyoza != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_gyoza == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Inktvis Ringen – 5 st:</label>
+        <select id="soldout_inktvis_ringen_select">
+            <option value="false" {% if soldout_inktvis_ringen != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_inktvis_ringen == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Crispy Rijst – 4 st:</label>
+        <select id="soldout_crispy_rijst_select">
+            <option value="false" {% if soldout_crispy_rijst != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_crispy_rijst == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Yakitori – 4 st:</label>
+        <select id="soldout_yakitori_select">
+            <option value="false" {% if soldout_yakitori != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_yakitori == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Mini Loempia – 6 st:</label>
+        <select id="soldout_mini_loempia_select">
+            <option value="false" {% if soldout_mini_loempia != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_mini_loempia == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Edamame:</label>
+        <select id="soldout_edamame_select">
+            <option value="false" {% if soldout_edamame != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_edamame == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Kimchi Komkommer:</label>
+        <select id="soldout_kimchi_komkommer_select">
+            <option value="false" {% if soldout_kimchi_komkommer != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_kimchi_komkommer == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Kimchi Kool:</label>
+        <select id="soldout_kimchi_kool_select">
+            <option value="false" {% if soldout_kimchi_kool != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_kimchi_kool == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Zeewiersalade – 100g:</label>
+        <select id="soldout_zeewiersalade_select">
+            <option value="false" {% if soldout_zeewiersalade != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_zeewiersalade == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
         <br><br>
 
         <h3>Pokebowl uitverkocht</h3>
@@ -580,6 +647,19 @@
             const soldout_beef_ramen = document.getElementById('soldout_beef_ramen_select').value;
             const soldout_ribeye_ramen = document.getElementById('soldout_ribeye_ramen_select').value;
             const soldout_chasiu_ramen = document.getElementById('soldout_chasiu_ramen_select').value;
+            const soldout_karaage = document.getElementById('soldout_karaage_select').value;
+            const soldout_ebi_fry = document.getElementById('soldout_ebi_fry_select').value;
+            const soldout_spicy_crispy_chicken = document.getElementById('soldout_spicy_crispy_chicken_select').value;
+            const soldout_chicken_loempia = document.getElementById('soldout_chicken_loempia_select').value;
+            const soldout_gyoza = document.getElementById('soldout_gyoza_select').value;
+            const soldout_inktvis_ringen = document.getElementById('soldout_inktvis_ringen_select').value;
+            const soldout_crispy_rijst = document.getElementById('soldout_crispy_rijst_select').value;
+            const soldout_yakitori = document.getElementById('soldout_yakitori_select').value;
+            const soldout_mini_loempia = document.getElementById('soldout_mini_loempia_select').value;
+            const soldout_edamame = document.getElementById('soldout_edamame_select').value;
+            const soldout_kimchi_komkommer = document.getElementById('soldout_kimchi_komkommer_select').value;
+            const soldout_kimchi_kool = document.getElementById('soldout_kimchi_kool_select').value;
+            const soldout_zeewiersalade = document.getElementById('soldout_zeewiersalade_select').value;
 
             fetch('/dashboard/update', {
                 method: 'POST',
@@ -642,7 +722,20 @@
                     soldout_chicken_ramen: soldout_chicken_ramen,
                     soldout_beef_ramen: soldout_beef_ramen,
                     soldout_ribeye_ramen: soldout_ribeye_ramen,
-                    soldout_chasiu_ramen: soldout_chasiu_ramen
+                    soldout_chasiu_ramen: soldout_chasiu_ramen,
+                    soldout_karaage: soldout_karaage,
+                    soldout_ebi_fry: soldout_ebi_fry,
+                    soldout_spicy_crispy_chicken: soldout_spicy_crispy_chicken,
+                    soldout_chicken_loempia: soldout_chicken_loempia,
+                    soldout_gyoza: soldout_gyoza,
+                    soldout_inktvis_ringen: soldout_inktvis_ringen,
+                    soldout_crispy_rijst: soldout_crispy_rijst,
+                    soldout_yakitori: soldout_yakitori,
+                    soldout_mini_loempia: soldout_mini_loempia,
+                    soldout_edamame: soldout_edamame,
+                    soldout_kimchi_komkommer: soldout_kimchi_komkommer,
+                    soldout_kimchi_kool: soldout_kimchi_kool,
+                    soldout_zeewiersalade: soldout_zeewiersalade
                 })
             })
             .then(response => response.json())

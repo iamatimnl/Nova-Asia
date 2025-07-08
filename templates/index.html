@@ -2658,6 +2658,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Karaage (Japanse gefrituurde kip)</h3>
 <p>€ 6.50</p>
+<p id="soldoutKaraage" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="snackCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="snackCount" type="button">-</button>
@@ -2674,6 +2675,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Ebi Fry – 4 st</h3>
     <p>€ 6.20</p>
+    <p id="soldoutEbiFry" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
       <label for="ebiFryCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="ebiFryCount" type="button">-</button>
@@ -2690,6 +2692,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Spicy Crispy Chicken – 5 st</h3>
     <p>€ 5.50</p>
+    <p id="soldoutSpicyCrispyChicken" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
       <label for="spicyCrispyChickenCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="spicyCrispyChickenCount" type="button">-</button>
@@ -2706,6 +2709,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Chicken Loempia – 2 st</h3>
     <p>€ 5.00</p>
+    <p id="soldoutChickenLoempia" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
       <label for="chickenLoempiaCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="chickenLoempiaCount" type="button">-</button>
@@ -2722,6 +2726,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Gyoza – 5 st</h3>
     <p>€ 5.00</p>
+    <p id="soldoutGyoza" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
       <label for="gyozaCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="gyozaCount" type="button">-</button>
@@ -2738,6 +2743,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Inktvis Ringen – 5 st</h3>
     <p>€ 5.00</p>
+    <p id="soldoutInktvisRingen" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
       <label for="inktvisRingenCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="inktvisRingenCount" type="button">-</button>
@@ -2754,6 +2760,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Crispy Rijst – 4 st</h3>
     <p>€ 4.00</p>
+    <p id="soldoutCrispyRijst" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
       <label for="crispyRijstCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="crispyRijstCount" type="button">-</button>
@@ -2770,6 +2777,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Yakitori – 4 st</h3>
     <p>€ 6.00</p>
+    <p id="soldoutYakitori" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
       <label for="yakitoriCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="yakitoriCount" type="button">-</button>
@@ -2786,6 +2794,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Mini Loempia – 6 st</h3>
     <p>€ 3.50</p>
+    <p id="soldoutMiniLoempia" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
       <label for="miniLoempiaCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="miniLoempiaCount" type="button">-</button>
@@ -2802,6 +2811,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Edamame</h3>
     <p>€ 4.50</p>
+    <p id="soldoutEdamame" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
       <label for="edamameCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="edamameCount" type="button">-</button>
@@ -2818,6 +2828,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Kimchi Komkommer</h3>
     <p>€ 4.50</p>
+    <p id="soldoutKimchiKomkommer" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
       <label for="kimchiKomkommerCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="kimchiKomkommerCount" type="button">-</button>
@@ -2834,6 +2845,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Kimchi Kool</h3>
     <p>€ 5.00</p>
+    <p id="soldoutKimchiKool" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
       <label for="kimchiKoolCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="kimchiKoolCount" type="button">-</button>
@@ -2850,6 +2862,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Zeewiersalade – 100g</h3>
     <p>€ 5.00</p>
+    <p id="soldoutZeewiersalade" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
       <label for="zeewiersaladeCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="zeewiersaladeCount" type="button">-</button>
@@ -3035,7 +3048,20 @@ const soldoutMap = {
   "Chicken": "soldout_chicken_ramen",
   "Beef": "soldout_beef_ramen",
   "Ribeye": "soldout_ribeye_ramen",
-  "Chasiu": "soldout_chasiu_ramen"
+  "Chasiu": "soldout_chasiu_ramen",
+  "Karaage": "soldout_karaage",
+  "Ebi Fry": "soldout_ebi_fry",
+  "Spicy Crispy Chicken": "soldout_spicy_crispy_chicken",
+  "Chicken Loempia": "soldout_chicken_loempia",
+  "Gyoza": "soldout_gyoza",
+  "Inktvis Ringen": "soldout_inktvis_ringen",
+  "Crispy Rijst": "soldout_crispy_rijst",
+  "Yakitori": "soldout_yakitori",
+  "Mini Loempia": "soldout_mini_loempia",
+  "Edamame": "soldout_edamame",
+  "Kimchi Komkommer": "soldout_kimchi_komkommer",
+  "Kimchi Kool": "soldout_kimchi_kool",
+  "Zeewiersalade": "soldout_zeewiersalade"
 };
 
 function isItemSoldOut(name){
@@ -5003,6 +5029,34 @@ function updateStatus(settings) {
   ];
 
   crispyRiceConfig.forEach(cfg => {
+    const itemEl = document.querySelector(`[data-name="${cfg.name}"]`);
+    if (!itemEl) return;
+    const soldout = settings[cfg.key] === 'true';
+    const msgEl = document.getElementById(cfg.msg);
+    if (msgEl) msgEl.classList.toggle('hidden', !soldout);
+    itemEl.querySelectorAll('select, button').forEach(el => { el.disabled = soldout; });
+    if (soldout && document.getElementById(cfg.qty)) {
+      document.getElementById(cfg.qty).value = 0;
+    }
+  });
+
+  const snackConfig = [
+    {name: 'Karaage', key: 'soldout_karaage', qty: 'snackCount', msg: 'soldoutKaraage'},
+    {name: 'Ebi Fry – 4 st', key: 'soldout_ebi_fry', qty: 'ebiFryCount', msg: 'soldoutEbiFry'},
+    {name: 'Spicy Crispy Chicken – 5 st', key: 'soldout_spicy_crispy_chicken', qty: 'spicyCrispyChickenCount', msg: 'soldoutSpicyCrispyChicken'},
+    {name: 'Chicken Loempia – 2 st', key: 'soldout_chicken_loempia', qty: 'chickenLoempiaCount', msg: 'soldoutChickenLoempia'},
+    {name: 'Gyoza – 5 st', key: 'soldout_gyoza', qty: 'gyozaCount', msg: 'soldoutGyoza'},
+    {name: 'Inktvis Ringen – 5 st', key: 'soldout_inktvis_ringen', qty: 'inktvisRingenCount', msg: 'soldoutInktvisRingen'},
+    {name: 'Crispy Rijst – 4 st', key: 'soldout_crispy_rijst', qty: 'crispyRijstCount', msg: 'soldoutCrispyRijst'},
+    {name: 'Yakitori – 4 st', key: 'soldout_yakitori', qty: 'yakitoriCount', msg: 'soldoutYakitori'},
+    {name: 'Mini Loempia – 6 st', key: 'soldout_mini_loempia', qty: 'miniLoempiaCount', msg: 'soldoutMiniLoempia'},
+    {name: 'Edamame', key: 'soldout_edamame', qty: 'edamameCount', msg: 'soldoutEdamame'},
+    {name: 'Kimchi Komkommer', key: 'soldout_kimchi_komkommer', qty: 'kimchiKomkommerCount', msg: 'soldoutKimchiKomkommer'},
+    {name: 'Kimchi Kool', key: 'soldout_kimchi_kool', qty: 'kimchiKoolCount', msg: 'soldoutKimchiKool'},
+    {name: 'Zeewiersalade – 100g', key: 'soldout_zeewiersalade', qty: 'zeewiersaladeCount', msg: 'soldoutZeewiersalade'}
+  ];
+
+  snackConfig.forEach(cfg => {
     const itemEl = document.querySelector(`[data-name="${cfg.name}"]`);
     if (!itemEl) return;
     const soldout = settings[cfg.key] === 'true';
