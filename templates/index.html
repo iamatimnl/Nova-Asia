@@ -2383,23 +2383,31 @@ input:focus, select:focus, textarea:focus {
         <img src="{{ url_for('static', filename='images/Xbowl.png') }}" alt="X-Bowl">
       </div>
       <div class="menu-content">
-        <h3>X-Bowl</h3>
+        <h3>X-Bowl (Vrije samenstelling)</h3>
+        <p>Prijs afhankelijk van keuzes</p>
         <p id="soldoutXBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="bubble-option">
           <select id="xBowlBase">
             <option value="">Basis</option>
-            <option value="Sushi rijst" data-price="4">Sushi rijst (€4.00)</option>
-            <option value="IJsbergsla" data-price="5">IJsbergsla (€5.00)</option>
-            <option value="Tempura crispy rijst" data-price="6">Tempura crispy rijst (€6.00)</option>
+            <option value="Zalm" data-price="15">Zalm</option>
+            <option value="Tonijn" data-price="15">Tonijn</option>
+            <option value="Kip" data-price="15">Kip</option>
+            <option value="Vega" data-price="13">Vega</option>
           </select>
         </div>
-        <div id="xBowlMains"></div>
-        <div id="xBowlToppings"></div>
-        <div class="new-set-wrap hidden" id="xBowlNewWrap">
-          <span class="new-set-msg">✅ Toegevoegd. Nieuw selecteren?</span>
-          <button type="button" class="new-set-button" id="xBowlNew">druk op</button>
+        <div class="bubble-option">
+          <select id="xBowlSauce">
+            <option value="">Saus</option>
+            <option value="Teriyaki" data-price="0">Teriyaki</option>
+            <option value="Spicy" data-price="0">Spicy</option>
+          </select>
         </div>
-        <button type="button" class="new-set-button" id="xBowlAdd">➕</button>
+        <div class="qty-box">
+          <label for="xBowlQty">Aantal</label>
+          <button class="qty-minus remove-button" data-target="xBowlQty" type="button">-</button>
+          <select id="xBowlQty" class="qty-select" name="xBowlQty"></select>
+          <button class="qty-plus add-button" data-target="xBowlQty" type="button">+</button>
+        </div>
       </div>
     </div>
 
@@ -3405,111 +3413,25 @@ function changeXbentoQty(delta) {
   if (xbentoSetControls) xbentoSetControls.update();
 }
 
-const xBowlMainOptions = [
-  {name:'Zalm',price:9},{name:'Tonijn',price:9},{name:'Gamba',price:8},
-  {name:'Crispy chicken',price:8},{name:'Spicy crispy chicken',price:8},
-  {name:'Teriyaki beef',price:9},{name:'Teriyaki chicken',price:9},
-  {name:'Ribeye',price:9},{name:'Unagi',price:9},{name:'Spicy tuna',price:9},
-  {name:'Krabstick',price:8}
-];
-const xBowlToppingOptions = ['Komkommer','Avocado','Sojabonen','Mais','Zeewiersalade','Masago','Inari','Tamago'];
+function changeXbowlQty(delta) {
+  const qtySel = document.getElementById('xBowlQty');
+  let val = parseInt(qtySel.value || 0);
 
-function createXbowlMainSelect() {
-  const wrap = document.createElement('div');
-  wrap.className = 'bubble-option';
-  const sel = document.createElement('select');
-  sel.innerHTML = '<option value="">Hoofdingrediënt</option>';
-  xBowlMainOptions.forEach(o => {
-    const opt = document.createElement('option');
-    opt.value = o.name;
-    opt.textContent = `${o.name} (€${o.price.toFixed(2)})`;
-    opt.dataset.price = o.price;
-    sel.appendChild(opt);
-  });
-  const del = document.createElement('button');
-  del.type = 'button';
-  del.textContent = '❌';
-  del.className = 'remove-button';
-  del.addEventListener('click', () => wrap.remove());
-  sel.addEventListener('change', () => {
-    if (wrap.parentElement.lastElementChild === wrap && sel.value) addXbowlMainSelect();
-  });
-  wrap.appendChild(sel);
-  wrap.appendChild(del);
-  return wrap;
-}
-
-function addXbowlMainSelect() {
-  document.getElementById('xBowlMains').appendChild(createXbowlMainSelect());
-}
-
-function createXbowlToppingSelect() {
-  const wrap = document.createElement('div');
-  wrap.className = 'bubble-option';
-  const sel = document.createElement('select');
-  sel.innerHTML = '<option value="">Topping</option>';
-  xBowlToppingOptions.forEach(t => {
-    const opt = document.createElement('option');
-    opt.value = t;
-    opt.textContent = t;
-    sel.appendChild(opt);
-  });
-  const del = document.createElement('button');
-  del.type = 'button';
-  del.textContent = '❌';
-  del.className = 'remove-button';
-  del.addEventListener('click', () => wrap.remove());
-  sel.addEventListener('change', () => {
-    if (wrap.parentElement.lastElementChild === wrap && sel.value) addXbowlToppingSelect();
-  });
-  wrap.appendChild(sel);
-  wrap.appendChild(del);
-  return wrap;
-}
-
-function addXbowlToppingSelect() {
-  document.getElementById('xBowlToppings').appendChild(createXbowlToppingSelect());
-}
-
-function calcXbowlPrice() {
   const baseOpt = document.querySelector('#xBowlBase option:checked');
-  let price = parseFloat(baseOpt?.dataset.price || 0);
-  document.querySelectorAll('#xBowlMains select').forEach(sel => {
-    const opt = sel.selectedOptions[0];
-    if (opt && opt.dataset.price) price += parseFloat(opt.dataset.price);
-  });
-  const toppingCount = Array.from(document.querySelectorAll('#xBowlToppings select')).filter(s => s.value).length;
-  price += toppingCount * 1.5;
-  return price;
-}
+  const sauceOpt = document.querySelector('#xBowlSauce option:checked');
 
-function buildXbowlName() {
-  const base = document.getElementById('xBowlBase').value;
-  const mains = Array.from(document.querySelectorAll('#xBowlMains select')).map(s => s.value).filter(Boolean);
-  const toppings = Array.from(document.querySelectorAll('#xBowlToppings select')).map(s => s.value).filter(Boolean);
-  let parts = [base];
-  if (mains.length) parts.push(mains.join(', '));
-  if (toppings.length) parts.push(toppings.join(', '));
-  return `X-Bowl (${parts.join(' | ')})`;
-}
+  if (!baseOpt.value || !sauceOpt.value) return;
 
-function addXbowlToCart() {
-  const price = calcXbowlPrice();
-  const name = buildXbowlName();
-  const current = cart[name] ? cart[name].qty : 0;
-  setQty(name, price, current + 1, DEFAULT_PACKAGING_FEE);
-  document.getElementById('xBowlNewWrap').classList.remove('hidden');
-}
+  val = Math.max(0, Math.min(20, val + delta));
+  qtySel.value = val;
 
-function clearXbowlSet() {
-  document.getElementById('xBowlBase').value = '';
-  document.getElementById('xBowlMains').innerHTML = '';
-  document.getElementById('xBowlToppings').innerHTML = '';
-  addXbowlMainSelect();
-  addXbowlToppingSelect();
-  document.getElementById('xBowlNewWrap').classList.add('hidden');
-}
+  const basePrice = parseFloat(baseOpt.dataset.price || 0);
+  const saucePrice = parseFloat(sauceOpt.dataset.price || 0);
+  const price = basePrice + saucePrice;
 
+  const fullName = `X-Bowl (${baseOpt.value}, ${sauceOpt.value})`;
+  setQty(fullName, price, val, DEFAULT_PACKAGING_FEE);
+}
 
 function changeOmakaseQty(delta) {
   const qtySel = document.getElementById('sushiBentoCount');
@@ -3612,8 +3534,8 @@ function setDragonQty() {
 
   function isXbowlValid() {
     const base = document.getElementById('xBowlBase').value;
-    const hasMain = Array.from(document.querySelectorAll('#xBowlMains select')).some(s => s.value);
-    return base && hasMain;
+    const sauce = document.getElementById('xBowlSauce').value;
+    return base && sauce;
   }
 
   bubbleSetControls = initNewSetControls({
@@ -3642,8 +3564,6 @@ function setDragonQty() {
     fieldIds: ['xBentoMain','xBentoSide','xBentoRice','xBentoVeg']
   });
   xbentoSetControls.update();
-  addXbowlMainSelect();
-  addXbowlToppingSelect();
 
   // 🧋 奶茶按钮加减
   document.querySelector('.qty-plus[data-target="bubbleTeaQty"]').addEventListener('click', () => {
@@ -3679,15 +3599,22 @@ function setDragonQty() {
     changeXbentoQty(-1);
   });
 
-  // 🥗 X-Bowl toevoegen
-  document.getElementById('xBowlAdd').addEventListener('click', () => {
+  // 🥗 X-Bowl buttons
+  document.querySelector('.qty-plus[data-target="xBowlQty"]').addEventListener('click', () => {
     if (!isXbowlValid()) {
-      alert('🥗 Kies basis en minimaal één hoofdingrediënt voor je X-Bowl.');
+      alert('🥗 Kies eerst basis en saus voor je X-Bowl.');
       return;
     }
-    addXbowlToCart();
+    changeXbowlQty(1);
   });
-  document.getElementById('xBowlNew').addEventListener('click', clearXbowlSet);
+
+  document.querySelector('.qty-minus[data-target="xBowlQty"]').addEventListener('click', () => {
+    if (!isXbowlValid()) {
+      alert('🥗 Kies eerst basis en saus voor je X-Bowl.');
+      return;
+    }
+    changeXbowlQty(-1);
+  });
 
 
   // 🧋 奶茶 select 直接选择数量时
@@ -3710,9 +3637,17 @@ function setDragonQty() {
     changeXbentoQty(0);
   });
 
+  document.getElementById('xBowlQty').addEventListener('change', () => {
+    if (!isXbowlValid()) {
+      alert('🥗 Kies eerst basis en saus voor je X-Bowl.');
+      document.getElementById('xBowlQty').value = 0;
+      return;
+    }
+    changeXbowlQty(0);
+  });
 
   // 🧁 初始化下拉数量为 0～20
-  ['bubbleTeaQty','xBentoQty','ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty'].forEach(id => {
+  ['bubbleTeaQty','xBentoQty','xBowlQty','ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty'].forEach(id => {
     const sel = document.getElementById(id);
     for (let i = 0; i <= 20; i++) {
       const opt = document.createElement('option');
@@ -3968,7 +3903,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   document.querySelectorAll('.menu-item select').forEach(sel => {
-    if (['bubbleTeaQty','bubbleType','bubbleFlavor','bubbleTopping','xBentoMain','xBentoSide','xBentoRice','xBentoVeg','xBowlBase','ebiBase','ebiSmaak','ebiQty','chickenBase','chickenSmaak','chickenQty','beefBase','beefSmaak','beefQty','ribeyeBase','ribeyeSmaak','ribeyeQty','chasiuBase','chasiuSmaak','chasiuQty'].includes(sel.id)) return;
+    if (['bubbleTeaQty','bubbleType','bubbleFlavor','bubbleTopping','xBentoMain','xBentoSide','xBentoRice','xBentoVeg','xBowlBase','xBowlSauce','xBowlQty','ebiBase','ebiSmaak','ebiQty','chickenBase','chickenSmaak','chickenQty','beefBase','beefSmaak','beefQty','ribeyeBase','ribeyeSmaak','ribeyeQty','chasiuBase','chasiuSmaak','chasiuQty'].includes(sel.id)) return;
     populateSelect(sel);
     const parent = sel.closest('.menu-item');
     const name = parent.dataset.name;
@@ -3986,7 +3921,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.querySelectorAll('.qty-plus').forEach(btn => {
-    if (['bubbleTeaQty','xBentoQty','ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty'].includes(btn.dataset.target)) return;
+    if (['bubbleTeaQty','xBentoQty','xBowlQty','ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty'].includes(btn.dataset.target)) return;
     btn.addEventListener('click', () => {
       const sel = document.getElementById(btn.dataset.target);
       let val = parseInt(sel.value);
@@ -4005,7 +3940,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.querySelectorAll('.qty-minus').forEach(btn => {
-    if (['bubbleTeaQty','xBentoQty','ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty'].includes(btn.dataset.target)) return;
+    if (['bubbleTeaQty','xBentoQty','xBowlQty','ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty'].includes(btn.dataset.target)) return;
     btn.addEventListener('click', () => {
       const sel = document.getElementById(btn.dataset.target);
       let val = parseInt(sel.value);
