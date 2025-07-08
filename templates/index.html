@@ -2706,7 +2706,7 @@ input:focus, select:focus, textarea:focus {
 <!-- Ebi Fry -->
 <div class="menu-row menu-item" data-name="Ebi Fry – 4 st" data-packaging="0.2" data-price="6.2">
   <div class="menu-img">
-    <img alt="Ebi Fry" loading="lazy" src="{{ url_for('static', filename='images/Ebi.png') }}">
+    <img alt="Ebi Fry" loading="lazy" src="{{ url_for('static', filename='images/EB.png') }}">
     </img></div>
   <div class="menu-content">
     <h3>Ebi Fry – 4 st</h3>
@@ -2723,7 +2723,7 @@ input:focus, select:focus, textarea:focus {
 <!-- Spicy Crispy Chicken -->
 <div class="menu-row menu-item" data-name="Spicy Crispy Chicken – 5 st" data-packaging="0.2" data-price="5.5">
   <div class="menu-img">
-    <img alt="Spicy Crispy Chicken" loading="lazy" src="{{ url_for('static', filename='images/chicken-crispy.png') }}">
+    <img alt="Spicy Crispy Chicken" loading="lazy" src="{{ url_for('static', filename='images/karaage.png') }}">
     </img></div>
   <div class="menu-content">
     <h3>Spicy Crispy Chicken – 5 st</h3>
@@ -2740,7 +2740,7 @@ input:focus, select:focus, textarea:focus {
 <!-- Chicken Loempia -->
 <div class="menu-row menu-item" data-name="Chicken Loempia – 2 st" data-packaging="0.2" data-price="5">
   <div class="menu-img">
-    <img alt="Chicken Loempia" loading="lazy" src="{{ url_for('static', filename='images/st.png') }}">
+    <img alt="Chicken Loempia" loading="lazy" src="{{ url_for('static', filename='KIPL.png') }}">
     </img></div>
   <div class="menu-content">
     <h3>Chicken Loempia – 2 st</h3>
@@ -2757,7 +2757,7 @@ input:focus, select:focus, textarea:focus {
 <!-- Gyoza -->
 <div class="menu-row menu-item" data-name="Gyoza – 5 st" data-packaging="0.2" data-price="5">
   <div class="menu-img">
-    <img alt="Gyoza" loading="lazy" src="{{ url_for('static', filename='images/dimsum-bento.png') }}">
+    <img alt="Gyoza" loading="lazy" src="{{ url_for('static', filename='images/GYO.png') }}">
     </img></div>
   <div class="menu-content">
     <h3>Gyoza – 5 st</h3>
@@ -2774,7 +2774,7 @@ input:focus, select:focus, textarea:focus {
 <!-- Inktvis Ringen -->
 <div class="menu-row menu-item" data-name="Inktvis Ringen – 5 st" data-packaging="0.2" data-price="5">
   <div class="menu-img">
-    <img alt="Inktvis Ringen" loading="lazy" src="{{ url_for('static', filename='images/ss.png') }}">
+    <img alt="Inktvis Ringen" loading="lazy" src="{{ url_for('static', filename='images/INKT.png') }}">
     </img></div>
   <div class="menu-content">
     <h3>Inktvis Ringen – 5 st</h3>
@@ -2808,7 +2808,7 @@ input:focus, select:focus, textarea:focus {
 <!-- Yakitori -->
 <div class="menu-row menu-item" data-name="Yakitori – 4 st" data-packaging="0.2" data-price="6">
   <div class="menu-img">
-    <img alt="Yakitori" loading="lazy" src="{{ url_for('static', filename='images/teri鸡.png') }}">
+    <img alt="Yakitori" loading="lazy" src="{{ url_for('static', filename='images/YAK.png') }}">
     </img></div>
   <div class="menu-content">
     <h3>Yakitori – 4 st</h3>
@@ -2825,7 +2825,7 @@ input:focus, select:focus, textarea:focus {
 <!-- Mini Loempia -->
 <div class="menu-row menu-item" data-name="Mini Loempia – 6 st" data-packaging="0.2" data-price="3.5">
   <div class="menu-img">
-    <img alt="Mini Loempia" loading="lazy" src="{{ url_for('static', filename='images/st.png') }}">
+    <img alt="Mini Loempia" loading="lazy" src="{{ url_for('static', filename='images/LOM.png') }}">
     </img></div>
   <div class="menu-content">
     <h3>Mini Loempia – 6 st</h3>
@@ -2842,7 +2842,7 @@ input:focus, select:focus, textarea:focus {
 <!-- Edamame -->
 <div class="menu-row menu-item" data-name="Edamame" data-packaging="0.2" data-price="4.5">
   <div class="menu-img">
-    <img alt="Edamame" loading="lazy" src="{{ url_for('static', filename='images/zwp.png') }}">
+    <img alt="Edamame" loading="lazy" src="{{ url_for('static', filename='images/EDA.png') }}">
     </img></div>
   <div class="menu-content">
     <h3>Edamame</h3>
@@ -2859,7 +2859,7 @@ input:focus, select:focus, textarea:focus {
 <!-- Kimchi Komkommer -->
 <div class="menu-row menu-item" data-name="Kimchi Komkommer" data-packaging="0.2" data-price="4.5">
   <div class="menu-img">
-    <img alt="Kimchi Komkommer" loading="lazy" src="{{ url_for('static', filename='images/nrp.png') }}">
+    <img alt="Kimchi Komkommer" loading="lazy" src="{{ url_for('static', filename='images/KKK.png') }}">
     </img></div>
   <div class="menu-content">
     <h3>Kimchi Komkommer</h3>
@@ -2890,7 +2890,29 @@ input:focus, select:focus, textarea:focus {
     </div>
   </div>
 </div>
+
+ <div class="menu-row menu-item" data-name="Ebi kroket" data-packaging="0.2" data-price="5">
+  <div class="menu-img">
+    <img alt="Ebi kroket" loading="lazy" src="{{ url_for('static', filename='images/KRO.png') }}">
+    </img></div>
+  <div class="menu-content">
+    <h3>Ebi kroket 4st</h3>
+    <p>€ 5.00</p>
+    <p id="soldoutEbikroket" class="sold-out-msg hidden">Uitverkocht!</p>
+    <div class="qty-box">
+      <label for="ebikroketCount">Aantal</label>
+      <button class="qty-minus remove-button" data-target="ebikroketCount" type="button">-</button>
+      <select id="ebikroketCount" name="ebikroketCount"></select>
+      <button class="qty-plus add-button" data-target="ebikroketCount" type="button">+</button>
+    </div>
+  </div>
+</div> 
+
+
+
+  
 <!-- Zeewiersalade -->
+  
 <div class="menu-row menu-item" data-name="Zeewiersalade – 100g" data-packaging="0.2" data-price="5">
   <div class="menu-img">
     <img alt="Zeewiersalade" loading="lazy" src="{{ url_for('static', filename='images/ss.png') }}">
