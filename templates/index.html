@@ -2257,6 +2257,25 @@ input:focus, select:focus, textarea:focus {
       </div>
     </div>
 
+
+
+    <div class="menu-row menu-item" data-name="Unagi Bowl" data-price="16" data-packaging="0.2">
+      <div class="menu-img">
+        <img src="{{ url_for('static', filename='images/Unagi.jpg') }}" alt="Vega Bowl">
+      </div>
+      <div class="menu-content">
+        <h3>Unagi Bowl (Gerilde paling)</h3>
+        <p>€ 16.00</p>
+        <p id="soldoutVegaBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <div class="qty-box">
+          <label for="unagiBowlQty">Aantal</label>
+          <button class="qty-minus remove-button" data-target="unagiBowlQty" type="button">-</button>
+          <select id="unagiBowlQty" name="unagiBowlQty"></select>
+          <button class="qty-plus add-button" data-target="unagiBowlQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
+
     <div class="menu-row menu-item" data-name="Vega Bowl" data-price="13" data-packaging="0.2">
       <div class="menu-img">
         <img src="{{ url_for('static', filename='images/vega-bowl.jpg') }}" alt="Vega Bowl">
