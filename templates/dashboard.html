@@ -149,6 +149,29 @@
         </select>
         <br><br>
 
+        <h3>Special Roll uitverkocht</h3>
+        <label>Salmon Roll Omakase:</label>
+        <select id="soldout_salmon_roll_select">
+            <option value="false" {% if soldout_salmon_roll != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_salmon_roll == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Dragon Roll Omakase:</label>
+        <select id="soldout_dragon_roll_select">
+            <option value="false" {% if soldout_dragon_roll != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_dragon_roll == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Beef Roll Omakase:</label>
+        <select id="soldout_beef_roll_select">
+            <option value="false" {% if soldout_beef_roll != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_beef_roll == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Chicken Roll Omakase:</label>
+        <select id="soldout_chicken_roll_select">
+            <option value="false" {% if soldout_chicken_roll != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_chicken_roll == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <br><br>
+
         <h3>Pokebowl uitverkocht</h3>
         <label>Zalm Bowl:</label>
         <select id="soldout_zalm_bowl_select">
@@ -467,6 +490,10 @@
             const soldout_lamskotelet_bento = document.getElementById('soldout_lamskotelet_bento_select').value;
             const soldout_veggie_bento = document.getElementById('soldout_veggie_bento_select').value;
             const soldout_sushi_bento = document.getElementById('soldout_sushi_bento_select').value;
+            const soldout_salmon_roll = document.getElementById('soldout_salmon_roll_select').value;
+            const soldout_dragon_roll = document.getElementById('soldout_dragon_roll_select').value;
+            const soldout_beef_roll = document.getElementById('soldout_beef_roll_select').value;
+            const soldout_chicken_roll = document.getElementById('soldout_chicken_roll_select').value;
             const soldout_xbento = document.getElementById('soldout_xbento_select').value;
             const soldout_zalm_bowl = document.getElementById('soldout_zalm_bowl_select').value;
             const soldout_tuna_bowl = document.getElementById('soldout_tuna_bowl_select').value;
@@ -516,6 +543,10 @@
                     soldout_lamskotelet_bento: soldout_lamskotelet_bento,
                     soldout_veggie_bento: soldout_veggie_bento,
                     soldout_sushi_bento: soldout_sushi_bento,
+                    soldout_salmon_roll: soldout_salmon_roll,
+                    soldout_dragon_roll: soldout_dragon_roll,
+                    soldout_beef_roll: soldout_beef_roll,
+                    soldout_chicken_roll: soldout_chicken_roll,
                     soldout_xbento: soldout_xbento,
                     soldout_zalm_bowl: soldout_zalm_bowl,
                     soldout_tuna_bowl: soldout_tuna_bowl,

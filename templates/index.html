@@ -2406,6 +2406,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Salmon Roll Omakase</h3>
 <p>9 st verrassing samengesteld<br/>€ 16.00</p>
+<p id="soldoutSalmonRoll" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="salmonRollCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="salmonRollCount" type="button">-</button>
@@ -2421,6 +2422,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Dragon Roll Omakase</h3>
 <p>9 st verrassing samengesteld<br/>€ 16.00</p>
+<p id="soldoutDragonRoll" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="dragonRollCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="dragonRollCount" type="button">-</button>
@@ -2437,6 +2439,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Beef Roll Omakase</h3>
 <p>9 st verrassing samengesteld<br/>€ 16.00</p>
+<p id="soldoutBeefRoll" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="beefRollCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="beefRollCount" type="button">-</button>
@@ -2452,6 +2455,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Chicken Roll Omakase</h3>
 <p>9 st verrassing samengesteld<br/>€ 16.00</p>
+<p id="soldoutChickenRoll" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="chickenRollCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="chickenRollCount" type="button">-</button>
@@ -2987,6 +2991,10 @@ const soldoutMap = {
   "Lamskotelet Bento": "soldout_lamskotelet_bento",
   "Veggie Bento": "soldout_veggie_bento",
   "Bento Sushi Omakase": "soldout_sushi_bento",
+  "Salmon Roll Omakase": "soldout_salmon_roll",
+  "Dragon Roll Omakase": "soldout_dragon_roll",
+  "Beef Roll Omakase": "soldout_beef_roll",
+  "Chicken Roll Omakase": "soldout_chicken_roll",
   "Xbento": "soldout_xbento",
   "Zalm Bowl": "soldout_zalm_bowl",
   "Tuna Bowl": "soldout_tuna_bowl",
@@ -4926,6 +4934,25 @@ function updateStatus(settings) {
       if (bubbleSetControls) bubbleSetControls.update();
     }
   }
+
+  const rollConfig = [
+    {name: 'Salmon Roll Omakase', key: 'soldout_salmon_roll', qty: 'salmonRollCount', msg: 'soldoutSalmonRoll'},
+    {name: 'Dragon Roll Omakase', key: 'soldout_dragon_roll', qty: 'dragonRollCount', msg: 'soldoutDragonRoll'},
+    {name: 'Beef Roll Omakase', key: 'soldout_beef_roll', qty: 'beefRollCount', msg: 'soldoutBeefRoll'},
+    {name: 'Chicken Roll Omakase', key: 'soldout_chicken_roll', qty: 'chickenRollCount', msg: 'soldoutChickenRoll'}
+  ];
+
+  rollConfig.forEach(cfg => {
+    const itemEl = document.querySelector(`[data-name="${cfg.name}"]`);
+    if (!itemEl) return;
+    const soldout = settings[cfg.key] === 'true';
+    const msgEl = document.getElementById(cfg.msg);
+    if (msgEl) msgEl.classList.toggle('hidden', !soldout);
+    itemEl.querySelectorAll('select, button').forEach(el => { el.disabled = soldout; });
+    if (soldout && document.getElementById(cfg.qty)) {
+      document.getElementById(cfg.qty).value = 0;
+    }
+  });
 
   const bentoConfig = [
     {name: 'Chicken Bento', key: 'soldout_chicken_bento', qty: 'chickenBentoCount', msg: 'soldoutChickenBento'},

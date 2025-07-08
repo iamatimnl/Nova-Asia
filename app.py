@@ -506,6 +506,10 @@ with app.app_context():
         "soldout_lamskotelet_bento": "false",
         "soldout_veggie_bento": "false",
         "soldout_sushi_bento": "false",
+        "soldout_salmon_roll": "false",
+        "soldout_dragon_roll": "false",
+        "soldout_beef_roll": "false",
+        "soldout_chicken_roll": "false",
         "soldout_xbento": "false",
         "soldout_zalm_bowl": "false",
         "soldout_tuna_bowl": "false",
@@ -967,6 +971,10 @@ def dashboard():
         soldout_lamskotelet_bento=get_value('soldout_lamskotelet_bento', 'false'),
         soldout_veggie_bento=get_value('soldout_veggie_bento', 'false'),
         soldout_sushi_bento=get_value('soldout_sushi_bento', 'false'),
+        soldout_salmon_roll=get_value('soldout_salmon_roll', 'false'),
+        soldout_dragon_roll=get_value('soldout_dragon_roll', 'false'),
+        soldout_beef_roll=get_value('soldout_beef_roll', 'false'),
+        soldout_chicken_roll=get_value('soldout_chicken_roll', 'false'),
         soldout_xbento=get_value('soldout_xbento', 'false'),
         soldout_zalm_bowl=get_value('soldout_zalm_bowl', 'false'),
         soldout_tuna_bowl=get_value('soldout_tuna_bowl', 'false'),
@@ -1026,6 +1034,10 @@ def update_setting():
     soldout_lamskotelet_bento_val = data.get('soldout_lamskotelet_bento', 'false')
     soldout_veggie_bento_val = data.get('soldout_veggie_bento', 'false')
     soldout_sushi_bento_val = data.get('soldout_sushi_bento', 'false')
+    soldout_salmon_roll_val = data.get('soldout_salmon_roll', 'false')
+    soldout_dragon_roll_val = data.get('soldout_dragon_roll', 'false')
+    soldout_beef_roll_val = data.get('soldout_beef_roll', 'false')
+    soldout_chicken_roll_val = data.get('soldout_chicken_roll', 'false')
     soldout_xbento_val = data.get('soldout_xbento', 'false')
     soldout_zalm_bowl_val = data.get('soldout_zalm_bowl', 'false')
     soldout_tuna_bowl_val = data.get('soldout_tuna_bowl', 'false')
@@ -1072,6 +1084,10 @@ def update_setting():
         ('soldout_lamskotelet_bento', soldout_lamskotelet_bento_val),
         ('soldout_veggie_bento', soldout_veggie_bento_val),
         ('soldout_sushi_bento', soldout_sushi_bento_val),
+        ('soldout_salmon_roll', soldout_salmon_roll_val),
+        ('soldout_dragon_roll', soldout_dragon_roll_val),
+        ('soldout_beef_roll', soldout_beef_roll_val),
+        ('soldout_chicken_roll', soldout_chicken_roll_val),
         ('soldout_xbento', soldout_xbento_val),
         ('soldout_zalm_bowl', soldout_zalm_bowl_val),
         ('soldout_tuna_bowl', soldout_tuna_bowl_val),
