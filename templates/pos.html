@@ -314,6 +314,12 @@
     gap:10px;
     margin:10px 0;
   }
+  img.supply-img {
+    width:40px;
+    height:40px;
+    object-fit:cover;
+    border-radius:12px;
+  }
   .supply-select {
     min-width:80px;
     padding:6px 10px;
@@ -589,20 +595,32 @@ body.today-open .today-toggle {
       <h2>Overzicht</h2>
       <ul id="cart"></ul>
       <div class="supply-row">
-        <label for="chopstickCount">Aantal stokjes</label>
-        <select id="chopstickCount" class="supply-select"></select>
+        <img alt="Stokjes" class="supply-img photo" src="{{ url_for('static', filename='images/chopsticks.png') }}"/>
+        <div class="supply-content">
+          <label for="chopstickCount">Aantal stokjes</label>
+          <select id="chopstickCount" class="supply-select"></select>
+        </div>
       </div>
       <div class="supply-row">
-        <label for="soyCount">Aantal sojasaus flesjes</label>
-        <select id="soyCount" class="supply-select"></select>
+        <img alt="Sojasaus" class="supply-img photo" src="{{ url_for('static', filename='images/soja saus.webp') }}"/>
+        <div class="supply-content">
+          <label for="soyCount">Aantal sojasaus flesjes</label>
+          <select id="soyCount" class="supply-select"></select>
+        </div>
       </div>
       <div class="supply-row">
-        <label for="gemberCount">Aantal gember porties</label>
-        <select id="gemberCount" class="supply-select"></select>
+        <img alt="Gember" class="supply-img photo" src="{{ url_for('static', filename='images/gember.webp') }}"/>
+        <div class="supply-content">
+          <label for="gemberCount">Aantal gember porties</label>
+          <select id="gemberCount" class="supply-select"></select>
+        </div>
       </div>
       <div class="supply-row">
-        <label for="wasabiCount">Aantal wasabi flesjes</label>
-        <select id="wasabiCount" class="supply-select"></select>
+        <img alt="Wasabi" class="supply-img photo" src="{{ url_for('static', filename='images/wasabi.webp') }}"/>
+        <div class="supply-content">
+          <label for="wasabiCount">Aantal wasabi flesjes</label>
+          <select id="wasabiCount" class="supply-select"></select>
+        </div>
       </div>
       <div>Subtotaal: <span id="summarySubtotal">€0,00</span></div>
       <div>Verpakkingskosten: <span id="summaryPackaging">€0,00</span></div>
