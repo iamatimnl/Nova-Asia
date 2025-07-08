@@ -2793,14 +2793,14 @@ input:focus, select:focus, textarea:focus {
     <img alt="Crispy Rijst" loading="lazy" src="{{ url_for('static', filename='images/beef-crispy.png') }}">
     </img></div>
   <div class="menu-content">
-    <h3>Crispy Rijst – 4 st</h3>
+    <h3>Sesambal – 5 st</h3>
     <p>€ 4.00</p>
-    <p id="soldoutCrispyRijst" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutSesambal" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
-      <label for="crispyRijstCount">Aantal</label>
-      <button class="qty-minus remove-button" data-target="crispyRijstCount" type="button">-</button>
-      <select id="crispyRijstCount" name="crispyRijstCount"></select>
-      <button class="qty-plus add-button" data-target="crispyRijstCount" type="button">+</button>
+      <label for="sesambalCount">Aantal</label>
+      <button class="qty-minus remove-button" data-target="sesambalCount" type="button">-</button>
+      <select id="sesambalCount" name="sesambalCount"></select>
+      <button class="qty-plus add-button" data-target="sesambalCount" type="button">+</button>
     </div>
   </div>
 </div>
@@ -5253,6 +5253,7 @@ function updateStatus(settings) {
   const crispyRiceConfig = [
     {name: 'Zalm crispy rice sandwich', key: 'soldout_zalm_crispy_rice_sandwich', qty: 'zalm-crispy-rice-sandwich', msg: 'soldoutZalmCrispyRiceSandwich'},
     {name: 'Ebi crispy rice sandwich', key: 'soldout_ebi_crispy_rice_sandwich', qty: 'ebiCrispyRiceSandwich', msg: 'soldoutEbiCrispyRiceSandwich'},
+    {name: 'Spicytuna crispy rice sandwich', key: 'soldout_spicytuna_crispy_rice_sandwich', qty: 'spicytunaCrispyRiceSandwich', msg: 'soldoutSpicytunaCrispyRiceSandwich'},
     {name: 'Beef crispy rice sandwich', key: 'soldout_beef_crispy_rice_sandwich', qty: 'beefCrispyRiceSandwich', msg: 'soldoutBeefCrispyRiceSandwich'},
     {name: 'California crispy rice sandwich', key: 'soldout_california_crispy_rice_sandwich', qty: 'californiaCrispyRiceSandwich', msg: 'soldoutCaliforniaCrispyRiceSandwich'},
     {name: 'Chicken crispy rice sandwich', key: 'soldout_chicken_crispy_rice_sandwich', qty: 'chickenCrispyRiceSandwich', msg: 'soldoutChickenCrispyRiceSandwich'}
@@ -5277,7 +5278,7 @@ function updateStatus(settings) {
     {name: 'Chicken Loempia – 2 st', key: 'soldout_chicken_loempia', qty: 'chickenLoempiaCount', msg: 'soldoutChickenLoempia'},
     {name: 'Gyoza – 5 st', key: 'soldout_gyoza', qty: 'gyozaCount', msg: 'soldoutGyoza'},
     {name: 'Inktvis Ringen – 5 st', key: 'soldout_inktvis_ringen', qty: 'inktvisRingenCount', msg: 'soldoutInktvisRingen'},
-    {name: 'Crispy Rijst – 4 st', key: 'soldout_crispy_rijst', qty: 'crispyRijstCount', msg: 'soldoutCrispyRijst'},
+    {name: 'Sesambal – 5 st', key: 'soldout_sesambal', qty: 'sesambalCount', msg: 'soldoutSesambal'},
     {name: 'Yakitori – 4 st', key: 'soldout_yakitori', qty: 'yakitoriCount', msg: 'soldoutYakitori'},
     {name: 'Mini Loempia – 6 st', key: 'soldout_mini_loempia', qty: 'miniLoempiaCount', msg: 'soldoutMiniLoempia'},
     {name: 'Edamame', key: 'soldout_edamame', qty: 'edamameCount', msg: 'soldoutEdamame'},
