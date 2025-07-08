@@ -205,6 +205,11 @@
             <option value="false" {% if soldout_zalm_crispy_rice_sandwich != 'true' %}selected{% endif %}>Open</option>
             <option value="true" {% if soldout_zalm_crispy_rice_sandwich == 'true' %}selected{% endif %}>Uitverkocht</option>
         </select><br>
+        <label>Spicytuna crispy rice sandwich:</label>
+        <select id="soldout_spicytuna_crispy_rice_sandwich_select">
+            <option value="false" {% if soldout_spicytuna_crispy_rice_sandwich != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_spicytuna_crispy_rice_sandwich == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
         <label>Ebi crispy rice sandwich:</label>
         <select id="soldout_ebi_crispy_rice_sandwich_select">
             <option value="false" {% if soldout_ebi_crispy_rice_sandwich != 'true' %}selected{% endif %}>Open</option>
@@ -272,10 +277,10 @@
             <option value="false" {% if soldout_inktvis_ringen != 'true' %}selected{% endif %}>Open</option>
             <option value="true" {% if soldout_inktvis_ringen == 'true' %}selected{% endif %}>Uitverkocht</option>
         </select><br>
-        <label>Crispy Rijst – 4 st:</label>
-        <select id="soldout_crispy_rijst_select">
-            <option value="false" {% if soldout_crispy_rijst != 'true' %}selected{% endif %}>Open</option>
-            <option value="true" {% if soldout_crispy_rijst == 'true' %}selected{% endif %}>Uitverkocht</option>
+        <label>Sesambal – 5 st:</label>
+        <select id="soldout_sesambal_select">
+            <option value="false" {% if soldout_sesambal != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_sesambal == 'true' %}selected{% endif %}>Uitverkocht</option>
         </select><br>
         <label>Yakitori – 4 st:</label>
         <select id="soldout_yakitori_select">
@@ -659,6 +664,7 @@
             const soldout_flamed_tonijn_sashimi = document.getElementById('soldout_flamed_tonijn_sashimi_select').value;
             const soldout_beef_sashimi = document.getElementById('soldout_beef_sashimi_select').value;
             const soldout_zalm_crispy_rice_sandwich = document.getElementById('soldout_zalm_crispy_rice_sandwich_select').value;
+            const soldout_spicytuna_crispy_rice_sandwich = document.getElementById('soldout_spicytuna_crispy_rice_sandwich_select').value;
             const soldout_ebi_crispy_rice_sandwich = document.getElementById('soldout_ebi_crispy_rice_sandwich_select').value;
             const soldout_beef_crispy_rice_sandwich = document.getElementById('soldout_beef_crispy_rice_sandwich_select').value;
             const soldout_california_crispy_rice_sandwich = document.getElementById('soldout_california_crispy_rice_sandwich_select').value;
@@ -690,7 +696,7 @@
             const soldout_chicken_loempia = document.getElementById('soldout_chicken_loempia_select').value;
             const soldout_gyoza = document.getElementById('soldout_gyoza_select').value;
             const soldout_inktvis_ringen = document.getElementById('soldout_inktvis_ringen_select').value;
-            const soldout_crispy_rijst = document.getElementById('soldout_crispy_rijst_select').value;
+            const soldout_sesambal = document.getElementById('soldout_sesambal_select').value;
             const soldout_yakitori = document.getElementById('soldout_yakitori_select').value;
             const soldout_mini_loempia = document.getElementById('soldout_mini_loempia_select').value;
             const soldout_edamame = document.getElementById('soldout_edamame_select').value;
@@ -739,6 +745,7 @@
                       soldout_flamed_tonijn_sashimi: soldout_flamed_tonijn_sashimi,
                       soldout_beef_sashimi: soldout_beef_sashimi,
                       soldout_zalm_crispy_rice_sandwich: soldout_zalm_crispy_rice_sandwich,
+                      soldout_spicytuna_crispy_rice_sandwich: soldout_spicytuna_crispy_rice_sandwich,
                       soldout_ebi_crispy_rice_sandwich: soldout_ebi_crispy_rice_sandwich,
                       soldout_beef_crispy_rice_sandwich: soldout_beef_crispy_rice_sandwich,
                       soldout_california_crispy_rice_sandwich: soldout_california_crispy_rice_sandwich,
@@ -770,7 +777,7 @@
                     soldout_chicken_loempia: soldout_chicken_loempia,
                     soldout_gyoza: soldout_gyoza,
                     soldout_inktvis_ringen: soldout_inktvis_ringen,
-                    soldout_crispy_rijst: soldout_crispy_rijst,
+                    soldout_sesambal: soldout_sesambal,
                     soldout_yakitori: soldout_yakitori,
                     soldout_mini_loempia: soldout_mini_loempia,
                     soldout_edamame: soldout_edamame,

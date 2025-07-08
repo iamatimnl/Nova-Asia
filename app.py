@@ -522,6 +522,7 @@ with app.app_context():
         "soldout_flamed_tonijn_sashimi": "false",
         "soldout_beef_sashimi": "false",
         "soldout_zalm_crispy_rice_sandwich": "false",
+        "soldout_spicytuna_crispy_rice_sandwich": "false",
         "soldout_ebi_crispy_rice_sandwich": "false",
         "soldout_beef_crispy_rice_sandwich": "false",
         "soldout_california_crispy_rice_sandwich": "false",
@@ -553,7 +554,7 @@ with app.app_context():
         "soldout_chicken_loempia": "false",
         "soldout_gyoza": "false",
         "soldout_inktvis_ringen": "false",
-        "soldout_crispy_rijst": "false",
+        "soldout_sesambal": "false",
         "soldout_yakitori": "false",
         "soldout_mini_loempia": "false",
         "soldout_edamame": "false",
@@ -1020,6 +1021,7 @@ def dashboard():
         soldout_flamed_tonijn_sashimi=get_value('soldout_flamed_tonijn_sashimi', 'false'),
         soldout_beef_sashimi=get_value('soldout_beef_sashimi', 'false'),
         soldout_zalm_crispy_rice_sandwich=get_value('soldout_zalm_crispy_rice_sandwich', 'false'),
+        soldout_spicytuna_crispy_rice_sandwich=get_value('soldout_spicytuna_crispy_rice_sandwich', 'false'),
         soldout_ebi_crispy_rice_sandwich=get_value('soldout_ebi_crispy_rice_sandwich', 'false'),
         soldout_beef_crispy_rice_sandwich=get_value('soldout_beef_crispy_rice_sandwich', 'false'),
         soldout_california_crispy_rice_sandwich=get_value('soldout_california_crispy_rice_sandwich', 'false'),
@@ -1051,7 +1053,7 @@ def dashboard():
         soldout_chicken_loempia=get_value('soldout_chicken_loempia', 'false'),
         soldout_gyoza=get_value('soldout_gyoza', 'false'),
         soldout_inktvis_ringen=get_value('soldout_inktvis_ringen', 'false'),
-        soldout_crispy_rijst=get_value('soldout_crispy_rijst', 'false'),
+        soldout_sesambal=get_value('soldout_sesambal', 'false'),
         soldout_yakitori=get_value('soldout_yakitori', 'false'),
         soldout_mini_loempia=get_value('soldout_mini_loempia', 'false'),
         soldout_edamame=get_value('soldout_edamame', 'false'),
@@ -1110,6 +1112,7 @@ def update_setting():
     soldout_flamed_tonijn_sashimi_val = data.get('soldout_flamed_tonijn_sashimi', 'false')
     soldout_beef_sashimi_val = data.get('soldout_beef_sashimi', 'false')
     soldout_zalm_crispy_rice_sandwich_val = data.get('soldout_zalm_crispy_rice_sandwich', 'false')
+    soldout_spicytuna_crispy_rice_sandwich_val = data.get('soldout_spicytuna_crispy_rice_sandwich', 'false')
     soldout_ebi_crispy_rice_sandwich_val = data.get('soldout_ebi_crispy_rice_sandwich', 'false')
     soldout_beef_crispy_rice_sandwich_val = data.get('soldout_beef_crispy_rice_sandwich', 'false')
     soldout_california_crispy_rice_sandwich_val = data.get('soldout_california_crispy_rice_sandwich', 'false')
@@ -1141,7 +1144,7 @@ def update_setting():
     soldout_chicken_loempia_val = data.get('soldout_chicken_loempia', 'false')
     soldout_gyoza_val = data.get('soldout_gyoza', 'false')
     soldout_inktvis_ringen_val = data.get('soldout_inktvis_ringen', 'false')
-    soldout_crispy_rijst_val = data.get('soldout_crispy_rijst', 'false')
+    soldout_sesambal_val = data.get('soldout_sesambal', 'false')
     soldout_yakitori_val = data.get('soldout_yakitori', 'false')
     soldout_mini_loempia_val = data.get('soldout_mini_loempia', 'false')
     soldout_edamame_val = data.get('soldout_edamame', 'false')
@@ -1187,6 +1190,7 @@ def update_setting():
         ('soldout_flamed_tonijn_sashimi', soldout_flamed_tonijn_sashimi_val),
         ('soldout_beef_sashimi', soldout_beef_sashimi_val),
         ('soldout_zalm_crispy_rice_sandwich', soldout_zalm_crispy_rice_sandwich_val),
+        ('soldout_spicytuna_crispy_rice_sandwich', soldout_spicytuna_crispy_rice_sandwich_val),
         ('soldout_ebi_crispy_rice_sandwich', soldout_ebi_crispy_rice_sandwich_val),
         ('soldout_beef_crispy_rice_sandwich', soldout_beef_crispy_rice_sandwich_val),
         ('soldout_california_crispy_rice_sandwich', soldout_california_crispy_rice_sandwich_val),
@@ -1218,7 +1222,7 @@ def update_setting():
         ('soldout_chicken_loempia', soldout_chicken_loempia_val),
         ('soldout_gyoza', soldout_gyoza_val),
         ('soldout_inktvis_ringen', soldout_inktvis_ringen_val),
-        ('soldout_crispy_rijst', soldout_crispy_rijst_val),
+        ('soldout_sesambal', soldout_sesambal_val),
         ('soldout_yakitori', soldout_yakitori_val),
         ('soldout_mini_loempia', soldout_mini_loempia_val),
         ('soldout_edamame', soldout_edamame_val),
