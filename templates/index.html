@@ -1447,44 +1447,6 @@ input:focus, select:focus, textarea:focus {
 }
 
 
-#xBowlToppings {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-}
-
-#xBowlToppings select {
-  min-width: 140px;
-  margin-right: 4px;
-}
-
-#xBowlToppings .remove-select {
-  font-size: 14px;
-  background: transparent;
-  border: none;
-  color: #999;
-  padding: 0 5px;
-  cursor: pointer;
-  line-height: 1;
-  align-self: center;
-  height: 30px;
-}
-
-#xBowlToppings .remove-select:hover {
-  color: #c00;
-}
-
-@media (max-width: 600px) {
-  #xBowlToppings select {
-    min-width: 120px;
-  }
-
-  #xBowlToppings .remove-select {
-    font-size: 12px;
-    padding: 0 4px;
-  }
-}
 
 
 
@@ -5665,6 +5627,61 @@ document.addEventListener('click', e => {
 
 
 
+
+
+<!-- 👇 Enhanced X-Bowl Synchronization Logic -->
+<script>
+let editingXbowlIndex = null; // 当前编辑的X-Bowl在cart中的位置
+
+function syncEditedXbowlToCart() {
+  if (editingXbowlIndex === null || !cart[editingXbowlIndex]) return;
+
+  const base = document.getElementById('xBowlBase')?.value || '';
+
+  const mains = [...document.querySelectorAll('#xBowlMains select')]
+    .map(sel => sel.value)
+    .filter(val => val);
+
+  const toppings = [...document.querySelectorAll('#xBowlToppings select')]
+    .map(sel => sel.value)
+    .filter(val => val);
+
+  const item = cart[editingXbowlIndex];
+  item.base = base;
+  item.mains = mains;
+  item.toppings = toppings;
+
+  updateCart();
+}
+
+// 增强所有动态选择器添加的事件绑定（仅在页面载入后绑定一次）
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('xBowlBase')?.addEventListener('change', syncEditedXbowlToCart);
+
+  // 拦截每个后添加的 select
+  const observeConfig = { childList: true, subtree: true };
+  const targetNodes = [document.getElementById('xBowlMains'), document.getElementById('xBowlToppings')];
+  const observer = new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+      mutation.addedNodes.forEach(node => {
+        if (node.tagName === 'SELECT') {
+          node.addEventListener('change', syncEditedXbowlToCart);
+        }
+        if (node.classList?.contains('remove-select')) {
+          node.addEventListener('click', () => {
+            const prevSelect = node.previousElementSibling;
+            if (prevSelect && prevSelect.tagName === 'SELECT') {
+              syncEditedXbowlToCart();
+            }
+          });
+        }
+      });
+    });
+  });
+  targetNodes.forEach(target => target && observer.observe(target, observeConfig));
+});
+</script>
+<!-- ☝️ End X-Bowl Sync Patch -->
 
 </body>
 </html>
