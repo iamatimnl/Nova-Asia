@@ -554,6 +554,10 @@ with app.app_context():
         "soldout_kimchi_komkommer": "false",
         "soldout_kimchi_kool": "false",
         "soldout_zeewiersalade": "false",
+        "soldout_mochi_mango": "false",
+        "soldout_mochi_aardbei": "false",
+        "soldout_mochi_matcha": "false",
+        "soldout_mochi_pistachio": "false",
     }
     for k, v in defaults.items():
         if not Setting.query.filter_by(key=k).first():
@@ -1042,6 +1046,10 @@ def dashboard():
         soldout_kimchi_komkommer=get_value('soldout_kimchi_komkommer', 'false'),
         soldout_kimchi_kool=get_value('soldout_kimchi_kool', 'false'),
         soldout_zeewiersalade=get_value('soldout_zeewiersalade', 'false'),
+        soldout_mochi_mango=get_value('soldout_mochi_mango', 'false'),
+        soldout_mochi_aardbei=get_value('soldout_mochi_aardbei', 'false'),
+        soldout_mochi_matcha=get_value('soldout_mochi_matcha', 'false'),
+        soldout_mochi_pistachio=get_value('soldout_mochi_pistachio', 'false'),
         sections=sections,
         base_options=bases,
         smaak_options=smaken,
@@ -1128,6 +1136,10 @@ def update_setting():
     soldout_kimchi_komkommer_val = data.get('soldout_kimchi_komkommer', 'false')
     soldout_kimchi_kool_val = data.get('soldout_kimchi_kool', 'false')
     soldout_zeewiersalade_val = data.get('soldout_zeewiersalade', 'false')
+    soldout_mochi_mango_val = data.get('soldout_mochi_mango', 'false')
+    soldout_mochi_aardbei_val = data.get('soldout_mochi_aardbei', 'false')
+    soldout_mochi_matcha_val = data.get('soldout_mochi_matcha', 'false')
+    soldout_mochi_pistachio_val = data.get('soldout_mochi_pistachio', 'false')
 
     for key, val in [
         ('is_open', is_open_val),
@@ -1201,6 +1213,10 @@ def update_setting():
         ('soldout_kimchi_komkommer', soldout_kimchi_komkommer_val),
         ('soldout_kimchi_kool', soldout_kimchi_kool_val),
         ('soldout_zeewiersalade', soldout_zeewiersalade_val),
+        ('soldout_mochi_mango', soldout_mochi_mango_val),
+        ('soldout_mochi_aardbei', soldout_mochi_aardbei_val),
+        ('soldout_mochi_matcha', soldout_mochi_matcha_val),
+        ('soldout_mochi_pistachio', soldout_mochi_pistachio_val),
     ]:
         s = Setting.query.filter_by(key=key).first()
         if not s:

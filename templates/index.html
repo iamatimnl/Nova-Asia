@@ -2881,9 +2881,10 @@ input:focus, select:focus, textarea:focus {
 <img alt="Mochi Mango" loading="lazy" src="{{ url_for('static', filename='images/mochi-mango.png') }}">
 </img></div>
 <div class="menu-content">
-<h3>Mochi – Mango</h3>
-<p>€ 4.00</p>
-<div class="qty-box">
+  <h3>Mochi – Mango</h3>
+  <p>€ 4.00</p>
+  <p id="soldoutMochiMango" class="sold-out-msg hidden">Uitverkocht!</p>
+  <div class="qty-box">
 <label for="mochiMangoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="mochiMangoCount" type="button">-</button>
 <select id="mochiMangoCount" name="mochiMangoCount"></select>
@@ -2897,9 +2898,10 @@ input:focus, select:focus, textarea:focus {
 <img alt="Mochi Aardbei" loading="lazy" src="{{ url_for('static', filename='images/mochi-aardbei.png') }}">
 </img></div>
 <div class="menu-content">
-<h3>Mochi – Aardbei</h3>
-<p>€ 4.00</p>
-<div class="qty-box">
+  <h3>Mochi – Aardbei</h3>
+  <p>€ 4.00</p>
+  <p id="soldoutMochiAardbei" class="sold-out-msg hidden">Uitverkocht!</p>
+  <div class="qty-box">
 <label for="mochiAardbeiCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="mochiAardbeiCount" type="button">-</button>
 <select id="mochiAardbeiCount" name="mochiAardbeiCount"></select>
@@ -2913,9 +2915,10 @@ input:focus, select:focus, textarea:focus {
 <img alt="Mochi Matcha" loading="lazy" src="{{ url_for('static', filename='images/mochi-matcha.png') }}">
 </img></div>
 <div class="menu-content">
-<h3>Mochi – Matcha</h3>
-<p>€ 4.00</p>
-<div class="qty-box">
+  <h3>Mochi – Matcha</h3>
+  <p>€ 4.00</p>
+  <p id="soldoutMochiMatcha" class="sold-out-msg hidden">Uitverkocht!</p>
+  <div class="qty-box">
 <label for="mochiMatchaCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="mochiMatchaCount" type="button">-</button>
 <select id="mochiMatchaCount" name="mochiMatchaCount"></select>
@@ -2929,9 +2932,10 @@ input:focus, select:focus, textarea:focus {
 <img alt="Mochi Pistachio" loading="lazy" src="{{ url_for('static', filename='images/mochi-pistachio.png') }}">
 </img></div>
 <div class="menu-content">
-<h3>Mochi – Pistachio</h3>
-<p>€ 4.00</p>
-<div class="qty-box">
+  <h3>Mochi – Pistachio</h3>
+  <p>€ 4.00</p>
+  <p id="soldoutMochiPistachio" class="sold-out-msg hidden">Uitverkocht!</p>
+  <div class="qty-box">
 <label for="mochiPistachioCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="mochiPistachioCount" type="button">-</button>
 <select id="mochiPistachioCount" name="mochiPistachioCount"></select>
@@ -5057,6 +5061,25 @@ function updateStatus(settings) {
   ];
 
   snackConfig.forEach(cfg => {
+    const itemEl = document.querySelector(`[data-name="${cfg.name}"]`);
+    if (!itemEl) return;
+    const soldout = settings[cfg.key] === 'true';
+    const msgEl = document.getElementById(cfg.msg);
+    if (msgEl) msgEl.classList.toggle('hidden', !soldout);
+    itemEl.querySelectorAll('select, button').forEach(el => { el.disabled = soldout; });
+    if (soldout && document.getElementById(cfg.qty)) {
+      document.getElementById(cfg.qty).value = 0;
+    }
+  });
+
+  const dessertConfig = [
+    {name: 'Mochi Mango', key: 'soldout_mochi_mango', qty: 'mochiMangoCount', msg: 'soldoutMochiMango'},
+    {name: 'Mochi Aardbei', key: 'soldout_mochi_aardbei', qty: 'mochiAardbeiCount', msg: 'soldoutMochiAardbei'},
+    {name: 'Mochi Matcha', key: 'soldout_mochi_matcha', qty: 'mochiMatchaCount', msg: 'soldoutMochiMatcha'},
+    {name: 'Mochi Pistachio', key: 'soldout_mochi_pistachio', qty: 'mochiPistachioCount', msg: 'soldoutMochiPistachio'}
+  ];
+
+  dessertConfig.forEach(cfg => {
     const itemEl = document.querySelector(`[data-name="${cfg.name}"]`);
     if (!itemEl) return;
     const soldout = settings[cfg.key] === 'true';

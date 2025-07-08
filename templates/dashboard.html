@@ -292,6 +292,28 @@
             <option value="false" {% if soldout_zeewiersalade != 'true' %}selected{% endif %}>Open</option>
             <option value="true" {% if soldout_zeewiersalade == 'true' %}selected{% endif %}>Uitverkocht</option>
         </select><br>
+
+        <h3>Dessert uitverkocht</h3>
+        <label>Mochi Mango:</label>
+        <select id="soldout_mochi_mango_select">
+            <option value="false" {% if soldout_mochi_mango != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_mochi_mango == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Mochi Aardbei:</label>
+        <select id="soldout_mochi_aardbei_select">
+            <option value="false" {% if soldout_mochi_aardbei != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_mochi_aardbei == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Mochi Matcha:</label>
+        <select id="soldout_mochi_matcha_select">
+            <option value="false" {% if soldout_mochi_matcha != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_mochi_matcha == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Mochi Pistachio:</label>
+        <select id="soldout_mochi_pistachio_select">
+            <option value="false" {% if soldout_mochi_pistachio != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_mochi_pistachio == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
         <br><br>
 
         <h3>Pokebowl uitverkocht</h3>
@@ -658,8 +680,12 @@
             const soldout_mini_loempia = document.getElementById('soldout_mini_loempia_select').value;
             const soldout_edamame = document.getElementById('soldout_edamame_select').value;
             const soldout_kimchi_komkommer = document.getElementById('soldout_kimchi_komkommer_select').value;
-            const soldout_kimchi_kool = document.getElementById('soldout_kimchi_kool_select').value;
-            const soldout_zeewiersalade = document.getElementById('soldout_zeewiersalade_select').value;
+              const soldout_kimchi_kool = document.getElementById('soldout_kimchi_kool_select').value;
+              const soldout_zeewiersalade = document.getElementById('soldout_zeewiersalade_select').value;
+              const soldout_mochi_mango = document.getElementById('soldout_mochi_mango_select').value;
+              const soldout_mochi_aardbei = document.getElementById('soldout_mochi_aardbei_select').value;
+              const soldout_mochi_matcha = document.getElementById('soldout_mochi_matcha_select').value;
+              const soldout_mochi_pistachio = document.getElementById('soldout_mochi_pistachio_select').value;
 
             fetch('/dashboard/update', {
                 method: 'POST',
@@ -734,9 +760,13 @@
                     soldout_mini_loempia: soldout_mini_loempia,
                     soldout_edamame: soldout_edamame,
                     soldout_kimchi_komkommer: soldout_kimchi_komkommer,
-                    soldout_kimchi_kool: soldout_kimchi_kool,
-                    soldout_zeewiersalade: soldout_zeewiersalade
-                })
+                      soldout_kimchi_kool: soldout_kimchi_kool,
+                      soldout_zeewiersalade: soldout_zeewiersalade,
+                      soldout_mochi_mango: soldout_mochi_mango,
+                      soldout_mochi_aardbei: soldout_mochi_aardbei,
+                      soldout_mochi_matcha: soldout_mochi_matcha,
+                      soldout_mochi_pistachio: soldout_mochi_pistachio
+                  })
             })
             .then(response => response.json())
             .then(data => {
