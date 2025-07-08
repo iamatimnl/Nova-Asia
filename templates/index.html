@@ -1447,6 +1447,44 @@ input:focus, select:focus, textarea:focus {
 }
 
 
+#xBowlToppings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+#xBowlToppings select {
+  min-width: 140px;
+  margin-right: 4px;
+}
+
+#xBowlToppings .remove-select {
+  font-size: 14px;
+  background: transparent;
+  border: none;
+  color: #999;
+  padding: 0 5px;
+  cursor: pointer;
+  line-height: 1;
+  align-self: center;
+  height: 30px;
+}
+
+#xBowlToppings .remove-select:hover {
+  color: #c00;
+}
+
+@media (max-width: 600px) {
+  #xBowlToppings select {
+    min-width: 120px;
+  }
+
+  #xBowlToppings .remove-select {
+    font-size: 12px;
+    padding: 0 4px;
+  }
+}
 
 
 
