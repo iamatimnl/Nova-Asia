@@ -1950,6 +1950,7 @@ input:focus, select:focus, textarea:focus {
     <div class="menu-content">
       <h3>Ebi Furai</h3>
       <p>€ 18.00</p>
+      <p id="soldoutEbiRamen" class="sold-out-msg hidden">Uitverkocht!</p>
       <div class="bubble-option">
         <select id="ebiBase">
           <option value="">Base</option>
@@ -1984,6 +1985,7 @@ input:focus, select:focus, textarea:focus {
     <div class="menu-content">
       <h3>Chicken</h3>
       <p>€ 18.00</p>
+      <p id="soldoutChickenRamen" class="sold-out-msg hidden">Uitverkocht!</p>
       <div class="bubble-option">
         <select id="chickenBase">
           <option value="">Base</option>
@@ -2018,6 +2020,7 @@ input:focus, select:focus, textarea:focus {
     <div class="menu-content">
       <h3>Beef</h3>
       <p>€ 18.00</p>
+      <p id="soldoutBeefRamen" class="sold-out-msg hidden">Uitverkocht!</p>
       <div class="bubble-option">
         <select id="beefBase">
           <option value="">Base</option>
@@ -2052,6 +2055,7 @@ input:focus, select:focus, textarea:focus {
     <div class="menu-content">
       <h3>Ribeye</h3>
       <p>€ 18.00</p>
+      <p id="soldoutRibeyeRamen" class="sold-out-msg hidden">Uitverkocht!</p>
       <div class="bubble-option">
         <select id="ribeyeBase">
           <option value="">Base</option>
@@ -2086,6 +2090,7 @@ input:focus, select:focus, textarea:focus {
     <div class="menu-content">
       <h3>Chasiu</h3>
       <p>€ 18.00</p>
+      <p id="soldoutChasiuRamen" class="sold-out-msg hidden">Uitverkocht!</p>
       <div class="bubble-option">
         <select id="chasiuBase">
           <option value="">Base</option>
@@ -2957,6 +2962,33 @@ let currentDiscount = 0;
 let bubbleSetControls;
 let xbentoSetControls;
 
+const soldoutMap = {
+  "Chicken Bento": "soldout_chicken_bento",
+  "Meatlover Bento": "soldout_meatlover_bento",
+  "Zalm Lover Bento": "soldout_zalm_lover_bento",
+  "Ebi Lover Bento": "soldout_ebi_lover_bento",
+  "Surf & Turf Bento": "soldout_surf_turf_bento",
+  "Dimsum Bento": "soldout_dimsum_bento",
+  "Lamskotelet Bento": "soldout_lamskotelet_bento",
+  "Veggie Bento": "soldout_veggie_bento",
+  "Bento Sushi Omakase": "soldout_sushi_bento",
+  "Xbento": "soldout_xbento",
+  "Ebi Furai": "soldout_ebi_ramen",
+  "Chicken": "soldout_chicken_ramen",
+  "Beef": "soldout_beef_ramen",
+  "Ribeye": "soldout_ribeye_ramen",
+  "Chasiu": "soldout_chasiu_ramen"
+};
+
+function isItemSoldOut(name){
+  for(const [base,key] of Object.entries(soldoutMap)){
+    if(name.startsWith(base) && currentSettings[key]==="true"){
+      return true;
+    }
+  }
+  return false;
+}
+
 function getOptionPrice(cat, name){
   const opt = (bubbleOptions[cat]||[]).find(o=>o.name===name);
   return opt ? parseFloat(opt.price) : 0;
@@ -3598,6 +3630,7 @@ function createSelect(current, onChange) {
 }
 
 function setQty(name, price, qty, packaging = DEFAULT_PACKAGING_FEE, prefs = null) {
+  if (isItemSoldOut(name)) return;
   if (qty === 0) {
     delete cart[name];
   } else {
@@ -3822,6 +3855,7 @@ let deliveryCloseTime = '23:59';
 let timeInterval = 15;
 let pickupAddress = '';
 let allowedPostcodes = [];
+let currentSettings = {};
 function showFeedback(msg, isError=false) {
   const el = document.getElementById('feedback');
   el.textContent = msg;
@@ -4837,6 +4871,7 @@ function parseTime(timeStr, startStr){
 }
 
 function updateStatus(settings) {
+  currentSettings = settings;
   const banner = document.getElementById('status-banner');
   const hoursEl = document.getElementById('hours-info');
   const checkoutBtn = document.querySelector('.checkout-btn');
@@ -4876,6 +4911,26 @@ function updateStatus(settings) {
   ];
 
   bentoConfig.forEach(cfg => {
+    const itemEl = document.querySelector(`[data-name="${cfg.name}"]`);
+    if (!itemEl) return;
+    const soldout = settings[cfg.key] === 'true';
+    const msgEl = document.getElementById(cfg.msg);
+    if (msgEl) msgEl.classList.toggle('hidden', !soldout);
+    itemEl.querySelectorAll('select, button').forEach(el => { el.disabled = soldout; });
+    if (soldout && document.getElementById(cfg.qty)) {
+      document.getElementById(cfg.qty).value = 0;
+    }
+  });
+
+  const ramenConfig = [
+    {name: 'Ebi Furai', key: 'soldout_ebi_ramen', qty: 'ebiQty', msg: 'soldoutEbiRamen'},
+    {name: 'Chicken', key: 'soldout_chicken_ramen', qty: 'chickenQty', msg: 'soldoutChickenRamen'},
+    {name: 'Beef', key: 'soldout_beef_ramen', qty: 'beefQty', msg: 'soldoutBeefRamen'},
+    {name: 'Ribeye', key: 'soldout_ribeye_ramen', qty: 'ribeyeQty', msg: 'soldoutRibeyeRamen'},
+    {name: 'Chasiu', key: 'soldout_chasiu_ramen', qty: 'chasiuQty', msg: 'soldoutChasiuRamen'}
+  ];
+
+  ramenConfig.forEach(cfg => {
     const itemEl = document.querySelector(`[data-name="${cfg.name}"]`);
     if (!itemEl) return;
     const soldout = settings[cfg.key] === 'true';
