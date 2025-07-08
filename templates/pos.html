@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -804,74 +805,6 @@ function changeXbentoQty(delta){
   setQty(name,price,val,0.2);
 }
 
-const xBowlMainOptions=[
-  {name:'Zalm',price:9},{name:'Tonijn',price:9},{name:'Gamba',price:8},
-  {name:'Crispy chicken',price:8},{name:'Spicy crispy chicken',price:8},
-  {name:'Teriyaki beef',price:9},{name:'Teriyaki chicken',price:9},
-  {name:'Ribeye',price:9},{name:'Unagi',price:9},{name:'Spicy tuna',price:9},
-  {name:'Krabstick',price:8}
-];
-const xBowlToppingOptions=['Komkommer','Avocado','Sojabonen','Mais','Zeewiersalade','Masago','Inari','Tamago'];
-
-function createXbowlMainSelect(){
-  const wrap=document.createElement('div');
-  wrap.className='bubble-option';
-  const sel=document.createElement('select');
-  sel.innerHTML='<option value="">Hoofdingred\u00ef\u00ebnt</option>';
-  xBowlMainOptions.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.dataset.price=o.price;opt.textContent=`${o.name} (€${o.price.toFixed(2)})`;sel.appendChild(opt);});
-  const del=document.createElement('button');del.type='button';del.textContent='❌';del.className='remove-button';del.addEventListener('click',()=>wrap.remove());
-  sel.addEventListener('change',()=>{if(wrap.parentElement.lastElementChild===wrap&&sel.value)addXbowlMainSelect();});
-  wrap.appendChild(sel);wrap.appendChild(del);return wrap;
-}
-function addXbowlMainSelect(){document.getElementById('xBowlMains').appendChild(createXbowlMainSelect());}
-
-function createXbowlToppingSelect(){
-  const wrap=document.createElement('div');
-  wrap.className='bubble-option';
-  const sel=document.createElement('select');
-  sel.innerHTML='<option value="">Topping</option>';
-  xBowlToppingOptions.forEach(t=>{const opt=document.createElement('option');opt.value=t;opt.textContent=t;sel.appendChild(opt);});
-  const del=document.createElement('button');del.type='button';del.textContent='❌';del.className='remove-button';del.addEventListener('click',()=>wrap.remove());
-  sel.addEventListener('change',()=>{if(wrap.parentElement.lastElementChild===wrap&&sel.value)addXbowlToppingSelect();});
-  wrap.appendChild(sel);wrap.appendChild(del);return wrap;
-}
-function addXbowlToppingSelect(){document.getElementById('xBowlToppings').appendChild(createXbowlToppingSelect());}
-
-function calcXbowlPrice(){
-  const base=document.querySelector('#xBowlBase option:checked');
-  let price=parseFloat(base?.dataset.price||0);
-  document.querySelectorAll('#xBowlMains select').forEach(sel=>{const opt=sel.selectedOptions[0];if(opt&&opt.dataset.price)price+=parseFloat(opt.dataset.price);});
-  const toppings=Array.from(document.querySelectorAll('#xBowlToppings select')).filter(s=>s.value).length;
-  return price+toppings*1.5;
-}
-
-function buildXbowlName(){
-  const base=document.getElementById('xBowlBase').value;
-  const mains=Array.from(document.querySelectorAll('#xBowlMains select')).map(s=>s.value).filter(Boolean);
-  const tops=Array.from(document.querySelectorAll('#xBowlToppings select')).map(s=>s.value).filter(Boolean);
-  let parts=[base];
-  if(mains.length) parts.push(mains.join(', '));
-  if(tops.length) parts.push(tops.join(', '));
-  return `X-Bowl (${parts.join(' | ')})`;
-}
-
-function addXbowlToCart(){
-  const price=calcXbowlPrice();
-  const name=buildXbowlName();
-  const cur=cart[name]?cart[name].qty:0;
-  setQty(name,price,cur+1,0.2);
-  document.getElementById('xBowlNewWrap').classList.remove('hidden');
-}
-
-function clearXbowlSet(){
-  document.getElementById('xBowlBase').value='';
-  document.getElementById('xBowlMains').innerHTML='';
-  document.getElementById('xBowlToppings').innerHTML='';
-  addXbowlMainSelect();
-  addXbowlToppingSelect();
-  document.getElementById('xBowlNewWrap').classList.add('hidden');
-}
-
 function changeOmakaseQty(delta){
   const sel=document.getElementById('sushiBentoCount');
   let val=parseInt(sel.value||0);
@@ -1071,7 +1004,7 @@ function addCustomPrice(){
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
-  const skip=['bubbleTeaQty','bubbleType','bubbleFlavor','bubbleTopping','xBentoMain','xBentoSide','xBentoRice','xBentoVeg','xBowlBase',
+  const skip=['bubbleTeaQty','bubbleType','bubbleFlavor','bubbleTopping','xBentoMain','xBentoSide','xBentoRice','xBentoVeg',
     'ebiBase','ebiSmaak','ebiQty','chickenBase','chickenSmaak','chickenQty','beefBase','beefSmaak','beefQty',
     'ribeyeBase','ribeyeSmaak','ribeyeQty','chasiuBase','chasiuSmaak','chasiuQty'];
   document.querySelectorAll('.menu-item select').forEach(sel=>{
@@ -1113,16 +1046,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.querySelector('.qty-minus[data-target="xBentoQty"]').addEventListener('click',()=>{
     if(!document.getElementById('xBentoMain').value||!document.getElementById('xBentoSide').value||!document.getElementById('xBentoRice').value||!document.getElementById('xBentoVeg').value){alert('🍱 Kies eerst hoofdgerecht, bijgerecht, rijstsoort en groente voor je Xbento.');return;}changeXbentoQty(-1);});
   document.getElementById('xBentoQty').addEventListener('change',()=>{if(!document.getElementById('xBentoMain').value||!document.getElementById('xBentoSide').value||!document.getElementById('xBentoRice').value||!document.getElementById('xBentoVeg').value){alert('🍱 Kies eerst hoofdgerecht, bijgerecht, rijstsoort en groente voor je Xbento.');document.getElementById('xBentoQty').value=0;return;}changeXbentoQty(0);});
-
-  addXbowlMainSelect();
-  addXbowlToppingSelect();
-  document.getElementById('xBowlAdd').addEventListener('click',()=>{
-    const base=document.getElementById('xBowlBase').value;
-    const hasMain=Array.from(document.querySelectorAll('#xBowlMains select')).some(s=>s.value);
-    if(!base||!hasMain){alert('🥗 Kies basis en minimaal één hoofdingrediënt voor je X-Bowl.');return;}
-    addXbowlToCart();
-  });
-  document.getElementById('xBowlNew').addEventListener('click',clearXbowlSet);
 
   const ramenIds=['ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty'];
   document.querySelectorAll('.qty-plus').forEach(btn=>{
