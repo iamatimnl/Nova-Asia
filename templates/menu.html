@@ -1,4 +1,3 @@
-
 <section id="bubble">
 <div class="menu-group">
 <h2 style="margin-top: -8px; font-size: 1.5rem; color: #333; text-align: center; font-weight: bold;">
@@ -11,6 +10,7 @@
 <div class="menu-content">
 <h3>Bubble Tea</h3>
 <p>€ 5.00</p>
+<p id="bubbleSoldOut" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="bubble-option">
 <select id="bubbleType">
 <option value="">Base</option>
@@ -63,6 +63,7 @@
 <div class="menu-content">
 <h3>Chicken Bento</h3>
 <p>€ 22.00</p>
+<p id="soldoutChickenBento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="chickenBentoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="chickenBentoCount" type="button">-</button>
@@ -80,6 +81,7 @@
 <div class="menu-content">
 <h3>Meatlover Bento</h3>
 <p>€ 25.00</p>
+<p id="soldoutMeatloverBento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="meatloverBentoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="meatloverBentoCount" type="button">-</button>
@@ -96,6 +98,7 @@
 <div class="menu-content">
 <h3>Zalm Lover Bento</h3>
 <p>€ 23.00</p>
+<p id="soldoutZalmLoverBento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="zalmLoverBentoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="zalmLoverBentoCount" type="button">-</button>
@@ -112,6 +115,7 @@
 <div class="menu-content">
 <h3>Ebi Lover Bento</h3>
 <p>€ 23.00</p>
+<p id="soldoutEbiLoverBento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="ebiLoverBentoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="ebiLoverBentoCount" type="button">-</button>
@@ -128,6 +132,7 @@
 <div class="menu-content">
 <h3>Surf &amp; Turf Bento</h3>
 <p>€ 25.00</p>
+<p id="soldoutSurfTurfBento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="surfTurfBentoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="surfTurfBentoCount" type="button">-</button>
@@ -144,6 +149,7 @@
 <div class="menu-content">
 <h3>Dimsum Bento</h3>
 <p>€ 15.00</p>
+<p id="soldoutDimsumBento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="dimsumBentoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="dimsumBentoCount" type="button">-</button>
@@ -160,6 +166,7 @@
 <div class="menu-content">
 <h3>Lamskotelet Bento</h3>
 <p>€ 28.00</p>
+<p id="soldoutLamskoteletBento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="lamsBentoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="lamsBentoCount" type="button">-</button>
@@ -176,6 +183,7 @@
 <div class="menu-content">
 <h3>Veggie Bento</h3>
 <p>€ 20.00</p>
+<p id="soldoutVeggieBento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="veggieBentoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="veggieBentoCount" type="button">-</button>
@@ -191,6 +199,7 @@
 <div class="menu-content">
 <h3>Bento Sushi Omakase</h3>
 <p>€ 22.00</p>
+<p id="soldoutSushiBento" class="sold-out-msg hidden">Uitverkocht!</p>
 <p class="menu-description">±16st Verrassing van de chef!</p>
 <div class="qty-box">
 <label for="sushiBentoCount">Aantal</label>
@@ -210,6 +219,7 @@
 <div class="menu-content">
 <h3>Xbento (stel zelf samen)</h3>
 <p>Vanaf € 25.00</p>
+<p id="soldoutXbento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="bubble-option">
 <select id="xBentoMain">
 <option value="">Hoofdgerecht</option>
@@ -256,6 +266,7 @@
     <div class="menu-content">
       <h3>Ebi Furai</h3>
       <p>€ 18.00</p>
+      <p id="soldoutEbiRamen" class="sold-out-msg hidden">Uitverkocht!</p>
       <div class="bubble-option">
         <select id="ebiBase">
           <option value="">Base</option>
@@ -290,6 +301,7 @@
     <div class="menu-content">
       <h3>Chicken</h3>
       <p>€ 18.00</p>
+      <p id="soldoutChickenRamen" class="sold-out-msg hidden">Uitverkocht!</p>
       <div class="bubble-option">
         <select id="chickenBase">
           <option value="">Base</option>
@@ -324,6 +336,7 @@
     <div class="menu-content">
       <h3>Beef</h3>
       <p>€ 18.00</p>
+      <p id="soldoutBeefRamen" class="sold-out-msg hidden">Uitverkocht!</p>
       <div class="bubble-option">
         <select id="beefBase">
           <option value="">Base</option>
@@ -358,6 +371,7 @@
     <div class="menu-content">
       <h3>Ribeye</h3>
       <p>€ 18.00</p>
+      <p id="soldoutRibeyeRamen" class="sold-out-msg hidden">Uitverkocht!</p>
       <div class="bubble-option">
         <select id="ribeyeBase">
           <option value="">Base</option>
@@ -392,6 +406,7 @@
     <div class="menu-content">
       <h3>Chasiu</h3>
       <p>€ 18.00</p>
+      <p id="soldoutChasiuRamen" class="sold-out-msg hidden">Uitverkocht!</p>
       <div class="bubble-option">
         <select id="chasiuBase">
           <option value="">Base</option>
@@ -430,6 +445,7 @@
       <div class="menu-content">
         <h3>Zalm Bowl</h3>
         <p>€ 15.00</p>
+        <p id="soldoutZalmBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
           <label for="zalmBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="zalmBowlQty" type="button">-</button>
@@ -445,6 +461,7 @@
       <div class="menu-content">
         <h3>Tuna Bowl</h3>
         <p>€ 15.00</p>
+        <p id="soldoutTunaBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
           <label for="tunaBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="tunaBowlQty" type="button">-</button>
@@ -456,11 +473,12 @@
 
     <div class="menu-row menu-item" data-name="Ebi Fry Bowl" data-price="15.5" data-packaging="0.2">
       <div class="menu-img">
-        <img src="{{ url_for('static', filename='images/.png') }}" alt="Ebi Fry Bowl">
+        <img src="{{ url_for('static', filename='images/虾boel.png') }}" alt="Ebi Fry Bowl">
       </div>
       <div class="menu-content">
         <h3>Ebi Fry Bowl</h3>
         <p>€ 15.50</p>
+        <p id="soldoutEbiFryBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
           <label for="ebiFryBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="ebiFryBowlQty" type="button">-</button>
@@ -472,11 +490,12 @@
 
     <div class="menu-row menu-item" data-name="Chicken Karaage Bowl" data-price="15.5" data-packaging="0.2">
       <div class="menu-img">
-        <img src="{{ url_for('static', filename='images/chicken-kar.png') }}" alt="Chicken Karaage Bowl">
+        <img src="{{ url_for('static', filename='images/chicken-kar.jpg') }}" alt="Chicken Karaage Bowl">
       </div>
       <div class="menu-content">
         <h3>Chicken Karaage Bowl</h3>
         <p>€ 15.50</p>
+        <p id="soldoutChickenKaraageBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
           <label for="chickenKaraageBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="chickenKaraageBowlQty" type="button">-</button>
@@ -488,11 +507,12 @@
 
     <div class="menu-row menu-item" data-name="Spicy Chicken Bowl" data-price="15.5" data-packaging="0.2">
       <div class="menu-img">
-        <img src="{{ url_for('static', filename='images/spicy-chicken-bowl.png') }}" alt="Spicy Chicken Bowl">
+        <img src="{{ url_for('static', filename='images/chicken-kar.jpg') }}" alt="Spicy Chicken Bowl">
       </div>
       <div class="menu-content">
         <h3>Spicy Chicken Bowl</h3>
         <p>€ 15.50</p>
+        <p id="soldoutSpicyChickenBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
           <label for="spicyChickenBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="spicyChickenBowlQty" type="button">-</button>
@@ -504,11 +524,12 @@
 
     <div class="menu-row menu-item" data-name="Teriyaki Chicken Bowl" data-price="15.5" data-packaging="0.2">
       <div class="menu-img">
-        <img src="{{ url_for('static', filename='images/teriyaki-chicken-bowl.png') }}" alt="Teriyaki Chicken Bowl">
+        <img src="{{ url_for('static', filename='images/teriyaki-chicken-bowl.jpg') }}" alt="Teriyaki Chicken Bowl">
       </div>
       <div class="menu-content">
         <h3>Teriyaki Chicken Bowl</h3>
         <p>€ 15.50</p>
+        <p id="soldoutTeriyakiChickenBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
           <label for="teriyakiChickenBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="teriyakiChickenBowlQty" type="button">-</button>
@@ -525,6 +546,7 @@
       <div class="menu-content">
         <h3>Teriyaki Beef Bowl</h3>
         <p>€ 15.50</p>
+        <p id="soldoutTeriyakiBeefBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
           <label for="teriyakiBeefBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="teriyakiBeefBowlQty" type="button">-</button>
@@ -536,11 +558,12 @@
 
     <div class="menu-row menu-item" data-name="California Bowl" data-price="14" data-packaging="0.2">
       <div class="menu-img">
-        <img src="{{ url_for('static', filename='images/california-bowl.png') }}" alt="California Bowl">
+        <img src="{{ url_for('static', filename='images/calibowl.png') }}" alt="California Bowl">
       </div>
       <div class="menu-content">
         <h3>California Bowl</h3>
         <p>€ 14.00</p>
+        <p id="soldoutCaliforniaBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
           <label for="californiaBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="californiaBowlQty" type="button">-</button>
@@ -550,13 +573,33 @@
       </div>
     </div>
 
+
+
+    <div class="menu-row menu-item" data-name="Unagi Bowl" data-price="16" data-packaging="0.2">
+      <div class="menu-img">
+        <img src="{{ url_for('static', filename='images/Unagi.jpg') }}" alt="Vega Bowl">
+      </div>
+      <div class="menu-content">
+        <h3>Unagi Bowl (Gerilde paling)</h3>
+        <p>€ 16.00</p>
+        <p id="soldoutVegaBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <div class="qty-box">
+          <label for="unagiBowlQty">Aantal</label>
+          <button class="qty-minus remove-button" data-target="unagiBowlQty" type="button">-</button>
+          <select id="unagiBowlQty" name="unagiBowlQty"></select>
+          <button class="qty-plus add-button" data-target="unagiBowlQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
+
     <div class="menu-row menu-item" data-name="Vega Bowl" data-price="13" data-packaging="0.2">
       <div class="menu-img">
-        <img src="{{ url_for('static', filename='images/vega-bowl.png') }}" alt="Vega Bowl">
+        <img src="{{ url_for('static', filename='images/vega-bowl.jpg') }}" alt="Vega Bowl">
       </div>
       <div class="menu-content">
         <h3>Vega Bowl (Vegetarisch)</h3>
         <p>€ 13.00</p>
+        <p id="soldoutVegaBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
           <label for="vegaBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="vegaBowlQty" type="button">-</button>
@@ -568,11 +611,12 @@
 
     <div class="menu-row menu-item" data-name="Meatlover Bowl" data-price="17" data-packaging="0.2">
       <div class="menu-img">
-        <img src="{{ url_for('static', filename='images/meatlover-bowl.png') }}" alt="Meatlover Bowl">
+        <img src="{{ url_for('static', filename='images/meatlover-bowl.jpg') }}" alt="Meatlover Bowl">
       </div>
       <div class="menu-content">
         <h3>Meatlover Bowl</h3>
         <p>€ 17.00</p>
+        <p id="soldoutMeatloverBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
           <label for="meatloverBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="meatloverBowlQty" type="button">-</button>
@@ -584,11 +628,12 @@
 
     <div class="menu-row menu-item" data-name="Rainbow Bowl" data-price="17" data-packaging="0.2">
       <div class="menu-img">
-        <img src="{{ url_for('static', filename='images/rainbow-bowl.png') }}" alt="Rainbow Bowl">
+        <img src="{{ url_for('static', filename='images/rainbowl.png') }}" alt="Rainbow Bowl">
       </div>
       <div class="menu-content">
         <h3>Rainbow Bowl</h3>
         <p>€ 17.00</p>
+        <p id="soldoutRainbowBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
           <label for="rainbowBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="rainbowBowlQty" type="button">-</button>
@@ -600,11 +645,12 @@
 
     <div class="menu-row menu-item" data-name="Spicy Tuna Bowl" data-price="15.5" data-packaging="0.2">
       <div class="menu-img">
-        <img src="{{ url_for('static', filename='images/spicy-tuna-bowl.png') }}" alt="Spicy Tuna Bowl">
+        <img src="{{ url_for('static', filename='images/spicy-tuna-bowl.jpg') }}" alt="Spicy Tuna Bowl">
       </div>
       <div class="menu-content">
         <h3>Spicy Tuna Bowl</h3>
         <p>€ 15.50</p>
+        <p id="soldoutSpicyTunaBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
           <label for="spicyTunaBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="spicyTunaBowlQty" type="button">-</button>
@@ -616,11 +662,12 @@
 
     <div class="menu-row menu-item" data-name="Flamed Zalm Bowl" data-price="16" data-packaging="0.2">
       <div class="menu-img">
-        <img src="{{ url_for('static', filename='images/flamed-salmon-bowl.png') }}" alt="Flamed Zalm Bowl">
+        <img src="{{ url_for('static', filename='images/flamed-salmon-bowl.jpg') }}" alt="Flamed Zalm Bowl">
       </div>
       <div class="menu-content">
         <h3>Flamed Zalm Bowl</h3>
         <p>€ 16.00</p>
+        <p id="soldoutFlamedZalmBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
           <label for="flamedZalmBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="flamedZalmBowlQty" type="button">-</button>
@@ -637,6 +684,7 @@
       <div class="menu-content">
         <h3>Flamed Tuna Bowl</h3>
         <p>€ 16.00</p>
+        <p id="soldoutFlamedTunaBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
           <label for="flamedTunaBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="flamedTunaBowlQty" type="button">-</button>
@@ -648,11 +696,11 @@
 
     <div class="menu-row menu-item" data-name="X-Bowl" data-price="0" data-packaging="0.2">
       <div class="menu-img">
-        <img src="{{ url_for('static', filename='images/xbowl.png') }}" alt="X-Bowl">
+        <img src="{{ url_for('static', filename='images/Xbowl.png') }}" alt="X-Bowl">
       </div>
       <div class="menu-content">
-        <h3>X-Bowl (Vrije samenstelling)</h3>
-        <p id="xBowlPrice">Prijs afhankelijk van keuzes</p>
+        <h3>X-Bowl</h3>
+        <p id="soldoutXBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="bubble-option">
           <select id="xBowlBase">
             <option value="">Basis</option>
@@ -690,6 +738,7 @@
 <div class="menu-content">
 <h3>Salmon Roll Omakase</h3>
 <p>9 st verrassing samengesteld<br/>€ 16.00</p>
+<p id="soldoutSalmonRoll" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="salmonRollCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="salmonRollCount" type="button">-</button>
@@ -705,6 +754,7 @@
 <div class="menu-content">
 <h3>Dragon Roll Omakase</h3>
 <p>9 st verrassing samengesteld<br/>€ 16.00</p>
+<p id="soldoutDragonRoll" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="dragonRollCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="dragonRollCount" type="button">-</button>
@@ -721,6 +771,7 @@
 <div class="menu-content">
 <h3>Beef Roll Omakase</h3>
 <p>9 st verrassing samengesteld<br/>€ 16.00</p>
+<p id="soldoutBeefRoll" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="beefRollCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="beefRollCount" type="button">-</button>
@@ -736,6 +787,7 @@
 <div class="menu-content">
 <h3>Chicken Roll Omakase</h3>
 <p>9 st verrassing samengesteld<br/>€ 16.00</p>
+<p id="soldoutChickenRoll" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="chickenRollCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="chickenRollCount" type="button">-</button>
@@ -758,6 +810,7 @@
 <div class="menu-content">
 <h3>Salmon sashimi</h3>
 <p>€ 9.00</p>
+<p id="soldoutSalmonSashimi" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="salmonSashimiQty">Aantal</label>
 <button class="qty-minus remove-button" data-target="salmonSashimiQty" type="button">-</button>
@@ -773,6 +826,7 @@
 <div class="menu-content">
 <h3>Flamed salmon sashimi</h3>
 <p>€ 10.00</p>
+<p id="soldoutFlamedSalmonSashimi" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="flamedsalmonSashimiQty">Aantal</label>
 <button class="qty-minus remove-button" data-target="flamedsalmonSashimiQty" type="button">-</button>
@@ -788,6 +842,7 @@
 <div class="menu-content">
 <h3>Tonijn sashimi</h3>
 <p>€ 10.00</p>
+<p id="soldoutTonijnSashimi" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="tonijnSashimiQty">Aantal</label>
 <button class="qty-minus remove-button" data-target="tonijnSashimiQty" type="button">-</button>
@@ -803,6 +858,7 @@
 <div class="menu-content">
 <h3>Flamed tonijn sashimi</h3>
 <p>€ 10.50</p>
+<p id="soldoutFlamedTonijnSashimi" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="flamedtonijnSashimiQty">Aantal</label>
 <button class="qty-minus remove-button" data-target="flamedtonijnSashimiQty" type="button">-</button>
@@ -819,6 +875,7 @@
 <div class="menu-content">
 <h3>Beef sashimi</h3>
 <p>€ 10.00</p>
+<p id="soldoutBeefSashimi" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="beefSashimiQty">Aantal</label>
 <button class="qty-minus remove-button" data-target="beefSashimiQty" type="button">-</button>
@@ -843,6 +900,7 @@
 <div class="menu-content">
 <h3>Zalm crispy rice sandwich</h3>
 <p>€ 7.00</p>
+<p id="soldoutZalmCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="zalm-crispy-rice-sandwich">Aantal</label>
 <button class="qty-minus remove-button" data-target="zalm-crispy-rice-sandwich" type="button">-</button>
@@ -851,6 +909,25 @@
 </div>
 </div>
 </div>
+
+<!-- Zalm -->
+<div class="menu-row menu-item" data-name="Spicytuna crispy rice sandwich" data-packaging="0.2" data-price="7">
+<div class="menu-img">
+<img alt="Spicytuna crispy rice sandwich" src="{{ url_for('static', filename='images/zalm.png') }}"/>
+</div>
+<div class="menu-content">
+<h3>Spicytuna crispy rice sandwich</h3>
+<p>€ 7.00</p>
+<p id="soldoutSpicytunaCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
+<div class="qty-box">
+<label for="spicytuna-crispy-rice-sandwich">Aantal</label>
+<button class="qty-minus remove-button" data-target="spicytuna-crispy-rice-sandwich" type="button">-</button>
+<select id="spicytuna-crispy-rice-sandwich" name="Spicytuna crispy rice sandwich"></select>
+<button class="qty-plus add-button" data-target="spicytuna-crispy-rice-sandwich" type="button">+</button>
+</div>
+</div>
+</div>
+  
 <!-- Ebi -->
 <!-- Ebi Crispy Rice Sandwich -->
 <div class="menu-row menu-item" data-name="Ebi crispy rice sandwich" data-packaging="0.2" data-price="7">
@@ -860,6 +937,7 @@
 <div class="menu-content">
 <h3>Ebi crispy rice sandwich</h3>
 <p>€ 7.00</p>
+<p id="soldoutEbiCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="ebiCrispyRiceSandwich">Aantal</label>
 <button class="qty-minus remove-button" data-target="ebiCrispyRiceSandwich" type="button">-</button>
@@ -876,6 +954,7 @@
 <div class="menu-content">
 <h3>Beef crispy rice sandwich</h3>
 <p>€ 7.50</p>
+<p id="soldoutBeefCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="beefCrispyRiceSandwich">Aantal</label>
 <button class="qty-minus remove-button" data-target="beefCrispyRiceSandwich" type="button">-</button>
@@ -892,6 +971,7 @@
 <div class="menu-content">
 <h3>California crispy rice sandwich</h3>
 <p>€ 7.50</p>
+<p id="soldoutCaliforniaCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="californiaCrispyRiceSandwich">Aantal</label>
 <button class="qty-minus remove-button" data-target="californiaCrispyRiceSandwich" type="button">-</button>
@@ -908,6 +988,7 @@
 <div class="menu-content">
 <h3>Chicken crispy rice sandwich</h3>
 <p>€ 7.00</p>
+<p id="soldoutChickenCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="chickenCrispyRiceSandwich">Aantal</label>
 <button class="qty-minus remove-button" data-target="chickenCrispyRiceSandwich" type="button">-</button>
@@ -928,6 +1009,7 @@
 <div class="menu-content">
 <h3>Karaage (Japanse gefrituurde kip)</h3>
 <p>€ 6.50</p>
+<p id="soldoutKaraage" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 <label for="snackCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="snackCount" type="button">-</button>
@@ -939,11 +1021,12 @@
 <!-- Ebi Fry -->
 <div class="menu-row menu-item" data-name="Ebi Fry – 4 st" data-packaging="0.2" data-price="6.2">
   <div class="menu-img">
-    <img alt="Ebi Fry" loading="lazy" src="{{ url_for('static', filename='images/Ebi.png') }}">
+    <img alt="Ebi Fry" loading="lazy" src="{{ url_for('static', filename='images/EB.png') }}">
     </img></div>
   <div class="menu-content">
     <h3>Ebi Fry – 4 st</h3>
     <p>€ 6.20</p>
+    <p id="soldoutEbiFry" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
       <label for="ebiFryCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="ebiFryCount" type="button">-</button>
@@ -955,11 +1038,12 @@
 <!-- Spicy Crispy Chicken -->
 <div class="menu-row menu-item" data-name="Spicy Crispy Chicken – 5 st" data-packaging="0.2" data-price="5.5">
   <div class="menu-img">
-    <img alt="Spicy Crispy Chicken" loading="lazy" src="{{ url_for('static', filename='images/chicken-crispy.png') }}">
+    <img alt="Spicy Crispy Chicken" loading="lazy" src="{{ url_for('static', filename='images/karaage.png') }}">
     </img></div>
   <div class="menu-content">
     <h3>Spicy Crispy Chicken – 5 st</h3>
     <p>€ 5.50</p>
+    <p id="soldoutSpicyCrispyChicken" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
       <label for="spicyCrispyChickenCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="spicyCrispyChickenCount" type="button">-</button>
@@ -971,11 +1055,12 @@
 <!-- Chicken Loempia -->
 <div class="menu-row menu-item" data-name="Chicken Loempia – 2 st" data-packaging="0.2" data-price="5">
   <div class="menu-img">
-    <img alt="Chicken Loempia" loading="lazy" src="{{ url_for('static', filename='images/st.png') }}">
+    <img alt="Chicken Loempia" loading="lazy" src="{{ url_for('static', filename='images/KIPL.png') }}">
     </img></div>
   <div class="menu-content">
     <h3>Chicken Loempia – 2 st</h3>
     <p>€ 5.00</p>
+    <p id="soldoutChickenLoempia" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
       <label for="chickenLoempiaCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="chickenLoempiaCount" type="button">-</button>
@@ -987,11 +1072,12 @@
 <!-- Gyoza -->
 <div class="menu-row menu-item" data-name="Gyoza – 5 st" data-packaging="0.2" data-price="5">
   <div class="menu-img">
-    <img alt="Gyoza" loading="lazy" src="{{ url_for('static', filename='images/dimsum-bento.png') }}">
+    <img alt="Gyoza" loading="lazy" src="{{ url_for('static', filename='images/GYO.jpg') }}">
     </img></div>
   <div class="menu-content">
     <h3>Gyoza – 5 st</h3>
     <p>€ 5.00</p>
+    <p id="soldoutGyoza" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
       <label for="gyozaCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="gyozaCount" type="button">-</button>
@@ -1003,11 +1089,12 @@
 <!-- Inktvis Ringen -->
 <div class="menu-row menu-item" data-name="Inktvis Ringen – 5 st" data-packaging="0.2" data-price="5">
   <div class="menu-img">
-    <img alt="Inktvis Ringen" loading="lazy" src="{{ url_for('static', filename='images/ss.png') }}">
+    <img alt="Inktvis Ringen" loading="lazy" src="{{ url_for('static', filename='images/INKT.jpg') }}">
     </img></div>
   <div class="menu-content">
     <h3>Inktvis Ringen – 5 st</h3>
     <p>€ 5.00</p>
+    <p id="soldoutInktvisRingen" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
       <label for="inktvisRingenCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="inktvisRingenCount" type="button">-</button>
@@ -1017,29 +1104,31 @@
   </div>
 </div>
 <!-- Crispy Rijst -->
-<div class="menu-row menu-item" data-name="Crispy Rijst – 4 st" data-packaging="0.2" data-price="4">
+<div class="menu-row menu-item" data-name="Sesambal – 5 st" data-packaging="0.2" data-price="5">
   <div class="menu-img">
-    <img alt="Crispy Rijst" loading="lazy" src="{{ url_for('static', filename='images/beef-crispy.png') }}">
+    <img alt="Sasambal" loading="lazy" src="{{ url_for('static', filename='images/SEM.webp') }}">
     </img></div>
   <div class="menu-content">
-    <h3>Crispy Rijst – 4 st</h3>
-    <p>€ 4.00</p>
+    <h3>Sesambal – 5 st</h3>
+    <p>€ 5.00</p>
+    <p id="soldoutSesambal" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
-      <label for="crispyRijstCount">Aantal</label>
-      <button class="qty-minus remove-button" data-target="crispyRijstCount" type="button">-</button>
-      <select id="crispyRijstCount" name="crispyRijstCount"></select>
-      <button class="qty-plus add-button" data-target="crispyRijstCount" type="button">+</button>
+      <label for="sesambalCount">Aantal</label>
+      <button class="qty-minus remove-button" data-target="sesambalCount" type="button">-</button>
+      <select id="sesambalCount" name="sesambalCount"></select>
+      <button class="qty-plus add-button" data-target="sesambalCount" type="button">+</button>
     </div>
   </div>
 </div>
 <!-- Yakitori -->
 <div class="menu-row menu-item" data-name="Yakitori – 4 st" data-packaging="0.2" data-price="6">
   <div class="menu-img">
-    <img alt="Yakitori" loading="lazy" src="{{ url_for('static', filename='images/teri鸡.png') }}">
+    <img alt="Yakitori" loading="lazy" src="{{ url_for('static', filename='images/YAK.jpg') }}">
     </img></div>
   <div class="menu-content">
     <h3>Yakitori – 4 st</h3>
     <p>€ 6.00</p>
+    <p id="soldoutYakitori" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
       <label for="yakitoriCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="yakitoriCount" type="button">-</button>
@@ -1051,11 +1140,12 @@
 <!-- Mini Loempia -->
 <div class="menu-row menu-item" data-name="Mini Loempia – 6 st" data-packaging="0.2" data-price="3.5">
   <div class="menu-img">
-    <img alt="Mini Loempia" loading="lazy" src="{{ url_for('static', filename='images/st.png') }}">
+    <img alt="Mini Loempia" loading="lazy" src="{{ url_for('static', filename='images/LOM.jpg') }}">
     </img></div>
   <div class="menu-content">
     <h3>Mini Loempia – 6 st</h3>
     <p>€ 3.50</p>
+    <p id="soldoutMiniLoempia" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
       <label for="miniLoempiaCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="miniLoempiaCount" type="button">-</button>
@@ -1067,11 +1157,12 @@
 <!-- Edamame -->
 <div class="menu-row menu-item" data-name="Edamame" data-packaging="0.2" data-price="4.5">
   <div class="menu-img">
-    <img alt="Edamame" loading="lazy" src="{{ url_for('static', filename='images/zwp.png') }}">
+    <img alt="Edamame" loading="lazy" src="{{ url_for('static', filename='images/EDA.jpg') }}">
     </img></div>
   <div class="menu-content">
     <h3>Edamame</h3>
     <p>€ 4.50</p>
+    <p id="soldoutEdamame" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
       <label for="edamameCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="edamameCount" type="button">-</button>
@@ -1083,11 +1174,12 @@
 <!-- Kimchi Komkommer -->
 <div class="menu-row menu-item" data-name="Kimchi Komkommer" data-packaging="0.2" data-price="4.5">
   <div class="menu-img">
-    <img alt="Kimchi Komkommer" loading="lazy" src="{{ url_for('static', filename='images/nrp.png') }}">
+    <img alt="Kimchi Komkommer" loading="lazy" src="{{ url_for('static', filename='images/KKK.jpg') }}">
     </img></div>
   <div class="menu-content">
     <h3>Kimchi Komkommer</h3>
     <p>€ 4.50</p>
+    <p id="soldoutKimchiKomkommer" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
       <label for="kimchiKomkommerCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="kimchiKomkommerCount" type="button">-</button>
@@ -1099,11 +1191,12 @@
 <!-- Kimchi Kool -->
 <div class="menu-row menu-item" data-name="Kimchi Kool" data-packaging="0.2" data-price="5">
   <div class="menu-img">
-    <img alt="Kimchi Kool" loading="lazy" src="{{ url_for('static', filename='images/nrp.png') }}">
+    <img alt="Kimchi Kool" loading="lazy" src="{{ url_for('static', filename='images/KIM.webp') }}">
     </img></div>
   <div class="menu-content">
     <h3>Kimchi Kool</h3>
     <p>€ 5.00</p>
+    <p id="soldoutKimchiKool" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
       <label for="kimchiKoolCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="kimchiKoolCount" type="button">-</button>
@@ -1112,14 +1205,37 @@
     </div>
   </div>
 </div>
+
+ <div class="menu-row menu-item" data-name="Ebi kroket" data-packaging="0.2" data-price="5">
+  <div class="menu-img">
+    <img alt="Ebi kroket" loading="lazy" src="{{ url_for('static', filename='images/KRO.jpg') }}">
+    </img></div>
+  <div class="menu-content">
+    <h3>Ebi kroket 4st</h3>
+    <p>€ 5.00</p>
+    <p id="soldoutEbikroket" class="sold-out-msg hidden">Uitverkocht!</p>
+    <div class="qty-box">
+      <label for="ebikroketCount">Aantal</label>
+      <button class="qty-minus remove-button" data-target="ebikroketCount" type="button">-</button>
+      <select id="ebikroketCount" name="ebikroketCount"></select>
+      <button class="qty-plus add-button" data-target="ebikroketCount" type="button">+</button>
+    </div>
+  </div>
+</div> 
+
+
+
+  
 <!-- Zeewiersalade -->
+  
 <div class="menu-row menu-item" data-name="Zeewiersalade – 100g" data-packaging="0.2" data-price="5">
   <div class="menu-img">
-    <img alt="Zeewiersalade" loading="lazy" src="{{ url_for('static', filename='images/ss.png') }}">
+    <img alt="Zeewiersalade" loading="lazy" src="{{ url_for('static', filename='images/ZEW.webp') }}">
     </img></div>
   <div class="menu-content">
     <h3>Zeewiersalade – 100g</h3>
     <p>€ 5.00</p>
+    <p id="soldoutZeewiersalade" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
       <label for="zeewiersaladeCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="zeewiersaladeCount" type="button">-</button>
@@ -1138,9 +1254,10 @@
 <img alt="Mochi Mango" loading="lazy" src="{{ url_for('static', filename='images/mochi-mango.png') }}">
 </img></div>
 <div class="menu-content">
-<h3>Mochi – Mango</h3>
-<p>€ 4.00</p>
-<div class="qty-box">
+  <h3>Mochi – Mango</h3>
+  <p>€ 4.00</p>
+  <p id="soldoutMochiMango" class="sold-out-msg hidden">Uitverkocht!</p>
+  <div class="qty-box">
 <label for="mochiMangoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="mochiMangoCount" type="button">-</button>
 <select id="mochiMangoCount" name="mochiMangoCount"></select>
@@ -1154,9 +1271,10 @@
 <img alt="Mochi Aardbei" loading="lazy" src="{{ url_for('static', filename='images/mochi-aardbei.png') }}">
 </img></div>
 <div class="menu-content">
-<h3>Mochi – Aardbei</h3>
-<p>€ 4.00</p>
-<div class="qty-box">
+  <h3>Mochi – Aardbei</h3>
+  <p>€ 4.00</p>
+  <p id="soldoutMochiAardbei" class="sold-out-msg hidden">Uitverkocht!</p>
+  <div class="qty-box">
 <label for="mochiAardbeiCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="mochiAardbeiCount" type="button">-</button>
 <select id="mochiAardbeiCount" name="mochiAardbeiCount"></select>
@@ -1170,9 +1288,10 @@
 <img alt="Mochi Matcha" loading="lazy" src="{{ url_for('static', filename='images/mochi-matcha.png') }}">
 </img></div>
 <div class="menu-content">
-<h3>Mochi – Matcha</h3>
-<p>€ 4.00</p>
-<div class="qty-box">
+  <h3>Mochi – Matcha</h3>
+  <p>€ 4.00</p>
+  <p id="soldoutMochiMatcha" class="sold-out-msg hidden">Uitverkocht!</p>
+  <div class="qty-box">
 <label for="mochiMatchaCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="mochiMatchaCount" type="button">-</button>
 <select id="mochiMatchaCount" name="mochiMatchaCount"></select>
@@ -1186,9 +1305,10 @@
 <img alt="Mochi Pistachio" loading="lazy" src="{{ url_for('static', filename='images/mochi-pistachio.png') }}">
 </img></div>
 <div class="menu-content">
-<h3>Mochi – Pistachio</h3>
-<p>€ 4.00</p>
-<div class="qty-box">
+  <h3>Mochi – Pistachio</h3>
+  <p>€ 4.00</p>
+  <p id="soldoutMochiPistachio" class="sold-out-msg hidden">Uitverkocht!</p>
+  <div class="qty-box">
 <label for="mochiPistachioCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="mochiPistachioCount" type="button">-</button>
 <select id="mochiPistachioCount" name="mochiPistachioCount"></select>
@@ -1197,4 +1317,26 @@
 </div>
 </div>
 </div>
+</section>
+<!-- iPhone 主屏幕提示 -->
+<section id="wapp" class="menu-tip-section">
+    <div class="menu-row menu-item" style="background: #f0e2c3; border: 2px dashed #e09142;">
+        <div class="menu-img">
+            <img alt="iPhone Tip" loading="lazy" src="{{ url_for('static', filename='images/iphone-tip.png') }}">
+        </div>
+        <div class="menu-content">
+            <!-- 不需要再写任何文字 -->
+        </div>
+    </div>
+</section>
+
+<section class="menu-tip-section">
+    <div class="menu-row menu-item" style="background: #f0e2c3; border: 2px dashed #e09142;">
+        <div class="menu-img">
+            <img alt="Bookmark Tip" loading="lazy" src="{{ url_for('static', filename='images/bookmark-tip.png') }}">
+        </div>
+        <div class="menu-content">
+            <!-- 不需要再写任何文字 -->
+        </div>
+    </div>
 </section>
