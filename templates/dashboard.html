@@ -199,6 +199,34 @@
         </select><br>
         <br><br>
 
+        <h3>Crispy Rice Sandwich uitverkocht</h3>
+        <label>Zalm crispy rice sandwich:</label>
+        <select id="soldout_zalm_crispy_rice_sandwich_select">
+            <option value="false" {% if soldout_zalm_crispy_rice_sandwich != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_zalm_crispy_rice_sandwich == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Ebi crispy rice sandwich:</label>
+        <select id="soldout_ebi_crispy_rice_sandwich_select">
+            <option value="false" {% if soldout_ebi_crispy_rice_sandwich != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_ebi_crispy_rice_sandwich == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Beef crispy rice sandwich:</label>
+        <select id="soldout_beef_crispy_rice_sandwich_select">
+            <option value="false" {% if soldout_beef_crispy_rice_sandwich != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_beef_crispy_rice_sandwich == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>California crispy rice sandwich:</label>
+        <select id="soldout_california_crispy_rice_sandwich_select">
+            <option value="false" {% if soldout_california_crispy_rice_sandwich != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_california_crispy_rice_sandwich == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Chicken crispy rice sandwich:</label>
+        <select id="soldout_chicken_crispy_rice_sandwich_select">
+            <option value="false" {% if soldout_chicken_crispy_rice_sandwich != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_chicken_crispy_rice_sandwich == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <br><br>
+
         <h3>Pokebowl uitverkocht</h3>
         <label>Zalm Bowl:</label>
         <select id="soldout_zalm_bowl_select">
@@ -526,6 +554,11 @@
             const soldout_tonijn_sashimi = document.getElementById('soldout_tonijn_sashimi_select').value;
             const soldout_flamed_tonijn_sashimi = document.getElementById('soldout_flamed_tonijn_sashimi_select').value;
             const soldout_beef_sashimi = document.getElementById('soldout_beef_sashimi_select').value;
+            const soldout_zalm_crispy_rice_sandwich = document.getElementById('soldout_zalm_crispy_rice_sandwich_select').value;
+            const soldout_ebi_crispy_rice_sandwich = document.getElementById('soldout_ebi_crispy_rice_sandwich_select').value;
+            const soldout_beef_crispy_rice_sandwich = document.getElementById('soldout_beef_crispy_rice_sandwich_select').value;
+            const soldout_california_crispy_rice_sandwich = document.getElementById('soldout_california_crispy_rice_sandwich_select').value;
+            const soldout_chicken_crispy_rice_sandwich = document.getElementById('soldout_chicken_crispy_rice_sandwich_select').value;
             const soldout_xbento = document.getElementById('soldout_xbento_select').value;
             const soldout_zalm_bowl = document.getElementById('soldout_zalm_bowl_select').value;
             const soldout_tuna_bowl = document.getElementById('soldout_tuna_bowl_select').value;
@@ -582,9 +615,14 @@
                     soldout_salmon_sashimi: soldout_salmon_sashimi,
                     soldout_flamed_salmon_sashimi: soldout_flamed_salmon_sashimi,
                     soldout_tonijn_sashimi: soldout_tonijn_sashimi,
-                    soldout_flamed_tonijn_sashimi: soldout_flamed_tonijn_sashimi,
-                    soldout_beef_sashimi: soldout_beef_sashimi,
-                    soldout_xbento: soldout_xbento,
+                      soldout_flamed_tonijn_sashimi: soldout_flamed_tonijn_sashimi,
+                      soldout_beef_sashimi: soldout_beef_sashimi,
+                      soldout_zalm_crispy_rice_sandwich: soldout_zalm_crispy_rice_sandwich,
+                      soldout_ebi_crispy_rice_sandwich: soldout_ebi_crispy_rice_sandwich,
+                      soldout_beef_crispy_rice_sandwich: soldout_beef_crispy_rice_sandwich,
+                      soldout_california_crispy_rice_sandwich: soldout_california_crispy_rice_sandwich,
+                      soldout_chicken_crispy_rice_sandwich: soldout_chicken_crispy_rice_sandwich,
+                      soldout_xbento: soldout_xbento,
                     soldout_zalm_bowl: soldout_zalm_bowl,
                     soldout_tuna_bowl: soldout_tuna_bowl,
                     soldout_ebi_fry_bowl: soldout_ebi_fry_bowl,
