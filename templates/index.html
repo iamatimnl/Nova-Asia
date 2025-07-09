@@ -3952,7 +3952,9 @@ function setQty(name, price, qty, packaging = DEFAULT_PACKAGING_FEE, prefs = nul
   }
   updateCart();
   saveCart();
+  updateCartCountBadge(); // ✅ 这一行必须加
 }
+
 
 function updateCart() {
   const list = document.getElementById('cart');
