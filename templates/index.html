@@ -3551,7 +3551,7 @@ function changeXbowlQty(delta) {
   if (currentXBowlName && currentXBowlName !== name && cart[currentXBowlName]) {
     delete cart[currentXBowlName];
   }
-  setQty(name, price, val, DEFAULT_PACKAGING_FEE);
+  setQty(name, price, val, 0.2);
   currentXBowlName = name;
   updateXBowlControls();
   // Match POS behaviour: show modal after adding to cart
