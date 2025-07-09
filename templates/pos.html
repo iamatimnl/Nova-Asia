@@ -170,6 +170,7 @@
   .add-button:hover { background:#a3c8ff; }
   .remove-button { background:#ffd6d6; color:#333; }
   .remove-button:hover { background:#ffc2c2; }
+  .xbowl-summary{background:rgba(255,255,255,0.7);backdrop-filter:blur(6px);border-radius:8px;padding:4px 8px;margin:2px 0;font-size:0.8rem;}
   @media (max-width: 600px) {
     .menu-item button { width:1.8rem; height:1.8rem; font-size:0.9rem; }
     .menu-item img { max-width:80px; }
@@ -740,6 +741,16 @@ body.today-open .today-toggle {
 
 <audio id="notifySound" src="/sound/beep.mp3" preload="auto"></audio>
 
+<div id="xBowlAddedModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; z-index:1000;">
+  <div style="background:white; padding:20px; border-radius:12px; text-align:center;">
+    <p>Toegevoegd! Nieuwe maken?</p>
+    <div style="display:flex; gap:10px; justify-content:center; margin-top:10px;">
+      <button id="xBowlAgain">Ja, graag</button>
+      <button id="xBowlClose">Nee, bedankt</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const cart = {};
 const extras = {
@@ -837,6 +848,17 @@ function updateXBowlDisplay(){
     item.dataset.price=price;
     const p=document.getElementById('xBowlPrice');
     if(p) p.textContent=price?`€ ${price.toFixed(2)}`:'Prijs afhankelijk van keuzes';
+    const info=document.getElementById('xBowlSummary');
+    if(info){
+      const mainNames=mains.map(o=>o.value).join(', ');
+      const topNames=toppings.join(', ');
+      let parts=[];
+      if(baseOpt&&baseOpt.value) parts.push(baseOpt.value);
+      if(mainNames) parts.push(mainNames);
+      if(topNames) parts.push(topNames);
+      const text=parts.join(' | ');
+      info.textContent=text?`${text} - € ${price.toFixed(2)}`:'';
+    }
   }
 }
 
@@ -870,6 +892,7 @@ function changeXbowlQty(delta){
   setQty(name,price,val,0.2);
   currentXBowlName=name;
   updateXBowlControls();
+  if(delta>0 && val>0) showXBowlModal();
 }
 
 function createXBowlMainSelect(){
@@ -1923,6 +1946,14 @@ function formatCurrency(value){
     }
   }
 
+  const xbowlModal=document.getElementById('xBowlAddedModal');
+  const againBtn=document.getElementById('xBowlAgain');
+  const closeXBowlBtn=document.getElementById('xBowlClose');
+  function showXBowlModal(){ if(xbowlModal) xbowlModal.style.display='flex'; }
+  function hideXBowlModal(){ if(xbowlModal) xbowlModal.style.display='none'; }
+  if(againBtn){ againBtn.addEventListener('click',()=>{ clearXBowlSet(); hideXBowlModal(); }); }
+  if(closeXBowlBtn){ closeXBowlBtn.addEventListener('click', hideXBowlModal); }
+
   window.addEventListener('beforeunload', () => socket.disconnect());
   window.addEventListener('focus', () => { newOrderCount = 0; hasNewOrder = false; updateTabTitle(); updateTodayBadge(); });
 </script>
@@ -1931,5 +1962,4 @@ function formatCurrency(value){
 
  
   
-</body>
-</html>
+</body></html>

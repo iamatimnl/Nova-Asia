@@ -451,6 +451,15 @@
   margin: 4px 0;
 }
 
+.xbowl-summary {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(6px);
+  border-radius: 8px;
+  padding: 4px 8px;
+  margin: 2px 0;
+  font-size: 0.8rem;
+}
+
 
 
 /* Generic button press feedback */
@@ -2408,6 +2417,8 @@ input:focus, select:focus, textarea:focus {
       <div class="menu-content">
         <h3>X-Bowl</h3>
         <p id="soldoutXBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="xBowlSummary" class="xbowl-summary"></p>
+        <p id="xBowlPrice" class="xbowl-summary">Prijs afhankelijk van keuzes</p>
         <div class="bubble-option">
           <select id="xBowlBase">
             <option value="">Basis</option>
@@ -3499,6 +3510,17 @@ function updateXBowlDisplay() {
     item.dataset.price = price;
     const p = document.getElementById('xBowlPrice');
     if (p) p.textContent = price ? `€ ${price.toFixed(2)}` : 'Prijs afhankelijk van keuzes';
+    const info = document.getElementById('xBowlSummary');
+    if (info) {
+      const mainNames = mains.map(o => o.value).join(', ');
+      const topNames = toppings.join(', ');
+      let parts = [];
+      if (baseOpt && baseOpt.value) parts.push(baseOpt.value);
+      if (mainNames) parts.push(mainNames);
+      if (topNames) parts.push(topNames);
+      const text = parts.join(' | ');
+      info.textContent = text ? `${text} - € ${price.toFixed(2)}` : '';
+    }
   }
 }
 
@@ -3532,6 +3554,7 @@ function changeXbowlQty(delta) {
   setQty(name, price, val, DEFAULT_PACKAGING_FEE);
   currentXBowlName = name;
   updateXBowlControls();
+  if (delta > 0 && val > 0) showXBowlModal();
 }
 
 function createXBowlMainSelect() {
@@ -5619,6 +5642,16 @@ document.addEventListener('click', e => {
 }, true);
 </script>
 
+<div id="xBowlAddedModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; z-index:1000;">
+  <div style="background:white; padding:20px; border-radius:12px; text-align:center;">
+    <p>Toegevoegd! Nieuwe maken?</p>
+    <div style="display:flex; gap:10px; justify-content:center; margin-top:10px;">
+      <button id="xBowlAgain">Ja, graag</button>
+      <button id="xBowlClose">Nee, bedankt</button>
+    </div>
+  </div>
+</div>
+
 <div id="reviewsModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:1000;">
   <div style="background:white; padding:20px; width:100%; height:100%; overflow:auto;" id="reviewsContent">
     <h2>Reviews</h2>
@@ -5658,11 +5691,18 @@ document.addEventListener('click', e => {
       if(modal.style.display !== 'none') loadReviews();
     });
   }
+
+  const xbowlModal = document.getElementById('xBowlAddedModal');
+  const againBtn = document.getElementById('xBowlAgain');
+  const closeXBowlBtn = document.getElementById('xBowlClose');
+  function showXBowlModal(){ if(xbowlModal) xbowlModal.style.display = 'flex'; }
+  function hideXBowlModal(){ if(xbowlModal) xbowlModal.style.display = 'none'; }
+  if(againBtn){ againBtn.addEventListener('click', () => { clearXBowlSet(); hideXBowlModal(); }); }
+  if(closeXBowlBtn){ closeXBowlBtn.addEventListener('click', hideXBowlModal); }
 </script>
 
 
 
 
 
-</body>
-</html>
+</body></html>
