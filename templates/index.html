@@ -1324,22 +1324,13 @@ input:focus, select:focus, textarea:focus {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  border: 3px solid transparent;
-  border-top-color: #d7a86e;
+  border: 3px solid;
+  border-color: #d7a86e transparent transparent transparent;
   animation: spin 0.8s linear infinite;
-  display: block;
   margin: auto;
-  position: relative;
-  box-shadow: 
-    0 -10px 0 0 #ffdaa3,     /* top */
-    7px -7px 0 0 #c6a46e,     /* top-right */
-    10px 0 0 0 #a7723f,       /* right */
-    7px 7px 0 0 #d7a86e,      /* bottom-right */
-    0 10px 0 0 #e1b574,       /* bottom */
-    -7px 7px 0 0 #c6a46e,     /* bottom-left */
-    -10px 0 0 0 #a7723f,      /* left */
-    -7px -7px 0 0 #704209;    /* top-left */
+  box-shadow: 0 0 4px rgba(215, 168, 110, 0.5);
 }
+
 
 
 @keyframes spin {
