@@ -405,20 +405,20 @@
 }
 
 .new-set-button {
-  all: unset !important; /* 重置所有默认和遗留样式 */
-  background: linear-gradient(135deg, #fed54f 0%, #fea500 100%) !important; /* 强制蓝色渐变 */
+  all: unset !important;
+  background: #45bc00!important;
   color: white !important;
   border: none !important;
-  border-radius: 16px !important;
-  padding: 8px 18px !important;
-  font-size: 1.6rem !important;
+  border-radius: 8px !important;
+  padding: 4px 10px !important;
+  font-size: 0.85rem !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
   cursor: pointer !important;
-  min-width: 30px !important;
-  min-height: 20px !important;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+  min-width: auto !important;
+  min-height: auto !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
   transition: all 0.2s ease !important;
 }
 
@@ -427,6 +427,7 @@
   filter: brightness(0.9) !important;
 }
 
+
 .new-set-wrap.hidden {
   display: none !important;
 }
@@ -434,7 +435,7 @@
 
 .new-set-msg {
   font-size: 2.6rem;  /* 稍微加大，更友好 */
-  color: #4E342E;
+  color: #45bc00;
   font-weight: 500;
   letter-spacing: 0.3px;
   margin: 0;
@@ -1323,13 +1324,23 @@ input:focus, select:focus, textarea:focus {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  border-width: 3px;
-  border-style: solid;
-  border-color: #d7a86e #e1b574 #c6a46e #a7723f; /* top, right, bottom, left */
+  border: 3px solid transparent;
+  border-top-color: #d7a86e;
   animation: spin 0.8s linear infinite;
   display: block;
   margin: auto;
+  position: relative;
+  box-shadow: 
+    0 -10px 0 0 #ffdaa3,     /* top */
+    7px -7px 0 0 #c6a46e,     /* top-right */
+    10px 0 0 0 #a7723f,       /* right */
+    7px 7px 0 0 #d7a86e,      /* bottom-right */
+    0 10px 0 0 #e1b574,       /* bottom */
+    -7px 7px 0 0 #c6a46e,     /* bottom-left */
+    -10px 0 0 0 #a7723f,      /* left */
+    -7px -7px 0 0 #704209;    /* top-left */
 }
+
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
