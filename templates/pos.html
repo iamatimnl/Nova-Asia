@@ -552,6 +552,34 @@ body.today-open .today-toggle {
   .today-toggle { display: none; }
 }
 
+@media (max-width: 768px) {
+  .menu-item[data-name="X-Bowl"] {
+    aspect-ratio: auto;
+    height: auto;
+  }
+  .menu-item[data-name="X-Bowl"] img {
+    position: static;
+    height: auto;
+  }
+  .menu-item[data-name="X-Bowl"] .menu-content {
+    position: static;
+  }
+  #xBowlToppings {
+    display: flex;
+    overflow-x: auto;
+    gap: 4px;
+  }
+  #xBowlToppings::-webkit-scrollbar { display: none; }
+  #xBowlToppings > div,
+  #xBowlMains > div { display: flex; align-items: center; margin-right: 4px; }
+  #xBowlToppings button,
+  #xBowlMains button {
+    width: 1.6rem;
+    height: 1.6rem;
+    font-size: 1rem;
+  }
+}
+
   
 </style>
 </head>
@@ -748,6 +776,7 @@ const xbowlMains=[
 ];
 const xbowlToppings=['Komkommer','Avocado','Sojabonen','Mais','Zeewiersalade','Masago','Inari','Tamago'];
 const XBOWL_TOPPING_PRICE=1.5;
+let currentXBowlName='';
 
 function getOptionPrice(cat,name){
   const opt=(bubbleOptions[cat]||[]).find(o=>o.name===name);
@@ -813,6 +842,16 @@ function updateXBowlDisplay(){
     item.dataset.price=price;
     const p=document.getElementById('xBowlPrice');
     if(p) p.textContent=price?`€ ${price.toFixed(2)}`:'Prijs afhankelijk van keuzes';
+  }
+  const qty=parseInt(document.getElementById('xBowlQty').value||0);
+  const name=getXBowlName();
+  if(qty>0&&name){
+    if(currentXBowlName&&currentXBowlName!==name) delete cart[currentXBowlName];
+    setQty(name,price,qty,0.2);
+    currentXBowlName=name;
+  } else if(qty===0&&currentXBowlName){
+    setQty(currentXBowlName,0,0,0.2);
+    currentXBowlName='';
   }
 }
 
@@ -881,6 +920,7 @@ function clearXBowlSet(){
   document.getElementById('xBowlMains').innerHTML='';
   document.getElementById('xBowlToppings').innerHTML='';
   document.getElementById('xBowlQty').value=0;
+  currentXBowlName='';
   ensureXBowlMain();
   ensureXBowlTopping();
   updateXBowlDisplay();
