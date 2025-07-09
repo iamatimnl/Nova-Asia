@@ -1151,6 +1151,38 @@ input:focus, select:focus, textarea:focus {
   }
 }
 
+/* X-Bowl styles */
+.xbowl-summary {
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(6px);
+  border-radius: 8px;
+  padding: 4px 8px;
+  margin: 2px 0;
+  font-size: 0.8rem;
+}
+@media (max-width: 767px) {
+  .menu-item[data-name="X-Bowl"] { aspect-ratio: auto; height: auto; }
+  .menu-item[data-name="X-Bowl"] .menu-content { position: static; }
+  .menu-item[data-name="X-Bowl"] img { position: static; width: 100%; height: auto; }
+  .menu-item[data-name="X-Bowl"] .qty-box { position: static; transform: none; width: 100%; margin-top: 8px; }
+  #xBowlMains, #xBowlToppings {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  #xBowlMains>div, #xBowlToppings>div {
+    display: flex;
+    align-items: center;
+    flex: 0 0 calc(50% - 3px);
+  }
+  #xBowlMains select, #xBowlToppings select { width: 100%; }
+  #xBowlMains button, #xBowlToppings button {
+    width: 1.4rem;
+    height: 1.4rem;
+    font-size: 0.9rem;
+  }
+}
+
 /* Increase font size on larger screens for better readability */
 @media (min-width: 768px) {
   html { font-size: 18px; }
@@ -2381,6 +2413,37 @@ input:focus, select:focus, textarea:focus {
       </div>
     </div>
 
+    <div class="menu-row menu-item" data-name="X-Bowl" data-price="0" data-packaging="0.2">
+      <div class="menu-img">
+          <img src="{{ url_for('static', filename='images/Xbowl.png') }}" alt="X-Bowl">
+      </div>
+      <div class="menu-content">
+        <h3>X-Bowl (Vrije samenstelling)</h3>
+        <p id="xBowlSummary" class="xbowl-summary"></p>
+        <p id="xBowlPrice" class="xbowl-summary">Prijs afhankelijk van keuzes</p>
+        <div class="bubble-option">
+          <select id="xBowlBase">
+            <option value="">Basis</option>
+            <option value="Sushi rijst" data-price="4">Sushi rijst</option>
+            <option value="IJsbergsla" data-price="5">IJsbergsla</option>
+            <option value="Tempura crispy rijst" data-price="6">Tempura crispy rijst</option>
+          </select>
+        </div>
+        <div id="xBowlMains"></div>
+        <div id="xBowlToppings"></div>
+        <div class="new-set-wrap hidden" id="xBowlNewWrap">
+          <span class="new-set-msg">Toegevoegd. Nieuw selecteren?</span>
+          <button type="button" class="new-set-button" id="xBowlNew">druk op</button>
+        </div>
+        <div class="qty-box">
+          <label for="xBowlQty">Aantal</label>
+          <button class="qty-minus remove-button" data-target="xBowlQty" type="button">-</button>
+          <select id="xBowlQty" class="qty-select" name="xBowlQty"></select>
+          <button class="qty-plus add-button" data-target="xBowlQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
+
 
   </div>
 </section>
@@ -3032,6 +3095,27 @@ const DELIVERY_FEE = 2.50;
 let milkTeaPrice = 0;
 let bubbleOptions = {base: [], smaak: [], topping: []};
 let xbentoOptions = {main: [], side: [], rice: [], groente: []};
+const xbowlBases = [
+  {name:'Sushi rijst', price:4},
+  {name:'IJsbergsla', price:5},
+  {name:'Tempura crispy rijst', price:6}
+];
+const xbowlMains = [
+  {name:'Zalm', price:9},
+  {name:'Tonijn', price:9},
+  {name:'Gamba', price:8},
+  {name:'Crispy chicken', price:8},
+  {name:'Spicy crispy chicken', price:8},
+  {name:'Teriyaki beef', price:9},
+  {name:'Teriyaki chicken', price:9},
+  {name:'Ribeye', price:9},
+  {name:'Unagi', price:9},
+  {name:'Spicy tuna', price:9},
+  {name:'Krabstick', price:8}
+];
+const xbowlToppings=['Komkommer','Avocado','Sojabonen','Mais','Zeewiersalade','Masago','Inari','Tamago'];
+const XBOWL_TOPPING_PRICE=1.5;
+let currentXBowlName = '';
 let currentPackaging = 0;
 let currentSubtotal = 0;
 let finalTotal = 0;
@@ -3488,6 +3572,121 @@ function setDragonQty() {
   setQty('Dragon Roll Omakase', price, qty, DEFAULT_PACKAGING_FEE, prefs);
 }
 
+function getXBowlSelections(){
+  const baseSel=document.getElementById('xBowlBase');
+  const baseOpt=baseSel?baseSel.selectedOptions[0]:null;
+  const mains=Array.from(document.querySelectorAll('#xBowlMains select')).map(s=>s.selectedOptions[0]).filter(o=>o&&o.value);
+  const toppings=Array.from(document.querySelectorAll('#xBowlToppings select')).map(s=>s.value).filter(v=>v);
+  return {baseOpt,mains,toppings};
+}
+
+function updateXBowlDisplay(){
+  const {baseOpt,mains,toppings}=getXBowlSelections();
+  let price=0;
+  if(baseOpt&&baseOpt.dataset.price) price+=parseFloat(baseOpt.dataset.price);
+  mains.forEach(o=>{price+=parseFloat(o.dataset.price||0);});
+  price+=toppings.length*XBOWL_TOPPING_PRICE;
+  const item=document.querySelector('.menu-item[data-name="X-Bowl"]');
+  if(item){
+    item.dataset.price=price;
+    const p=document.getElementById('xBowlPrice');
+    if(p) p.textContent=price?`€ ${price.toFixed(2)}`:'Prijs afhankelijk van keuzes';
+    const info=document.getElementById('xBowlSummary');
+    if(info){
+      const mainNames=mains.map(o=>o.value).join(', ');
+      const topNames=toppings.join(', ');
+      let parts=[];
+      if(baseOpt&&baseOpt.value) parts.push(baseOpt.value);
+      if(mainNames) parts.push(mainNames);
+      if(topNames) parts.push(topNames);
+      const text=parts.join(' | ');
+      info.textContent=text?`${text} - € ${price.toFixed(2)}`:'';
+    }
+  }
+}
+
+function getXBowlName(){
+  const {baseOpt,mains,toppings}=getXBowlSelections();
+  if(!baseOpt||!baseOpt.value||mains.length===0) return '';
+  const mainNames=mains.map(o=>o.value).join(', ');
+  const topNames=toppings.join(', ');
+  return `X-Bowl (${baseOpt.value} | ${mainNames}${topNames?' | '+topNames:''})`;
+}
+
+function isXbowlValid(){
+  const base=document.getElementById('xBowlBase').value;
+  const hasMain=Array.from(document.querySelectorAll('#xBowlMains select')).some(s=>s.value);
+  return base && hasMain;
+}
+
+function updateXBowlControls(){
+  const wrap=document.getElementById('xBowlNewWrap');
+  const qty=parseInt(document.getElementById('xBowlQty').value||0);
+  if(isXbowlValid()&&qty>0) wrap.classList.remove('hidden');
+  else wrap.classList.add('hidden');
+}
+
+function changeXbowlQty(delta){
+  const sel=document.getElementById('xBowlQty');
+  let val=parseInt(sel.value||0);
+  const name=getXBowlName();
+  if(!name) return;
+  val=Math.max(0,Math.min(20,val+delta));
+  sel.value=val;
+  updateXBowlDisplay();
+  const price=parseFloat(document.querySelector('.menu-item[data-name="X-Bowl"]').dataset.price||0);
+  if(currentXBowlName && currentXBowlName!==name && cart[currentXBowlName]){
+    delete cart[currentXBowlName];
+  }
+  setQty(name,price,val,DEFAULT_PACKAGING_FEE);
+  currentXBowlName=name;
+  updateXBowlControls();
+  if(delta>0 && val>0) showXBowlModal();
+}
+
+function createXBowlMainSelect(){
+  const div=document.createElement('div');
+  const sel=document.createElement('select');
+  sel.innerHTML='<option value="">Hoofdingredient</option>';
+  xbowlMains.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.dataset.price=o.price;opt.textContent=o.name;sel.appendChild(opt);});
+  const del=document.createElement('button');del.type='button';del.textContent='❌';
+  del.addEventListener('click',()=>{div.remove();ensureXBowlMain();updateXBowlDisplay();updateXBowlControls();changeXbowlQty(0);});
+  sel.addEventListener('change',()=>{if(sel.value&&div===document.querySelector('#xBowlMains').lastElementChild){if(confirm('Wil je extra portie?')){document.getElementById('xBowlMains').appendChild(createXBowlMainSelect());}}updateXBowlDisplay();updateXBowlControls();changeXbowlQty(0);});
+  div.appendChild(sel);div.appendChild(del);return div;
+}
+
+function createXBowlToppingSelect(){
+  const div=document.createElement('div');
+  const sel=document.createElement('select');
+  sel.innerHTML='<option value="">Topping</option>';
+  xbowlToppings.forEach(n=>{const opt=document.createElement('option');opt.value=n;opt.textContent=n;sel.appendChild(opt);});
+  const del=document.createElement('button');del.type='button';del.textContent='❌';
+  del.addEventListener('click',()=>{div.remove();ensureXBowlTopping();updateXBowlDisplay();updateXBowlControls();changeXbowlQty(0);});
+  sel.addEventListener('change',()=>{if(sel.value&&div===document.querySelector('#xBowlToppings').lastElementChild){if(confirm('Wil je extra topping toevoegen?')){document.getElementById('xBowlToppings').appendChild(createXBowlToppingSelect());}}updateXBowlDisplay();updateXBowlControls();changeXbowlQty(0);});
+  div.appendChild(sel);div.appendChild(del);return div;
+}
+
+function ensureXBowlMain(){
+  const wrap=document.getElementById('xBowlMains');
+  if(!wrap.querySelector('select')) wrap.appendChild(createXBowlMainSelect());
+}
+
+function ensureXBowlTopping(){
+  const wrap=document.getElementById('xBowlToppings');
+  if(!wrap.querySelector('select')) wrap.appendChild(createXBowlToppingSelect());
+}
+
+function clearXBowlSet(){
+  document.getElementById('xBowlBase').value='';
+  document.getElementById('xBowlMains').innerHTML='';
+  document.getElementById('xBowlToppings').innerHTML='';
+  document.getElementById('xBowlQty').value=0;
+  ensureXBowlMain();
+  ensureXBowlTopping();
+  updateXBowlDisplay();
+  updateXBowlControls();
+}
+
 
 
  document.addEventListener('DOMContentLoaded', () => {
@@ -3524,6 +3723,27 @@ function setDragonQty() {
     document.getElementById(id).addEventListener('change', () => {
       updateXbentoDisplay();
     });
+  });
+
+  ensureXBowlMain();
+  ensureXBowlTopping();
+  document.getElementById('xBowlBase').addEventListener('change', () => { updateXBowlDisplay(); updateXBowlControls(); changeXbowlQty(0); });
+  document.getElementById('xBowlNew').addEventListener('click', clearXBowlSet);
+  document.querySelector('.qty-plus[data-target="xBowlQty"]').addEventListener('click', () => {
+    if (!isXbowlValid()) { alert('🥗 Basis en hoofdingrediënt vereist.'); return; }
+    changeXbowlQty(1);
+  });
+  document.querySelector('.qty-minus[data-target="xBowlQty"]').addEventListener('click', () => {
+    if (!isXbowlValid()) { alert('🥗 Basis en hoofdingrediënt vereist.'); return; }
+    changeXbowlQty(-1);
+  });
+  document.getElementById('xBowlQty').addEventListener('change', () => {
+    if (!isXbowlValid()) {
+      alert('🥗 Basis en hoofdingrediënt vereist.');
+      document.getElementById('xBowlQty').value = 0;
+      return;
+    }
+    changeXbowlQty(0);
   });
 
   xbentoSetControls = initNewSetControls({
@@ -3593,7 +3813,7 @@ function setDragonQty() {
 
 
   // 🧁 初始化下拉数量为 0～20
-  ['bubbleTeaQty','xBentoQty','ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty'].forEach(id => {
+  ['bubbleTeaQty','xBentoQty','xBowlQty','ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty'].forEach(id => {
     const sel = document.getElementById(id);
     for (let i = 0; i <= 20; i++) {
       const opt = document.createElement('option');
@@ -3849,7 +4069,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   document.querySelectorAll('.menu-item select').forEach(sel => {
-    if (['bubbleTeaQty','bubbleType','bubbleFlavor','bubbleTopping','xBentoMain','xBentoSide','xBentoRice','xBentoVeg','ebiBase','ebiSmaak','ebiQty','chickenBase','chickenSmaak','chickenQty','beefBase','beefSmaak','beefQty','ribeyeBase','ribeyeSmaak','ribeyeQty','chasiuBase','chasiuSmaak','chasiuQty'].includes(sel.id)) return;
+    if (['bubbleTeaQty','bubbleType','bubbleFlavor','bubbleTopping','xBentoMain','xBentoSide','xBentoRice','xBentoVeg','xBowlBase','xBowlQty','ebiBase','ebiSmaak','ebiQty','chickenBase','chickenSmaak','chickenQty','beefBase','beefSmaak','beefQty','ribeyeBase','ribeyeSmaak','ribeyeQty','chasiuBase','chasiuSmaak','chasiuQty'].includes(sel.id)) return;
     populateSelect(sel);
     const parent = sel.closest('.menu-item');
     const name = parent.dataset.name;
@@ -3867,7 +4087,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.querySelectorAll('.qty-plus').forEach(btn => {
-    if (['bubbleTeaQty','xBentoQty','ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty'].includes(btn.dataset.target)) return;
+    if (['bubbleTeaQty','xBentoQty','xBowlQty','ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty'].includes(btn.dataset.target)) return;
     btn.addEventListener('click', () => {
       const sel = document.getElementById(btn.dataset.target);
       let val = parseInt(sel.value);
@@ -3886,7 +4106,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.querySelectorAll('.qty-minus').forEach(btn => {
-    if (['bubbleTeaQty','xBentoQty','ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty'].includes(btn.dataset.target)) return;
+    if (['bubbleTeaQty','xBentoQty','xBowlQty','ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty'].includes(btn.dataset.target)) return;
     btn.addEventListener('click', () => {
       const sel = document.getElementById(btn.dataset.target);
       let val = parseInt(sel.value);
@@ -5361,6 +5581,15 @@ document.addEventListener('click', e => {
 }, true);
 </script>
 
+<div id="xBowlAddedModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; z-index:1000;">
+  <div style="background:white; padding:20px; border-radius:12px; text-align:center;">
+    <p>Toegevoegd! Nieuwe maken?</p>
+    <div style="display:flex; gap:10px; justify-content:center; margin-top:10px;">
+      <button id="xBowlAgain">Ja, graag</button>
+      <button id="xBowlClose">Nee, bedankt</button>
+    </div>
+  </div>
+</div>
 
 <div id="reviewsModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:1000;">
   <div style="background:white; padding:20px; width:100%; height:100%; overflow:auto;" id="reviewsContent">
@@ -5401,6 +5630,14 @@ document.addEventListener('click', e => {
       if(modal.style.display !== 'none') loadReviews();
     });
   }
+
+  const xbowlModal = document.getElementById('xBowlAddedModal');
+  const againBtn = document.getElementById('xBowlAgain');
+  const closeXBowlBtn = document.getElementById('xBowlClose');
+  function showXBowlModal(){ if(xbowlModal) xbowlModal.style.display='flex'; }
+  function hideXBowlModal(){ if(xbowlModal) xbowlModal.style.display='none'; }
+  if(againBtn){ againBtn.addEventListener('click', ()=>{ clearXBowlSet(); hideXBowlModal(); }); }
+  if(closeXBowlBtn){ closeXBowlBtn.addEventListener('click', hideXBowlModal); }
 
 </script>
 
