@@ -473,6 +473,16 @@
     font-size: 0.7rem;
   }
 }
+@media (max-width: 767px) {
+  .menu-item[data-name="X-Bowl"] { aspect-ratio: auto; height: auto; }
+  .menu-item[data-name="X-Bowl"] .menu-content { position: static; }
+  .menu-item[data-name="X-Bowl"] img { position: static; width: 100%; height: auto; }
+  .menu-item[data-name="X-Bowl"] .qty-box { position: static; transform: none; width: 100%; margin-top: 8px; }
+  #xBowlMains, #xBowlToppings { display: flex; overflow-x: auto; gap: 6px; }
+  #xBowlMains>div, #xBowlToppings>div { display: flex; align-items: center; }
+  #xBowlMains button, #xBowlToppings button { width: 1.4rem; height: 1.4rem; font-size: 0.9rem; }
+}
+
 
 
 
@@ -3085,6 +3095,7 @@ let currentDiscount = 0;
 let bubbleSetControls;
 let xbentoSetControls;
 
+let currentXBowlName = "";
 const soldoutMap = {
   "Chicken Bento": "soldout_chicken_bento",
   "Meatlover Bento": "soldout_meatlover_bento",
@@ -3502,7 +3513,11 @@ function changeXbowlQty(delta) {
   qtySel.value = val;
   updateXBowlDisplay();
   const price = parseFloat(document.querySelector('.menu-item[data-name="X-Bowl"]').dataset.price || 0);
+  if (currentXBowlName && currentXBowlName !== name && cart[currentXBowlName]) {
+    delete cart[currentXBowlName];
+  }
   setQty(name, price, val, DEFAULT_PACKAGING_FEE);
+  currentXBowlName = name;
   updateXBowlControls();
 }
 
@@ -3525,6 +3540,7 @@ function createXBowlMainSelect() {
     ensureXBowlMain();
     updateXBowlDisplay();
     updateXBowlControls();
+    changeXbowlQty(0);
   });
   sel.addEventListener('change', () => {
     if (sel.value && div === document.querySelector('#xBowlMains').lastElementChild) {
@@ -3534,6 +3550,7 @@ function createXBowlMainSelect() {
     }
     updateXBowlDisplay();
     updateXBowlControls();
+    changeXbowlQty(0);
   });
   div.appendChild(sel);
   div.appendChild(del);
@@ -3558,6 +3575,7 @@ function createXBowlToppingSelect() {
     ensureXBowlTopping();
     updateXBowlDisplay();
     updateXBowlControls();
+    changeXbowlQty(0);
   });
   sel.addEventListener('change', () => {
     if (sel.value && div === document.querySelector('#xBowlToppings').lastElementChild) {
@@ -3567,6 +3585,7 @@ function createXBowlToppingSelect() {
     }
     updateXBowlDisplay();
     updateXBowlControls();
+    changeXbowlQty(0);
   });
   div.appendChild(sel);
   div.appendChild(del);
@@ -3728,7 +3747,11 @@ function setDragonQty() {
 
   ensureXBowlMain();
   ensureXBowlTopping();
-  document.getElementById('xBowlBase').addEventListener('change', () => {updateXBowlDisplay(); updateXBowlControls();});
+  document.getElementById('xBowlBase').addEventListener('change', () => {
+    updateXBowlDisplay();
+    updateXBowlControls();
+    changeXbowlQty(0);
+  });
   document.getElementById('xBowlNew').addEventListener('click', clearXBowlSet);
 
   // 🧋 奶茶按钮加减

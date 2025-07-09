@@ -175,6 +175,16 @@
     .menu-item img { max-width:80px; }
   }
   @media (max-width: 600px) { .menu-item { flex-direction: column; align-items: flex-start; } }
+@media (max-width: 767px) {
+  .menu-item[data-name="X-Bowl"] { aspect-ratio: auto; height: auto; }
+  .menu-item[data-name="X-Bowl"] .menu-content { position: static; }
+  .menu-item[data-name="X-Bowl"] img { position: static; width: 100%; height: auto; }
+  .menu-item[data-name="X-Bowl"] .qty-box { position: static; transform: none; width: 100%; margin-top: 8px; }
+  #xBowlMains, #xBowlToppings { display: flex; overflow-x: auto; gap: 6px; }
+  #xBowlMains>div, #xBowlToppings>div { display: flex; align-items: center; }
+  #xBowlMains button, #xBowlToppings button { width: 1.4rem; height: 1.4rem; font-size: 0.9rem; }
+}
+
 
   .side-tools { width: 180px; }
 
@@ -748,6 +758,7 @@ const xbowlMains=[
 ];
 const xbowlToppings=['Komkommer','Avocado','Sojabonen','Mais','Zeewiersalade','Masago','Inari','Tamago'];
 const XBOWL_TOPPING_PRICE=1.5;
+let currentXBowlName="";
 
 function getOptionPrice(cat,name){
   const opt=(bubbleOptions[cat]||[]).find(o=>o.name===name);
@@ -840,7 +851,11 @@ function changeXbowlQty(delta){
   sel.value=val;
   updateXBowlDisplay();
   const price=parseFloat(document.querySelector('.menu-item[data-name="X-Bowl"]').dataset.price||0);
+  if(currentXBowlName && currentXBowlName!==name && cart[currentXBowlName]){
+    delete cart[currentXBowlName];
+  }
   setQty(name,price,val,0.2);
+  currentXBowlName=name;
   updateXBowlControls();
 }
 
@@ -850,8 +865,8 @@ function createXBowlMainSelect(){
   sel.innerHTML='<option value="">Hoofdingredient</option>';
   xbowlMains.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.dataset.price=o.price;opt.textContent=o.name;sel.appendChild(opt);});
   const del=document.createElement('button');del.type='button';del.textContent='❌';
-  del.addEventListener('click',()=>{div.remove();ensureXBowlMain();updateXBowlDisplay();updateXBowlControls();});
-  sel.addEventListener('change',()=>{if(sel.value&&div===document.querySelector('#xBowlMains').lastElementChild){if(confirm('Wil je extra portie?')){document.getElementById('xBowlMains').appendChild(createXBowlMainSelect());}}updateXBowlDisplay();updateXBowlControls();});
+  del.addEventListener('click',()=>{div.remove();ensureXBowlMain();updateXBowlDisplay();updateXBowlControls();changeXbowlQty(0);});
+  sel.addEventListener('change',()=>{if(sel.value&&div===document.querySelector('#xBowlMains').lastElementChild){if(confirm('Wil je extra portie?')){document.getElementById('xBowlMains').appendChild(createXBowlMainSelect());}}updateXBowlDisplay();updateXBowlControls();changeXbowlQty(0);});
   div.appendChild(sel);div.appendChild(del);return div;
 }
 
@@ -861,8 +876,8 @@ function createXBowlToppingSelect(){
   sel.innerHTML='<option value="">Topping</option>';
   xbowlToppings.forEach(n=>{const opt=document.createElement('option');opt.value=n;opt.textContent=n;sel.appendChild(opt);});
   const del=document.createElement('button');del.type='button';del.textContent='❌';
-  del.addEventListener('click',()=>{div.remove();ensureXBowlTopping();updateXBowlDisplay();updateXBowlControls();});
-  sel.addEventListener('change',()=>{if(sel.value&&div===document.querySelector('#xBowlToppings').lastElementChild){if(confirm('Wil je extra topping toevoegen?')){document.getElementById('xBowlToppings').appendChild(createXBowlToppingSelect());}}updateXBowlDisplay();updateXBowlControls();});
+  del.addEventListener('click',()=>{div.remove();ensureXBowlTopping();updateXBowlDisplay();updateXBowlControls();changeXbowlQty(0);});
+  sel.addEventListener('change',()=>{if(sel.value&&div===document.querySelector('#xBowlToppings').lastElementChild){if(confirm('Wil je extra topping toevoegen?')){document.getElementById('xBowlToppings').appendChild(createXBowlToppingSelect());}}updateXBowlDisplay();updateXBowlControls();changeXbowlQty(0);});
   div.appendChild(sel);div.appendChild(del);return div;
 }
 
@@ -1186,7 +1201,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   ensureXBowlMain();
   ensureXBowlTopping();
-  document.getElementById('xBowlBase').addEventListener('change',()=>{updateXBowlDisplay();updateXBowlControls();});
+  document.getElementById('xBowlBase').addEventListener('change',()=>{updateXBowlDisplay();updateXBowlControls();changeXbowlQty(0);});
   document.getElementById('xBowlNew').addEventListener('click',clearXBowlSet);
   document.querySelector('.qty-plus[data-target="xBowlQty"]').addEventListener('click',()=>{if(!isXbowlValid()){alert('🥗 Basis en hoofdingrediënt vereist.');return;}changeXbowlQty(1);});
   document.querySelector('.qty-minus[data-target="xBowlQty"]').addEventListener('click',()=>{if(!isXbowlValid()){alert('🥗 Basis en hoofdingrediënt vereist.');return;}changeXbowlQty(-1);});
