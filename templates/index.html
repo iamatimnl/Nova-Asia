@@ -2,6 +2,7 @@
 
 
 
+
 <!DOCTYPE html>
 
 <html lang="nl">
@@ -451,15 +452,6 @@
   margin: 4px 0;
 }
 
-.xbowl-summary {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(6px);
-  border-radius: 8px;
-  padding: 4px 8px;
-  margin: 2px 0;
-  font-size: 0.8rem;
-}
-
 
 
 /* Generic button press feedback */
@@ -482,29 +474,6 @@
     font-size: 0.7rem;
   }
 }
-@media (max-width: 767px) {
-  .menu-item[data-name="X-Bowl"] { aspect-ratio: auto; height: auto; }
-  .menu-item[data-name="X-Bowl"] .menu-content { position: static; }
-  .menu-item[data-name="X-Bowl"] img { position: static; width: 100%; height: auto; }
-  .menu-item[data-name="X-Bowl"] .qty-box { position: static; transform: none; width: 100%; margin-top: 8px; }
-  #xBowlMains, #xBowlToppings {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-  #xBowlMains>div, #xBowlToppings>div {
-    display: flex;
-    align-items: center;
-    flex: 0 0 calc(50% - 3px);
-  }
-  #xBowlMains select, #xBowlToppings select { width: 100%; }
-  #xBowlMains button, #xBowlToppings button {
-    width: 1.4rem;
-    height: 1.4rem;
-    font-size: 0.9rem;
-  }
-}
-
 
 
 
@@ -1307,8 +1276,8 @@ input:focus, select:focus, textarea:focus {
 .spinner {
   width: 24px;
   height: 24px;
-  border: 3px solid rgba(255, 255, 255, 0.6);
-  border-top: 3px solid  #4E342E; /* 日式金色 */
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid #D4AF37; /* 日式金色 */
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   display: block;
@@ -1479,6 +1448,44 @@ input:focus, select:focus, textarea:focus {
 }
 
 
+#xBowlToppings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+#xBowlToppings select {
+  min-width: 140px;
+  margin-right: 4px;
+}
+
+#xBowlToppings .remove-select {
+  font-size: 14px;
+  background: transparent;
+  border: none;
+  color: #999;
+  padding: 0 5px;
+  cursor: pointer;
+  line-height: 1;
+  align-self: center;
+  height: 30px;
+}
+
+#xBowlToppings .remove-select:hover {
+  color: #c00;
+}
+
+@media (max-width: 600px) {
+  #xBowlToppings select {
+    min-width: 120px;
+  }
+
+  #xBowlToppings .remove-select {
+    font-size: 12px;
+    padding: 0 4px;
+  }
+}
 
 
 
@@ -2417,8 +2424,6 @@ input:focus, select:focus, textarea:focus {
       <div class="menu-content">
         <h3>X-Bowl</h3>
         <p id="soldoutXBowl" class="sold-out-msg hidden">Uitverkocht!</p>
-        <p id="xBowlSummary" class="xbowl-summary"></p>
-        <p id="xBowlPrice" class="xbowl-summary">Prijs afhankelijk van keuzes</p>
         <div class="bubble-option">
           <select id="xBowlBase">
             <option value="">Basis</option>
@@ -3119,7 +3124,6 @@ let currentDiscount = 0;
 let bubbleSetControls;
 let xbentoSetControls;
 
-let currentXBowlName = "";
 const soldoutMap = {
   "Chicken Bento": "soldout_chicken_bento",
   "Meatlover Bento": "soldout_meatlover_bento",
@@ -3510,17 +3514,6 @@ function updateXBowlDisplay() {
     item.dataset.price = price;
     const p = document.getElementById('xBowlPrice');
     if (p) p.textContent = price ? `€ ${price.toFixed(2)}` : 'Prijs afhankelijk van keuzes';
-    const info = document.getElementById('xBowlSummary');
-    if (info) {
-      const mainNames = mains.map(o => o.value).join(', ');
-      const topNames = toppings.join(', ');
-      let parts = [];
-      if (baseOpt && baseOpt.value) parts.push(baseOpt.value);
-      if (mainNames) parts.push(mainNames);
-      if (topNames) parts.push(topNames);
-      const text = parts.join(' | ');
-      info.textContent = text ? `${text} - € ${price.toFixed(2)}` : '';
-    }
   }
 }
 
@@ -3548,14 +3541,8 @@ function changeXbowlQty(delta) {
   qtySel.value = val;
   updateXBowlDisplay();
   const price = parseFloat(document.querySelector('.menu-item[data-name="X-Bowl"]').dataset.price || 0);
-  if (currentXBowlName && currentXBowlName !== name && cart[currentXBowlName]) {
-    delete cart[currentXBowlName];
-  }
-  setQty(name, price, val, 0.2);
-  currentXBowlName = name;
+  setQty(name, price, val, DEFAULT_PACKAGING_FEE);
   updateXBowlControls();
-  // Match POS behaviour: show modal after adding to cart
-  if (delta > 0 && val > 0) showXBowlModal();
 }
 
 function createXBowlMainSelect() {
@@ -3577,7 +3564,6 @@ function createXBowlMainSelect() {
     ensureXBowlMain();
     updateXBowlDisplay();
     updateXBowlControls();
-    changeXbowlQty(0);
   });
   sel.addEventListener('change', () => {
     if (sel.value && div === document.querySelector('#xBowlMains').lastElementChild) {
@@ -3587,7 +3573,6 @@ function createXBowlMainSelect() {
     }
     updateXBowlDisplay();
     updateXBowlControls();
-    changeXbowlQty(0);
   });
   div.appendChild(sel);
   div.appendChild(del);
@@ -3612,7 +3597,6 @@ function createXBowlToppingSelect() {
     ensureXBowlTopping();
     updateXBowlDisplay();
     updateXBowlControls();
-    changeXbowlQty(0);
   });
   sel.addEventListener('change', () => {
     if (sel.value && div === document.querySelector('#xBowlToppings').lastElementChild) {
@@ -3622,7 +3606,6 @@ function createXBowlToppingSelect() {
     }
     updateXBowlDisplay();
     updateXBowlControls();
-    changeXbowlQty(0);
   });
   div.appendChild(sel);
   div.appendChild(del);
@@ -3784,11 +3767,7 @@ function setDragonQty() {
 
   ensureXBowlMain();
   ensureXBowlTopping();
-  document.getElementById('xBowlBase').addEventListener('change', () => {
-    updateXBowlDisplay();
-    updateXBowlControls();
-    changeXbowlQty(0);
-  });
+  document.getElementById('xBowlBase').addEventListener('change', () => {updateXBowlDisplay(); updateXBowlControls();});
   document.getElementById('xBowlNew').addEventListener('click', clearXBowlSet);
 
   // 🧋 奶茶按钮加减
@@ -4494,9 +4473,9 @@ function checkout() {
         updateCart();
 
         sliderText.innerText = 'Gelukt!';
-         sliderButton.innerHTML = `
-           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-           <polyline points="20 6 9 17 4 12"></polyline>
+        sliderButton.innerHTML = `
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
           </svg>`;
 
         sliderTrack.style.pointerEvents = 'none';
@@ -5643,16 +5622,6 @@ document.addEventListener('click', e => {
 }, true);
 </script>
 
-<div id="xBowlAddedModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; z-index:1000;">
-  <div style="background:white; padding:20px; border-radius:12px; text-align:center;">
-    <p>Toegevoegd! Nieuwe maken?</p>
-    <div style="display:flex; gap:10px; justify-content:center; margin-top:10px;">
-      <button id="xBowlAgain">Ja, graag</button>
-      <button id="xBowlClose">Nee, bedankt</button>
-    </div>
-  </div>
-</div>
-
 <div id="reviewsModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:1000;">
   <div style="background:white; padding:20px; width:100%; height:100%; overflow:auto;" id="reviewsContent">
     <h2>Reviews</h2>
@@ -5692,18 +5661,11 @@ document.addEventListener('click', e => {
       if(modal.style.display !== 'none') loadReviews();
     });
   }
-
-  const xbowlModal = document.getElementById('xBowlAddedModal');
-  const againBtn = document.getElementById('xBowlAgain');
-  const closeXBowlBtn = document.getElementById('xBowlClose');
-  function showXBowlModal(){ if(xbowlModal) xbowlModal.style.display = 'flex'; }
-  function hideXBowlModal(){ if(xbowlModal) xbowlModal.style.display = 'none'; }
-  if(againBtn){ againBtn.addEventListener('click', () => { clearXBowlSet(); hideXBowlModal(); }); }
-  if(closeXBowlBtn){ closeXBowlBtn.addEventListener('click', hideXBowlModal); }
 </script>
 
 
 
 
 
-</body></html>
+</body>
+</html>
