@@ -1685,8 +1685,9 @@ input:focus, select:focus, textarea:focus {
           top: -4px;
         ">💳</span>
       </span>
-
-      <select id="deliveryPayment" style="
+<label for="cartPaymentSelect">Betaalmethode:</label>
+      <select id="cartPaymentSelect" style="
+    
         flex: 1;
         padding: 6px 10px;
         border-radius: 6px;
@@ -1695,6 +1696,7 @@ input:focus, select:focus, textarea:focus {
       ">
         <option value="online" selected>Online betaling</option>
         <option value="contant">Contant</option>
+        <option value="pin">Pin</option>
         <option value="oprekening">Op rekening</option>
       </select>
     </div>
@@ -4685,6 +4687,7 @@ function checkout() {
       afhalenFields.classList.remove('hidden');
       bezorgenFields.classList.add('hidden');
       populateTimeOptions('pickup_time', 30, pickupOpenTime, pickupCloseTime);
+      updateCartPaymentOptions();
     } else {
       transferValues(afhalenFields, bezorgenFields);
       infoBox.textContent = 'Wij bezorgen in de volgende postcodegebieden:\n' + allowedPostcodes.join(', ');
@@ -4692,6 +4695,7 @@ function checkout() {
       bezorgenFields.classList.remove('hidden');
       afhalenFields.classList.add('hidden');
       populateTimeOptions('delivery_time', 45, deliveryOpenTime, deliveryCloseTime);
+      updateCartPaymentOptions();
     }
     updatePriceBreakdown(currentSubtotal, currentPackaging);
     storeOpen = afhalen.checked ? pickupAvailable : deliveryAvailable;
@@ -4818,6 +4822,43 @@ function toggleMobileCart() {
   }
   cartSection.classList.toggle('mobile-visible');
 }
+</script>
+  <script>
+function updateCartPaymentOptions() {
+  const cartSel = document.getElementById('cartPaymentSelect');
+  const pickupSel = document.getElementById('pickupPayment');
+  const deliverySel = document.getElementById('deliveryPayment');
+  if (!cartSel || !pickupSel || !deliverySel) return;
+  const orderType = document.querySelector('input[name="orderType"]:checked').value;
+  const src = orderType === 'afhalen' ? pickupSel : deliverySel;
+  cartSel.innerHTML = src.innerHTML;
+  cartSel.value = src.value;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const cartSel = document.getElementById('cartPaymentSelect');
+  const pickupSel = document.getElementById('pickupPayment');
+  const deliverySel = document.getElementById('deliveryPayment');
+  if (!cartSel || !pickupSel || !deliverySel) return;
+  const getCurrent = () => document.querySelector('input[name="orderType"]:checked').value === 'afhalen' ? pickupSel : deliverySel;
+
+  cartSel.addEventListener('change', () => {
+    const target = getCurrent();
+    target.value = cartSel.value;
+  });
+
+  pickupSel.addEventListener('change', () => {
+    if (getCurrent() === pickupSel) cartSel.value = pickupSel.value;
+  });
+
+  deliverySel.addEventListener('change', () => {
+    if (getCurrent() === deliverySel) cartSel.value = deliverySel.value;
+  });
+
+  document.querySelectorAll('input[name="orderType"]').forEach(r => r.addEventListener('change', updateCartPaymentOptions));
+
+  updateCartPaymentOptions();
+});
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
