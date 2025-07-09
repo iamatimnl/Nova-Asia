@@ -3267,6 +3267,11 @@ function loadCart() {
   }
 }
 
+function updateCartIconBadge() {
+  const count = Object.values(cart).reduce((sum, item) => sum + (item.qty || 0), 0);
+  const badge = document.querySelector('#cartBadge');
+  if (badge) badge.textContent = count > 0 ? count : '';
+}
 
 
 
