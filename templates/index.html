@@ -3488,6 +3488,19 @@ function changeXbentoQty(delta) {
   if (xbentoSetControls) xbentoSetControls.update();
 }
 
+
+// ------------------ 绑定 + / - 按钮 ------------------
+document.querySelector('.qty-plus[data-target="xBowlQty"]')?.addEventListener('click', () => {
+  changeXbowlQty(1);
+});
+document.querySelector('.qty-minus[data-target="xBowlQty"]')?.addEventListener('click', () => {
+  changeXbowlQty(-1);
+});
+
+// ------------------ X-Bowl 全套函数（来自 POS） ------------------
+const XBOWL_TOPPING_PRICE = 1.0;
+let currentXBowlName = '';
+
 function getXBowlSelections() {
   const baseSel = document.getElementById('xBowlBase');
   const baseOpt = baseSel.selectedOptions[0];
@@ -3533,6 +3546,11 @@ function getXBowlName() {
   return `X-Bowl (${baseOpt.value} | ${mainNames}${topNames ? ' | ' + topNames : ''})`;
 }
 
+function isXbowlValid() {
+  const { baseOpt, mains } = getXBowlSelections();
+  return baseOpt && baseOpt.value && mains.length > 0;
+}
+
 function updateXBowlControls() {
   const wrap = document.getElementById('xBowlNewWrap');
   const qty = parseInt(document.getElementById('xBowlQty').value || 0);
@@ -3555,8 +3573,7 @@ function changeXbowlQty(delta) {
   setQty(name, price, val, 0.2);
   currentXBowlName = name;
   updateXBowlControls();
-  // Match POS behaviour: show modal after adding to cart
-  if (delta > 0 && val > 0) showXBowlModal();
+  if (delta > 0 && val > 0) showXBowlModal(); // 模拟 POS 中行为
 }
 
 function createXBowlMainSelect() {
@@ -3650,6 +3667,7 @@ function clearXBowlSet() {
   updateXBowlDisplay();
   updateXBowlControls();
 }
+
 
 function changeOmakaseQty(delta) {
   const qtySel = document.getElementById('sushiBentoCount');
