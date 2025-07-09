@@ -4125,6 +4125,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.querySelectorAll('.menu-item select').forEach(sel => {
     if (['bubbleTeaQty','bubbleType','bubbleFlavor','bubbleTopping','xBentoMain','xBentoSide','xBentoRice','xBentoVeg','xBowlBase','xBowlQty','ebiBase','ebiSmaak','ebiQty','chickenBase','chickenSmaak','chickenQty','beefBase','beefSmaak','beefQty','ribeyeBase','ribeyeSmaak','ribeyeQty','chasiuBase','chasiuSmaak','chasiuQty'].includes(sel.id)) return;
+    if (sel.closest('#xBowlMains') || sel.closest('#xBowlToppings')) return;
     populateSelect(sel);
     const parent = sel.closest('.menu-item');
     const name = parent.dataset.name;
