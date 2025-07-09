@@ -3580,30 +3580,43 @@ function getXBowlSelections(){
   return {baseOpt,mains,toppings};
 }
 
-function updateXBowlDisplay(){
-  const {baseOpt,mains,toppings}=getXBowlSelections();
-  let price=0;
-  if(baseOpt&&baseOpt.dataset.price) price+=parseFloat(baseOpt.dataset.price);
-  mains.forEach(o=>{price+=parseFloat(o.dataset.price||0);});
-  price+=toppings.length*XBOWL_TOPPING_PRICE;
-  const item=document.querySelector('.menu-item[data-name="X-Bowl"]');
-  if(item){
-    item.dataset.price=price;
-    const p=document.getElementById('xBowlPrice');
-    if(p) p.textContent=price?`€ ${price.toFixed(2)}`:'Prijs afhankelijk van keuzes';
-    const info=document.getElementById('xBowlSummary');
-    if(info){
-      const mainNames=mains.map(o=>o.value).join(', ');
-      const topNames=toppings.join(', ');
-      let parts=[];
-      if(baseOpt&&baseOpt.value) parts.push(baseOpt.value);
-      if(mainNames) parts.push(mainNames);
-      if(topNames) parts.push(topNames);
-      const text=parts.join(' | ');
-      info.textContent=text?`${text} - € ${price.toFixed(2)}`:'';
+function updateXBowlDisplay() {
+  const { baseOpt, mains, toppings } = getXBowlSelections();
+  let price = 0;
+
+  // ✅ 安全处理 base 价格
+  const basePrice = parseFloat(baseOpt?.dataset?.price);
+  if (!isNaN(basePrice)) price += basePrice;
+
+  // ✅ 安全处理 mains
+  mains.forEach(o => {
+    const mainPrice = parseFloat(o?.dataset?.price);
+    if (!isNaN(mainPrice)) price += mainPrice;
+  });
+
+  // ✅ toppings 数量直接加
+  price += toppings.length * XBOWL_TOPPING_PRICE;
+
+  const item = document.querySelector('.menu-item[data-name="X-Bowl"]');
+  if (item) {
+    item.dataset.price = price;
+    const p = document.getElementById('xBowlPrice');
+    if (p) p.textContent = price ? `€ ${price.toFixed(2)}` : 'Prijs afhankelijk van keuzes';
+
+    const info = document.getElementById('xBowlSummary');
+    if (info) {
+      const mainNames = mains.map(o => o.value).join(', ');
+      const topNames = toppings.join(', ');
+      let parts = [];
+      if (baseOpt?.value) parts.push(baseOpt.value);
+      if (mainNames) parts.push(mainNames);
+      if (topNames) parts.push(topNames);
+      const text = parts.join(' | ');
+      info.textContent = text ? `${text} - € ${price.toFixed(2)}` : '';
     }
   }
 }
+
 
 function getXBowlName(){
   const {baseOpt,mains,toppings}=getXBowlSelections();
