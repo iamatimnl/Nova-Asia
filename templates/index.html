@@ -1659,20 +1659,51 @@ input:focus, select:focus, textarea:focus {
 <div class="cart-section" id="mobileCart">
 
   <!-- 左侧: Winkelwagen 商品列表 -->
-  <div class="cart-left">  
+<div class="cart-left">  
   <div class="cart-items">
-    <h2 style="padding-top: 60px; margin-bottom: 10px;">Winkelwagen</h2>
 
-    <label for="deliveryPayment" style="font-weight: 500; display: block; margin-bottom: 6px;">Betaalmethode:</label>
-    <select id="deliveryPayment" style="width: 100%; padding: 6px 10px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #ccc;">
-      <option value="online" selected>Online betaling</option>
-      <option value="contant">Contant</option>
-      <option value="oprekening">Op rekening</option>
-    </select>
+    <!-- 标题 + 支付选择器在同一行 -->
+    <div style="
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    ">
+      <span style="
+        font-weight: bold;
+        font-size: 1.4rem;
+        text-transform: uppercase;
+        color: #333;
+        white-space: nowrap;
+      ">
+        Overzicht 
+        <span style="
+          font-size: 1.6rem;
+          position: relative;
+          top: -4px;
+        ">💳</span>
+      </span>
 
+      <select id="deliveryPayment" style="
+        flex: 1;
+        padding: 6px 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 1rem;
+      ">
+        <option value="online" selected>Online betaling</option>
+        <option value="contant">Contant</option>
+        <option value="oprekening">Op rekening</option>
+      </select>
+    </div>
+
+    <!-- 购物车商品列表 -->
     <ul id="cart"></ul>
+
   </div>
 </div>
+
 
 
   <!-- 右侧: 结算区域 -->
