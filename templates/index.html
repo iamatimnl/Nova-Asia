@@ -1307,8 +1307,8 @@ input:focus, select:focus, textarea:focus {
 .spinner {
   width: 24px;
   height: 24px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  border-top: 3px solid #D4AF37; /* 日式金色 */
+  border: 3px solid rgba(255, 255, 255, 0.6);
+  border-top: 3px solid  #4E342E; /* 日式金色 */
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   display: block;
@@ -4493,9 +4493,9 @@ function checkout() {
         updateCart();
 
         sliderText.innerText = 'Gelukt!';
-        sliderButton.innerHTML = `
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"></polyline>
+         sliderButton.innerHTML = `
+           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+           <polyline points="20 6 9 17 4 12"></polyline>
           </svg>`;
 
         sliderTrack.style.pointerEvents = 'none';
