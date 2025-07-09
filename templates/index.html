@@ -1148,33 +1148,6 @@ input:focus, select:focus, textarea:focus {
     display: block !important;
   }
 }
-@media (max-width: 768px) {
-  .menu-item[data-name="X-Bowl"] {
-    aspect-ratio: auto;
-    height: auto;
-  }
-  .menu-item[data-name="X-Bowl"] img {
-    position: static;
-    height: auto;
-  }
-  .menu-item[data-name="X-Bowl"] .menu-content {
-    position: static;
-  }
-  #xBowlToppings {
-    display: flex;
-    overflow-x: auto;
-    gap: 4px;
-  }
-  #xBowlToppings::-webkit-scrollbar { display: none; }
-  #xBowlToppings > div,
-  #xBowlMains > div { display: flex; align-items: center; margin-right: 4px; }
-  #xBowlToppings button,
-  #xBowlMains button {
-    width: 1.6rem;
-    height: 1.6rem;
-    font-size: 1rem;
-  }
-}
 
 /* Increase font size on larger screens for better readability */
 @media (min-width: 768px) {
@@ -1474,6 +1447,44 @@ input:focus, select:focus, textarea:focus {
 }
 
 
+#xBowlToppings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+#xBowlToppings select {
+  min-width: 140px;
+  margin-right: 4px;
+}
+
+#xBowlToppings .remove-select {
+  font-size: 14px;
+  background: transparent;
+  border: none;
+  color: #999;
+  padding: 0 5px;
+  cursor: pointer;
+  line-height: 1;
+  align-self: center;
+  height: 30px;
+}
+
+#xBowlToppings .remove-select:hover {
+  color: #c00;
+}
+
+@media (max-width: 600px) {
+  #xBowlToppings select {
+    min-width: 120px;
+  }
+
+  #xBowlToppings .remove-select {
+    font-size: 12px;
+    padding: 0 4px;
+  }
+}
 
 
 
@@ -3105,7 +3116,6 @@ const xbowlMains = [
 ];
 const xbowlToppings = ['Komkommer','Avocado','Sojabonen','Mais','Zeewiersalade','Masago','Inari','Tamago'];
 const XBOWL_TOPPING_PRICE = 1.5;
-let currentXBowlName = '';
 let currentPackaging = 0;
 let currentSubtotal = 0;
 let finalTotal = 0;
@@ -3504,16 +3514,6 @@ function updateXBowlDisplay() {
     const p = document.getElementById('xBowlPrice');
     if (p) p.textContent = price ? `€ ${price.toFixed(2)}` : 'Prijs afhankelijk van keuzes';
   }
-  const qty = parseInt(document.getElementById('xBowlQty').value || 0);
-  const name = getXBowlName();
-  if (qty > 0 && name) {
-    if (currentXBowlName && currentXBowlName !== name) delete cart[currentXBowlName];
-    setQty(name, price, qty, DEFAULT_PACKAGING_FEE);
-    currentXBowlName = name;
-  } else if (qty === 0 && currentXBowlName) {
-    setQty(currentXBowlName, price, 0, DEFAULT_PACKAGING_FEE);
-    currentXBowlName = '';
-  }
 }
 
 function getXBowlName() {
@@ -3626,7 +3626,6 @@ function clearXBowlSet() {
   document.getElementById('xBowlMains').innerHTML = '';
   document.getElementById('xBowlToppings').innerHTML = '';
   document.getElementById('xBowlQty').value = 0;
-  currentXBowlName = '';
   ensureXBowlMain();
   ensureXBowlTopping();
   updateXBowlDisplay();
