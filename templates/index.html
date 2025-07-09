@@ -1309,7 +1309,7 @@ input:focus, select:focus, textarea:focus {
 .spinner {
   width: 24px;
   height: 24px;
-  border: 3px solid rgba(232, 217, 192, 0.4); /* 柔和浅金边 */
+  border: 3px solid rgba(233, 218, 196, 0.7); /* 柔和浅金边 */
   border-top: 3px solid #D7A86E; /* 温暖日式金色 */
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -3626,22 +3626,25 @@ function updateXBowlControls(){
   else wrap.classList.add('hidden');
 }
 
-function changeXbowlQty(delta){
-  const sel=document.getElementById('xBowlQty');
-  let val=parseInt(sel.value||0);
-  const name=getXBowlName();
-  if(!name) return;
-  val=Math.max(0,Math.min(20,val+delta));
-  sel.value=val;
-  updateXBowlDisplay();
-  const price=parseFloat(document.querySelector('.menu-item[data-name="X-Bowl"]').dataset.price||0);
-  if(currentXBowlName && currentXBowlName!==name && cart[currentXBowlName]){
+function changeXbowlQty(delta) {
+  const sel = document.getElementById('xBowlQty');
+  let val = parseInt(sel.value || 0);
+  const name = getXBowlName();
+  if (!name) return;
+  val = Math.max(0, Math.min(20, val + delta));
+  sel.value = val;
+
+  updateXBowlDisplay(); // 确保 price 被设置
+  let price = parseFloat(document.querySelector('.menu-item[data-name="X-Bowl"]').dataset.price || '0');
+  if (isNaN(price)) price = 0;
+
+  if (currentXBowlName && currentXBowlName !== name && cart[currentXBowlName]) {
     delete cart[currentXBowlName];
   }
-  setQty(name,price,val,DEFAULT_PACKAGING_FEE);
-  currentXBowlName=name;
+  setQty(name, price, val, DEFAULT_PACKAGING_FEE);
+  currentXBowlName = name;
   updateXBowlControls();
-  if(delta>0 && val>0) showXBowlModal();
+  if (delta > 0 && val > 0) showXBowlModal();
 }
 
 function createXBowlMainSelect(){
