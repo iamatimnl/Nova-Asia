@@ -3554,7 +3554,9 @@ function changeXbowlQty(delta) {
   setQty(name, price, val, DEFAULT_PACKAGING_FEE);
   currentXBowlName = name;
   updateXBowlControls();
-  if (delta > 0 && val > 0) showXBowlModal();
+  // Match Xbento behaviour: do not open a modal after adding to cart.
+  // A small prompt appears in the product area instead of a popup.
+  // if (delta > 0 && val > 0) showXBowlModal();
 }
 
 function createXBowlMainSelect() {
