@@ -529,7 +529,8 @@
   border-bottom-left-radius: 16px;
   margin-top: 0px;
   margin-bottom: 0px;
-  padding: 16px 36px;
+  padding: 16px 36px 16px 12px; /* ✅ 左 12px，与上面一致 */
+  margin-right: -8px;
   position: relative; /* allow absolute children like the close button */
 }
 
@@ -3350,6 +3351,25 @@ function updateXbentoCartPrices(){
   });
   updateCart();
 }
+// 同步支付方式
+function syncPaymentMethod(id1, id2) {
+  const sel1 = document.getElementById(id1);
+  const sel2 = document.getElementById(id2);
+  if (!sel1 || !sel2) return;
+
+  // 当一个改变，另一个也改变
+  sel1.addEventListener('change', () => {
+    sel2.value = sel1.value;
+  });
+  sel2.addEventListener('change', () => {
+    sel1.value = sel2.value;
+  });
+}
+
+// 页面加载时绑定
+document.addEventListener('DOMContentLoaded', () => {
+  syncPaymentMethod('deliveryPayment', 'checkoutPayment'); // 替换ID为你真实的
+});
 
 function fetchBubbleOptions(){
   fetch('/api/bubble_options').then(r=>r.json()).then(data=>{
