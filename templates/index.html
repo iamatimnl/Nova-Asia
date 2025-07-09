@@ -3946,7 +3946,10 @@ function createSelect(current, onChange) {
 
 function setQty(name, price, qty, packaging = DEFAULT_PACKAGING_FEE, prefs = null) {
   if (isItemSoldOut(name)) return;
-  if (qty === 0) {
+  price = parseFloat(price);
+  if (isNaN(price)) price = 0;
+  qty = parseInt(qty, 10);
+  if (isNaN(qty) || qty <= 0) {
     delete cart[name];
   } else {
     cart[name] = { price, qty, packaging };
@@ -4048,7 +4051,7 @@ function updateCart() {
 
   updatePriceBreakdown(total, packagingTotal);
 
-  const totalQty = Object.values(cart).reduce((s, it) => s + it.qty, 0) +
+  const totalQty = Object.values(cart).reduce((s, it) => s + (isNaN(it.qty) ? 0 : it.qty), 0) +
     Object.keys(extras).reduce((s, id) => s + parseInt(document.getElementById(id).value || 0), 0);
 
   const badge = document.getElementById('cart-count');
