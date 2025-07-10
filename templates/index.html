@@ -1703,12 +1703,12 @@ input:focus, select:focus, textarea:focus {
 </div></section>
 <div class="cart-section" id="mobileCart">
 
-<!-- Winkelwagen 商品列表左侧区域 -->
+  <!-- 左侧: Winkelwagen 商品列表 -->
 <div class="cart-left">  
   <div class="cart-items">
 
     <!-- 标题 + 支付选择器在同一行 -->
-    <div style=" 
+    <div style="
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1717,12 +1717,13 @@ input:focus, select:focus, textarea:focus {
 ">
   <span style="font-weight: bold; font-size: 1.4rem; color: #333; white-space: nowrap;">
     Overzicht:
-    <img
+   <img
   id="cartIcon"
   src="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/online.svg"
   alt="Payment icon"
-  style="height: 24px; vertical-align: middle;"
+  style="height: 24px; vertical-align: middle; margin-bottom: 5px;"
 />
+
 
   </span>
 
@@ -1740,8 +1741,13 @@ input:focus, select:focus, textarea:focus {
   </select>
 </div>
 
-  </div> <!-- ✅ 正确关闭 .cart-items -->
-</div>  
+
+    <!-- 购物车商品列表 -->
+    <ul id="cart"></ul>
+
+  </div>
+</div>
+
 
 
   <!-- 右侧: 结算区域 -->
@@ -3308,6 +3314,73 @@ const soldoutMap = {
   "Cola Zero": "soldout_cola_zero"
 };
 
+const iconMap = {
+  online: "https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/online.svg",
+  contant: "https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/contant.svg",
+  pin: "https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/pin.svg",
+  oprekening: "https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/oprekening.svg"
+};
+
+const cartIcon = document.getElementById("cartIcon");
+const cartPaymentSelect = document.getElementById("cartPaymentSelect");
+const pickupPaymentSelect = document.getElementById("pickupPayment");
+const deliveryPaymentSelect = document.getElementById("deliveryPayment");
+
+const afhalenFields = document.getElementById("afhalenFields");
+const bezorgenFields = document.getElementById("bezorgenFields");
+
+function getActivePaymentMethod() {
+  return !bezorgenFields.classList.contains("hidden")
+    ? deliveryPaymentSelect.value
+    : pickupPaymentSelect.value;
+}
+
+function updatePaymentIcon(value) {
+  const iconPath = iconMap[value] || iconMap.online;
+  cartIcon.setAttribute("src", iconPath);
+}
+
+function syncAllPaymentDropdowns(value) {
+  pickupPaymentSelect.value = value;
+  deliveryPaymentSelect.value = value;
+  cartPaymentSelect.value = value;
+  updatePaymentIcon(value);
+}
+
+// 监听器
+pickupPaymentSelect.addEventListener("change", () => {
+  syncAllPaymentDropdowns(pickupPaymentSelect.value);
+});
+
+deliveryPaymentSelect.addEventListener("change", () => {
+  syncAllPaymentDropdowns(deliveryPaymentSelect.value);
+});
+
+cartPaymentSelect.addEventListener("change", () => {
+  syncAllPaymentDropdowns(cartPaymentSelect.value);
+});
+
+// 初始化图标
+document.addEventListener("DOMContentLoaded", () => {
+  updatePaymentIcon(getActivePaymentMethod());
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function isItemSoldOut(name){
   for(const [base,key] of Object.entries(soldoutMap)){
     if(name.startsWith(base) && currentSettings[key]==="true"){
@@ -3375,62 +3448,6 @@ function updateXbentoDisplay(){
     if(p) p.textContent=`€ ${price.toFixed(2)}`;
   }
 }
-
- 
-const iconMap = {
-  online: "https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/online.svg",
-  contant: "https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/contant.svg",
-  pin: "https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/pin.svg",
-  oprekening: "https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/oprekening.svg"
-};
-
-const cartIcon = document.getElementById("cartIcon");
-const cartPaymentSelect = document.getElementById("cartPaymentSelect");
-const pickupPaymentSelect = document.getElementById("pickupPayment");
-const deliveryPaymentSelect = document.getElementById("deliveryPayment");
-
-const afhalenFields = document.getElementById("afhalenFields");
-const bezorgenFields = document.getElementById("bezorgenFields");
-
-function getActivePaymentMethod() {
-  return !bezorgenFields.classList.contains("hidden")
-    ? deliveryPaymentSelect.value
-    : pickupPaymentSelect.value;
-}
-
-function updatePaymentIcon(value) {
-  const iconPath = iconMap[value] || iconMap.online;
-  cartIcon.setAttribute("src", iconPath);
-}
-
-function syncAllPaymentDropdowns(value) {
-  pickupPaymentSelect.value = value;
-  deliveryPaymentSelect.value = value;
-  cartPaymentSelect.value = value;
-  updatePaymentIcon(value);
-}
-
-// 监听器
-pickupPaymentSelect.addEventListener("change", () => {
-  syncAllPaymentDropdowns(pickupPaymentSelect.value);
-});
-
-deliveryPaymentSelect.addEventListener("change", () => {
-  syncAllPaymentDropdowns(deliveryPaymentSelect.value);
-});
-
-cartPaymentSelect.addEventListener("change", () => {
-  syncAllPaymentDropdowns(cartPaymentSelect.value);
-});
-
-// 初始化图标
-document.addEventListener("DOMContentLoaded", () => {
-  updatePaymentIcon(getActivePaymentMethod());
-});
-
-
-
-
 
 function applyCrispyPrices(prices){
   const map={
