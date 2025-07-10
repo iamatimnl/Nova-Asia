@@ -904,7 +904,17 @@ function createXBowlMainSelect(){
   xbowlMains.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.dataset.price=o.price;opt.textContent=o.name;sel.appendChild(opt);});
   const del=document.createElement('button');del.type='button';del.textContent='❌';
   del.addEventListener('click',()=>{div.remove();ensureXBowlMain();updateXBowlDisplay();updateXBowlControls();changeXbowlQty(0);});
-  sel.addEventListener('change',()=>{if(sel.value&&div===document.querySelector('#xBowlMains').lastElementChild){if(confirm('Wil je extra portie?')){document.getElementById('xBowlMains').appendChild(createXBowlMainSelect());}}updateXBowlDisplay();updateXBowlControls();changeXbowlQty(0);});
+  sel.addEventListener('change',()=>{
+    const val = sel.value.toLowerCase();
+    if(sel.value && val !== 'geen' && div===document.querySelector('#xBowlMains').lastElementChild){
+      if(confirm('Wil je extra portie?')){
+        document.getElementById('xBowlMains').appendChild(createXBowlMainSelect());
+      }
+    }
+    updateXBowlDisplay();
+    updateXBowlControls();
+    changeXbowlQty(0);
+  });
   div.appendChild(sel);div.appendChild(del);return div;
 }
 
@@ -915,7 +925,17 @@ function createXBowlToppingSelect(){
   xbowlToppings.forEach(n=>{const opt=document.createElement('option');opt.value=n;opt.textContent=n;sel.appendChild(opt);});
   const del=document.createElement('button');del.type='button';del.textContent='❌';
   del.addEventListener('click',()=>{div.remove();ensureXBowlTopping();updateXBowlDisplay();updateXBowlControls();changeXbowlQty(0);});
-  sel.addEventListener('change',()=>{if(sel.value&&div===document.querySelector('#xBowlToppings').lastElementChild){if(confirm('Wil je extra topping toevoegen?')){document.getElementById('xBowlToppings').appendChild(createXBowlToppingSelect());}}updateXBowlDisplay();updateXBowlControls();changeXbowlQty(0);});
+  sel.addEventListener('change',()=>{
+    const val = sel.value.toLowerCase();
+    if(sel.value && val !== 'geen' && div===document.querySelector('#xBowlToppings').lastElementChild){
+      if(confirm('Wil je extra topping toevoegen?')){
+        document.getElementById('xBowlToppings').appendChild(createXBowlToppingSelect());
+      }
+    }
+    updateXBowlDisplay();
+    updateXBowlControls();
+    changeXbowlQty(0);
+  });
   div.appendChild(sel);div.appendChild(del);return div;
 }
 
