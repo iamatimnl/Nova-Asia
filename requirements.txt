@@ -12,4 +12,5 @@ pandas==2.3.0
 xlsxwriter==3.2.5
 reportlab==4.4.2
 python-dotenv
+Pillow
 
