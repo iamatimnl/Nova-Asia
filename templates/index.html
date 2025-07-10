@@ -3133,13 +3133,13 @@ input:focus, select:focus, textarea:focus {
 </section>
 <section id="drinks">
 <div class="menu-group">
-<div class="menu-row menu-item" data-name="Cola" data-packaging="0.2" data-price="2">
+<div class="menu-row menu-item" data-name="Cola" data-packaging="0.15" data-price="2.5">
   <div class="menu-img">
-    <img alt="Cola" loading="lazy" src="https://via.placeholder.com/150">
+    <img alt="Cola" loading="lazy" src="{{ url_for('static', filename='images/COLA.webp') }}">
   </div>
   <div class="menu-content">
     <h3>Cola</h3>
-    <p>€ 2.00</p>
+    <p>€ 2.5</p>
     <p id="soldoutCola" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
       <label for="colaCount">Aantal</label>
@@ -3149,13 +3149,13 @@ input:focus, select:focus, textarea:focus {
     </div>
   </div>
 </div>
-<div class="menu-row menu-item" data-name="Cola Zero" data-packaging="0.2" data-price="2">
+<div class="menu-row menu-item" data-name="Cola Zero" data-packaging="0.15" data-price="2.5">
   <div class="menu-img">
-    <img alt="Cola Zero" loading="lazy" src="https://via.placeholder.com/150">
+    <img alt="Cola Zero" loading="lazy" src="{{ url_for('static', filename='images/COLAZERO.webp') }}">
   </div>
   <div class="menu-content">
     <h3>Cola Zero</h3>
-    <p>€ 2.00</p>
+    <p>€ 2.50</p>
     <p id="soldoutColaZero" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
       <label for="colaZeroCount">Aantal</label>
