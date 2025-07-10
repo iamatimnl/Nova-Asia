@@ -1201,6 +1201,30 @@ input:focus, select:focus, textarea:focus {
     font-size: 0.7rem;
   }
 }
+/* 桌面端主料和配料布局优化 */
+#xBowlMains,
+#xBowlToppings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+#xBowlMains > div,
+#xBowlToppings > div {
+  flex: 0 0 200px;       /* 固定宽度更清晰 */
+  min-width: 160px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+}
+
+#xBowlMains select,
+#xBowlToppings select {
+  width: 100%;
+  font-size: 0.9rem;
+  padding: 4px;
+}
 
 /* Increase font size on larger screens for better readability */
 @media (min-width: 768px) {
