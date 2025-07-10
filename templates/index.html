@@ -476,7 +476,7 @@
 
 
 
-/* 为移动端购物车显示添加遮罩和居中显示 */
+/* ✅ 主购物车遮罩层：不滚动，只让 .cart-left 滚 */
 .cart-section.mobile-visible {
   display: flex !important;
   flex-direction: column;
@@ -485,57 +485,67 @@
   bottom: 0;
   right: 0px;
   width: 100vw;
-  height: 100dvh; /* ✅ 关键改动：使用 100dvh 解决地址栏收起自适配 */
+  height: 100dvh; /* 防止地址栏收起影响高度 */
   background: rgba(0, 0, 0, 0.6);
   z-index: 2000;
-  justify-content: flex-start; /* ✅ 正确，顶部开始显示购物车 */
-  align-items: stretch;  /* ✅ 水平居中可以保留 */
-  overflow-y: auto; /* ✅ 确保购物车整体可以滑动，防止内容溢出 */
-  overflow-x: hidden; /* ❌ 阻止横向滚动导致的整体滑动 */
- 
+  justify-content: flex-start;
+  align-items: stretch;
+
+  /* ✅ 新增：只禁用自身滚动，避免滚动冲突 */
+  overflow: hidden !important;
 }
 
-
-
-/* 内部购物车面板保持现有宽度但适配移动端 */
+/* ✅ 商品区：保留你原来的定位 + 增强滑动丝滑度 */
 .cart-section.mobile-visible .cart-left {
   width: 100vw;
   max-height: 100%;
   flex: 1 1 auto;
 
-  padding: 0 8px;       /* ✅ 只保留一次 */
+  padding: 0 8px;       
   margin-right: -8px;
   box-sizing: border-box;
 
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
-
   background: #E8E5DF;
   position: relative;
+
+  /* ✅ 以下为增强滚动体验的关键 */
+  overflow-y: auto !important;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+  min-height: 0;
 }
 
- .cart-section.mobile-visible .cart-left li {
-    color: #9b6413;
-  }
+/* ✅ 商品项文字颜色保留 */
+.cart-section.mobile-visible .cart-left li {
+  color: #9b6413;
+}
+
+/* ✅ 结算栏：保持原定位 + 可固定在底部 */
 .cart-section.mobile-visible .cart-summary {
   width: 100%;
   flex: 0 0 auto;
   background: #E8E5DF;
   border-bottom-left-radius: 16px;
+
   margin-top: 0px;
-  margin-left: -10px;       /* 显式设定左边距 */
+  margin-left: -10px;
+  margin-bottom: 0px;
+  margin-right: 20px;
   padding-left: 10px;
 
-  margin-bottom: 0px;
-  
-  margin-right: 20px;
-  position: relative; /* allow absolute children like the close button */
+  position: relative; /* 保留你设置的定位 */
+
+  /* ✅ 可选增强：若你希望 summary 总是在底部显示，可打开 */
+  /* position: sticky;
+     bottom: 0;
+     z-index: 10; */
 }
 
-/* Position close button inside summary on mobile */
+/* ✅ 关闭按钮定位（建议保留） */
 .cart-section.mobile-visible .cart-summary #closeCartBtn {
+  position: absolute;
   top: 16px;
   right: 4px;
 }
@@ -1500,6 +1510,19 @@ input:focus, select:focus, textarea:focus {
 }
 
 
+.icon-bank {
+  font-size: 1.6rem;      /* 默认在手机端稍大 */
+  position: relative;
+  top: 1px;
+}
+
+/* 桌面端变大两号 */
+@media (min-width: 768px) {
+  .icon-bank {
+    font-size: 2.4rem;    /* ✅ 放大图标在桌面端更显眼 */
+    top: 0px;             /* ✅ 微调向下对齐基线 */
+  }
+}
 
 
 
@@ -1681,19 +1704,21 @@ input:focus, select:focus, textarea:focus {
       margin-bottom: 12px;
     ">
       <span style="
-        font-weight: bold;
-        font-size: 1.4rem;
-        text-transform: uppercase;
-        color: #333;
-        white-space: nowrap;
-      ">
-        Overzicht 
-        <span style="
-          font-size: 2rem;
-          position: relative;
-          top: 2px;
-        ">💳</span>
-      </span>
+  font-weight: bold;
+  font-size: 1.4rem;
+  color: #333;
+  white-space: nowrap;
+">
+  Overzicht:
+  <span style="
+  font-weight: bold;
+  font-size: 1.4rem;
+  color: #333;
+  white-space: nowrap;
+">
+  Overzicht 
+  <span class="icon-bank">💳</span>
+</span>
       <select id="cartPaymentSelect" style="
     
         flex: 1;
