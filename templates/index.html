@@ -3371,58 +3371,54 @@ function updateXbentoDisplay(){
 }
 
  
+ const iconMap = {
+      online: "/Nova-Asia/icons/online.svg",
+      contant: "/Nova-Asia/icons/contant.svg",
+      pin: "/Nova-Asia/icons/pin.svg",
+      oprekening: "/Nova-Asia/icons/oprekening.svg"
+    };
 
-  // 支付方式对应 SVG 图标路径（确保这些文件在 /icons/ 目录下）
-  const iconMap = {
-  online: "/icons/online.svg",
-  contant: "/icons/contant.svg",
-  pin: "/icons/pin.svg",
-  oprekening: "/icons/oprekening.svg"
-};
+    const cartIcon = document.getElementById("cartIcon");
+    const cartPaymentSelect = document.getElementById("cartPaymentSelect");
+    const pickupPaymentSelect = document.getElementById("pickupPayment");
+    const deliveryPaymentSelect = document.getElementById("deliveryPayment");
+    const bezorgenFields = document.getElementById("bezorgenFields");
 
-const cartIcon = document.getElementById("cartIcon");
-const cartPaymentSelect = document.getElementById("cartPaymentSelect");
-const pickupPaymentSelect = document.getElementById("pickupPayment");
-const deliveryPaymentSelect = document.getElementById("deliveryPayment");
+    function getActivePaymentMethod() {
+      return !bezorgenFields.classList.contains("hidden")
+        ? deliveryPaymentSelect.value
+        : pickupPaymentSelect.value;
+    }
 
-const afhalenFields = document.getElementById("afhalenFields");
-const bezorgenFields = document.getElementById("bezorgenFields");
+    function updatePaymentIcon(value) {
+      const iconPath = iconMap[value] || iconMap.online;
+      cartIcon.setAttribute("src", iconPath);
+    }
 
-function getActivePaymentMethod() {
-  return bezorgenFields.classList.contains("hidden")
-    ? pickupPaymentSelect.value
-    : deliveryPaymentSelect.value;
-}
+    function syncAllPaymentDropdowns(value) {
+      pickupPaymentSelect.value = value;
+      deliveryPaymentSelect.value = value;
+      cartPaymentSelect.value = value;
+      updatePaymentIcon(value);
+    }
 
-function updatePaymentIcon(value) {
-  const iconPath = iconMap[value] || iconMap.online;
-  cartIcon.setAttribute("src", iconPath);
-}
+    // 添加事件监听器
+    pickupPaymentSelect.addEventListener("change", () => {
+      syncAllPaymentDropdowns(pickupPaymentSelect.value);
+    });
 
-function syncAllPaymentDropdowns(value) {
-  pickupPaymentSelect.value = value;
-  deliveryPaymentSelect.value = value;
-  cartPaymentSelect.value = value;
-  updatePaymentIcon(value);
-}
+    deliveryPaymentSelect.addEventListener("change", () => {
+      syncAllPaymentDropdowns(deliveryPaymentSelect.value);
+    });
 
-pickupPaymentSelect.addEventListener("change", () => {
-  syncAllPaymentDropdowns(pickupPaymentSelect.value);
-});
+    cartPaymentSelect.addEventListener("change", () => {
+      syncAllPaymentDropdowns(cartPaymentSelect.value);
+    });
 
-deliveryPaymentSelect.addEventListener("change", () => {
-  syncAllPaymentDropdowns(deliveryPaymentSelect.value);
-});
-
-cartPaymentSelect.addEventListener("change", () => {
-  syncAllPaymentDropdowns(cartPaymentSelect.value);
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-  updatePaymentIcon(getActivePaymentMethod());
-});
-
-
+    // 页面加载时初始化
+    document.addEventListener("DOMContentLoaded", () => {
+      updatePaymentIcon(getActivePaymentMethod());
+    });
 
 
 
