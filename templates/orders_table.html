@@ -93,7 +93,7 @@ th:last-child {
        <th>Tijdslot</th>
        <th>Betaalwijze</th>
        <th>Ordernummer</th>
-       <th>操作</th>
+       <th>Acties</th>
       </tr>
     </thead>
     <tbody>
@@ -146,9 +146,9 @@ th:last-child {
             data-phone="{{ order.phone or '' }}"
             data-email="{{ order.email or '' }}"
             data-type="{{ 'bezorg' if is_delivery else 'afhaal' }}">
-            {{ 'Undone' if order.is_completed else '订单完成' }}</button>
-          <button onclick="editOrder(this)">编辑</button>
-          <button onclick="cancelOrder(this)">取消</button>
+            {{ 'Undone' if order.is_completed else 'Klaar' }}</button>
+          <button onclick="editOrder(this)">Bewerk</button>
+          <button onclick="cancelOrder(this)">Annuleer</button>
           <span class="notify"></span>
         </td>
       </tr>
@@ -173,12 +173,12 @@ th:last-child {
       body: JSON.stringify(payload)
     }).then(r => {
       if (r.ok) {
-        status.textContent = '通知已发送';
+        status.textContent = 'Notificatie verzonden';
       } else {
-        status.textContent = '通知发送失败';
+        status.textContent = 'Notificatie mislukt';
       }
     }).catch(() => {
-      status.textContent = '通知发送失败';
+      status.textContent = 'Notificatie mislukt';
     });
   }
 
