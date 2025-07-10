@@ -164,9 +164,9 @@
                 data-name="${order.customer_name || ''}"
                 data-phone="${order.phone || ''}"
                 data-email="${order.email || ''}"
-                data-type="${isDelivery ? 'bezorg' : 'afhaal'}">${order.is_completed ? 'Undone' : '订单完成'}</button>
-                <button onclick="editOrder(this)">编辑</button>
-                <button onclick="cancelOrder(this)">取消</button>
+                data-type="${isDelivery ? 'bezorg' : 'afhaal'}">${order.is_completed ? 'Undone' : 'Klaar'}</button>
+                <button onclick="editOrder(this)">Bewerk</button>
+                <button onclick="cancelOrder(this)">Annuleer</button>
                 <span class="notify"></span></td>
             `;
             tbody.appendChild(tr);
