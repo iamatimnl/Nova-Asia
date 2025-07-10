@@ -950,21 +950,23 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 0 0 2px rgba(63,92,75,0.2);
 }
 .cart-section select {
-  width: 100%; /* ✅ 更适配小屏 */
-  padding: 6px 10px; /* ⬅️ 调低内边距 */
-  font-size: 0.95rem; /* ⬅️ 稍微小一点 */
-  border-radius: 8px; /* ⬅️ 稍微圆润即可 */
+  width: 3.5em;                /* ✅ 容纳两个字符或短文字 */
+  padding: 2px 4px;            /* ✅ 上下边距最小化 */
+  font-size: 0.85rem;          /* ✅ 清晰但紧凑 */
+  border-radius: 4px;
   border: 1px solid #ccc;
   background-color: #fff;
-  background-image: url("data:image/svg+xml;utf8,<svg fill='%23666' height='18' viewBox='0 0 24 24' width='18' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23666' height='10' viewBox='0 0 24 24' width='10' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
   background-repeat: no-repeat;
-  background-position: right 8px center;
-  background-size: 14px 14px;
+  background-position: right 4px center;
+  background-size: 10px 10px;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  box-shadow: none; /* 去掉多余阴影 */
-  margin: 4px 0; /* 给一点垂直间距即可 */
+  box-shadow: none;
+  margin: 2px;
+  box-sizing: border-box;
+  text-align: center;
 }
 
 /* ✅ 统一 focus 样式 */
@@ -1069,7 +1071,7 @@ input:focus, select:focus, textarea:focus {
 .checkout-panel {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 60vh;
 }
 
 .checkout-scroll-content {
