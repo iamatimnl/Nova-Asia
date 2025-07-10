@@ -3374,96 +3374,58 @@ function updateXbentoDisplay(){
 
   // 支付方式对应 SVG 图标路径（确保这些文件在 /icons/ 目录下）
   const iconMap = {
-    online: "/icons/online.svg",
-    contant: "/icons/contant.svg",
-    pin: "/icons/pin.svg",
-    oprekening: "/icons/oprekening.svg"
-  };
+  online: "/icons/online.svg",
+  contant: "/icons/contant.svg",
+  pin: "/icons/pin.svg",
+  oprekening: "/icons/oprekening.svg"
+};
 
-  const cartIcon = document.getElementById("cartIcon");
-  const cartPaymentSelect = document.getElementById("cartPaymentSelect");
-  const pickupPaymentSelect = document.getElementById("pickupPayment");
-  const deliveryPaymentSelect = document.getElementById("deliveryPayment");
+const cartIcon = document.getElementById("cartIcon");
+const cartPaymentSelect = document.getElementById("cartPaymentSelect");
+const pickupPaymentSelect = document.getElementById("pickupPayment");
+const deliveryPaymentSelect = document.getElementById("deliveryPayment");
 
-  const afhalenFields = document.getElementById("afhalenFields");
-  const bezorgenFields = document.getElementById("bezorgenFields");
+const afhalenFields = document.getElementById("afhalenFields");
+const bezorgenFields = document.getElementById("bezorgenFields");
 
-  function getActivePaymentMethod() {
-    if (!bezorgenFields.classList.contains("hidden")) {
-      return deliveryPaymentSelect.value;
-    } else {
-      return pickupPaymentSelect.value;
-    }
-  }
+function getActivePaymentMethod() {
+  return bezorgenFields.classList.contains("hidden")
+    ? pickupPaymentSelect.value
+    : deliveryPaymentSelect.value;
+}
 
-  function updatePaymentIcon(value) {
-    const iconPath = iconMap[value] || iconMap.online;
-    cartIcon.setAttribute("src", iconPath);
-  }
+function updatePaymentIcon(value) {
+  const iconPath = iconMap[value] || iconMap.online;
+  cartIcon.setAttribute("src", iconPath);
+}
 
-  // 同步选择器并更新图标
-  function syncAllPaymentDropdowns(value) {
-    pickupPaymentSelect.value = value;
-    deliveryPaymentSelect.value = value;
-    cartPaymentSelect.value = value;
-    updatePaymentIcon(value);
-  }
+function syncAllPaymentDropdowns(value) {
+  pickupPaymentSelect.value = value;
+  deliveryPaymentSelect.value = value;
+  cartPaymentSelect.value = value;
+  updatePaymentIcon(value);
+}
 
-  // 事件监听器
-  pickupPaymentSelect.addEventListener("change", () => {
-    syncAllPaymentDropdowns(pickupPaymentSelect.value);
-  });
+pickupPaymentSelect.addEventListener("change", () => {
+  syncAllPaymentDropdowns(pickupPaymentSelect.value);
+});
 
-  deliveryPaymentSelect.addEventListener("change", () => {
-    syncAllPaymentDropdowns(deliveryPaymentSelect.value);
-  });
+deliveryPaymentSelect.addEventListener("change", () => {
+  syncAllPaymentDropdowns(deliveryPaymentSelect.value);
+});
 
-  cartPaymentSelect.addEventListener("change", () => {
-    syncAllPaymentDropdowns(cartPaymentSelect.value);
-  });
+cartPaymentSelect.addEventListener("change", () => {
+  syncAllPaymentDropdowns(cartPaymentSelect.value);
+});
 
-  // 页面加载时初始化图标
-  document.addEventListener("DOMContentLoaded", () => {
-    updatePaymentIcon(getActivePaymentMethod());
-  });
+document.addEventListener("DOMContentLoaded", () => {
+  updatePaymentIcon(getActivePaymentMethod());
+});
 
 
 
-  function syncAllPaymentDropdowns(value) {
-    pickupPaymentSelect.value = value;
-    deliveryPaymentSelect.value = value;
-    cartPaymentSelect.value = value;
-    updatePaymentIcon(value);
-  }
-
-  function updatePaymentIcon(value) {
-    cartIcon.textContent = iconMap[value] || "🌐";
-  }
-
-  // 监听三个支付选择器变更
-  pickupPaymentSelect.addEventListener("change", () => {
-    syncAllPaymentDropdowns(pickupPaymentSelect.value);
-  });
-
-  deliveryPaymentSelect.addEventListener("change", () => {
-    syncAllPaymentDropdowns(deliveryPaymentSelect.value);
-  });
-
-  cartPaymentSelect.addEventListener("change", () => {
-    syncAllPaymentDropdowns(cartPaymentSelect.value);
-  });
-
-  // 页面初始化时自动同步当前图标
-  document.addEventListener("DOMContentLoaded", () => {
-    syncAllPaymentDropdowns(getActivePaymentMethod());
-  });
 
 
-
-  document.getElementById("cartPaymentSelect").addEventListener("change", function () {
-    const selected = this.value;
-    document.getElementById("cartIcon").textContent = iconMap[selected] || "🌐";
-  });
 
 function applyCrispyPrices(prices){
   const map={
