@@ -476,7 +476,7 @@
 
 
 
-/* 为移动端购物车显示添加遮罩和居中显示 */
+/* 移动端购物车整体样式 */
 .cart-section.mobile-visible {
   display: flex !important;
   flex-direction: column;
@@ -485,60 +485,95 @@
   bottom: 0;
   right: 0px;
   width: 100vw;
-  height: 100dvh; /* ✅ 关键改动：使用 100dvh 解决地址栏收起自适配 */
+  height: 100dvh;
   background: rgba(0, 0, 0, 0.6);
   z-index: 2000;
-  justify-content: flex-start; /* ✅ 正确，顶部开始显示购物车 */
-  align-items: stretch;  /* ✅ 水平居中可以保留 */
-  overflow-y: auto; /* ✅ 确保购物车整体可以滑动，防止内容溢出 */
-  overflow-x: hidden; /* ❌ 阻止横向滚动导致的整体滑动 */
- 
+  justify-content: flex-start;
+  align-items: stretch;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-
-
-/* 内部购物车面板保持现有宽度但适配移动端 */
+/* 移动端购物车左侧展示区（滑动商品列表） */
 .cart-section.mobile-visible .cart-left {
   width: 100vw;
   max-height: 100%;
   flex: 1 1 auto;
-
-  padding: 0 8px;       /* ✅ 只保留一次 */
+  padding: 0 8px;
   margin-right: -8px;
   box-sizing: border-box;
-
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
-
   background: #E8E5DF;
   position: relative;
 }
 
- .cart-section.mobile-visible .cart-left li {
-    color: #9b6413;
-  }
+.cart-section.mobile-visible .cart-left li {
+  color: #9b6413;
+}
+
+/* 结算区 - cart-summary */
 .cart-section.mobile-visible .cart-summary {
   width: 100%;
   flex: 0 0 auto;
   background: #E8E5DF;
   border-bottom-left-radius: 16px;
-  margin-top: 0px;
-  margin-left: -10px;       /* 显式设定左边距 */
-  padding-left: 10px;
-
-  margin-bottom: 0px;
-  
-  margin-right: 20px;
-  position: relative; /* allow absolute children like the close button */
+  margin: 0 20px 0 -10px;
+  padding: 6px 10px;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  position: relative;
 }
 
-/* Position close button inside summary on mobile */
+/* 结算内容字体与布局优化 */
+.cart-summary label,
+.cart-summary textarea,
+.cart-summary input,
+.cart-summary select,
+.cart-summary .price-row span {
+  font-size: 0.95rem;
+  line-height: 1.2;
+}
+
+.cart-summary textarea {
+  padding: 4px 6px;
+  margin-top: 4px;
+}
+
+.cart-summary input,
+.cart-summary select {
+  padding: 4px 6px;
+  margin-top: 2px;
+  margin-bottom: 4px;
+}
+
+.cart-summary .price-row {
+  margin: 2px 0;
+}
+
+.cart-summary .btw-note {
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+/* 缩短 spacer 间距 */
+.cart-summary .spacer {
+  height: 6px;
+}
+
+/* 关闭按钮位置优化 */
 .cart-section.mobile-visible .cart-summary #closeCartBtn {
+  position: absolute;
   top: 16px;
   right: 4px;
+  font-size: 1.5rem;
+  background: transparent;
+  border: none;
+  color: #333;
 }
+
 
 
 
