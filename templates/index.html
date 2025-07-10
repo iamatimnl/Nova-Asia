@@ -641,7 +641,7 @@
   border-radius: 10px;
   cursor: pointer;
   z-index: 1010;
-o  display: flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   line-height: 1;
@@ -1516,7 +1516,12 @@ input:focus, select:focus, textarea:focus {
 
 
 
-
+@media (min-width: 768px) {
+    .cart-title-icon {
+      font-size: 2.4rem; /* 放大图标尺寸 */
+      top: -5px !important   ;           /* 微调图标位置 */
+    }
+  }
 
 
 /* 响应式控制 */
@@ -1686,12 +1691,19 @@ input:focus, select:focus, textarea:focus {
       margin-bottom: 12px;
     ">
       <span style="
-        font-weight: bold;
-        font-size: 1.4rem;
-        color: #333;
-        white-space: nowrap;
-      ">
-        Overzicht:
+  font-weight: bold;
+  font-size: 1.4rem;
+  color: #333;
+  white-space: nowrap;
+">
+  Overzicht:
+  <span class="cart-title-icon" style="
+    font-size: 2rem;
+    position: relative;
+    top: 2px;
+  ">💳</span>
+</span>
+
       <select id="cartPaymentSelect" style="
     
         flex: 1;
