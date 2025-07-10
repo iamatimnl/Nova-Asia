@@ -4416,7 +4416,7 @@ function checkout() {
 
   const orderType = document.querySelector('input[name="orderType"]:checked').value;
   let customerDetails = '';
-  let paymentMethod = '';
+  let paymentMethod = document.getElementById('cartPaymentSelect')?.value || '';
   let email = '';
 
   if (orderType === 'afhalen') {
@@ -4424,7 +4424,8 @@ function checkout() {
     const phone = document.getElementById('pickupPhone').value.trim();
     email = document.getElementById('pickupEmail').value.trim();
     const time = document.getElementById('pickup_time').value;
-    paymentMethod = document.getElementById('pickupPayment').value;
+    paymentMethod = document.getElementById('cartPaymentSelect')?.value || document.getElementById('pickupPayment').value;
+    document.getElementById('pickupPayment').value = paymentMethod;
 
     customerDetails = `\n[Afhalen]\nNaam: ${name}\nTelefoon: ${phone}`;
     if (email) customerDetails += `\nEmail: ${email}`;
@@ -4438,7 +4439,8 @@ function checkout() {
     const postcodeRaw = document.getElementById('deliveryPostcode').value.trim();
     const area = document.getElementById('deliveryArea').value.trim();
     const time = document.getElementById('delivery_time').value;
-    paymentMethod = document.getElementById('deliveryPayment').value;
+    paymentMethod = document.getElementById('cartPaymentSelect')?.value || document.getElementById('deliveryPayment').value;
+    document.getElementById('deliveryPayment').value = paymentMethod;
 
     const postcodeClean = postcodeRaw.replace(/\s+/g, '');
     const postcode = postcodeClean.slice(0, 4);
