@@ -334,6 +334,16 @@
             <option value="false" {% if soldout_mochi_pistachio != 'true' %}selected{% endif %}>Open</option>
             <option value="true" {% if soldout_mochi_pistachio == 'true' %}selected{% endif %}>Uitverkocht</option>
         </select><br>
+        <label>Cola:</label>
+        <select id="soldout_cola_select">
+            <option value="false" {% if soldout_cola != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_cola == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Cola Zero:</label>
+        <select id="soldout_cola_zero_select">
+            <option value="false" {% if soldout_cola_zero != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_cola_zero == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
         <br><br>
 
         <h3>Pokebowl uitverkocht</h3>
