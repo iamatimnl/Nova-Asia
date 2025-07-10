@@ -768,6 +768,7 @@ const xbowlBases=[
   {name:'Tempura crispy rijst',price:6}
 ];
 const xbowlMains=[
+  {name:'geen',price:0},
   {name:'Zalm',price:9},
   {name:'Tonijn',price:9},
   {name:'Gamba',price:8},
@@ -780,7 +781,7 @@ const xbowlMains=[
   {name:'Spicy tuna',price:9},
   {name:'Krabstick',price:8}
 ];
-const xbowlToppings=['Komkommer','Avocado','Sojabonen','Mais','Zeewiersalade','Masago','Inari','Tamago'];
+const xbowlToppings=['geen','Komkommer','Avocado','Sojabonen','Mais','Zeewiersalade','Masago','Inari','Tamago'];
 const XBOWL_TOPPING_PRICE=1.5;
 let currentXBowlName="";
 
@@ -842,7 +843,8 @@ function updateXBowlDisplay(){
   let price=0;
   if(baseOpt&&baseOpt.dataset.price) price+=parseFloat(baseOpt.dataset.price);
   mains.forEach(o=>{price+=parseFloat(o.dataset.price||0);});
-  price+=toppings.length*XBOWL_TOPPING_PRICE;
+  const paidTops=toppings.filter(t=>t.toLowerCase()!=='geen');
+  price+=paidTops.length*XBOWL_TOPPING_PRICE;
   const item=document.querySelector('.menu-item[data-name="X-Bowl"]');
   if(item){
     item.dataset.price=price;
