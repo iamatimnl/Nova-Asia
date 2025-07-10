@@ -1328,22 +1328,22 @@ input:focus, select:focus, textarea:focus {
   margin: auto;
 }
 
-.spinner::before {
-  content: "";
-  position: absolute;
-  inset: 0;
+.spinner {
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: conic-gradient(
-    #6C4F3D 0deg,
-    white 90deg,
-    #6C4F3D 180deg,
-    transparent 270deg,
-    #6C4F3D 360deg
+    #A67C52 0deg,
+    #6C4F3D 120deg,
+    white 160deg,
+    transparent 220deg,
+    #A67C52 360deg
   );
   animation: spin 0.8s linear infinite;
   mask: radial-gradient(farthest-side, transparent 60%, black 61%);
   -webkit-mask: radial-gradient(farthest-side, transparent 60%, black 61%);
   box-shadow: 0 0 4px rgba(108, 79, 61, 0.4);
+  margin: auto;
 }
 
 @keyframes spin {
