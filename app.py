@@ -565,6 +565,8 @@ with app.app_context():
         "soldout_mochi_aardbei": "false",
         "soldout_mochi_matcha": "false",
         "soldout_mochi_pistachio": "false",
+        "soldout_cola": "false",
+        "soldout_cola_zero": "false",
     }
     for k, v in defaults.items():
         if not Setting.query.filter_by(key=k).first():
@@ -838,6 +840,43 @@ def api_menu():
     ]
     return jsonify(data)
 
+
+@app.route('/api/update_item', methods=['POST'])
+def api_update_item():
+    data = request.get_json() or {}
+    item_id = data.get('id')
+    item = MenuItem.query.get(item_id)
+    if not item:
+        return jsonify({'success': False, 'error': 'not_found'}), 404
+    if 'price' in data:
+        try:
+            item.price = float(data['price'])
+        except (TypeError, ValueError):
+            pass
+    soldout_key = data.get('soldout_key')
+    if soldout_key is not None and 'sold_out' in data:
+        val = 'true' if data.get('sold_out') else 'false'
+        s = Setting.query.filter_by(key=soldout_key).first()
+        if not s:
+            s = Setting(key=soldout_key, value=val)
+            db.session.add(s)
+        else:
+            s.value = val
+    db.session.commit()
+    items = [
+        {
+            'id': i.id,
+            'name': i.name,
+            'price': i.price,
+            'section': i.section.name if i.section else None,
+            'image': i.image,
+        } for i in MenuItem.query.all()
+    ]
+    socketio.emit('menu_update', items)
+    settings = {s.key: s.value for s in Setting.query.all()}
+    socketio.emit('setting_update', settings)
+    return jsonify({'success': True})
+
 @app.route('/api/bubble_options')
 def api_bubble_options():
     return jsonify(get_bubble_options_dict())
@@ -1064,6 +1103,8 @@ def dashboard():
         soldout_mochi_aardbei=get_value('soldout_mochi_aardbei', 'false'),
         soldout_mochi_matcha=get_value('soldout_mochi_matcha', 'false'),
         soldout_mochi_pistachio=get_value('soldout_mochi_pistachio', 'false'),
+        soldout_cola=get_value('soldout_cola', 'false'),
+        soldout_cola_zero=get_value('soldout_cola_zero', 'false'),
         sections=sections,
         base_options=bases,
         smaak_options=smaken,
@@ -1155,6 +1196,8 @@ def update_setting():
     soldout_mochi_aardbei_val = data.get('soldout_mochi_aardbei', 'false')
     soldout_mochi_matcha_val = data.get('soldout_mochi_matcha', 'false')
     soldout_mochi_pistachio_val = data.get('soldout_mochi_pistachio', 'false')
+    soldout_cola_val = data.get('soldout_cola', 'false')
+    soldout_cola_zero_val = data.get('soldout_cola_zero', 'false')
 
     for key, val in [
         ('is_open', is_open_val),
@@ -1233,6 +1276,8 @@ def update_setting():
         ('soldout_mochi_aardbei', soldout_mochi_aardbei_val),
         ('soldout_mochi_matcha', soldout_mochi_matcha_val),
         ('soldout_mochi_pistachio', soldout_mochi_pistachio_val),
+        ('soldout_cola', soldout_cola_val),
+        ('soldout_cola_zero', soldout_cola_zero_val),
     ]:
         s = Setting.query.filter_by(key=key).first()
         if not s:

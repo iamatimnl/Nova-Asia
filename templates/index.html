@@ -1590,6 +1590,7 @@ input:focus, select:focus, textarea:focus {
 <a href="#Crispy-rice-sandwich">Crispy Rice</a>
 <a href="#snack">Snack</a>
 <a href="#dessert">Dessert</a>
+<a href="#drinks">Drinks</a>
 <a href="#wapp">Wapp</a>
 
 
@@ -3127,6 +3128,42 @@ input:focus, select:focus, textarea:focus {
 <button class="qty-plus add-button" data-target="mochiPistachioCount" type="button">+</button>
 </div>
 </div>
+</div>
+</div>
+</section>
+<section id="drinks">
+<div class="menu-group">
+<div class="menu-row menu-item" data-name="Cola" data-packaging="0.2" data-price="2">
+  <div class="menu-img">
+    <img alt="Cola" loading="lazy" src="https://via.placeholder.com/150">
+  </div>
+  <div class="menu-content">
+    <h3>Cola</h3>
+    <p>€ 2.00</p>
+    <p id="soldoutCola" class="sold-out-msg hidden">Uitverkocht!</p>
+    <div class="qty-box">
+      <label for="colaCount">Aantal</label>
+      <button class="qty-minus remove-button" data-target="colaCount" type="button">-</button>
+      <select id="colaCount" name="colaCount"></select>
+      <button class="qty-plus add-button" data-target="colaCount" type="button">+</button>
+    </div>
+  </div>
+</div>
+<div class="menu-row menu-item" data-name="Cola Zero" data-packaging="0.2" data-price="2">
+  <div class="menu-img">
+    <img alt="Cola Zero" loading="lazy" src="https://via.placeholder.com/150">
+  </div>
+  <div class="menu-content">
+    <h3>Cola Zero</h3>
+    <p>€ 2.00</p>
+    <p id="soldoutColaZero" class="sold-out-msg hidden">Uitverkocht!</p>
+    <div class="qty-box">
+      <label for="colaZeroCount">Aantal</label>
+      <button class="qty-minus remove-button" data-target="colaZeroCount" type="button">-</button>
+      <select id="colaZeroCount" name="colaZeroCount"></select>
+      <button class="qty-plus add-button" data-target="colaZeroCount" type="button">+</button>
+    </div>
+  </div>
 </div>
 </div>
 </section>
@@ -5501,6 +5538,23 @@ function updateStatus(settings) {
   ];
 
   dessertConfig.forEach(cfg => {
+    const itemEl = document.querySelector(`[data-name="${cfg.name}"]`);
+    if (!itemEl) return;
+    const soldout = settings[cfg.key] === 'true';
+    const msgEl = document.getElementById(cfg.msg);
+    if (msgEl) msgEl.classList.toggle('hidden', !soldout);
+    itemEl.querySelectorAll('select, button').forEach(el => { el.disabled = soldout; });
+    if (soldout && document.getElementById(cfg.qty)) {
+      document.getElementById(cfg.qty).value = 0;
+    }
+  });
+
+  const drinksConfig = [
+    {name: 'Cola', key: 'soldout_cola', qty: 'colaCount', msg: 'soldoutCola'},
+    {name: 'Cola Zero', key: 'soldout_cola_zero', qty: 'colaZeroCount', msg: 'soldoutColaZero'}
+  ];
+
+  drinksConfig.forEach(cfg => {
     const itemEl = document.querySelector(`[data-name="${cfg.name}"]`);
     if (!itemEl) return;
     const soldout = settings[cfg.key] === 'true';
