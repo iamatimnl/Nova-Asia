@@ -1703,53 +1703,39 @@ input:focus, select:focus, textarea:focus {
 </div></section>
 <div class="cart-section" id="mobileCart">
 
-  <!-- 左侧: Winkelwagen 商品列表 -->
+<!-- Winkelwagen 商品列表左侧区域 -->
 <div class="cart-left">  
   <div class="cart-items">
 
     <!-- 标题 + 支付选择器在同一行 -->
     <div style="
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 12px;
-    ">
-      <span style="
-  font-weight: bold;
-  font-size: 1.4rem;
-  color: #333;
-  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
 ">
-  Overzicht:
-  <span class="cart-title-icon" style="
-    font-size: 2rem;
-    position: relative;
-    top: 2px;
-  ">💳</span>
-</span>
+  <span style="font-weight: bold; font-size: 1.4rem; color: #333; white-space: nowrap;">
+    Overzicht:
+    <img id="cartIcon" src="/icons/online.svg" alt="Payment icon" style="height: 24px; display: inline-block; vertical-align: middle;" />
+  </span>
 
-      <select id="cartPaymentSelect" style="
-    
-        flex: 1;
-        padding: 6px 10px;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-        font-size: 1rem;
-      ">
-        <option value="online" selected>Online betaling</option>
-        <option value="contant">Contant</option>
-        <option value="pin">Pin</option>
-        <option value="oprekening">Op rekening</option>
-      </select>
-    </div>
-
-    <!-- 购物车商品列表 -->
-    <ul id="cart"></ul>
-
-  </div>
+  <select id="cartPaymentSelect" style="
+    flex: 1;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+  ">
+    <option value="online" selected>Online betaling</option>
+    <option value="contant">Contant</option>
+    <option value="pin">Pin</option>
+    <option value="oprekening">Op rekening</option>
+  </select>
 </div>
 
+  </div> <!-- ✅ 正确关闭 .cart-items -->
+</div>  
 
 
   <!-- 右侧: 结算区域 -->
@@ -3383,6 +3369,101 @@ function updateXbentoDisplay(){
     if(p) p.textContent=`€ ${price.toFixed(2)}`;
   }
 }
+
+ 
+
+  // 支付方式对应 SVG 图标路径（确保这些文件在 /icons/ 目录下）
+  const iconMap = {
+    online: "/icons/online.svg",
+    contant: "/icons/contant.svg",
+    pin: "/icons/pin.svg",
+    oprekening: "/icons/oprekening.svg"
+  };
+
+  const cartIcon = document.getElementById("cartIcon");
+  const cartPaymentSelect = document.getElementById("cartPaymentSelect");
+  const pickupPaymentSelect = document.getElementById("pickupPayment");
+  const deliveryPaymentSelect = document.getElementById("deliveryPayment");
+
+  const afhalenFields = document.getElementById("afhalenFields");
+  const bezorgenFields = document.getElementById("bezorgenFields");
+
+  function getActivePaymentMethod() {
+    if (!bezorgenFields.classList.contains("hidden")) {
+      return deliveryPaymentSelect.value;
+    } else {
+      return pickupPaymentSelect.value;
+    }
+  }
+
+  function updatePaymentIcon(value) {
+    const iconPath = iconMap[value] || iconMap.online;
+    cartIcon.setAttribute("src", iconPath);
+  }
+
+  // 同步选择器并更新图标
+  function syncAllPaymentDropdowns(value) {
+    pickupPaymentSelect.value = value;
+    deliveryPaymentSelect.value = value;
+    cartPaymentSelect.value = value;
+    updatePaymentIcon(value);
+  }
+
+  // 事件监听器
+  pickupPaymentSelect.addEventListener("change", () => {
+    syncAllPaymentDropdowns(pickupPaymentSelect.value);
+  });
+
+  deliveryPaymentSelect.addEventListener("change", () => {
+    syncAllPaymentDropdowns(deliveryPaymentSelect.value);
+  });
+
+  cartPaymentSelect.addEventListener("change", () => {
+    syncAllPaymentDropdowns(cartPaymentSelect.value);
+  });
+
+  // 页面加载时初始化图标
+  document.addEventListener("DOMContentLoaded", () => {
+    updatePaymentIcon(getActivePaymentMethod());
+  });
+
+
+
+  function syncAllPaymentDropdowns(value) {
+    pickupPaymentSelect.value = value;
+    deliveryPaymentSelect.value = value;
+    cartPaymentSelect.value = value;
+    updatePaymentIcon(value);
+  }
+
+  function updatePaymentIcon(value) {
+    cartIcon.textContent = iconMap[value] || "🌐";
+  }
+
+  // 监听三个支付选择器变更
+  pickupPaymentSelect.addEventListener("change", () => {
+    syncAllPaymentDropdowns(pickupPaymentSelect.value);
+  });
+
+  deliveryPaymentSelect.addEventListener("change", () => {
+    syncAllPaymentDropdowns(deliveryPaymentSelect.value);
+  });
+
+  cartPaymentSelect.addEventListener("change", () => {
+    syncAllPaymentDropdowns(cartPaymentSelect.value);
+  });
+
+  // 页面初始化时自动同步当前图标
+  document.addEventListener("DOMContentLoaded", () => {
+    syncAllPaymentDropdowns(getActivePaymentMethod());
+  });
+
+
+
+  document.getElementById("cartPaymentSelect").addEventListener("change", function () {
+    const selected = this.value;
+    document.getElementById("cartIcon").textContent = iconMap[selected] || "🌐";
+  });
 
 function applyCrispyPrices(prices){
   const map={
