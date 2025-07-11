@@ -4242,7 +4242,10 @@ function createSelect(current, onChange) {
 }
 
 function setQty(name, price, qty, packaging = DEFAULT_PACKAGING_FEE, prefs = null) {
-  if (isItemSoldOut(name)) return;
+  if (isItemSoldOut(name)) {
+    showFeedback('Uitverkocht!', true);
+    return;
+  }
   price = parseFloat(price);
   if (isNaN(price)) price = 0;
   qty = parseInt(qty, 10);
