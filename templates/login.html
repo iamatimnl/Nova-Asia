@@ -9,3 +9,15 @@
   <button type="submit">Login</button>
 </form>
 {% if error %}<p style="color:red;">Invalid credentials</p>{% endif %}
+{% if auto_login %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    if (form) {
+      form.username.value = 'admin';
+      form.password.value = 'novaasia3693';
+      form.submit();
+    }
+  });
+</script>
+{% endif %}
