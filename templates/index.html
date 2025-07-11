@@ -633,11 +633,11 @@
   right: 18px;
   width: 36px;
   height: 36px;
-  background: #4E342E;
+  background: #88512C;
   color: #D8C3A5;
   font-size: 22px;
   font-weight: bold;
-  border: 3px solid #4E342E;
+  border: 3px solid #88512C;
   border-radius: 10px;
   cursor: pointer;
   z-index: 1010;
@@ -877,7 +877,7 @@
 .apply-discount-btn {
   margin-left: 8px;
   padding: 6px 12px;
-  background: #4E342E;
+  background: #88512C;
   color: #D8C3A5;
   border: none;
   border-radius: 8px;
@@ -1272,7 +1272,7 @@ input:focus, select:focus, textarea:focus {
   margin-left: -20px;
   height: 100%;
   border-radius: 42px;
-  background: #4E342E;
+  background: #f6e2c7bd;
   padding: 0 20px;
   display: flex;
   align-items: center;
@@ -1284,7 +1284,7 @@ input:focus, select:focus, textarea:focus {
 .slider-button {
   width: 61px;
   height: 61px;
-  background: linear-gradient(145deg, #ffffff, #f0f0f0); /* 渐变白色 */
+  background: linear-gradient(145deg, var(--accent-gradient-start), var(--accent-gradient-end));
   border-radius: 50%;
   position: absolute;
   left: 1px;
@@ -1331,14 +1331,11 @@ input:focus, select:focus, textarea:focus {
   font-size: 11px;
   font-weight: 600;
   background: linear-gradient(
-  90deg,
-  #D8C3A5 0%,
-  #E8D9C0 40%,
-  rgba(0, 0, 0, 0.85) 45%,
-  rgba(0, 0, 0, 0.85) 55%,
-  #E8D9C0 60%,
-  #D8C3A5 100%
-);
+    90deg,
+    #6A2E14 0%,
+    rgba(255, 255, 255, 0.99) 50%,
+    #4E342E 100%
+  );
 
   background-size: 200% auto;
   background-position: 100% 0;
@@ -1537,6 +1534,42 @@ input:focus, select:focus, textarea:focus {
     to { opacity: 1; transform: scale(1); }
 }
 
+.clipboard {
+  position: fixed;     /* ✅ 固定在视口位置，滚动时不动 */
+  top: 670px;            /* 距离页面顶端 80px */
+  left: 6px;             /* 贴右边 */
+  width: 600px;
+  background: var(--off-white);
+  padding: 16px;
+  text-align: center;
+  border-top-right-radius: 16px;
+  border-bottom-right-radius: 16px;
+  box-shadow:
+    0 -4px 8px rgba(224, 176, 126, 0.15),
+    4px 0 8px rgba(224, 176, 126, 0.15);
+  z-index: 1000;       /* 确保它在上层可见 */
+}
+
+
+
+.clipboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* ✅ 加这个就能居中标题 */
+  gap: 8px;
+  font-size: 1.4rem;
+  color: #333;
+  margin-bottom: 12px;
+  white-space: nowrap;
+  text-align: center;
+}
+
+
+.clipboard-content {
+  color: #4E342E;
+  font-size: 1rem;
+  line-height: 1.5;
+}
 
 
 
@@ -1778,7 +1811,7 @@ input:focus, select:focus, textarea:focus {
       <div class="price-row total-row"><span>Totaal:</span> <span id="totalDisplay">€0,00</span></div>
       <div class="btw-note">Alle prijzen zijn inclusief BTW</div>
     </div>
-
+     
     <!-- 桌面端正常结账按钮 -->
     <button class="checkout-btn desktop-only" onclick="checkout()">Afrekenen &amp; Betalen</button>
 
@@ -1791,7 +1824,12 @@ input:focus, select:focus, textarea:focus {
     </div>
   </div>
 </div>
-
+<div class="clipboard">
+  <div class="clipboard-header">📋 <strong>Mededeling</strong></div>
+  <div class="clipboard-content">
+    <p>Vandaag zijn we gesloten wegens onderhoud. Bedankt voor uw begrip!</p>
+  </div>
+</div>
 <button id="cart-toggle" onclick="toggleMobileCart()">
   <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" width="30" height="30"    viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M256 256v128M320 320H192M80 176a16 16 0 00-16 16v216c0 30.24 25.76 56 56 56h272c30.24 0 56-24.51 56-54.75V192a16 16 0 00-16-16zM160 176v-32a96 96 0 0196-96h0a96 96 0 0196 96v32"/></svg>
   <span id="cart-count" style="
