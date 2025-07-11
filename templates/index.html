@@ -1029,6 +1029,14 @@ input:focus, select:focus, textarea:focus {
   max-height: 100vh;
 }
 
+@media (max-width: 767px) {
+  #xBowlBase {
+    width: 100%;
+    font-size: 0.8rem;
+    padding: 4px;
+  }
+}
+
 
 
 
@@ -1222,7 +1230,7 @@ input:focus, select:focus, textarea:focus {
 #xBowlMains select,
 #xBowlToppings select {
   width: 100%;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   padding: 4px;
 }
 
@@ -2888,6 +2896,23 @@ input:focus, select:focus, textarea:focus {
     </div>
   </div>
 </div>
+ <div class="menu-row menu-item" data-name="Ebi kroket" data-packaging="0.2" data-price="5">
+  <div class="menu-img">
+    <img alt="Ebi kroket" loading="lazy" src="{{ url_for('static', filename='images/KRO.png') }}">
+    </img></div>
+  <div class="menu-content">
+    <h3>Ebi kroket 4st</h3>
+    <p>€ 5.00</p>
+    <p id="soldoutEbikroket" class="sold-out-msg hidden">Uitverkocht!</p>
+    <div class="qty-box">
+      <label for="ebikroketCount">Aantal</label>
+      <button class="qty-minus remove-button" data-target="ebikroketCount" type="button">-</button>
+      <select id="ebikroketCount" name="ebikroketCount"></select>
+      <button class="qty-plus add-button" data-target="ebikroketCount" type="button">+</button>
+    </div>
+  </div>
+</div> 
+ 
 <!-- Spicy Crispy Chicken -->
 <div class="menu-row menu-item" data-name="Spicy Crispy Chicken – 5 st" data-packaging="0.2" data-price="5.5">
   <div class="menu-img">
@@ -2905,6 +2930,22 @@ input:focus, select:focus, textarea:focus {
     </div>
   </div>
 </div>
+<div class="menu-row menu-item" data-name="Mini Loempia – 6 st" data-packaging="0.2" data-price="3.5">
+  <div class="menu-img">
+    <img alt="Mini Loempia" loading="lazy" src="{{ url_for('static', filename='images/LOM.png') }}">
+    </img></div>
+  <div class="menu-content">
+    <h3>Mini Loempia – 6 st</h3>
+    <p>€ 3.50</p>
+    <p id="soldoutMiniLoempia" class="sold-out-msg hidden">Uitverkocht!</p>
+    <div class="qty-box">
+      <label for="miniLoempiaCount">Aantal</label>
+      <button class="qty-minus remove-button" data-target="miniLoempiaCount" type="button">-</button>
+      <select id="miniLoempiaCount" name="miniLoempiaCount"></select>
+      <button class="qty-plus add-button" data-target="miniLoempiaCount" type="button">+</button>
+    </div>
+  </div>
+</div>  
 <!-- Chicken Loempia -->
 <div class="menu-row menu-item" data-name="Chicken Loempia – 2 st" data-packaging="0.2" data-price="5">
   <div class="menu-img">
@@ -2990,23 +3031,8 @@ input:focus, select:focus, textarea:focus {
     </div>
   </div>
 </div>
-<!-- Mini Loempia -->
-<div class="menu-row menu-item" data-name="Mini Loempia – 6 st" data-packaging="0.2" data-price="3.5">
-  <div class="menu-img">
-    <img alt="Mini Loempia" loading="lazy" src="{{ url_for('static', filename='images/LOM.png') }}">
-    </img></div>
-  <div class="menu-content">
-    <h3>Mini Loempia – 6 st</h3>
-    <p>€ 3.50</p>
-    <p id="soldoutMiniLoempia" class="sold-out-msg hidden">Uitverkocht!</p>
-    <div class="qty-box">
-      <label for="miniLoempiaCount">Aantal</label>
-      <button class="qty-minus remove-button" data-target="miniLoempiaCount" type="button">-</button>
-      <select id="miniLoempiaCount" name="miniLoempiaCount"></select>
-      <button class="qty-plus add-button" data-target="miniLoempiaCount" type="button">+</button>
-    </div>
-  </div>
-</div>
+
+
 <!-- Edamame -->
 <div class="menu-row menu-item" data-name="Edamame" data-packaging="0.2" data-price="4.5">
   <div class="menu-img">
@@ -3059,23 +3085,7 @@ input:focus, select:focus, textarea:focus {
   </div>
 </div>
 
- <div class="menu-row menu-item" data-name="Ebi kroket" data-packaging="0.2" data-price="5">
-  <div class="menu-img">
-    <img alt="Ebi kroket" loading="lazy" src="{{ url_for('static', filename='images/KRO.png') }}">
-    </img></div>
-  <div class="menu-content">
-    <h3>Ebi kroket 4st</h3>
-    <p>€ 5.00</p>
-    <p id="soldoutEbikroket" class="sold-out-msg hidden">Uitverkocht!</p>
-    <div class="qty-box">
-      <label for="ebikroketCount">Aantal</label>
-      <button class="qty-minus remove-button" data-target="ebikroketCount" type="button">-</button>
-      <select id="ebikroketCount" name="ebikroketCount"></select>
-      <button class="qty-plus add-button" data-target="ebikroketCount" type="button">+</button>
-    </div>
-  </div>
-</div> 
-
+ 
 
 
   
