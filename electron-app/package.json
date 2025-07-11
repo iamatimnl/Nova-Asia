@@ -9,5 +9,12 @@
   "devDependencies": {
     "electron": "25.8.4",
     "electron-builder": "24.6.4"
+  },
+  "build": {
+    "files": [
+      "**/*",
+      "../static/**/*",
+      "../assets/**/*"
+    ]
   }
 }
