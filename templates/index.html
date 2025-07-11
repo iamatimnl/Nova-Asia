@@ -4903,15 +4903,16 @@ function checkout() {
       showFeedback('Vandaag is bezorging niet mogelijk.', true);
       afhalen.checked = true;
     }
-
-    if (afhalen.checked) {
-      transferValues(bezorgenFields, afhalenFields);
-      const map = encodeURIComponent(pickupAddress);
-      infoBox.innerHTML = `Adres voor afhalen:
-  <a href="https://www.google.com/maps?q=${map}" target="_blank" style="color: var(--accent-color); text-decoration: underline;">
-    ${pickupAddress}
-  </a><br>
-  📞: <a href="tel:0633399366" style="color: var(--accent-color); text-decoration: underline;">0622599566</a>`;
+   if (afhalen.checked) {
+     transferValues(bezorgenFields, afhalenFields);
+     const map = encodeURIComponent(pickupAddress);
+     infoBox.innerHTML = `Adres voor afhalen:
+     <a href="https://www.google.com/maps?q=${map}" target="_blank" style="color: var(--accent-color); text-decoration: underline;">
+     ${pickupAddress}
+     </a><br>
+    📞: <a href="tel:0633399366" style="color: var(--accent-color); text-decoration: underline;">0622599566</a><br>
+    ✉️: <a href="mailto:novaasianl@gmail.com" style="color: var(--accent-color); text-decoration: underline;">novaasianl@gmail.com</a>`;
+   }
 
       afhalenFields.classList.remove('hidden');
       bezorgenFields.classList.add('hidden');
