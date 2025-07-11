@@ -4904,15 +4904,18 @@ function checkout() {
       afhalen.checked = true;
     }
    if (afhalen.checked) {
-     transferValues(bezorgenFields, afhalenFields);
-     const map = encodeURIComponent(pickupAddress);
-     infoBox.innerHTML = `Adres voor afhalen:
-     <a href="https://www.google.com/maps?q=${map}" target="_blank" style="color: var(--accent-color); text-decoration: underline;">
-     ${pickupAddress}
-     </a><br>
-    📞: <a href="tel:0633399366" style="color: var(--accent-color); text-decoration: underline;">0622599566</a><br>
-    ✉️: <a href="mailto:novaasianl@gmail.com" style="color: var(--accent-color); text-decoration: underline;">novaasianl@gmail.com</a>`;
-   }
+  transferValues(bezorgenFields, afhalenFields);
+  const map = encodeURIComponent(pickupAddress);
+  infoBox.innerHTML = `Adres voor afhalen:
+  <a href="https://www.google.com/maps?q=${map}" target="_blank" style="color: var(--accent-color); text-decoration: underline;">
+    ${pickupAddress}
+  </a><br>
+  <img src="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/phone.svg" alt="Phone Icon" style="height: 20px; vertical-align: middle; margin-right: 4px;">
+  <a href="tel:0622599566" style="color: var(--accent-color); text-decoration: underline;">0622599566</a><br>
+  <img src="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/email.svg" alt="Email Icon" style="height: 20px; vertical-align: middle; margin-right: 4px;">
+  <a href="mailto:novaasianl@gmail.com" style="color: var(--accent-color); text-decoration: underline;">novaasianl@gmail.com</a>`;
+
+
 
       afhalenFields.classList.remove('hidden');
       bezorgenFields.classList.add('hidden');
