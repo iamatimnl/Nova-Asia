@@ -109,6 +109,13 @@ th:last-child {
   <script>
     const socket = io({transports:['websocket']});
     let pollTimer;
+    let beepAudio = new Audio('assets/beep.mp3');
+    document.addEventListener('DOMContentLoaded', () => {
+      beepAudio.play().then(() => {
+        beepAudio.pause();
+        beepAudio.currentTime = 0;
+      }).catch(() => {});
+    });
     window.addEventListener('beforeunload',()=>socket.disconnect());
     socket.on('connect_error',()=>{setTimeout(()=>socket.connect(),1000);});
     socket.on('disconnect', startPolling);
@@ -126,17 +133,9 @@ function pad(num) {
 }
 
 // 声音提示
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 function beep(){
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(660, audioCtx.currentTime);
-  gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-  osc.start();
-  osc.stop(audioCtx.currentTime + 0.2);
+  beepAudio.currentTime = 0;
+  beepAudio.play();
 }
 
 function parseTimeToMinutes(str){
