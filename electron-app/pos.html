@@ -998,7 +998,6 @@ th:last-child {
 
 
 
-<audio id="notifySound" src="assets/beep.mp3" preload="auto"></audio>
 
 
 <div id="xBowlAddedModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; z-index:1000;">
@@ -1634,10 +1633,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   updateCart();
   toggleAddress();
   updateTodayBadge();
-  // 🔊 自动解锁 AudioContext
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume().catch(() => {});
-  }
 
 });
 
@@ -2060,19 +2055,7 @@ function formatCurrency(value){
     });
   }
 
-  // 音效播放
-  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  function beep() {
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(660, audioCtx.currentTime);
-    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start();
-    osc.stop(audioCtx.currentTime + 0.2);
-  }
+
 
   function parseTimeToMinutes(str){
     if(!str) return Infinity;
