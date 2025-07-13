@@ -45,9 +45,23 @@
     --primary-color: #FAF8F1; /* 和风白主背景（轻柔、干净） */
 
     /* 🌸 局部背景色（标签、卡片、背景块） */
-    --section-alt-bg: #F0E2C3; /* 奶茶浅金背景块 */
+  
+  --section-alt-bg: linear-gradient(
+    to bottom,
+    rgba(246, 226, 199, 0.95),  /* 奶茶浅金（顶部亮） */
+    rgba(239, 212, 179, 0.9),   /* 中段柔金 */
+    rgba(194, 162, 128, 0.85)   /* 底部稍深 */
+  );
+
+ /* 奶茶浅金背景块 */
     --accent-tertiary: #FEEACE; /* 奶茶色标签、小块背景 */
-    --off-white: #F0ECE6; /* 真正的局部白色（卡片、按钮背景） */
+    --off-white: linear-gradient(
+  to bottom,
+  #F9F8F4,
+  #F0ECE6,
+  #E6E2DC
+);
+ /* 真正的局部白色（卡片、按钮背景） */
 
     /* 🖌️ 按钮色 */
     --accent-color: #4E342E; /* 焦糖色主按钮 */
@@ -72,7 +86,7 @@
   input,
   select {
     border-radius: 12px;
-    color:#4E342E;
+    color:#000000;
   }
 
     /* Hide horizontal scroll bar in all modern browsers */
@@ -92,7 +106,7 @@
  
   height: 64px;
 
-  background: #f6e2c7c0;
+  background: #f6e2c79a;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 
@@ -513,17 +527,19 @@
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
 
-  background: #E8E5DF;
+  background: linear-gradient(to bottom, #E6E6E3, #D4D4D0, #C1C1BD);
+
   position: relative;
 }
 
  .cart-section.mobile-visible .cart-left li {
-    color: #9b6413;
+    color: #000000;
   }
 .cart-section.mobile-visible .cart-summary {
   width: 100%;
   flex: 0 0 auto;
-  background: #E8E5DF;
+  background: linear-gradient(to bottom, #E6E6E3, #D4D4D0, #C1C1BD);
+
   border-bottom-left-radius: 16px;
   margin-top: 0px;
   margin-left: -10px;       /* 显式设定左边距 */
@@ -550,7 +566,7 @@
     border-radius: 24px;
     cursor: pointer;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 10px;
     line-height: 1; /* 避免字体撑高 */
 
     display: inline-flex;
@@ -593,7 +609,7 @@
     height: 95vh;
     display: flex;
     flex-direction: column;
-    background: var(--off-white);
+    
     border-radius: 12px;
     z-index: 1000;
   }
@@ -606,7 +622,8 @@
     flex-direction: column;
     overflow: hidden;
     border-top-left-radius: 16px;
-    background: var(--off-white);
+    background: linear-gradient(to bottom, #f6e2c7, #f0ece6, #fbfaf7);
+    backdrop-filter: blur(6px);
     box-shadow:
     0 -4px 8px rgba(224, 176, 126, 0.15), /* 上侧淡棕光 */
     -4px 0 8px rgba(224, 176, 126, 0.15); /* 左侧淡棕光 */
@@ -633,10 +650,11 @@
     width: 100%;
     position: static;
     padding: 16px;
-    background: var(--off-white);
+    background: linear-gradient(to bottom, #f6e2c7, #f0ece6, #fbfaf7);
+    backdrop-filter: blur(6px);
     border-bottom-left-radius: 16px;
     box-shadow: 
-    -4px 0 8px rgba(224, 176, 126, 0.15), /* 左侧淡棕光 */
+    -4px 0 8px rgba(223, 32, 32, 0.15), /* 左侧淡棕光 */
     0 4px 8px rgba(224, 176, 126, 0.15);  /* 下侧淡棕光 */
     }
 
@@ -851,43 +869,130 @@
 
 
 
-.checkout-btn:active,
-.apply-discount-btn:active {
-  transform: scale(0.65);
-  
- }
+
 
 .checkout-btn {
-  background-color: #88512C;
-  color: white;
-  padding: 12px 24px;
+  background: linear-gradient(
+    145deg,
+    var(--accent-gradient-start),
+    var(--accent-gradient-mid),
+    var(--accent-gradient-end)
+  );
+  color: #fff;
+  padding: 14px 28px;
   border: none;
   border-radius: 12px;
-  font-size: 1rem;
-  font-weight: bold;
+  font-size: 1.05rem;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  transition: background 0.3s ease;
-  margin-top: 16px;
   width: 100%;
+  margin-top: 20px;
+  letter-spacing: 0.5px;
+
+  /* 🧱 强立体浮起 + 内光反射效果 */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),   /* 顶部内亮边，光源方向 */
+    inset 0 -3px 5px rgba(0, 0, 0, 0.15),      /* 底部内阴影，压感 */
+    0 6px 14px rgba(0, 0, 0, 0.25);            /* 外部浮起阴影 */
+
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);     /* 雕刻字体阴影感 */
+  transition:
+    transform 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out,
+    filter 0.15s ease-in-out;
 }
 
 .checkout-btn:hover {
-  background-color: 	#E6B422;
+  filter: brightness(1.07);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.18),
+    0 8px 16px rgba(0, 0, 0, 0.28);
 }
+
+.checkout-btn:active {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.25),
+    0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+
 
 @media (min-width: 768px) {
   .apply-discount-btn {
     margin-left: 8px;
     padding: 6px 12px;
-    background: #88512C;
+
+    background: linear-gradient(
+      145deg,
+      var(--accent-gradient-start),
+      var(--accent-gradient-mid),
+      var(--accent-gradient-end)
+    );
+
     color: #fff;
     border: none;
     border-radius: 8px;
     cursor: pointer;
+
+    /* 🌟 增加立体浮雕感 */
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.3),   /* 上部亮线，模拟光源 */
+      0 4px 6px rgba(0, 0, 0, 0.2);             /* 外部阴影，提升层次 */
+
+    transition: all 0.2s ease-in-out;
+    font-weight: 600;
+  }
+
+  .apply-discount-btn:hover {
+    filter: brightness(1.05);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.4),
+      0 6px 10px rgba(0, 0, 0, 0.25);
+  }
+
+  .apply-discount-btn:active {
+    transform: translateY(2px);
+    box-shadow:
+      inset 0 2px 4px rgba(0, 0, 0, 0.3),
+      0 2px 4px rgba(0, 0, 0, 0.15);
   }
 }
 
+@media (max-width: 768px) {
+  .apply-discount-btn {
+    margin-left: 8px;
+    padding: 8px 16px; /* ↑↑ 增加上下 padding 提升居中感 */
+    background: linear-gradient(145deg, #2c2c2c, #1a1a1a);
+    color: #f9d571;
+    border: none;
+    border-radius: 24px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 1; /* 避免字体撑高 */
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow:
+      4px 4px 8px rgba(0, 0, 0, 0.6),
+      inset -1px -1px 2px rgba(255, 255, 255, 0.05),
+      inset 1px 1px 3px rgba(0, 0, 0, 0.4);
+    transition: transform 0.1s ease, box-shadow 0.3s ease;
+  }
+
+  .apply-discount-btn:active {
+    transform: scale(0.90);
+    color: #ffbc03;
+    box-shadow:
+      2px 2px 4px rgba(0, 0, 0, 0.7),
+      inset 2px 2px 6px rgba(0, 0, 0, 0.5),
+      inset -1px -1px 2px rgba(255, 255, 255, 0.05);
+  }
+}
 
 
 .feedback {
@@ -1123,7 +1228,7 @@ input:focus, select:focus, textarea:focus {
   width: 100%;
   height: 80vh; /* 明确限制高度为 80vh */
   max-height: 80vh;
-  background: #fff;
+  background: #c01d1d;
   z-index: 9998;
   display: flex;
   flex-direction: column;
@@ -1267,17 +1372,33 @@ input:focus, select:focus, textarea:focus {
   width: 50%;
   max-width: 300px;
   height: 64px;
-  background: #424242;
+
+  /* ✅ 灰色渐变背景：更有层次 */
+  background: linear-gradient(145deg, #5A5A5A, #2F2F2F);
+
+  /* ✅ 柔和磨砂玻璃感 */
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  /* ✅ 圆角和内边距 */
   border-radius: 32px;
   padding: 0;
+
+  /* ✅ 立体阴影：下方浮起感 */
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.2),     /* 外部阴影 */
+    inset 0 1px 2px rgba(255, 255, 255, 0.08); /* 内部高光 */
+
   z-index: 999;
- 
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  /* ✅ 边框淡描边（可选） */
+
 }
+
 
 .slider-track {
   position: relative;
@@ -1285,7 +1406,7 @@ input:focus, select:focus, textarea:focus {
   margin-left: -20px;
   height: 100%;
   border-radius: 42px;
-  background: #474747fd;
+  background: #747373fd;
   padding: 0 20px;
   display: flex;
   align-items: center;
@@ -1310,7 +1431,7 @@ input:focus, select:focus, textarea:focus {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff; /* 白色字体 */
+  color: #f9d571; /* 白色字体 */
   cursor: pointer;
   touch-action: pan-y;
   box-shadow:
@@ -1351,9 +1472,9 @@ input:focus, select:focus, textarea:focus {
   font-weight: 600;
   background: linear-gradient(
     90deg,
-    #aca9a9 0%,
+    #1a1919 0%,
     rgba(255, 253, 253, 1) 50%,
-    #1a1919 100%
+    #fab700 100%
   );
 
   background-size: 200% auto;
@@ -1362,7 +1483,7 @@ input:focus, select:focus, textarea:focus {
   -webkit-background-clip: text;
   color: black;
   -webkit-text-fill-color: transparent;
-  animation: ios-shine 2s linear infinite;
+  animation: ios-shine 3s linear infinite;
 }
 
 .spinner {
@@ -1372,6 +1493,7 @@ input:focus, select:focus, textarea:focus {
   position: relative;
   margin: auto;
 }
+
 
 .spinner {
   width: 32px;
@@ -1455,6 +1577,7 @@ input:focus, select:focus, textarea:focus {
   
 }
 
+
 .order-type-text {
   position: absolute;
   right: 6px;
@@ -1467,8 +1590,8 @@ input:focus, select:focus, textarea:focus {
   background: linear-gradient(
     90deg,
     #6A2E14 0%,
-    rgba(255, 255, 255, 0.99) 50%,
-    #4E342E 100%
+    rgba(249, 229, 148, 0.99) 50%,
+    #000000 100%
   );
   background-size: 200% auto;
   background-position: -200% 0;
@@ -1809,14 +1932,16 @@ input:focus, select:focus, textarea:focus {
 
 
   <!-- 右侧: 结算区域 -->
-  <div class="cart-summary">
+  <div class="cart-summary pretty-gradient">
+
     <button id="closeCartBtn" onclick="toggleMobileCart()" style="background: none; border: none; padding: 6px; cursor: pointer;">
-  <img src="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/close.svg" alt="Close" style="width: 20px; height: 20px;">
+  <img src="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/close.svg" alt="Close" style="width: 30px; height: 30px;">
 
 </button>
 
     <div id="cartExtrasContainer"></div>
-    <label for="remark" style="display:block;margin-top:10px;">Opmerking:</label>
+   <label for="remark" style="display:block; margin-top:10px; font-weight: bold;">Opmerking:</label>
+
     <textarea id="remark" placeholder="Bijv. geen komkomer, extra mayo" rows="2"></textarea>
 
     <div class="price-details">
