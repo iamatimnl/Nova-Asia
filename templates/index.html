@@ -540,6 +540,39 @@
   top: 16px;
   right: 4px;
 }
+@media (max-width: 768px) {
+  .apply-discount-btn {
+    margin-left: 8px;
+    padding: 8px 16px; /* ↑↑ 增加上下 padding 提升居中感 */
+    background: linear-gradient(145deg, #2c2c2c, #1a1a1a);
+    color: #ffffff;
+    border: none;
+    border-radius: 24px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 1; /* 避免字体撑高 */
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow:
+      4px 4px 8px rgba(0, 0, 0, 0.6),
+      inset -1px -1px 2px rgba(255, 255, 255, 0.05),
+      inset 1px 1px 3px rgba(0, 0, 0, 0.4);
+    transition: transform 0.1s ease, box-shadow 0.3s ease;
+  }
+
+  .apply-discount-btn:active {
+    transform: scale(0.90);
+    color: #ffbc03;
+    box-shadow:
+      2px 2px 4px rgba(0, 0, 0, 0.7),
+      inset 2px 2px 6px rgba(0, 0, 0, 0.5),
+      inset -1px -1px 2px rgba(255, 255, 255, 0.05);
+  }
+}
 
 
 
@@ -627,26 +660,6 @@
 
 
 
-#closeCartBtn {
-  position: absolute;
-  top: 16px;
-  right: 18px;
-  width: 36px;
-  height: 36px;
-  background: #88512C;
-  color: #D8C3A5;
-  font-size: 22px;
-  font-weight: bold;
-  border: 3px solid #88512C;
-  border-radius: 10px;
-  cursor: pointer;
-  z-index: 1010;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-  padding: 0;
-}
 #cart-toggle {
   position: fixed;
   bottom: 20px;
@@ -863,26 +876,18 @@
   background-color: 	#E6B422;
 }
 
-.apply-discount-btn {
-  margin-left: 8px;
-  padding: 6px 12px;
-  background: #88512C;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
+@media (min-width: 768px) {
+  .apply-discount-btn {
+    margin-left: 8px;
+    padding: 6px 12px;
+    background: #88512C;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
 }
 
-@media (max-width: 768px) {
-.apply-discount-btn {
-  margin-left: 8px;
-  padding: 6px 12px;
-  background: #88512C;
-  color: #D8C3A5;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}}
 
 
 .feedback {
@@ -1262,7 +1267,7 @@ input:focus, select:focus, textarea:focus {
   width: 50%;
   max-width: 300px;
   height: 64px;
-  background: #4E342E;
+  background: #424242;
   backdrop-filter: blur(12px);
   border-radius: 32px;
   padding: 0;
@@ -1280,7 +1285,7 @@ input:focus, select:focus, textarea:focus {
   margin-left: -20px;
   height: 100%;
   border-radius: 42px;
-  background: #f6e2c7bd;
+  background: #474747fd;
   padding: 0 20px;
   display: flex;
   align-items: center;
@@ -1292,7 +1297,7 @@ input:focus, select:focus, textarea:focus {
 .slider-button {
   width: 61px;
   height: 61px;
-  background: linear-gradient(145deg, var(--accent-gradient-start), var(--accent-gradient-end));
+  background: linear-gradient(145deg, #2c2c2c, #1a1a1a); /* 黑色渐变 */
   border-radius: 50%;
   position: absolute;
   left: 1px;
@@ -1305,11 +1310,17 @@ input:focus, select:focus, textarea:focus {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #D8C3A5;
+  color: #ffffff; /* 白色字体 */
   cursor: pointer;
   touch-action: pan-y;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* 增加轻微阴影更立体 */
+  box-shadow:
+    4px 4px 8px rgba(0, 0, 0, 0.5),   /* 外部阴影 */
+    inset -2px -2px 4px rgba(255, 255, 255, 0.1), /* 内部高光 */
+    inset 2px 2px 4px rgba(0, 0, 0, 0.3);         /* 内部阴影 */
+
+  /* 可选加 hover 效果 */
 }
+
 
 
 .slider-button:active {
@@ -1340,9 +1351,9 @@ input:focus, select:focus, textarea:focus {
   font-weight: 600;
   background: linear-gradient(
     90deg,
-    #6A2E14 0%,
-    rgba(255, 255, 255, 0.99) 50%,
-    #4E342E 100%
+    #aca9a9 0%,
+    rgba(255, 253, 253, 1) 50%,
+    #1a1919 100%
   );
 
   background-size: 200% auto;
@@ -1585,6 +1596,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 
+
 @media (min-width: 768px) {
     .cart-title-icon {
       font-size: 2.4rem; /* 放大图标尺寸 */
@@ -1798,7 +1810,10 @@ input:focus, select:focus, textarea:focus {
 
   <!-- 右侧: 结算区域 -->
   <div class="cart-summary">
-    <button id="closeCartBtn" onclick="toggleMobileCart()">×</button>
+    <button id="closeCartBtn" onclick="toggleMobileCart()" style="background: none; border: none; padding: 6px; cursor: pointer;">
+  <img src="icons/close.svg" alt="Close" style="width: 20px; height: 20px;">
+</button>
+
     <div id="cartExtrasContainer"></div>
     <label for="remark" style="display:block;margin-top:10px;">Opmerking:</label>
     <textarea id="remark" placeholder="Bijv. geen komkomer, extra mayo" rows="2"></textarea>
@@ -1814,7 +1829,9 @@ input:focus, select:focus, textarea:focus {
       <div class="price-row">
         <label for="discountCode">Kortingscode:</label>
         <input id="discountCode" />
+        <!-- 桌面端按钮（原样保留） -->
         <button id="validateDiscountBtn" class="apply-discount-btn" type="button">Apply</button>
+
       </div>
       <div class="price-row" id="discountRow" style="display:none;"><span>Korting:</span> <span id="discountDisplay">- €0,00</span></div>
       <div class="spacer"></div>
@@ -4912,18 +4929,24 @@ function checkout() {
    if (afhalen.checked) {
   transferValues(bezorgenFields, afhalenFields);
   const map = encodeURIComponent(pickupAddress);
-  infoBox.innerHTML = `Adres voor afhalen:<br>
-  <a href="https://www.google.com/maps?q=${map}" target="_blank" style="color: var(--accent-color); text-decoration: underline;">
-    ${pickupAddress}
-  </a><br>
+  infoBox.innerHTML = `
+  <span style="display: inline-flex; align-items: center; gap: 6px; margin-top: 4px;">
+    <img src="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/home.svg" alt="Home Icon" style="height: 20px;">
+    <a href="https://www.google.com/maps?q=${map}" target="_blank" style="color: var(--accent-color); text-decoration: underline;">
+      ${pickupAddress}
+    </a>
+  </span><br>
+
   <span style="display: inline-flex; align-items: center; gap: 6px; margin-top: 4px;">
     <img src="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/phone.svg" alt="Phone Icon" style="height: 20px;">
     <a href="tel:0622599566" style="color: var(--accent-color); text-decoration: underline;">0622599566</a>
   </span><br>
+
   <span style="display: inline-flex; align-items: center; gap: 6px; margin-top: 4px;">
     <img src="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/email.svg" alt="Email Icon" style="height: 20px;">
     <a href="mailto:novaasianl@gmail.com" style="color: var(--accent-color); text-decoration: underline;">novaasianl@gmail.com</a>
-  </span>`;
+  </span>
+`;
 
 
       afhalenFields.classList.remove('hidden');
