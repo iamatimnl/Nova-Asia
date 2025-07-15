@@ -132,6 +132,11 @@
             <option value="false" {% if soldout_lamskotelet_bento != 'true' %}selected{% endif %}>Open</option>
             <option value="true" {% if soldout_lamskotelet_bento == 'true' %}selected{% endif %}>Uitverkocht</option>
         </select><br>
+        <label>Unagi Bento:</label>
+        <select id="soldout_unagi_bento_select">
+            <option value="false" {% if soldout_unagi_bento != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_unagi_bento == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
         <label>Veggie Bento:</label>
         <select id="soldout_veggie_bento_select">
             <option value="false" {% if soldout_veggie_bento != 'true' %}selected{% endif %}>Open</option>
@@ -662,6 +667,7 @@
             const soldout_surf_turf_bento = document.getElementById('soldout_surf_turf_bento_select').value;
             const soldout_dimsum_bento = document.getElementById('soldout_dimsum_bento_select').value;
             const soldout_lamskotelet_bento = document.getElementById('soldout_lamskotelet_bento_select').value;
+            const soldout_unagi_bento = document.getElementById('soldout_unagi_bento_select').value;
             const soldout_veggie_bento = document.getElementById('soldout_veggie_bento_select').value;
             const soldout_sushi_bento = document.getElementById('soldout_sushi_bento_select').value;
             const soldout_salmon_roll = document.getElementById('soldout_salmon_roll_select').value;
@@ -745,6 +751,7 @@
                     soldout_surf_turf_bento: soldout_surf_turf_bento,
                     soldout_dimsum_bento: soldout_dimsum_bento,
                     soldout_lamskotelet_bento: soldout_lamskotelet_bento,
+                    soldout_unagi_bento: soldout_unagi_bento,
                     soldout_veggie_bento: soldout_veggie_bento,
                     soldout_sushi_bento: soldout_sushi_bento,
                     soldout_salmon_roll: soldout_salmon_roll,
