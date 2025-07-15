@@ -25,7 +25,6 @@
 <style>
   body {
     font-family: 'Noto Sans', 'Open Sans', sans-serif;
-    font-size: 1.1rem;
     padding: 20px;
     max-width: 1200px;
     margin: auto;
@@ -1012,8 +1011,8 @@
   top: 80px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--accent-color); /* 焦糖色主按钮 */
-  color: var(--off-white); /* 卡片、按钮背景的局部白 */
+  background: #f6e2c7; /* 焦糖色主按钮 */
+  color: #111111; /* 卡片、按钮背景的局部白 */
   padding: 10px 20px;
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
@@ -1024,12 +1023,12 @@
 #status-banner {
   font-weight: bold;
   margin-bottom: 8px;
-  color: var(--accent-color); /* 焦糖色，醒目但柔和 */
+  color: #c97b49; /* 焦糖色，醒目但柔和 */
 }
 
 #hours-info {
   margin-bottom: 8px;
-  color: var(--secondary-color); /* 深灰正文色，更柔和 */
+  color: #4b3a2f; /* 深灰正文色，更柔和 */
 }
 
 #closed-overlay {
@@ -1043,17 +1042,19 @@
 }
 
 #closed-popup {
-  background: var(--off-white); /* 卡片白色背景 */
+  background: #fffaf5; /* 奶白色卡片背景 */
   padding: 20px;
   border-radius: 12px;
   text-align: center;
   max-width: 90%;
-  color: var(--secondary-color); /* 正文颜色 */
+  color: #4b3a2f; /* 正文颜色 */
 }
 
+
 .feedback.error {
-  background: var(--sakura); /* 错误反馈使用樱花粉，符合整体和风感 */
+  background: #f8c8d0; /* 错误反馈使用樱花粉，符合整体和风感 */
 }
+
 
 
 input, select, textarea {
@@ -1359,13 +1360,13 @@ input:focus, select:focus, textarea:focus {
 /* Increase font size on larger screens for better readability */
 @media (min-width: 768px) {
   html { font-size: 18px; }
-  body { font-size: 1.1rem !important; }
-  h1 { font-size: 2.4rem !important; }
-  h2 { font-size: 2rem !important; }
-  h3 { font-size: 1.6rem !important; }
-  h4 { font-size: 1.4rem !important; }
-  h5 { font-size: 1.2rem !important; }
-  h6 { font-size: 1.1rem !important; }
+  body { font-size: 1.4rem !important; }
+  h1 { font-size: 2.6rem !important; }
+  h2 { font-size: 2.2rem !important; }
+  h3 { font-size: 1.8rem !important; }
+  h4 { font-size: 1.6rem !important; }
+  h5 { font-size: 1.4rem !important; }
+  h6 { font-size: 1.3rem !important; }
   p,
   label,
   input,
@@ -1373,7 +1374,7 @@ input:focus, select:focus, textarea:focus {
   textarea,
   button,
   a {
-    font-size: 1.1rem !important;
+    font-size: 1.3rem !important;
   }
 }
 .slider-container {
@@ -1533,17 +1534,14 @@ input:focus, select:focus, textarea:focus {
 
 
 
-/* Order type slider */
+/* 默认：手机端样式 */
 .order-type-slider {
   margin: 16px auto 20px;
   width: 90%;
   max-width: 340px;
-  height: 48px;
-  background: rgba(255, 232, 205, 0.213); /* ✅ 可以适当提高透明度，增加轻盈感 */
-   
+  height: 46px;
+  background: rgba(255, 232, 205, 0.213);
   backdrop-filter: blur(12px);
-
- 
   transition: box-shadow 0.3s ease, border 0.3s ease;
   border-radius: 26px;
   position: relative;
@@ -1556,18 +1554,10 @@ input:focus, select:focus, textarea:focus {
   height: 100%;
   padding: 0 8px;
   box-sizing: border-box;
- 
- 
   border-radius: 26px;
-   
-
   background: #f6e2c7bd;
   backdrop-filter: blur(12px); 
-
 }
-
-
-
 
 .order-type-button {
   position: absolute;
@@ -1586,9 +1576,7 @@ input:focus, select:focus, textarea:focus {
   justify-content: center;
   transition: left 0.3s ease;
   user-select: none;
-  
 }
-
 
 .order-type-text {
   position: absolute;
@@ -1599,24 +1587,59 @@ input:focus, select:focus, textarea:focus {
   font-weight: 600;
   font-size: 1.5rem;
   white-space: nowrap;
-  background: linear-gradient(
-    90deg,
-    #363333 0%,
-    rgba(255, 253, 253, 1) 50%,
-    #000000 100%
-  );
+  background: linear-gradient(90deg, #363333 0%, #fffdfd 50%, #000000 100%);
   background-size: 200% auto;
   background-position: -200% 0;
   background-clip: text;
   -webkit-background-clip: text;
- 
   -webkit-text-fill-color: transparent;
   animation: shine 4s linear infinite;
 }
+
 .order-type-text.left {
   left: 12px;
   right: auto;
 }
+
+/* ✅ 桌面端放大版本：仅限宽度 ≥768px */
+@media (min-width: 768px) {
+  .order-type-slider {
+    margin: 20px auto 24px;
+    width: 95%;
+    max-width: 400px;
+    height: 65px;
+    font-size: 1.4rem;
+    border-radius: 30px;
+    background: rgba(255, 232, 205, 0.25);
+    backdrop-filter: blur(14px);
+  }
+
+  .order-type-track {
+    padding: 0 10px;
+    border-radius: 30px;
+    backdrop-filter: blur(14px);
+  }
+
+  .order-type-button {
+    left: 8px;
+    width: 46%;
+    height: 88%;
+    border-radius: 30px;
+    font-size: 1.3rem;
+  }
+
+  .order-type-text {
+    font-size: 2rem;
+    right: 10px;
+  }
+
+  .order-type-text.left {
+    left: 14px;
+    font-size: 1.4;
+  }
+}
+
+
 @keyframes shine {
   0% {
     background-position: 100% 0; /* 从左开始 */
@@ -1631,12 +1654,21 @@ input:focus, select:focus, textarea:focus {
     transform: rotate(360deg);
   }
 }
+
+@media (max-width: 768px) {
 .order-type-text {
-  font-size: 14px; /* slightly smaller text */
+  font-size: 0.8rem; /* slightly smaller text */
+  font-weight: 400; /* keep bold */
+  /* prevent text wrapping */
+
+}}
+@media (min-width: 768px) {
+  .order-type-text {
+  font-size: 1.2rem; /* slightly smaller text */
   font-weight: 500; /* keep bold */
   /* prevent text wrapping */
-}
 
+}}
 .install-popup-overlay {
     position: fixed;
     top: 0;
