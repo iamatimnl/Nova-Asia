@@ -44,22 +44,20 @@
 
     /* 🌸 局部背景色（标签、卡片、背景块） */
   
-  --section-alt-bg: linear-gradient(
+ --section-alt-bg: linear-gradient(
     to bottom,
-    rgba(246, 226, 199, 0.95),  /* 奶茶浅金（顶部亮） */
-    rgba(239, 212, 179, 0.9),   /* 中段柔金 */
-    rgba(194, 162, 128, 0.85)   /* 底部稍深 */
+   rgba(248, 240, 225, 0.92),  /* 顶部浅米黄 */
+   rgba(244, 232, 210, 0.88),  /* 中段米金 */
+   rgba(240, 225, 200, 0.84)  /* 底部稍深 */
   );
 
- /* 奶茶浅金背景块 */
-    --accent-tertiary: #FEEACE; /* 奶茶色标签、小块背景 */
-    --off-white: linear-gradient(
+  --off-white-frosted: linear-gradient(
   to bottom,
-  #F9F8F4,
-  #F0ECE6,
-  #E6E2DC
+  rgba(215, 207, 197, 0.9),
+  rgba(156, 151, 145, 0.85),
+  rgba(147, 141, 132, 0.8)
 );
- /* 真正的局部白色（卡片、按钮背景） */
+
 
     /* 🖌️ 按钮色 */
     --accent-color: #4E342E; /* 焦糖色主按钮 */
@@ -79,6 +77,16 @@
     --accent-gradient-end: #4E342E; /* 深焦糖收尾 */
 }
 
+  .frosted-glass {
+  background: var(--off-white); /* 可切换为 --off-white */
+  backdrop-filter: blur(12px);       /* 毛玻璃模糊强度 */
+  -webkit-backdrop-filter: blur(12px); /* 兼容 Safari */
+  border-radius: 16px;               /* 柔和圆角 */
+  border: 1px solid rgba(255, 255, 255, 0.3); /* 细边框 */
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);  /* 轻微阴影 */
+  padding: 2rem;
+  color: #3a2d1a;  /* 深一点的字体颜色，与奶茶底色搭配 */
+}
 
   button,
   input,
@@ -249,7 +257,12 @@
     box-sizing: border-box;
     border-bottom: 1px solid #ccc;
     border-radius: 16px;
-    background: var(--off-white);
+    background: linear-gradient(
+  to bottom,
+  rgba(249, 242, 227, 0.93),  /* 顶部奶白 */
+  rgba(248, 243, 232, 0.88),  /* 中段温柔米白 */
+  rgba(240, 235, 220, 0.83)  /* 底部偏暖黄 */
+);
     margin-bottom: 20px;
   }
 
@@ -620,7 +633,7 @@
     flex-direction: column;
     overflow: hidden;
     border-top-left-radius: 16px;
-    background: linear-gradient(to bottom, #ffffff, #e8e3dc,#f6e2c7);
+    background: linear-gradient(to bottom, rgba(248, 243, 232, 0.88),  rgba(240, 235, 220, 0.83),#fff0dd);
     backdrop-filter: blur(6px);
     box-shadow:
     0 -4px 8px rgba(224, 176, 126, 0.15), /* 上侧淡棕光 */
@@ -648,7 +661,7 @@
     width: 100%;
     position: static;
     padding: 16px;
-    background: linear-gradient(to bottom, #f6e2c7, #e5dfd8, #eae8e8);
+    background: linear-gradient(to bottom, #fff0dd,  rgba(240, 235, 220, 0.83), #eae8e8);
     backdrop-filter: blur(6px);
     border-bottom-left-radius: 16px;
     box-shadow: 
