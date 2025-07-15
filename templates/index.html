@@ -2222,6 +2222,23 @@ input:focus, select:focus, textarea:focus {
 </div>
 </div>
 </div>
+<!-- Unagi Bento -->
+<div class="menu-row menu-item" data-name="Unagi Bento" data-packaging="0.2" data-price="24">
+<div class="menu-img">
+<img alt="Unagi Bento" src="{{ url_for('static', filename='images/Unagi.jpg') }}"/>
+</div>
+<div class="menu-content">
+<h3>Unagi Bento</h3>
+<p>€ 24.00</p>
+<p id="soldoutUnagiBento" class="sold-out-msg hidden">Uitverkocht!</p>
+<div class="qty-box">
+<label for="unagiBentoCount">Aantal</label>
+<button class="qty-minus remove-button" data-target="unagiBentoCount" type="button">-</button>
+<select id="unagiBentoCount" name="unagiBentoCount"></select>
+<button class="qty-plus add-button" data-target="unagiBentoCount" type="button">+</button>
+</div>
+</div>
+</div>
 <!-- Veggie Bento -->
 <div class="menu-row menu-item" data-name="Veggie Bento" data-packaging="0.2" data-price="20">
 <div class="menu-img">
@@ -3502,6 +3519,7 @@ const soldoutMap = {
   "Surf & Turf Bento": "soldout_surf_turf_bento",
   "Dimsum Bento": "soldout_dimsum_bento",
   "Lamskotelet Bento": "soldout_lamskotelet_bento",
+  "Unagi Bento": "soldout_unagi_bento",
   "Veggie Bento": "soldout_veggie_bento",
   "Bento Sushi Omakase": "soldout_sushi_bento",
   "Salmon Roll Omakase": "soldout_salmon_roll",
@@ -5906,6 +5924,7 @@ function updateStatus(settings) {
     {name: 'Surf & Turf Bento', key: 'soldout_surf_turf_bento', qty: 'surfTurfBentoCount', msg: 'soldoutSurfTurfBento'},
     {name: 'Dimsum Bento', key: 'soldout_dimsum_bento', qty: 'dimsumBentoCount', msg: 'soldoutDimsumBento'},
     {name: 'Lamskotelet Bento', key: 'soldout_lamskotelet_bento', qty: 'lamsBentoCount', msg: 'soldoutLamskoteletBento'},
+    {name: 'Unagi Bento', key: 'soldout_unagi_bento', qty: 'unagiBentoCount', msg: 'soldoutUnagiBento'},
     {name: 'Veggie Bento', key: 'soldout_veggie_bento', qty: 'veggieBentoCount', msg: 'soldoutVeggieBento'},
     {name: 'Bento Sushi Omakase', key: 'soldout_sushi_bento', qty: 'sushiBentoCount', msg: 'soldoutSushiBento'},
     {name: 'Xbento', key: 'soldout_xbento', qty: 'xBentoQty', msg: 'soldoutXbento'}
