@@ -19,65 +19,6 @@
 th:last-child {
   padding-right: 20px;
 }
-<style>
-.order-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
-  gap: 20px;
-}
-
-.order-card {
-  background: #fff;
-  border-radius: 10px;
-  padding: 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  border-left: 6px solid #ccc;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.order-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.order-number {
-  font-size: 1.1em;
-  font-weight: bold;
-}
-
-.type-afhalen {
-  color: green;
-  font-weight: bold;
-}
-
-.type-bezorging {
-  color: red;
-  font-weight: bold;
-}
-
-.order-meta, .order-items, .order-footer {
-  font-size: 0.9em;
-  margin-top: 6px;
-}
-
-.order-items ul {
-  padding-left: 18px;
-  margin: 0;
-}
-
-.new-order {
-  animation: highlightBlink 6s ease-in-out;
-  animation-iteration-count: 6;
-}
-@keyframes highlightBlink {
-  0%, 100% { background-color: #e6ffe6; }
-  50% { background-color: #d0f0ff; }
-}
-</style>
 
 .type-bezorging { color: red; font-weight: bold; }
 .type-afhalen { color: green; font-weight: bold; }
@@ -96,46 +37,73 @@ th:last-child {
 </head>
 <body>
   <h1>Bestellingen Vandaag</h1>
-<div class="order-grid">
+<table>
+  <thead>
+    <tr>
+      <th>Datum</th>
+      <th>Tijd</th>
+      <th>Type</th>
+      <th>Klant</th>
+      <th>Telefoon</th>
+      <th>Email</th>
+      <th>Items</th>
+      <th>Opmerking</th>
+      <th>Totaal (&euro;)</th>  <!-- ✅ 只保留一列价格 -->
+      <th>Adres</th>
+      <th>Tijdslot</th>
+      <th>Betaling</th>
+      <th>Bestelnummer</th>
+    </tr>
+  </thead>
+  <tbody>
   {% for order in orders %}
-    {% set is_delivery = order.order_type in ['delivery', 'bezorgen'] %}
-    <div class="order-card {% if loop.first %}new-order{% endif %}">
-      <div class="order-header">
-        <div class="order-number">#{{ order.order_number or '-' }}</div>
-        <div class="order-type {{ 'type-bezorging' if is_delivery else 'type-afhalen' }}">
-          {{ 'Bezorging' if is_delivery else 'Afhalen' }}
-        </div>
-      </div>
-      <div class="order-meta">
-        <strong>Klant:</strong> {{ order.customer_name or '-' }}<br>
-        <strong>Telefoon:</strong> {{ order.phone or '-' }}<br>
-        <strong>Email:</strong> {{ order.email or '-' }}<br>
+    <tr>
+      <td>{{ order.created_at_local.strftime('%Y-%m-%d') }}</td>
+      <td>{{ order.created_at_local.strftime('%H:%M') }}</td>
+      <td>{{ order.order_number or '' }}</td>
+      
+      {% set is_delivery = order.order_type in ['delivery', 'bezorgen'] %}
+      <td><span class="{{ 'type-bezorging' if is_delivery else 'type-afhalen' }}">{{ 'Bezorging' if is_delivery else 'Afhalen' }}</span></td>
+
+      <td>{{ order.customer_name or '' }}</td>
+      <td>{{ order.phone or '' }}</td>
+      <td>{{ order.email or '-' }}</td>
+
+      <td>
+        <ul>
+        {% for name, item in order.items_dict.items() %}
+          <li>{{ name }} x {{ item['qty'] }}</li>
+        {% endfor %}
+        </ul>
+      </td>
+
+      <td>{{ order.opmerking or '-' }}</td>
+
+      <!-- ✅ 只显示 één prijswaarde -->
+      <td>€{{ '%.2f' % (order.totaal or 0) }}</td>
+
+      <td>
         {% if is_delivery %}
-          <strong>Adres:</strong> {{ order.street }} {{ order.house_number }} {{ order.postcode }} {{ order.city }}
+          {{ order.street }} {{ order.house_number }} {{ order.postcode }} {{ order.city }}
           {% if order.maps_link %}
             <a href="{{ order.maps_link }}" target="_blank">📍Maps</a>
           {% endif %}
-          <br>
-        {% endif %}
-        <strong>Tijdslot:</strong> {{ order.delivery_time if is_delivery else order.pickup_time or '-' }}<br>
-        <strong>Betaling:</strong> {{ order.payment_method or '-' }}
-      </div>
-      <div class="order-items">
-        <strong>Items:</strong>
-        <ul>
-          {% for name, item in order.items_dict.items() %}
-            <li>{{ name }} x {{ item['qty'] }}</li>
-          {% endfor %}
-        </ul>
-      </div>
-      <div class="order-footer">
-        <strong>Opmerking:</strong> {{ order.opmerking or '-' }}<br>
-        <strong>Totaal:</strong> €{{ '%.2f' % (order.totaal or 0) }}
-      </div>
-    </div>
-  {% endfor %}
-</div>
+        {% else %}-{% endif %}
+      </td>
 
+      <td>
+        {% if is_delivery %}
+          {{ order.delivery_time or '-' }}
+        {% else %}
+          {{ order.pickup_time or '-' }}
+        {% endif %}
+      </td>
+
+      <td>{{ order.payment_method or '-' }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
   <p><a href="{{ url_for('pos') }}">Terug naar POS</a></p>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script>
@@ -157,7 +125,19 @@ function pad(num) {
   return num.toString().padStart(2, '0');
 }
 
-
+// 声音提示
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function beep(){
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(660, audioCtx.currentTime);
+  gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + 0.2);
+}
 
 function parseTimeToMinutes(str){
   if(!str) return Infinity;
