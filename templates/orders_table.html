@@ -76,48 +76,85 @@ th:last-child {
 </style>
 <h1>Bestellingen Vandaag</h1>
 <div class="orders-wrapper">
-  <div class="order-grid">
-  {% for order in orders %}
-    {% set is_delivery = order.order_type in ['delivery', 'bezorgen'] %}
-    <div class="order-card">
-      <div class="order-header">
-        <div class="order-number">#{{ order.order_number or '-' }}</div>
-        <div class="{{ 'type-bezorging' if is_delivery else 'type-afhalen' }}">
-          {{ 'Bezorging' if is_delivery else 'Afhalen' }}
-        </div>
-      </div>
-      <div class="order-meta">
-        <strong>Datum:</strong> {{ order.created_at_local.strftime('%Y-%m-%d') }}<br>
-        <strong>Tijd:</strong> {{ order.created_at_local.strftime('%H:%M') }}<br>
-        <strong>Klant:</strong> {{ order.customer_name or '-' }}<br>
-        <strong>Telefoon:</strong> {{ order.phone or '-' }}<br>
-        <strong>Email:</strong> {{ order.email or '-' }}<br>
-        {% if is_delivery %}
-          <strong>Adres:</strong> {{ order.street }} {{ order.house_number }} {{ order.postcode }} {{ order.city }}
-          {% if order.maps_link %}
-            <a href="{{ order.maps_link }}" target="_blank">📍Maps</a>
-          {% endif %}
-          <br>
-        {% endif %}
-        <strong>Tijdslot:</strong> {{ order.delivery_time if is_delivery else order.pickup_time or '-' }}<br>
-        <strong>Betaling:</strong> {{ order.payment_method or '-' }}
-      </div>
-      <div class="order-items">
-        <strong>Items:</strong>
-        <ul>
+  <table class="orders-table">
+    <thead>
+      <tr>
+       <th>Datum</th>
+       <th>Tijd</th>
+       <th>Type</th>
+       <th>Naam</th>
+       <th>Telefoon</th>
+       <th>Email</th>
+       <th>Items</th>
+       <th>Opmerking</th>
+       <th>Fooi</th>
+       <th>Totaal</th>
+       <th>Adres</th>
+       <th>Tijdslot</th>
+       <th>Betaalwijze</th>
+       <th>Ordernummer</th>
+       <th>Acties</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for order in orders %}
+      <tr data-id="{{ order.id }}" data-order="{{ order|tojson }}" class="{% if order.is_cancelled %}cancelled{% elif order.is_completed %}completed{% endif %}">
+        <td>{{ order.created_at_local.strftime('%Y-%m-%d') }}</td>
+        <td>{{ order.created_at_local.strftime('%H:%M') }}</td>
+        {% set is_delivery = order.order_type in ['delivery', 'bezorgen'] %}
+        <td>
+          <span class="{{ 'type-bezorging' if is_delivery else 'type-afhalen' }}">
+            {{ 'Bezorging' if is_delivery else 'Afhalen' }}
+          </span>
+        </td>
+        <td>{{ order.customer_name or '' }}</td>
+        <td>{{ order.phone or '' }}</td>
+        <td>{{ order.email or '-' }}</td>
+        <td>
+          <ul>
           {% for name, item in order.items_dict.items() %}
             <li>{{ name }} x {{ item['qty'] }}</li>
           {% endfor %}
-        </ul>
-      </div>
-      <div class="order-footer">
-        <strong>Opmerking:</strong> {{ order.opmerking or '-' }}<br>
-        <strong>Totaal:</strong> €{{ '%.2f' % (order.totaal or 0) }}
-      </div>
-    </div>
-  {% endfor %}
-</div>
+          </ul>
+        </td>
+       <td>{{ order.opmerking or '-' }}</td>
+       <td>€{{ '%.2f' % (order.fooi or order.tip or 0) }}</td>
 
+        <td>€{{ '%.2f' % (order.totaal or 0) }}</td>
+
+        <td>
+          {% if is_delivery %}
+            {{ order.street }} {{ order.house_number }} {{ order.postcode }} {{ order.city }}
+            {% if order.maps_link %}
+              <a href="{{ order.maps_link }}" target="_blank">📍Maps</a>
+            {% endif %}
+          {% else %}-{% endif %}
+        </td>
+        <td>
+          {% if is_delivery %}
+            {{ order.delivery_time or '-' }}
+          {% else %}
+            {{ order.pickup_time or '-' }}
+          {% endif %}
+        </td>
+        <td>{{ order.payment_method }}</td>
+        <td>{{ order.order_number or '' }}</td>
+        <td>
+          <button onclick="toggleComplete(this)"
+            data-number="{{ order.order_number }}"
+            data-name="{{ order.customer_name or '' }}"
+            data-phone="{{ order.phone or '' }}"
+            data-email="{{ order.email or '' }}"
+            data-type="{{ 'bezorg' if is_delivery else 'afhaal' }}">
+            {{ 'Undone' if order.is_completed else 'Klaar' }}</button>
+          <button onclick="editOrder(this)">Bewerk</button>
+          <button onclick="cancelOrder(this)">Annuleer</button>
+          <span class="notify"></span>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
 </div>
 
 <script>
