@@ -1,0 +1,25 @@
+{
+  "name": "nova-pos",
+  "version": "1.0.0",
+  "description": "Electron wrapper for Nova POS",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^30.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "nl.sushinova.pos",
+    "productName": "Nova POS",
+    "files": ["**/*"],
+    "directories": {
+      "buildResources": "assets"
+    },
+    "win": {
+      "target": "nsis"
+    }
+  }
+}
