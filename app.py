@@ -904,23 +904,10 @@ def update_order_status(order_id: int):
 def edit_order(order_id: int):
     order = Order.query.get_or_404(order_id)
     data = request.get_json() or {}
-    allowed = ['customer_name','phone','email','street','house_number','postcode','city','pickup_time','delivery_time','order_type','items','payment_method']
+    allowed = ['customer_name','phone','email','street','house_number','postcode','city','pickup_time','delivery_time','order_type','items']
     for f in allowed:
         if f in data:
-            if f == 'items':
-                val = data[f]
-                if not isinstance(val, str):
-                    order.items = json.dumps(val)
-                else:
-                    order.items = val
-                try:
-                    items = json.loads(order.items or '{}')
-                except Exception:
-                    items = {}
-                subtotal = sum(float(i.get('price', 0)) * int(i.get('qty', 0)) for i in items.values())
-                order.totaal = float(data.get('totaal') or subtotal)
-            else:
-                setattr(order, f, data[f])
+            setattr(order, f, data[f])
     db.session.commit()
     return jsonify({'success': True})
 
@@ -1744,7 +1731,6 @@ def logout():
 # 启动
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000)
-
 
 
 
