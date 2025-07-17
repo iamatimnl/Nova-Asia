@@ -14,12 +14,17 @@
   "build": {
     "appId": "nl.sushinova.pos",
     "productName": "Nova POS",
-    "files": ["**/*"],
+    "files": [
+      "**/*"
+    ],
     "directories": {
       "buildResources": "assets"
     },
     "win": {
       "target": "nsis"
     }
+  },
+  "dependencies": {
+    "node-wav-player": "^1.0.0"
   }
 }

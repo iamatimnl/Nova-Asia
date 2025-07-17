@@ -2,11 +2,7 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 const wavPlayer = require('node-wav-player');
-
-// 使用 __dirname 来动态定位路径，避免硬编码绝对路径
 const dingPath = path.join(__dirname, 'assets', 'ding.wav');
-const flaskAppPath = path.join(__dirname, '..', 'app.py');
-const flaskAppDir = path.dirname(flaskAppPath);
 
 let mainWindow;
 let flaskProcess;
@@ -29,10 +25,12 @@ function createWindow() {
 
 // 启动 Flask
 function startFlaskServer() {
-  const pythonPath = process.platform === 'win32' ? 'python' : 'python3';
+  const pythonPath = 'python';
+  const appPath = path.join(__dirname, '..', 'app.py'); // 如果 Flask 在上层目录
+  const appDir = path.dirname(appPath);
 
-  flaskProcess = spawn(pythonPath, [flaskAppPath], {
-    cwd: flaskAppDir,
+  flaskProcess = spawn(pythonPath, [appPath], {
+    cwd: appDir,
     shell: false
   });
 
