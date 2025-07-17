@@ -1853,6 +1853,7 @@ function formatCurrency(value){
       tr.innerHTML = `
         <td>${order.created_date || ''}</td>
         <td>${time}</td>
+        <td>${isDelivery ? (delivery || '-') : (pickup || '-')}</td>
         <td>${isDelivery ? 'Bezorgen' : 'Afhalen'}</td>
         <td>${order.customer_name || ''}</td>
         <td>${order.phone || ''}</td>
@@ -1862,7 +1863,6 @@ function formatCurrency(value){
         <td>€${parseFloat(fooi).toFixed(2)}</td>
         <td>€${parseFloat(order.totaal).toFixed(2)}</td>
         <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
-        <td>${isDelivery ? (delivery || '-') : (pickup || '-')}</td>
         <td>${order.payment_method || ''}</td>
         <td>${order.order_number || '-'}</td>
         <td><button onclick="toggleComplete(this)"

@@ -80,7 +80,8 @@ th:last-child {
     <thead>
       <tr>
        <th>Datum</th>
-       <th>Tijd</th>
+       <th>Orderd</th>
+       <th>Tijdslot</th>
        <th>Type</th>
        <th>Naam</th>
        <th>Telefoon</th>
@@ -90,7 +91,6 @@ th:last-child {
        <th>Fooi</th>
        <th>Totaal</th>
        <th>Adres</th>
-       <th>Tijdslot</th>
        <th>Betaalwijze</th>
        <th>Ordernummer</th>
        <th>Acties</th>
@@ -99,9 +99,16 @@ th:last-child {
     <tbody>
     {% for order in orders %}
       <tr data-id="{{ order.id }}" data-order="{{ order|tojson }}" class="{% if order.is_cancelled %}cancelled{% elif order.is_completed %}completed{% endif %}">
+        {% set is_delivery = order.order_type in ['delivery', 'bezorgen'] %}
         <td>{{ order.created_at_local.strftime('%Y-%m-%d') }}</td>
         <td>{{ order.created_at_local.strftime('%H:%M') }}</td>
-        {% set is_delivery = order.order_type in ['delivery', 'bezorgen'] %}
+        <td>
+          {% if is_delivery %}
+            {{ order.delivery_time or '-' }}
+          {% else %}
+            {{ order.pickup_time or '-' }}
+          {% endif %}
+        </td>
         <td>
           <span class="{{ 'type-bezorging' if is_delivery else 'type-afhalen' }}">
             {{ 'Bezorging' if is_delivery else 'Afhalen' }}
@@ -129,13 +136,6 @@ th:last-child {
               <a href="{{ order.maps_link }}" target="_blank">📍Maps</a>
             {% endif %}
           {% else %}-{% endif %}
-        </td>
-        <td>
-          {% if is_delivery %}
-            {{ order.delivery_time or '-' }}
-          {% else %}
-            {{ order.pickup_time or '-' }}
-          {% endif %}
         </td>
         <td>{{ order.payment_method }}</td>
         <td>{{ order.order_number or '' }}</td>

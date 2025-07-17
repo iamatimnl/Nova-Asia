@@ -41,7 +41,8 @@ th:last-child {
   <thead>
     <tr>
       <th>Datum</th>
-      <th>Tijd</th>
+      <th>Orderd</th>
+      <th>Tijdslot</th>
       <th>Type</th>
       <th>Klant</th>
       <th>Telefoon</th>
@@ -50,7 +51,6 @@ th:last-child {
       <th>Opmerking</th>
       <th>Totaal (&euro;)</th>  <!-- ✅ 只保留一列价格 -->
       <th>Adres</th>
-      <th>Tijdslot</th>
       <th>Betaling</th>
       <th>Bestelnummer</th>
     </tr>
@@ -58,11 +58,16 @@ th:last-child {
   <tbody>
   {% for order in orders %}
     <tr>
+      {% set is_delivery = order.order_type in ['delivery', 'bezorgen'] %}
       <td>{{ order.created_at_local.strftime('%Y-%m-%d') }}</td>
       <td>{{ order.created_at_local.strftime('%H:%M') }}</td>
-      <td>{{ order.order_number or '' }}</td>
-      
-      {% set is_delivery = order.order_type in ['delivery', 'bezorgen'] %}
+      <td>
+        {% if is_delivery %}
+          {{ order.delivery_time or '-' }}
+        {% else %}
+          {{ order.pickup_time or '-' }}
+        {% endif %}
+      </td>
       <td><span class="{{ 'type-bezorging' if is_delivery else 'type-afhalen' }}">{{ 'Bezorging' if is_delivery else 'Afhalen' }}</span></td>
 
       <td>{{ order.customer_name or '' }}</td>
@@ -91,15 +96,8 @@ th:last-child {
         {% else %}-{% endif %}
       </td>
 
-      <td>
-        {% if is_delivery %}
-          {{ order.delivery_time or '-' }}
-        {% else %}
-          {{ order.pickup_time or '-' }}
-        {% endif %}
-      </td>
-
       <td>{{ order.payment_method or '-' }}</td>
+      <td>{{ order.order_number or '' }}</td>
     </tr>
   {% endfor %}
   </tbody>
@@ -206,7 +204,8 @@ function insertSorted(tbody,tr){
 
   tr.innerHTML = `
   <td>${order.created_date || ''}</td>
-
+  <td>${time}</td>
+  <td>${isDelivery ? (delivery || '-') : (pickup || '-')}</td>
   <td>${isDelivery ? 'Bezorgen' : 'Afhalen'}</td>
   <td>${order.customer_name || ''}</td>
   <td>${order.phone || ''}</td>
@@ -215,7 +214,6 @@ function insertSorted(tbody,tr){
   <td>${remark || '-'}</td>
   <td>${formatCurrency(totaalVal)}</td>
   <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
-  <td>${isDelivery ? (delivery || '-') : (pickup || '-')}</td>
   <td>${order.payment_method || '-'}</td>
   <td>${order.order_number || ''}</td>
 `;
