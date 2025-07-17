@@ -97,10 +97,15 @@
         <br><br>
 
         <h3>Bento uitverkocht</h3>
-        <label>Chicken Bento:</label>
-        <select id="soldout_chicken_bento_select">
-            <option value="false" {% if soldout_chicken_bento != 'true' %}selected{% endif %}>Open</option>
-            <option value="true" {% if soldout_chicken_bento == 'true' %}selected{% endif %}>Uitverkocht</option>
+        <label>Japans Chicken Bento:</label>
+        <select id="soldout_japans_chicken_bento_select">
+            <option value="false" {% if soldout_japans_chicken_bento != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_japans_chicken_bento == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Korean Chicken Bento:</label>
+        <select id="soldout_korean_chicken_bento_select">
+            <option value="false" {% if soldout_korean_chicken_bento != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_korean_chicken_bento == 'true' %}selected{% endif %}>Uitverkocht</option>
         </select><br>
         <label>Meatlover Bento:</label>
         <select id="soldout_meatlover_bento_select">
@@ -660,7 +665,8 @@
                   .join(',');
             const time_interval = document.getElementById('interval_select').value;
             const milktea_soldout = document.getElementById('milktea_soldout_select').value;
-            const soldout_chicken_bento = document.getElementById('soldout_chicken_bento_select').value;
+            const soldout_japans_chicken_bento = document.getElementById('soldout_japans_chicken_bento_select').value;
+            const soldout_korean_chicken_bento = document.getElementById('soldout_korean_chicken_bento_select').value;
             const soldout_meatlover_bento = document.getElementById('soldout_meatlover_bento_select').value;
             const soldout_zalm_lover_bento = document.getElementById('soldout_zalm_lover_bento_select').value;
             const soldout_ebi_lover_bento = document.getElementById('soldout_ebi_lover_bento_select').value;
@@ -744,7 +750,8 @@
                     delivery_postcodes: delivery_postcodes,
                     time_interval: time_interval,
                     milktea_soldout: milktea_soldout,
-                    soldout_chicken_bento: soldout_chicken_bento,
+                    soldout_japans_chicken_bento: soldout_japans_chicken_bento,
+                    soldout_korean_chicken_bento: soldout_korean_chicken_bento,
                     soldout_meatlover_bento: soldout_meatlover_bento,
                     soldout_zalm_lover_bento: soldout_zalm_lover_bento,
                     soldout_ebi_lover_bento: soldout_ebi_lover_bento,
