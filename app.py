@@ -503,7 +503,8 @@ with app.app_context():
         "price_beef_crispy_rice_sandwich": "7.5",
         "price_california_crispy_rice_sandwich": "7.5",
         "price_chicken_crispy_rice_sandwich": "7",
-        "soldout_chicken_bento": "false",
+        "soldout_japans_chicken_bento": "false",
+        "soldout_korean_chicken_bento": "false",
         "soldout_meatlover_bento": "false",
         "soldout_zalm_lover_bento": "false",
         "soldout_ebi_lover_bento": "false",
@@ -1042,7 +1043,8 @@ def dashboard():
         price_beef_crispy_rice_sandwich=get_value('price_beef_crispy_rice_sandwich', '7.5'),
         price_california_crispy_rice_sandwich=get_value('price_california_crispy_rice_sandwich', '7.5'),
         price_chicken_crispy_rice_sandwich=get_value('price_chicken_crispy_rice_sandwich', '7'),
-        soldout_chicken_bento=get_value('soldout_chicken_bento', 'false'),
+        soldout_japans_chicken_bento=get_value('soldout_japans_chicken_bento', 'false'),
+        soldout_korean_chicken_bento=get_value('soldout_korean_chicken_bento', 'false'),
         soldout_meatlover_bento=get_value('soldout_meatlover_bento', 'false'),
         soldout_zalm_lover_bento=get_value('soldout_zalm_lover_bento', 'false'),
         soldout_ebi_lover_bento=get_value('soldout_ebi_lover_bento', 'false'),
@@ -1136,7 +1138,8 @@ def update_setting():
     delivery_postcodes_val = data.get('delivery_postcodes', '')
     time_interval_val = data.get('time_interval', '15')
     milktea_soldout_val = data.get('milktea_soldout', 'false')
-    soldout_chicken_bento_val = data.get('soldout_chicken_bento', 'false')
+    soldout_japans_chicken_bento_val = data.get('soldout_japans_chicken_bento', 'false')
+    soldout_korean_chicken_bento_val = data.get('soldout_korean_chicken_bento', 'false')
     soldout_meatlover_bento_val = data.get('soldout_meatlover_bento', 'false')
     soldout_zalm_lover_bento_val = data.get('soldout_zalm_lover_bento', 'false')
     soldout_ebi_lover_bento_val = data.get('soldout_ebi_lover_bento', 'false')
@@ -1217,7 +1220,8 @@ def update_setting():
         ('delivery_postcodes', delivery_postcodes_val),
         ('time_interval', time_interval_val),
         ('milktea_soldout', milktea_soldout_val),
-        ('soldout_chicken_bento', soldout_chicken_bento_val),
+        ('soldout_japans_chicken_bento', soldout_japans_chicken_bento_val),
+        ('soldout_korean_chicken_bento', soldout_korean_chicken_bento_val),
         ('soldout_meatlover_bento', soldout_meatlover_bento_val),
         ('soldout_zalm_lover_bento', soldout_zalm_lover_bento_val),
         ('soldout_ebi_lover_bento', soldout_ebi_lover_bento_val),
