@@ -49,7 +49,8 @@
         <tr>
           <th>ID</th>
           <th>Datum</th>
-          <th>Tijd</th>
+          <th>Orderd</th>
+          <th>Tijdslot</th>
           <th>Type</th>
           <th>Klant</th>
           <th>Telefoon</th>
@@ -59,7 +60,6 @@
           <th>Fooi (€)</th>
           <th>Totaal (€)</th>
           <th>Adres</th>
-          <th>Tijdslot</th>
           <th>Betaling</th>
           <th>Actie</th>
         </tr>
@@ -148,6 +148,7 @@
               <td>${order.id || ''}</td>
               <td>${order.created_date || ''}</td>
               <td>${order.created_at || ''}</td>
+              <td>${isDelivery ? (order.delivery_time || order.deliveryTime || '-') : (order.pickup_time || order.pickupTime || '-')}</td>
               <td>${isDelivery ? 'Bezorgen' : 'Afhalen'}</td>
               <td>${order.customer_name || ''}</td>
               <td>${order.phone || ''}</td>
@@ -157,7 +158,6 @@
               <td>${formatCurrency(fooi)}</td>
               <td>${formatCurrency(tot)}</td>
               <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
-              <td>${isDelivery ? (order.delivery_time || order.deliveryTime || '-') : (order.pickup_time || order.pickupTime || '-')}</td>
               <td>${order.payment_method || ''}</td>
               <td><button onclick="toggleComplete(this)"
                 data-number="${order.order_number}"
