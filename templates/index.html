@@ -259,9 +259,9 @@
     border-radius: 16px;
     background: linear-gradient(
   to bottom,
-  rgba(249, 242, 227, 0.93),  /* 顶部奶白 */
-  rgba(248, 243, 232, 0.88),  /* 中段温柔米白 */
-  rgba(240, 235, 220, 0.83)  /* 底部偏暖黄 */
+  rgba(249, 242, 227, 0.98),  /* 顶部奶白 */
+  rgba(248, 243, 232, 0.95),  /* 中段温柔米白 */
+  rgba(240, 235, 220, 0.93)  /* 底部偏暖黄 */
 );
     margin-bottom: 20px;
   }
@@ -1076,7 +1076,7 @@ input:focus, select:focus, textarea:focus {
   width: 3.5em;                /* ✅ 容纳两个字符或短文字 */
   padding: 2px 4px;            /* ✅ 上下边距最小化 */
   font-size: 0.85rem;          /* ✅ 清晰但紧凑 */
-  border-radius: 4px;
+  border-radius: 6px;
   border: 1px solid #ccc;
   background-color: #fff;
   background-image: url("data:image/svg+xml;utf8,<svg fill='%23666' height='10' viewBox='0 0 24 24' width='10' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
@@ -2006,7 +2006,11 @@ input:focus, select:focus, textarea:focus {
       <div class="price-row" id="discountRow" style="display:none;"><span>Korting:</span> <span id="discountDisplay">- €0,00</span></div>
       <div class="spacer"></div>
       <div class="spacer"></div>
-      <div class="price-row"><label for="tipSelect">Fooi:</label> <select id="tipSelect"></select></div>
+      <div class="price-row">
+  <label for="tipSelect">Fooi:</label>
+  <select id="tipSelect" style="width: 85px; border-radius: 6px;"></select>
+</div>
+
       <div class="price-row"><span>BTW (9%):</span> <span id="btwDisplay">€0,00</span></div>
       <div class="price-row total-row"><span>Totaal:</span> <span id="totalDisplay">€0,00</span></div>
       <div class="btw-note">Alle prijzen zijn inclusief BTW</div>
