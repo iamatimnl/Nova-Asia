@@ -570,6 +570,10 @@ with app.app_context():
         "soldout_mochi_pistachio": "false",
         "soldout_cola": "false",
         "soldout_cola_zero": "false",
+        "soldout_spa_blauw": "false",
+        "soldout_spa_rood": "false",
+        "soldout_red_bull": "false",
+
     }
     for k, v in defaults.items():
         if not Setting.query.filter_by(key=k).first():
@@ -1133,6 +1137,9 @@ def dashboard():
         soldout_mochi_pistachio=get_value('soldout_mochi_pistachio', 'false'),
         soldout_cola=get_value('soldout_cola', 'false'),
         soldout_cola_zero=get_value('soldout_cola_zero', 'false'),
+        soldout_spa_blauw=get_value('soldout_spa_blauw', 'false'),
+        soldout_spa_rood=get_value('soldout_spa_rood', 'false'),
+        soldout_red_bull=get_value('soldout_red_bull', 'false'),
         sections=sections,
         base_options=bases,
         smaak_options=smaken,
@@ -1229,6 +1236,9 @@ def update_setting():
     soldout_mochi_pistachio_val = data.get('soldout_mochi_pistachio', 'false')
     soldout_cola_val = data.get('soldout_cola', 'false')
     soldout_cola_zero_val = data.get('soldout_cola_zero', 'false')
+    soldout_spa_blauw_val = data.get('soldout_spa_blauw', 'false')
+    soldout_spa_rood_val = data.get('soldout_spa_rood', 'false')
+    soldout_red_bull_val = data.get('soldout_red_bull', 'false')
 
     for key, val in [
         ('is_open', is_open_val),
@@ -1312,6 +1322,9 @@ def update_setting():
         ('soldout_mochi_pistachio', soldout_mochi_pistachio_val),
         ('soldout_cola', soldout_cola_val),
         ('soldout_cola_zero', soldout_cola_zero_val),
+        ('soldout_spa_blauw', soldout_spa_blauw_val),
+        ('soldout_spa_rood', soldout_spa_rood_val),
+        ('soldout_red_bull', soldout_red_bull_val),
     ]:
         s = Setting.query.filter_by(key=key).first()
         if not s:
