@@ -1809,7 +1809,7 @@ input:focus, select:focus, textarea:focus {
 <a href="#bento">Bento Box</a>
 <a href="#Ramen">Ramen</a>
 <a href="#Pokebowl">Pokebowl</a>
-<a href="#sushi">Special Sushi Rolls</a>
+<a href="#sushi">Omakase Sushi</a>
 <a href="#sashimi">Sashimi</a>
 <a href="#Crispy-rice-sandwich">Crispy Rice</a>
 <a href="#snack">Snack</a>
@@ -2816,7 +2816,7 @@ input:focus, select:focus, textarea:focus {
 <section id="sushi">
 <div class="menu-group">
 <h2 style="margin-top: -8px; font-size: 1.5rem; color: #333; text-align: center; font-weight: bold;">
-  Special Sushi Rolls
+  Omakase Sushi
 </h2>
 <div class="menu-row menu-item" data-name="Salmon Roll Omakase" data-packaging="0.2" data-price="16">
 <div class="menu-img">
@@ -2880,6 +2880,22 @@ input:focus, select:focus, textarea:focus {
 <button class="qty-minus remove-button" data-target="chickenRollCount" type="button">-</button>
 <select id="chickenRollCount" name="chickenRollCount"></select>
 <button class="qty-plus add-button" data-target="chickenRollCount" type="button">+</button>
+</div>
+</div>
+</div>
+<div class="menu-row menu-item" data-name="Nigiri Box Omakase" data-packaging="0.2" data-price="10">
+<div class="menu-img">
+<img alt="Nigiri Box Omakase" src="{{ url_for('static', filename='images/sushi-bento.jpg') }}"/>
+</div>
+<div class="menu-content">
+<h3>Nigiri Box Omakase</h3>
+<p>5 stuks nigiri, verrassend samengesteld door de chef<br/>€ 10.00</p>
+<p id="soldoutNigiriBox" class="sold-out-msg hidden">Uitverkocht!</p>
+<div class="qty-box">
+<label for="nigiriBoxCount">Aantal</label>
+<button class="qty-minus remove-button" data-target="nigiriBoxCount" type="button">-</button>
+<select id="nigiriBoxCount" name="nigiriBoxCount"></select>
+<button class="qty-plus add-button" data-target="nigiriBoxCount" type="button">+</button>
 </div>
 </div>
 </div>
@@ -3548,6 +3564,7 @@ const soldoutMap = {
   "Dragon Roll Omakase": "soldout_dragon_roll",
   "Beef Roll Omakase": "soldout_beef_roll",
   "Chicken Roll Omakase": "soldout_chicken_roll",
+  "Nigiri Box Omakase": "soldout_nigiri_box",
   "Salmon sashimi": "soldout_salmon_sashimi",
   "Flamed salmon sashimi": "soldout_flamed_salmon_sashimi",
   "Tonijn sashimi": "soldout_tonijn_sashimi",
@@ -5818,7 +5835,8 @@ function updateStatus(settings) {
     {name: 'Salmon Roll Omakase', key: 'soldout_salmon_roll', qty: 'salmonRollCount', msg: 'soldoutSalmonRoll'},
     {name: 'Dragon Roll Omakase', key: 'soldout_dragon_roll', qty: 'dragonRollCount', msg: 'soldoutDragonRoll'},
     {name: 'Beef Roll Omakase', key: 'soldout_beef_roll', qty: 'beefRollCount', msg: 'soldoutBeefRoll'},
-    {name: 'Chicken Roll Omakase', key: 'soldout_chicken_roll', qty: 'chickenRollCount', msg: 'soldoutChickenRoll'}
+    {name: 'Chicken Roll Omakase', key: 'soldout_chicken_roll', qty: 'chickenRollCount', msg: 'soldoutChickenRoll'},
+    {name: 'Nigiri Box Omakase', key: 'soldout_nigiri_box', qty: 'nigiriBoxCount', msg: 'soldoutNigiriBox'}
   ];
 
   rollConfig.forEach(cfg => {

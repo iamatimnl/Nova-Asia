@@ -180,6 +180,11 @@
             <option value="false" {% if soldout_chicken_roll != 'true' %}selected{% endif %}>Open</option>
             <option value="true" {% if soldout_chicken_roll == 'true' %}selected{% endif %}>Uitverkocht</option>
         </select><br>
+        <label>Nigiri Box Omakase:</label>
+        <select id="soldout_nigiri_box_select">
+            <option value="false" {% if soldout_nigiri_box != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_nigiri_box == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
         <br>
         <h3>Sashimi uitverkocht</h3>
         <label>Salmon sashimi:</label>
@@ -680,6 +685,7 @@
             const soldout_dragon_roll = document.getElementById('soldout_dragon_roll_select').value;
             const soldout_beef_roll = document.getElementById('soldout_beef_roll_select').value;
             const soldout_chicken_roll = document.getElementById('soldout_chicken_roll_select').value;
+            const soldout_nigiri_box = document.getElementById('soldout_nigiri_box_select').value;
             const soldout_salmon_sashimi = document.getElementById('soldout_salmon_sashimi_select').value;
             const soldout_flamed_salmon_sashimi = document.getElementById('soldout_flamed_salmon_sashimi_select').value;
             const soldout_tonijn_sashimi = document.getElementById('soldout_tonijn_sashimi_select').value;
@@ -765,6 +771,7 @@
                     soldout_dragon_roll: soldout_dragon_roll,
                     soldout_beef_roll: soldout_beef_roll,
                     soldout_chicken_roll: soldout_chicken_roll,
+                    soldout_nigiri_box: soldout_nigiri_box,
                     soldout_salmon_sashimi: soldout_salmon_sashimi,
                     soldout_flamed_salmon_sashimi: soldout_flamed_salmon_sashimi,
                     soldout_tonijn_sashimi: soldout_tonijn_sashimi,
