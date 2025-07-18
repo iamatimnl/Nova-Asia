@@ -3448,6 +3448,54 @@ input:focus, select:focus, textarea:focus {
     </div>
 </div>
 </div>
+<div class="menu-row menu-item" data-name="Spa Blauw" data-packaging="0.15" data-price="2.5">
+  <div class="menu-img">
+    <img alt="Spa Blauw" loading="lazy" src="{{ url_for('static', filename='images/SPA_BLAUW.png') }}">
+  </div>
+  <div class="menu-content">
+    <h3>Spa Blauw</h3>
+    <p>€ 2.50</p>
+    <p id="soldoutSpaBlauw" class="sold-out-msg hidden">Uitverkocht!</p>
+    <div class="qty-box">
+      <label for="spaBlauwCount">Aantal</label>
+      <button class="qty-minus remove-button" data-target="spaBlauwCount" type="button">-</button>
+      <select id="spaBlauwCount" name="spaBlauwCount"></select>
+      <button class="qty-plus add-button" data-target="spaBlauwCount" type="button">+</button>
+    </div>
+  </div>
+</div>
+<div class="menu-row menu-item" data-name="Spa Rood" data-packaging="0.15" data-price="2.5">
+  <div class="menu-img">
+    <img alt="Spa Rood" loading="lazy" src="{{ url_for('static', filename='images/SPA_ROOD.png') }}">
+  </div>
+  <div class="menu-content">
+    <h3>Spa Rood</h3>
+    <p>€ 2.50</p>
+    <p id="soldoutSpaRood" class="sold-out-msg hidden">Uitverkocht!</p>
+    <div class="qty-box">
+      <label for="spaRoodCount">Aantal</label>
+      <button class="qty-minus remove-button" data-target="spaRoodCount" type="button">-</button>
+      <select id="spaRoodCount" name="spaRoodCount"></select>
+      <button class="qty-plus add-button" data-target="spaRoodCount" type="button">+</button>
+    </div>
+  </div>
+</div>
+<div class="menu-row menu-item" data-name="Red Bull" data-packaging="0.15" data-price="2.5">
+  <div class="menu-img">
+    <img alt="Red Bull" loading="lazy" src="{{ url_for('static', filename='images/RED_BULL.png') }}">
+  </div>
+  <div class="menu-content">
+    <h3>Red Bull</h3>
+    <p>€ 2.50</p>
+    <p id="soldoutRedBull" class="sold-out-msg hidden">Uitverkocht!</p>
+    <div class="qty-box">
+      <label for="redBullCount">Aantal</label>
+      <button class="qty-minus remove-button" data-target="redBullCount" type="button">-</button>
+      <select id="redBullCount" name="redBullCount"></select>
+      <button class="qty-plus add-button" data-target="redBullCount" type="button">+</button>
+    </div>
+  </div>
+</div>
 </div>
 </section>
 <section id="info">
@@ -3604,7 +3652,11 @@ const soldoutMap = {
   "Mochi Matcha": "soldout_mochi_matcha",
   "Mochi Pistachio": "soldout_mochi_pistachio",
   "Cola": "soldout_cola",
-  "Cola Zero": "soldout_cola_zero"
+  "Cola Zero": "soldout_cola_zero",
+  "Spa Blauw": "soldout_spa_blauw",
+  "Spa Rood": "soldout_spa_rood",
+  "Red Bull": "soldout_red_bull"
+};
 };
 
 const iconMap = {
@@ -5932,7 +5984,10 @@ function updateStatus(settings) {
 
   const drinksConfig = [
     {name: 'Cola', key: 'soldout_cola', qty: 'colaCount', msg: 'soldoutCola'},
-    {name: 'Cola Zero', key: 'soldout_cola_zero', qty: 'colaZeroCount', msg: 'soldoutColaZero'}
+    {name: 'Cola Zero', key: 'soldout_cola_zero', qty: 'colaZeroCount', msg: 'soldoutColaZero'},
+    {name: 'Spa Blauw', key: 'soldout_spa_blauw', qty: 'spaBlauwCount', msg: 'soldoutSpaBlauw'},
+    {name: 'Spa Rood', key: 'soldout_spa_rood', qty: 'spaRoodCount', msg: 'soldoutSpaRood'},
+    {name: 'Red Bull', key: 'soldout_red_bull', qty: 'redBullCount', msg: 'soldoutRedBull'}
   ];
 
   drinksConfig.forEach(cfg => {
