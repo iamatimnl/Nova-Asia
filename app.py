@@ -904,10 +904,32 @@ def update_order_status(order_id: int):
 def edit_order(order_id: int):
     order = Order.query.get_or_404(order_id)
     data = request.get_json() or {}
-    allowed = ['customer_name','phone','email','street','house_number','postcode','city','pickup_time','delivery_time','order_type','items']
+    allowed = [
+        'customer_name', 'phone', 'email', 'street', 'house_number', 'postcode',
+        'city', 'pickup_time', 'delivery_time', 'order_type', 'items',
+        'payment_method', 'totaal', 'fooi'
+    ]
     for f in allowed:
-        if f in data:
-            setattr(order, f, data[f])
+        if f not in data:
+            continue
+        val = data[f]
+        if f == 'items':
+            if not isinstance(val, str):
+                order.items = json.dumps(val)
+            else:
+                order.items = val
+        elif f in ('totaal', 'fooi'):
+            try:
+                setattr(order, f, float(val))
+            except (TypeError, ValueError):
+                setattr(order, f, 0.0)
+        else:
+            setattr(order, f, val)
+    if 'tip' in data:
+        try:
+            order.fooi = float(data['tip'])
+        except (TypeError, ValueError):
+            order.fooi = 0.0
     db.session.commit()
     return jsonify({'success': True})
 
