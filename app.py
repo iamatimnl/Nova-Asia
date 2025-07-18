@@ -573,7 +573,6 @@ with app.app_context():
         "soldout_spa_blauw": "false",
         "soldout_spa_rood": "false",
         "soldout_red_bull": "false",
-
     }
     for k, v in defaults.items():
         if not Setting.query.filter_by(key=k).first():
@@ -1239,7 +1238,7 @@ def update_setting():
     soldout_spa_blauw_val = data.get('soldout_spa_blauw', 'false')
     soldout_spa_rood_val = data.get('soldout_spa_rood', 'false')
     soldout_red_bull_val = data.get('soldout_red_bull', 'false')
-
+    
     for key, val in [
         ('is_open', is_open_val),
         ('open_time', open_time_val),
@@ -1325,6 +1324,7 @@ def update_setting():
         ('soldout_spa_blauw', soldout_spa_blauw_val),
         ('soldout_spa_rood', soldout_spa_rood_val),
         ('soldout_red_bull', soldout_red_bull_val),
+        
     ]:
         s = Setting.query.filter_by(key=key).first()
         if not s:
@@ -1770,7 +1770,6 @@ def logout():
 # 启动
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000)
-
 
 
 
