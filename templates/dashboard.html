@@ -359,6 +359,21 @@
             <option value="false" {% if soldout_cola_zero != 'true' %}selected{% endif %}>Open</option>
             <option value="true" {% if soldout_cola_zero == 'true' %}selected{% endif %}>Uitverkocht</option>
         </select><br>
+        <label>Spa Blauw:</label>
+        <select id="soldout_spa_blauw_select">
+            <option value="false" {% if soldout_spa_blauw != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_spa_blauw == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Spa Rood:</label>
+        <select id="soldout_spa_rood_select">
+            <option value="false" {% if soldout_spa_rood != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_spa_rood == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
+        <label>Red Bull:</label>
+        <select id="soldout_red_bull_select">
+            <option value="false" {% if soldout_red_bull != 'true' %}selected{% endif %}>Open</option>
+            <option value="true" {% if soldout_red_bull == 'true' %}selected{% endif %}>Uitverkocht</option>
+        </select><br>
         <br><br>
 
         <h3>Pokebowl uitverkocht</h3>
@@ -737,6 +752,9 @@
               const soldout_mochi_pistachio = document.getElementById('soldout_mochi_pistachio_select').value;
               const soldout_cola = document.getElementById('soldout_cola_select').value;
               const soldout_cola_zero = document.getElementById('soldout_cola_zero_select').value;
+              const soldout_spa_blauw = document.getElementById('soldout_spa_blauw_select').value;
+              const soldout_spa_rood = document.getElementById('soldout_spa_rood_select').value;
+              const soldout_red_bull = document.getElementById('soldout_red_bull_select').value;
 
             fetch('/dashboard/update', {
                 method: 'POST',
@@ -822,7 +840,10 @@
                       soldout_mochi_matcha: soldout_mochi_matcha,
                       soldout_mochi_pistachio: soldout_mochi_pistachio,
                       soldout_cola: soldout_cola,
-                      soldout_cola_zero: soldout_cola_zero
+                      soldout_cola_zero: soldout_cola_zero,
+                      soldout_spa_blauw: soldout_spa_blauw,
+                      soldout_spa_rood: soldout_spa_rood,
+                      soldout_red_bull: soldout_red_bull
                   })
             })
             .then(response => response.json())
