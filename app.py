@@ -87,7 +87,7 @@ with app.app_context():
 UTC = timezone.utc
 NL_TZ = ZoneInfo("Europe/Amsterdam")
 # 默认首页 index.html
-@app.route("/")
+@app.route("/index.html")
 def serve_index():
     return send_from_directory(".", "index.html")
 
