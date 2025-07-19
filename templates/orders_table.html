@@ -102,13 +102,7 @@ th:last-child {
         {% set is_delivery = order.order_type in ['delivery', 'bezorgen'] %}
         <td>{{ order.created_at_local.strftime('%Y-%m-%d') }}</td>
         <td>{{ order.created_at_local.strftime('%H:%M') }}</td>
-        <td>
-          {% if is_delivery %}
-            {{ order.delivery_time or '-' }}
-          {% else %}
-            {{ order.pickup_time or '-' }}
-          {% endif %}
-        </td>
+        <td>{{ order.tijdslot_display or (order.delivery_time if is_delivery else order.pickup_time) or '-' }}</td>
         <td>
           <span class="{{ 'type-bezorging' if is_delivery else 'type-afhalen' }}">
             {{ 'Bezorging' if is_delivery else 'Afhalen' }}

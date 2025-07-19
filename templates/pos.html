@@ -1560,14 +1560,20 @@ function submitOrder() {
   };
 
   const orderType = delivery ? 'bezorgen' : 'afhalen';
+  const pickupSel = document.getElementById('pickup_time').value;
+  const deliverySel = document.getElementById('delivery_time').value;
+  const pickupVal = pickupSel === 'Z.S.M.' ? getAsapTime() : pickupSel;
+  const deliveryVal = deliverySel === 'Z.S.M.' ? getAsapTime() : deliverySel;
+  const tijdslotDisplay = delivery ? deliverySel : pickupSel;
   const payload = {
     orderType,
     name,
     phone,
     email: '',
     customerEmail: '',
-    pickup_time: !delivery ? document.getElementById('pickup_time').value : '',
-    delivery_time: delivery ? document.getElementById('delivery_time').value : '',
+    pickup_time: !delivery ? pickupVal : '',
+    delivery_time: delivery ? deliveryVal : '',
+    tijdslot_display: tijdslotDisplay,
     paymentMethod: delivery
       ? document.getElementById('deliveryPayment').value
       : document.getElementById('pickupPayment').value,
@@ -1612,10 +1618,20 @@ function submitOrder() {
     return num.toString().padStart(2,'0');
   }
 
+  function getAsapTime(){
+    const d=new Date();
+    d.setMinutes(d.getMinutes()+30);
+    return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
   function populateTimeOptions(selectId,offsetMinutes){
     const select=document.getElementById(selectId);
     if(!select) return;
     select.innerHTML='';
+    const asap=document.createElement('option');
+    asap.value='Z.S.M.';
+    asap.textContent='Z.S.M.';
+    select.appendChild(asap);
     const now=new Date();
     now.setMinutes(now.getMinutes()+offsetMinutes);
 
@@ -1839,6 +1855,7 @@ function formatCurrency(value){
     const remark = order.opmerking || order.remark || '';
     const pickup = order.pickup_time || order.pickupTime;
     const delivery = order.delivery_time || order.deliveryTime;
+    const tijdslot = order.tijdslot_display || (isDelivery ? delivery : pickup);
 
     let time = order.created_at || '';
     if (time && time.length > 5) {
@@ -1853,7 +1870,7 @@ function formatCurrency(value){
       tr.innerHTML = `
         <td>${order.created_date || ''}</td>
         <td>${time}</td>
-        <td>${isDelivery ? (delivery || '-') : (pickup || '-')}</td>
+        <td>${tijdslot || '-'}</td>
         <td>${isDelivery ? 'Bezorgen' : 'Afhalen'}</td>
         <td>${order.customer_name || ''}</td>
         <td>${order.phone || ''}</td>

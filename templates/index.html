@@ -4995,6 +4995,13 @@ function checkout() {
     if (qty > 0) itemsToSend[extras[id].label] = { price: 0, qty };
   });
 
+  const pickupSel = document.getElementById('pickup_time').value;
+  const deliverySel = document.getElementById('delivery_time').value;
+  const pickupValue = pickupSel === 'Z.S.M.' ? getAsapTime() : pickupSel;
+  const deliveryValue = deliverySel === 'Z.S.M.' ? getAsapTime() : deliverySel;
+
+  const tijdslotDisplay = orderType === 'afhalen' ? pickupSel : deliverySel;
+
   fetch('https://flask-order-api.onrender.com/submit_order', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -5004,8 +5011,9 @@ function checkout() {
       phone: orderType === 'afhalen' ? document.getElementById('pickupPhone').value.trim() : document.getElementById('deliveryPhone').value.trim(),
       email: email,
       customerEmail: email,
-      pickup_time: orderType === 'afhalen' ? document.getElementById('pickup_time').value : '',
-      delivery_time: orderType === 'bezorgen' ? document.getElementById('delivery_time').value : '',
+      pickup_time: orderType === 'afhalen' ? pickupValue : '',
+      delivery_time: orderType === 'bezorgen' ? deliveryValue : '',
+      tijdslot_display: tijdslotDisplay,
       paymentMethod: paymentMethod,
       postcode: orderType === 'bezorgen' ? document.getElementById('deliveryPostcode').value.trim() : '',
       house_number: orderType === 'bezorgen' ? document.getElementById('deliveryHouseNumber').value.trim() : '',
@@ -5081,6 +5089,12 @@ function checkout() {
     return num.toString().padStart(2, '0');
   }
 
+  function getAsapTime() {
+    const d = new Date();
+    d.setMinutes(d.getMinutes() + 30);
+    return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
   function getSelectTimes(selectId, startStr){
     const sel = document.getElementById(selectId);
     if(!sel || sel.options.length === 0) return {};
@@ -5098,6 +5112,11 @@ function checkout() {
 
     const prev = select.value; // 保留当前选中值
     select.innerHTML = '';
+
+    const asapOpt = document.createElement('option');
+    asapOpt.value = 'Z.S.M.';
+    asapOpt.textContent = 'Z.S.M.';
+    select.appendChild(asapOpt);
 
     const now = new Date();
     now.setMinutes(now.getMinutes() + offsetMinutes); // 现在时间 + 制作时间缓冲

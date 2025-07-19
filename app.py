@@ -65,6 +65,9 @@ with app.app_context():
         if "is_cancelled" not in cols:
             with db.engine.begin() as conn:
                 conn.execute(text("ALTER TABLE orders ADD COLUMN is_cancelled BOOLEAN DEFAULT FALSE"))
+        if "tijdslot_display" not in cols:
+            with db.engine.begin() as conn:
+                conn.execute(text("ALTER TABLE orders ADD COLUMN tijdslot_display TEXT"))
         cols = {c["name"] for c in inspector.get_columns("reviews")}
         if "rating" not in cols:
             with db.engine.begin() as conn:
@@ -313,6 +316,7 @@ def orders_to_dicts(orders):
             "payment_method": o.payment_method,
             "pickup_time": o.pickup_time,
             "delivery_time": o.delivery_time,
+            "tijdslot_display": o.tijdslot_display,
             "pickupTime": o.pickup_time,
             "deliveryTime": o.delivery_time,
             "postcode": o.postcode,
@@ -406,6 +410,7 @@ class Order(db.Model):
     email = db.Column(db.String(120))
     pickup_time = db.Column(db.String(20))
     delivery_time = db.Column(db.String(20))
+    tijdslot_display = db.Column(db.String(20))
     payment_method = db.Column(db.String(20))
     postcode = db.Column(db.String(10))
     house_number = db.Column(db.String(10))
@@ -716,6 +721,7 @@ def api_orders():
             email=data.get("customerEmail") or data.get("email"),
             pickup_time=data.get("pickup_time") or data.get("pickupTime"),
             delivery_time=data.get("delivery_time") or data.get("deliveryTime"),
+            tijdslot_display=data.get("tijdslot_display"),
             payment_method=data.get("paymentMethod") or data.get("payment_method"),
             postcode=data.get("postcode"),
             house_number=data.get("house_number"),
@@ -1660,6 +1666,7 @@ def pos_orders_today():
             "payment_method": o.payment_method,
             "pickup_time": o.pickup_time,
             "delivery_time": o.delivery_time,
+            "tijdslot_display": o.tijdslot_display,
             "pickupTime": o.pickup_time,
             "deliveryTime": o.delivery_time,
             "postcode": o.postcode,
