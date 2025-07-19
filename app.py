@@ -86,14 +86,18 @@ with app.app_context():
 
 UTC = timezone.utc
 NL_TZ = ZoneInfo("Europe/Amsterdam")
-@app.route("/")  # 👈 这是访问 https://www.novaasia.nl/ 的关键
-@app.route("/index.html")
-def serve_index():
-    return send_from_directory(".", "index.html")
 
-@app.route("/indexEN.html")
+
+@app.route("/")
+def serve_index():
+    return render_template("index.html")  # 默认首页（荷兰语）
+
+@app.route("/en")
 def serve_index_en():
-    return send_from_directory(".", "indexEN.html")
+    return render_template("indexEN.html")  
+    
+
+# 英文版首页
 def to_nl(dt: datetime) -> datetime:
     """Convert naive UTC datetime to Europe/Amsterdam timezone."""
     if dt is None:
