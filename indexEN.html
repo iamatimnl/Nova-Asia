@@ -1893,7 +1893,7 @@ input:focus, select:focus, textarea:focus {
     Specify what you need. Avoid waste, think of the environment. 🌱
 </p>
 <div class="supply-row">
-    <img alt="Stokjes" class="supply-img photo" src="{{ url_for('static', filename='images/chopsticks.png') }}"/>
+    <img alt="Chopsticks" class="supply-img photo" src="{{ url_for('static', filename='images/chopsticks.png') }}"/>
     <div class="supply-content">
         <label for="chopstickCount">Number of chopsticks</label>
         <select class="supply-select" id="chopstickCount"></select>
@@ -3540,7 +3540,7 @@ input:focus, select:focus, textarea:focus {
 const cart = {};
 const extras = {
   chopstickCount: {
-    label: 'Stokjes',
+    label: 'Chopsticks',
     price: 0,
     icon: "{{ url_for('static', filename='images/chopsticks.png') }}"
   },
@@ -4608,7 +4608,7 @@ function updateCart() {
     li.appendChild(sel);
     if (item.prefs) {
       const prefTitle = document.createElement('div');
-      prefTitle.textContent = 'Voorkeur:';
+      prefTitle.textContent = 'Preference:';
       const ul = document.createElement('ul');
       item.prefs.forEach((p, i) => {
         const pli = document.createElement('li');
@@ -4920,13 +4920,13 @@ function checkout() {
       let line = `${name} x ${item.qty}`;
       if (item.prefs) {
         const prefsText = item.prefs.map((p, i) => `${i + 1}. ${p}`).join('\n   ');
-        line += `\n   Voorkeur:\n   ${prefsText}`;
+        line += `\n   Preference:\n   ${prefsText}`;
       }
       return line;
     })
     .join('\n');
 
-  orderSummary += `\nStokjes nodig: ${chopstickCount}`;
+  orderSummary += `\nChopsticks: ${chopstickCount}`;
   orderSummary += `\nSoy sauce: ${soyCount}`;
   orderSummary += `\nWasabi: ${wasabiCount}`;
   orderSummary += `\nGinger: ${gemberCount}`;
@@ -4945,9 +4945,9 @@ function checkout() {
     paymentMethod = document.getElementById('cartPaymentSelect')?.value || document.getElementById('pickupPayment').value;
     document.getElementById('pickupPayment').value = paymentMethod;
 
-    customerDetails = `\n[Afhalen]\nName: ${name}\nTelefoon: ${phone}`;
+    customerDetails = `\n[Pickup]\nName: ${name}\nPhone: ${phone}`;
     if (email) customerDetails += `\nEmail: ${email}`;
-    customerDetails += `\nAfhaaltijd: ${time}\nBetaalwijze: ${paymentMethod}`;
+    customerDetails += `\nPickup time: ${time}\nPayment method: ${paymentMethod}`;
   } else {
     const name = document.getElementById('deliveryName').value.trim();
     const phone = document.getElementById('deliveryPhone').value.trim();
@@ -4972,9 +4972,9 @@ function checkout() {
       document.getElementById('deliveryPostcode').style.borderColor = '';
     }
 
-    customerDetails = `\n[Bezorgen]\nName: ${name}\nTelefoon: ${phone}`;
+    customerDetails = `\n[Delivery]\nName: ${name}\nPhone: ${phone}`;
     if (email) customerDetails += `\nEmail: ${email}`;
-    customerDetails += `\nAddress: ${address} ${houseNumber}\nPostcode: ${postcodeRaw}\nArea: ${area}\nDelivery time: ${time}\nBetaalwijze: ${paymentMethod}`;
+    customerDetails += `\nAddress: ${address} ${houseNumber}\nPostal code: ${postcodeRaw}\nArea: ${area}\nDelivery time: ${time}\nPayment method: ${paymentMethod}`;
   }
 
   const tip = parseFloat(document.getElementById('tipSelect').value);
@@ -4993,8 +4993,8 @@ function checkout() {
   }
 
   const discountCode = document.getElementById('discountCode').value.trim();
-  const discountLine = `\nDiscount: -€${currentDiscount.toFixed(2)} (Code: ${discountCode || 'geen'})`;
-  const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}${tipLine}${discountLine}\nTotal: €${totalPrice}`;
+  const discountLine = `\nDiscount: -€${currentDiscount.toFixed(2)} (Code: ${discountCode || 'none'})`;
+  const message = `📦 New order at *Nova Asia*:\n\n${orderSummary}\n${customerDetails}${tipLine}${discountLine}\nTotal: €${totalPrice}`;
 
   const itemsToSend = { ...cart };
   Object.keys(extras).forEach(id => {
@@ -5215,11 +5215,11 @@ function checkout() {
     };
 
     if (afhalen.checked && !pickupAvailable) {
-      showFeedback('Vandaag is afhalen niet mogelijk.', true);
+      showFeedback('Pickup is not available today.', true);
       bezorgen.checked = true;
     }
     if (bezorgen.checked && !deliveryAvailable) {
-      showFeedback('Vandaag is bezorging niet mogelijk.', true);
+      showFeedback('Delivery is not available today.', true);
       afhalen.checked = true;
     }
    if (afhalen.checked) {
@@ -5251,7 +5251,7 @@ function checkout() {
       updateCartPaymentOptions();
     } else {
       transferValues(afhalenFields, bezorgenFields);
-      infoBox.textContent = 'Wij bezorgen in de volgende postcodegebieden:\n' + allowedPostcodes.join(', ');
+      infoBox.textContent = 'We deliver to the following postal codes:\n' + allowedPostcodes.join(', ');
 
       bezorgenFields.classList.remove('hidden');
       afhalenFields.classList.add('hidden');
@@ -5281,18 +5281,18 @@ function checkout() {
       this.parentNode.appendChild(hint);
     }
 
-    // 格式检查
+    // Format check
     if (!formatRegex.test(raw)) {
       this.style.borderColor = 'red';
-      hint.textContent = 'Postcode moet het formaat 1234AB hebben (zonder spatie).';
+      hint.textContent = 'Postal code must be in the format 1234AB (no space).';
       return;
     }
 
-    // 区域检查
-    const postcode = raw.slice(0, 4); // 取前4位数字
+    // Area check
+    const postcode = raw.slice(0, 4); // first 4 digits
     if (allowedPostcodes.length && !allowedPostcodes.includes(postcode)) {
       this.style.borderColor = 'red';
-      hint.textContent = `🚫 Wij bezorgen niet in dit postcodegebied (${postcode}).`;
+      hint.textContent = `🚫 We do not deliver to this postal code area (${postcode}).`;
     } else {
       this.style.borderColor = '';
       hint.textContent = '';
@@ -5319,10 +5319,10 @@ function checkout() {
         if (data.street && !streetInput.value) streetInput.value = data.street;
         if (data.city && !areaInput.value) areaInput.value = data.city;
       } else {
-        console.warn('Adres ophalen mislukt');
+        console.warn('Failed to fetch address');
       }
     } catch (err) {
-      console.warn('Adres ophalen mislukt');
+      console.warn('Failed to fetch address');
     }
   }
 
@@ -5334,7 +5334,7 @@ function checkout() {
     if (street && house && pc && city) {
       const address = `${street} ${house}, ${pc} ${city}`;
       const url = `https://www.google.com/maps?q=${encodeURIComponent(address)}`;
-      mapLinkContainer.innerHTML = `<a href="${url}" target="_blank" style="color: var(--accent-color); text-decoration: underline;">Bekijk op Google Maps</a>`;
+      mapLinkContainer.innerHTML = `<a href="${url}" target="_blank" style="color: var(--accent-color); text-decoration: underline;">View on Google Maps</a>`;
     } else {
       mapLinkContainer.innerHTML = '';
     }
@@ -6159,23 +6159,23 @@ function updateStatus(settings) {
     message = 'The website is currently closed';
   } else if (!pickupOrderable && !deliveryOrderable) {
     storeOpen = false;
-    message = 'Vandaag afhalen en bezorgen zijn niet meer mogelijk.';
+    message = 'Pickup and delivery are no longer possible today.';
   } else if (afhalen.checked) {
     if (!pickupOrderable) {
       if (deliveryOrderable) {
-        message = 'Afhalen is niet meer mogelijk, maar bezorgen is nog beschikbaar.';
+        message = 'Pickup is no longer possible, but delivery is still available.';
         bezorgen.checked = true;
         afhalen.checked = false;
         toggleOrderType();
         storeOpen = true;
       } else {
         storeOpen = false;
-        message = 'Vandaag afhalen en bezorgen zijn niet meer mogelijk.';
+        message = 'Pickup and delivery are no longer possible today.';
       }
     } else {
       storeOpen = true;
       if (pickupTooLate) {
-        message = 'Vandaag afhalen is niet meer mogelijk.';
+        message = 'Pickup is no longer available today.';
       } else {
         message = '';
       }
@@ -6183,19 +6183,19 @@ function updateStatus(settings) {
   } else { // bezorgen.checked
     if (!deliveryOrderable) {
       if (pickupOrderable) {
-        message = 'Delivery is no longer possible, but pick up is still available.';
+        message = 'Delivery is no longer possible, but pickup is still available.';
         afhalen.checked = true;
         bezorgen.checked = false;
         toggleOrderType();
         storeOpen = true;
       } else {
         storeOpen = false;
-        message = 'Vandaag afhalen en bezorgen zijn niet meer mogelijk.';
+        message = 'Pickup and delivery are no longer possible today.';
       }
     } else {
       storeOpen = true;
       if (deliveryTooLate) {
-        message = 'Vandaag bezorgen we niet meer.';
+        message = 'Delivery is no longer available today.';
       } else {
         message = '';
       }
