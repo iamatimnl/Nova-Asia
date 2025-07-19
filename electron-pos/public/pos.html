@@ -1628,6 +1628,10 @@ function submitOrder() {
     const select=document.getElementById(selectId);
     if(!select) return;
     select.innerHTML='';
+    const asap=document.createElement('option');
+    asap.value='ZSM';
+    asap.textContent='Z.S.M.';
+    select.appendChild(asap);
     const now=new Date();
     now.setMinutes(now.getMinutes()+offsetMinutes);
 
