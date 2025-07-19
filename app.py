@@ -55,7 +55,20 @@ with app.app_context():
     db.create_all()
     try:
         inspector = db.inspect(db.engine)
-        cols = {c["name"] for c in inspector.get_columns("orders")}
+        cols_info = {c["name"]: c["type"] for c in inspector.get_columns("orders")}
+        cols = set(cols_info)
+
+        def ensure_varchar(col: str):
+            ctype = str(cols_info.get(col, "")).lower()
+            if "time" in ctype and "char" not in ctype and "text" not in ctype:
+                try:
+                    with db.engine.begin() as conn:
+                        conn.execute(text(f"ALTER TABLE orders ALTER COLUMN {col} TYPE VARCHAR(20)"))
+                except Exception as err:
+                    print(f"DB init warning: could not alter column {col} -> VARCHAR: {err}")
+
+        ensure_varchar("pickup_time")
+        ensure_varchar("delivery_time")
         if "opmerking" not in cols:
             with db.engine.begin() as conn:
                 conn.execute(text("ALTER TABLE orders ADD COLUMN opmerking TEXT"))
