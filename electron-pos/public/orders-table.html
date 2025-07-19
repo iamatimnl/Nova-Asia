@@ -113,6 +113,8 @@ function beep(){
 
 function parseTimeToMinutes(str){
   if(!str) return Infinity;
+  const s=str.trim().toUpperCase();
+  if(s==='ZSM' || s==='Z.S.M.') return -1;
   const p=str.split(':');
   const h=parseInt(p[0],10);
   const m=parseInt(p[1],10);
