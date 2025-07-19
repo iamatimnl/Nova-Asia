@@ -11,7 +11,7 @@ from flask_socketio import SocketIO
 from sqlalchemy import text
 import eventlet
 eventlet.monkey_patch()
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 import os
 import json
@@ -55,20 +55,7 @@ with app.app_context():
     db.create_all()
     try:
         inspector = db.inspect(db.engine)
-        cols_info = {c["name"]: c["type"] for c in inspector.get_columns("orders")}
-        cols = set(cols_info)
-
-        def ensure_varchar(col: str):
-            ctype = str(cols_info.get(col, "")).lower()
-            if "time" in ctype and "char" not in ctype and "text" not in ctype:
-                try:
-                    with db.engine.begin() as conn:
-                        conn.execute(text(f"ALTER TABLE orders ALTER COLUMN {col} TYPE VARCHAR(20)"))
-                except Exception as err:
-                    print(f"DB init warning: could not alter column {col} -> VARCHAR: {err}")
-
-        ensure_varchar("pickup_time")
-        ensure_varchar("delivery_time")
+        cols = {c["name"] for c in inspector.get_columns("orders")}
         if "opmerking" not in cols:
             with db.engine.begin() as conn:
                 conn.execute(text("ALTER TABLE orders ADD COLUMN opmerking TEXT"))
@@ -78,9 +65,6 @@ with app.app_context():
         if "is_cancelled" not in cols:
             with db.engine.begin() as conn:
                 conn.execute(text("ALTER TABLE orders ADD COLUMN is_cancelled BOOLEAN DEFAULT FALSE"))
-        if "ready_time" not in cols:
-            with db.engine.begin() as conn:
-                conn.execute(text("ALTER TABLE orders ADD COLUMN ready_time DATETIME"))
         cols = {c["name"] for c in inspector.get_columns("reviews")}
         if "rating" not in cols:
             with db.engine.begin() as conn:
@@ -331,7 +315,6 @@ def orders_to_dicts(orders):
             "delivery_time": o.delivery_time,
             "pickupTime": o.pickup_time,
             "deliveryTime": o.delivery_time,
-            "ready_time": to_nl(o.ready_time).strftime("%Y-%m-%d %H:%M") if o.ready_time else None,
             "postcode": o.postcode,
             "house_number": o.house_number,
             "street": o.street,
@@ -423,7 +406,6 @@ class Order(db.Model):
     email = db.Column(db.String(120))
     pickup_time = db.Column(db.String(20))
     delivery_time = db.Column(db.String(20))
-    ready_time = db.Column(db.DateTime)
     payment_method = db.Column(db.String(20))
     postcode = db.Column(db.String(10))
     house_number = db.Column(db.String(10))
@@ -644,44 +626,14 @@ def pos():
     if request.method == "POST":
         data = request.get_json() or {}
         order_number = data.get("order_number") or data.get("orderNumber")
-        order_type = data.get("order_type") or data.get("orderType")
-        pickup_val = data.get("pickup_time") or data.get("pickupTime")
-        delivery_val = data.get("delivery_time") or data.get("deliveryTime")
-        ready_dt = None
-        if order_type in ["afhalen", "pickup"]:
-            if pickup_val == "ZSM":
-                ready_dt = datetime.now(NL_TZ) + timedelta(minutes=30)
-                pickup_val_display = "Z.S.M."
-            else:
-                pickup_val_display = pickup_val
-                if pickup_val:
-                    try:
-                        h, m = map(int, pickup_val.split(":"))
-                        ready_dt = datetime.now(NL_TZ).replace(hour=h, minute=m, second=0, microsecond=0)
-                    except Exception:
-                        ready_dt = None
-        else:
-            if delivery_val == "ZSM":
-                ready_dt = datetime.now(NL_TZ) + timedelta(minutes=45)
-                delivery_val_display = "Z.S.M."
-            else:
-                delivery_val_display = delivery_val
-                if delivery_val:
-                    try:
-                        h, m = map(int, delivery_val.split(":"))
-                        ready_dt = datetime.now(NL_TZ).replace(hour=h, minute=m, second=0, microsecond=0)
-                    except Exception:
-                        ready_dt = None
-        ready_time = ready_dt.astimezone(UTC).replace(tzinfo=None) if ready_dt else None
 
         order = Order(
-            order_type=order_type,
+            order_type=data.get("order_type") or data.get("orderType"),
             customer_name=data.get("customer_name") or data.get("name"),
             phone=data.get("phone"),
             email=data.get("email") or data.get("customerEmail"),
-            pickup_time=pickup_val_display if order_type in ["afhalen", "pickup"] else pickup_val,
-            delivery_time=delivery_val_display if order_type not in ["afhalen", "pickup"] else delivery_val,
-            ready_time=ready_time,
+            pickup_time=data.get("pickup_time") or data.get("pickupTime"),
+            delivery_time=data.get("delivery_time") or data.get("deliveryTime"),
             payment_method=data.get("payment_method") or data.get("paymentMethod"),
             postcode=data.get("postcode"),
             house_number=data.get("house_number"),
@@ -690,7 +642,7 @@ def pos():
             opmerking=data.get("opmerking") or data.get("remark"),
             items=json.dumps(data.get("items", {})),
             order_number=order_number
-        )
+        )   
         db.session.add(order)
         db.session.commit()
 
@@ -739,12 +691,10 @@ def api_orders():
         end_today = now.replace(hour=end_hour, minute=end_minute, second=0, microsecond=0)
 
         chosen_dt = None
-        if gekozen and gekozen != 'ZSM':
+        if gekozen:
             try:
                 ch, cm = map(int, gekozen.split(':'))
                 chosen_dt = now.replace(hour=ch, minute=cm, second=0, microsecond=0)
-                if ch*60 + cm <= start_hour*60 + start_minute:
-                    chosen_dt += timedelta(days=1)
             except Exception:
                 pass
 
@@ -758,51 +708,14 @@ def api_orders():
             return jsonify({"status": "fail", "error": gesloten_message}), 403
         # ===== 新时间判断逻辑结束 =====
 
-        pickup_val = data.get("pickup_time") or data.get("pickupTime")
-        delivery_val = data.get("delivery_time") or data.get("deliveryTime")
-        ready_dt = None
-        if order_type == 'afhalen':
-            if pickup_val == 'ZSM':
-                ready_dt = now + timedelta(minutes=30)
-                pickup_val_display = 'Z.S.M.'
-            else:
-                pickup_val_display = pickup_val
-                if pickup_val:
-                    try:
-                        ch, cm = map(int, pickup_val.split(':'))
-                        ready_dt = now.replace(hour=ch, minute=cm, second=0, microsecond=0)
-                        if ch*60 + cm <= start_hour*60 + start_minute:
-                            ready_dt += timedelta(days=1)
-                    except Exception:
-                        ready_dt = None
-            delivery_val_display = delivery_val
-        else:
-            if delivery_val == 'ZSM':
-                ready_dt = now + timedelta(minutes=45)
-                delivery_val_display = 'Z.S.M.'
-            else:
-                delivery_val_display = delivery_val
-                if delivery_val:
-                    try:
-                        ch, cm = map(int, delivery_val.split(':'))
-                        ready_dt = now.replace(hour=ch, minute=cm, second=0, microsecond=0)
-                        if ch*60 + cm <= start_hour*60 + start_minute:
-                            ready_dt += timedelta(days=1)
-                    except Exception:
-                        ready_dt = None
-            pickup_val_display = pickup_val
-
-        ready_time = ready_dt.astimezone(UTC).replace(tzinfo=None) if ready_dt else None
-
         # 1. 构造订单对象（初始字段）
         order = Order(
             order_type=order_type,
             customer_name=data.get("name") or data.get("customer_name"),
             phone=data.get("phone"),
             email=data.get("customerEmail") or data.get("email"),
-            pickup_time=pickup_val_display,
-            delivery_time=delivery_val_display,
-            ready_time=ready_time,
+            pickup_time=data.get("pickup_time") or data.get("pickupTime"),
+            delivery_time=data.get("delivery_time") or data.get("deliveryTime"),
             payment_method=data.get("paymentMethod") or data.get("payment_method"),
             postcode=data.get("postcode"),
             house_number=data.get("house_number"),
@@ -1857,7 +1770,6 @@ def logout():
 # 启动
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000)
-
 
 
 
