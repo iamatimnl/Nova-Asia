@@ -1616,10 +1616,6 @@ function submitOrder() {
     const select=document.getElementById(selectId);
     if(!select) return;
     select.innerHTML='';
-    const asap=document.createElement('option');
-    asap.value='ZSM';
-    asap.textContent='Z.S.M.';
-    select.appendChild(asap);
     const now=new Date();
     now.setMinutes(now.getMinutes()+offsetMinutes);
 
@@ -1795,8 +1791,6 @@ function formatCurrency(value){
   
   function parseTimeToMinutes(str){
     if(!str) return Infinity;
-    const s = str.trim().toUpperCase();
-    if(s === 'ZSM' || s === 'Z.S.M.') return -1;
     const parts = str.split(':');
     const h = parseInt(parts[0],10);
     const m = parseInt(parts[1],10);
