@@ -36,9 +36,7 @@ from reportlab.lib import colors
 from sqlalchemy import func
 
 import traceback
-from flask import Flask, send_from_directory, render_template
 
-app = Flask(__name__, static_folder='static', template_folder='templates')
 
 
 # 初始化 Flask
@@ -86,13 +84,7 @@ with app.app_context():
 
 UTC = timezone.utc
 NL_TZ = ZoneInfo("Europe/Amsterdam")
-@app.route("/")
-def serve_index():
-    return render_template("index.html")  # 默认首页（荷兰语）
 
-@app.route("/en")
-def serve_index_en():
-    return render_template("indexEN.html")  # 英文版首页
 def to_nl(dt: datetime) -> datetime:
     """Convert naive UTC datetime to Europe/Amsterdam timezone."""
     if dt is None:
@@ -1785,7 +1777,6 @@ def logout():
 # 启动
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000)
-
 
 
 
