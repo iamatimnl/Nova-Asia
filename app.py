@@ -86,12 +86,11 @@ with app.app_context():
 
 UTC = timezone.utc
 NL_TZ = ZoneInfo("Europe/Amsterdam")
-# 默认首页 index.html
+@app.route("/")  # 👈 这是访问 https://www.novaasia.nl/ 的关键
 @app.route("/index.html")
 def serve_index():
     return send_from_directory(".", "index.html")
 
-# 英文版首页 indexEN.html
 @app.route("/indexEN.html")
 def serve_index_en():
     return send_from_directory(".", "indexEN.html")
