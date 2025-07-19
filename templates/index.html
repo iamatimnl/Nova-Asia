@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 
-<html lang="nl">
+<html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0" name="viewport"/>
-<title>Nova Asia Bestellen</title>
+<title>Nova Asia Ordering</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Quicksand:wght@400;700&family=Noto+Sans:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
 <!-- 网页标签图标 -->
 <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/assets/Logo.png">
@@ -1794,8 +1794,8 @@ input:focus, select:focus, textarea:focus {
 <div class="navbar-container" id="navbar-container">
 <nav class="navbar" id="navbar">
 <div class="nav-categories">
-<a href="#delivery-options">Bestelwijze</a>
-<a href="#checkbox-group">Benodigdheden</a>
+<a href="#delivery-options">Order Method</a>
+<a href="#checkbox-group">Supplies</a>
 <a href="#bubble">Bubble Tea</a>
 <a href="#bento">Bento Box</a>
 <a href="#Ramen">Ramen</a>
@@ -1818,10 +1818,10 @@ input:focus, select:focus, textarea:focus {
 <div class="indicator" id="indicator"></div>
 </nav>
 </div>
-<h1>Nova Asia Online Bestellen</h1>
+<h1>Order Online at Nova Asia</h1>
 <section id="delivery-options">
 <div class="delivery-options">
-<h2>Kies uw bestelmethode</h2>
+<h2>Choose your order method</h2>
 <div id="status-banner"></div>
 <div id="hours-info"></div>
 <div class="order-type-slider">
@@ -1835,68 +1835,68 @@ input:focus, select:focus, textarea:focus {
 <div class="info-text" id="locationInfo" style="white-space: pre-line; font-size: 0.95rem; margin-top: 8px;"></div>
 <!-- Afhalen 表单 -->
 <div id="afhalenFields">
-<label>Naam:</label>
+<label>Name:</label>
 <input id="pickupName" type="text"/>
-<label>Telefoonnummer:</label>
+<label>Phone number:</label>
 <input id="pickupPhone" type="tel"/>
 <label>Email:</label>
 <input id="pickupEmail" type="email" required/>
-<label>Tijd van afhalen:</label>
+<label>Pickup time:</label>
 <select id="pickup_time"></select>
-<label>Betaalmethode:</label>
+<label>Payment method:</label>
 <select id="pickupPayment">
-<option value="online" selected>Online betaling</option>
-<option value="contant">Contant</option>
-<option value="pin">Pin</option>
+<option value="online" selected>Online payment</option>
+<option value="contant">Cash</option>
+<option value="pin">Card</option>
 </select>
 </div>
 <!-- Bezorgen 表单（默认隐藏） -->
 <div class="hidden" id="bezorgenFields">
-<label>Naam:</label>
+<label>Name:</label>
 <input id="deliveryName" type="text"/>
-<label>Telefoonnummer:</label>
+<label>Phone number:</label>
 <input id="deliveryPhone" type="tel"/>
 <label>Email:</label>
 <input id="deliveryEmail" type="email" required/>
-<label>Adres:</label>
+<label>Address:</label>
 <input id="deliveryAddress" type="text"/>
-<label>Huisnummer:</label>
+<label>House number:</label>
 <input id="deliveryHouseNumber" type="text"/>
 <label>Postcode:</label>
 <input id="deliveryPostcode" type="text"/>
-<label>Gebied:</label>
+<label>Area:</label>
 <input id="deliveryArea" type="text"/>
 <div id="mapLinkContainer" style="margin-top: 4px;"></div>
-<label>Bezorgtijd:</label>
+<label>Delivery time:</label>
 <select id="delivery_time"></select>
-<label>Betaalmethode:</label>
+<label>Payment method:</label>
 <select id="deliveryPayment">
-<option value="online" selected>Online betaling</option>
-<option value="contant">Contant</option>
-<option value="oprekening">Op rekening</option>
+<option value="online" selected>Online payment</option>
+<option value="contant">Cash</option>
+<option value="oprekening">On account</option>
 </select>
 </div>
 </div>
 </section>
 <section id="checkbox-group">
 <div class="checkbox-group">
-<h2>Benodigdheden </h2>
+<h2>Supplies </h2>
 <p style="margin-top: -12px; font-size: 0.95rem; color: #6A994E; text-align: center;">
-    Geef aan wat u nodig heeft. Voorkom verspilling, denk aan het milieu. 🌱
+    Specify what you need. Avoid waste, think of the environment. 🌱
 </p>
 <div class="supply-row">
     <img alt="Stokjes" class="supply-img photo" src="{{ url_for('static', filename='images/chopsticks.png') }}"/>
     <div class="supply-content">
-        <label for="chopstickCount">Aantal stokjes</label>
+        <label for="chopstickCount">Number of chopsticks</label>
         <select class="supply-select" id="chopstickCount"></select>
     </div>
 </div>
 
-<!-- Sojasaus -->
+<!-- Soy sauce -->
 <div class="supply-row">
-<img alt="Sojasaus" class="supply-img photo" src="{{ url_for('static', filename='images/sjal.png') }}"/>
+<img alt="Soy sauce" class="supply-img photo" src="{{ url_for('static', filename='images/sjal.png') }}"/>
 <div class="supply-content">
-<label for="soyCount">Aantal sojasaus</label>
+<label for="soyCount">Amount of soy sauce</label>
 <select class="supply-select" id="soyCount"></select>
 </div>
 </div>
@@ -1904,15 +1904,15 @@ input:focus, select:focus, textarea:focus {
 <div class="supply-row">
 <img alt="Wasabi" class="supply-img photo" src="{{ url_for('static', filename='images/wasabib.png') }}"/>
 <div class="supply-content">
-<label for="wasabiCount">Aantal wasabi</label>
+<label for="wasabiCount">Amount of wasabi</label>
 <select class="supply-select" id="wasabiCount"></select>
 </div>
 </div>
-<!-- Gember -->
+<!-- Ginger -->
 <div class="supply-row">
-<img alt="Gember" class="supply-img photo" src="{{ url_for('static', filename='images/gembeerr.png') }}"/>
+<img alt="Ginger" class="supply-img photo" src="{{ url_for('static', filename='images/gembeerr.png') }}"/>
 <div class="supply-content">
-<label for="gemberCount">Aantal gember</label>
+<label for="gemberCount">Amount of ginger</label>
 <select class="supply-select" id="gemberCount"></select>
 </div>
 </div>
@@ -1932,7 +1932,7 @@ input:focus, select:focus, textarea:focus {
   margin-bottom: 12px;
 ">
   <span style="font-weight: bold; font-size: 1.4rem; color: #333; white-space: nowrap;">
-    Overzicht:
+    Summary:
    <img
   id="cartIcon"
   src="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/online.svg"
@@ -1950,10 +1950,10 @@ input:focus, select:focus, textarea:focus {
     border: 1px solid #ccc;
     font-size: 1rem;
   ">
-    <option value="online" selected>Online betaling</option>
-    <option value="contant">Contant</option>
-    <option value="pin">Pin</option>
-    <option value="oprekening">Op rekening</option>
+    <option value="online" selected>Online payment</option>
+    <option value="contant">Cash</option>
+    <option value="pin">Card</option>
+    <option value="oprekening">On account</option>
   </select>
 </div>
 
@@ -1975,54 +1975,53 @@ input:focus, select:focus, textarea:focus {
 </button>
 
     <div id="cartExtrasContainer"></div>
-   <label for="remark" style="display:block; margin-top:10px; font-weight: bold;">Opmerking:</label>
+   <label for="remark" style="display:block; margin-top:10px; font-weight: bold;">Note:</label>
 
-    <textarea id="remark" placeholder="Bijv. geen komkomer, extra mayo" rows="2"></textarea>
+    <textarea id="remark" placeholder="e.g. no cucumber, extra mayo" rows="2"></textarea>
 
     <div class="price-details">
-      <div class="price-row"><span>Subtotaal:</span> <span id="subtotalDisplay">€0,00</span></div>
-      <div class="price-row"><span>Verpakkingskosten:</span> <span id="packagingDisplay">€0,00</span></div>
-      <div class="price-row" id="deliveryRow"><span>Bezorgkosten:</span> <span id="deliveryDisplay">€2,50</span></div>
+      <div class="price-row"><span>Subtotal:</span> <span id="subtotalDisplay">€0,00</span></div>
+      <div class="price-row"><span>Packaging costs:</span> <span id="packagingDisplay">€0,00</span></div>
+      <div class="price-row" id="deliveryRow"><span>Delivery fee:</span> <span id="deliveryDisplay">€2,50</span></div>
       <div class="spacer"></div>
       <div class="spacer"></div>
       <div class="spacer"></div>
       <div class="spacer"></div>
       <div class="price-row">
-        <label for="discountCode">Kortingscode:</label>
+        <label for="discountCode">Discount code:</label>
         <input id="discountCode" />
         <!-- 桌面端按钮（原样保留） -->
         <button id="validateDiscountBtn" class="apply-discount-btn" type="button">Apply</button>
 
       </div>
-      <div class="price-row" id="discountRow" style="display:none;"><span>Korting:</span> <span id="discountDisplay">- €0,00</span></div>
+      <div class="price-row" id="discountRow" style="display:none;"><span>Discount:</span> <span id="discountDisplay">- €0,00</span></div>
       <div class="spacer"></div>
       <div class="spacer"></div>
       <div class="price-row">
-  <label for="tipSelect">Fooi:</label>
+  <label for="tipSelect">Tip:</label>
   <select id="tipSelect" style="width: 85px; border-radius: 6px;"></select>
 </div>
 
-      <div class="price-row"><span>BTW (9%):</span> <span id="btwDisplay">€0,00</span></div>
-      <div class="price-row total-row"><span>Totaal:</span> <span id="totalDisplay">€0,00</span></div>
-      <div class="btw-note">Alle prijzen zijn inclusief BTW</div>
+      <div class="price-row"><span>VAT (9%):</span> <span id="btwDisplay">€0,00</span></div>
+      <div class="price-row total-row"><span>Total:</span> <span id="totalDisplay">€0,00</span></div>
+      <div class="btw-note">All prices include VAT</div>
     </div>
      
     <!-- 桌面端正常结账按钮 -->
-    <button class="checkout-btn desktop-only" onclick="checkout()">Afrekenen &amp; Betalen</button>
-
+    <button class="checkout-btn desktop-only" onclick="checkout()">Checkout &amp; Pay</button>
     <!-- 移动端滑动确认按钮 -->
     <div class="slider-container mobile-only">
       <div class="slider-track" id="sliderTrack">
         <div class="slider-button" id="sliderButton">➜</div>
-        <span class="slider-text" id="sliderText">Schuif om te bestellen</span>
+        <span class="slider-text" id="sliderText">Slide to order</span>
       </div>
     </div>
   </div>
 </div>
 <div class="clipboard">
-  <div class="clipboard-header">📋 <strong>Mededeling</strong></div>
+  <div class="clipboard-header">📋 <strong>Notice</strong></div>
   <div class="clipboard-content">
-    <p>Vandaag zijn we gesloten wegens onderhoud. Bedankt voor uw begrip!</p>
+    <p>We are closed today for maintenance. Thank you for your understanding!</p>
   </div>
 </div>
 <button id="cart-toggle" onclick="toggleMobileCart()">
@@ -2052,7 +2051,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Bubble Tea</h3>
 <p>€ 5.00</p>
-<p id="bubbleSoldOut" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="bubbleSoldOut" class="sold-out-msg hidden">Sold Out!</p>
 <div class="bubble-option">
 <select id="bubbleType">
 <option value="">Base</option>
@@ -2079,7 +2078,7 @@ input:focus, select:focus, textarea:focus {
   </select>
 </div>
         <div class="new-set-wrap hidden" id="bubbleNewWrap">
-          <span class="new-set-msg">Toegevoegd. Nieuw selecteren?</span>
+          <span class="new-set-msg">Added. Select another?</span>
           <button type="button" class="new-set-button" id="bubbleNew">druk op</button>
         </div>
 <div class="qty-box">
@@ -2105,7 +2104,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Japans Chicken Bento</h3>
 <p>€ 22.00</p>
-<p id="soldoutJapansChickenBento" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutJapansChickenBento" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
 <label for="japansChickenBentoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="japansChickenBentoCount" type="button">-</button>
@@ -2122,7 +2121,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Korean Chicken Bento</h3>
 <p>€ 22.00</p>
-<p id="soldoutKoreanChickenBento" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutKoreanChickenBento" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
 <label for="koreanChickenBentoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="koreanChickenBentoCount" type="button">-</button>
@@ -2140,7 +2139,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Meatlover Bento</h3>
 <p>€ 25.00</p>
-<p id="soldoutMeatloverBento" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutMeatloverBento" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
 <label for="meatloverBentoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="meatloverBentoCount" type="button">-</button>
@@ -2157,7 +2156,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Zalm Lover Bento</h3>
 <p>€ 23.00</p>
-<p id="soldoutZalmLoverBento" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutZalmLoverBento" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
 <label for="zalmLoverBentoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="zalmLoverBentoCount" type="button">-</button>
@@ -2174,7 +2173,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Ebi Lover Bento</h3>
 <p>€ 23.00</p>
-<p id="soldoutEbiLoverBento" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutEbiLoverBento" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
 <label for="ebiLoverBentoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="ebiLoverBentoCount" type="button">-</button>
@@ -2191,7 +2190,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Surf &amp; Turf Bento</h3>
 <p>€ 25.00</p>
-<p id="soldoutSurfTurfBento" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutSurfTurfBento" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
 <label for="surfTurfBentoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="surfTurfBentoCount" type="button">-</button>
@@ -2208,7 +2207,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Dimsum Bento</h3>
 <p>€ 15.00</p>
-<p id="soldoutDimsumBento" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutDimsumBento" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
 <label for="dimsumBentoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="dimsumBentoCount" type="button">-</button>
@@ -2225,7 +2224,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Lamskotelet Bento</h3>
 <p>€ 28.00</p>
-<p id="soldoutLamskoteletBento" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutLamskoteletBento" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
 <label for="lamsBentoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="lamsBentoCount" type="button">-</button>
@@ -2242,7 +2241,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Unagi Bento</h3>
 <p>€ 24.00</p>
-<p id="soldoutUnagiBento" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutUnagiBento" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
 <label for="unagiBentoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="unagiBentoCount" type="button">-</button>
@@ -2259,7 +2258,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Veggie Bento</h3>
 <p>€ 20.00</p>
-<p id="soldoutVeggieBento" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutVeggieBento" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
 <label for="veggieBentoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="veggieBentoCount" type="button">-</button>
@@ -2275,7 +2274,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Bento Sushi Omakase</h3>
 <p>€ 22.00</p>
-<p id="soldoutSushiBento" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutSushiBento" class="sold-out-msg hidden">Sold Out!</p>
 <p class="menu-description">±16st Verrassing van de chef!</p>
 <div class="qty-box">
 <label for="sushiBentoCount">Aantal</label>
@@ -2295,7 +2294,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Xbento (stel zelf samen)</h3>
 <p>Vanaf € 25.00</p>
-<p id="soldoutXbento" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutXbento" class="sold-out-msg hidden">Sold Out!</p>
 <div class="bubble-option">
 <select id="xBentoMain">
 <option value="">Hoofdgerecht</option>
@@ -2317,7 +2316,7 @@ input:focus, select:focus, textarea:focus {
   </select>
 </div>
     <div class="new-set-wrap hidden" id="xBentoNewWrap">
-      <span class="new-set-msg">Toegevoegd. Nieuw selecteren?</span>
+      <span class="new-set-msg">Added. Select another?</span>
       <button type="button" class="new-set-button" id="xBentoNew">druk op</button>
     </div>
 <div class="qty-box">
@@ -2342,7 +2341,7 @@ input:focus, select:focus, textarea:focus {
     <div class="menu-content">
       <h3>Ebi Furai</h3>
       <p>€ 18.00</p>
-      <p id="soldoutEbiRamen" class="sold-out-msg hidden">Uitverkocht!</p>
+      <p id="soldoutEbiRamen" class="sold-out-msg hidden">Sold Out!</p>
       <div class="bubble-option">
         <select id="ebiBase">
           <option value="">Base</option>
@@ -2358,7 +2357,7 @@ input:focus, select:focus, textarea:focus {
         </select>
       </div>
       <div class="new-set-wrap hidden" id="ebiNewWrap">
-        <span class="new-set-msg">Toegevoegd. Nieuw selecteren?</span>
+        <span class="new-set-msg">Added. Select another?</span>
         <button type="button" class="new-set-button" id="ebiNew">druk op</button>
       </div>
       <div class="qty-box">
@@ -2377,7 +2376,7 @@ input:focus, select:focus, textarea:focus {
     <div class="menu-content">
       <h3>Chicken</h3>
       <p>€ 18.00</p>
-      <p id="soldoutChickenRamen" class="sold-out-msg hidden">Uitverkocht!</p>
+      <p id="soldoutChickenRamen" class="sold-out-msg hidden">Sold Out!</p>
       <div class="bubble-option">
         <select id="chickenBase">
           <option value="">Base</option>
@@ -2393,7 +2392,7 @@ input:focus, select:focus, textarea:focus {
         </select>
       </div>
       <div class="new-set-wrap hidden" id="chickenNewWrap">
-        <span class="new-set-msg">Toegevoegd. Nieuw selecteren?</span>
+        <span class="new-set-msg">Added. Select another?</span>
         <button type="button" class="new-set-button" id="chickenNew">druk op</button>
       </div>
       <div class="qty-box">
@@ -2412,7 +2411,7 @@ input:focus, select:focus, textarea:focus {
     <div class="menu-content">
       <h3>Beef</h3>
       <p>€ 18.00</p>
-      <p id="soldoutBeefRamen" class="sold-out-msg hidden">Uitverkocht!</p>
+      <p id="soldoutBeefRamen" class="sold-out-msg hidden">Sold Out!</p>
       <div class="bubble-option">
         <select id="beefBase">
           <option value="">Base</option>
@@ -2428,7 +2427,7 @@ input:focus, select:focus, textarea:focus {
         </select>
       </div>
       <div class="new-set-wrap hidden" id="beefNewWrap">
-        <span class="new-set-msg">Toegevoegd. Nieuw selecteren?</span>
+        <span class="new-set-msg">Added. Select another?</span>
         <button type="button" class="new-set-button" id="beefNew">druk op</button>
       </div>
       <div class="qty-box">
@@ -2447,7 +2446,7 @@ input:focus, select:focus, textarea:focus {
     <div class="menu-content">
       <h3>Ribeye</h3>
       <p>€ 18.00</p>
-      <p id="soldoutRibeyeRamen" class="sold-out-msg hidden">Uitverkocht!</p>
+      <p id="soldoutRibeyeRamen" class="sold-out-msg hidden">Sold Out!</p>
       <div class="bubble-option">
         <select id="ribeyeBase">
           <option value="">Base</option>
@@ -2463,7 +2462,7 @@ input:focus, select:focus, textarea:focus {
         </select>
       </div>
       <div class="new-set-wrap hidden" id="ribeyeNewWrap">
-        <span class="new-set-msg">Toegevoegd. Nieuw selecteren?</span>
+        <span class="new-set-msg">Added. Select another?</span>
         <button type="button" class="new-set-button" id="ribeyeNew">druk op</button>
       </div>
       <div class="qty-box">
@@ -2482,7 +2481,7 @@ input:focus, select:focus, textarea:focus {
     <div class="menu-content">
       <h3>Chasiu</h3>
       <p>€ 18.00</p>
-      <p id="soldoutChasiuRamen" class="sold-out-msg hidden">Uitverkocht!</p>
+      <p id="soldoutChasiuRamen" class="sold-out-msg hidden">Sold Out!</p>
       <div class="bubble-option">
         <select id="chasiuBase">
           <option value="">Base</option>
@@ -2498,7 +2497,7 @@ input:focus, select:focus, textarea:focus {
         </select>
       </div>
       <div class="new-set-wrap hidden" id="chasiuNewWrap">
-        <span class="new-set-msg">Toegevoegd. Nieuw selecteren?</span>
+        <span class="new-set-msg">Added. Select another?</span>
         <button type="button" class="new-set-button" id="chasiuNew">druk op</button>
       </div>
       <div class="qty-box">
@@ -2521,7 +2520,7 @@ input:focus, select:focus, textarea:focus {
       <div class="menu-content">
         <h3>Zalm Bowl</h3>
         <p>€ 15.00</p>
-        <p id="soldoutZalmBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutZalmBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
           <label for="zalmBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="zalmBowlQty" type="button">-</button>
@@ -2537,7 +2536,7 @@ input:focus, select:focus, textarea:focus {
       <div class="menu-content">
         <h3>Tuna Bowl</h3>
         <p>€ 15.00</p>
-        <p id="soldoutTunaBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutTunaBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
           <label for="tunaBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="tunaBowlQty" type="button">-</button>
@@ -2554,7 +2553,7 @@ input:focus, select:focus, textarea:focus {
       <div class="menu-content">
         <h3>Ebi Fry Bowl</h3>
         <p>€ 15.50</p>
-        <p id="soldoutEbiFryBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutEbiFryBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
           <label for="ebiFryBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="ebiFryBowlQty" type="button">-</button>
@@ -2571,7 +2570,7 @@ input:focus, select:focus, textarea:focus {
       <div class="menu-content">
         <h3>Chicken Karaage Bowl</h3>
         <p>€ 15.50</p>
-        <p id="soldoutChickenKaraageBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutChickenKaraageBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
           <label for="chickenKaraageBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="chickenKaraageBowlQty" type="button">-</button>
@@ -2588,7 +2587,7 @@ input:focus, select:focus, textarea:focus {
       <div class="menu-content">
         <h3>Spicy Chicken Bowl</h3>
         <p>€ 15.50</p>
-        <p id="soldoutSpicyChickenBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutSpicyChickenBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
           <label for="spicyChickenBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="spicyChickenBowlQty" type="button">-</button>
@@ -2605,7 +2604,7 @@ input:focus, select:focus, textarea:focus {
       <div class="menu-content">
         <h3>Teriyaki Chicken Bowl</h3>
         <p>€ 15.50</p>
-        <p id="soldoutTeriyakiChickenBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutTeriyakiChickenBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
           <label for="teriyakiChickenBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="teriyakiChickenBowlQty" type="button">-</button>
@@ -2622,7 +2621,7 @@ input:focus, select:focus, textarea:focus {
       <div class="menu-content">
         <h3>Teriyaki Beef Bowl</h3>
         <p>€ 15.50</p>
-        <p id="soldoutTeriyakiBeefBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutTeriyakiBeefBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
           <label for="teriyakiBeefBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="teriyakiBeefBowlQty" type="button">-</button>
@@ -2639,7 +2638,7 @@ input:focus, select:focus, textarea:focus {
       <div class="menu-content">
         <h3>California Bowl</h3>
         <p>€ 14.00</p>
-        <p id="soldoutCaliforniaBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutCaliforniaBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
           <label for="californiaBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="californiaBowlQty" type="button">-</button>
@@ -2658,7 +2657,7 @@ input:focus, select:focus, textarea:focus {
       <div class="menu-content">
         <h3>Unagi Bowl (Gerilde paling)</h3>
         <p>€ 16.00</p>
-        <p id="soldoutVegaBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutVegaBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
           <label for="unagiBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="unagiBowlQty" type="button">-</button>
@@ -2675,7 +2674,7 @@ input:focus, select:focus, textarea:focus {
       <div class="menu-content">
         <h3>Vega Bowl (Vegetarisch)</h3>
         <p>€ 13.00</p>
-        <p id="soldoutVegaBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutVegaBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
           <label for="vegaBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="vegaBowlQty" type="button">-</button>
@@ -2692,7 +2691,7 @@ input:focus, select:focus, textarea:focus {
       <div class="menu-content">
         <h3>Meatlover Bowl</h3>
         <p>€ 17.00</p>
-        <p id="soldoutMeatloverBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutMeatloverBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
           <label for="meatloverBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="meatloverBowlQty" type="button">-</button>
@@ -2709,7 +2708,7 @@ input:focus, select:focus, textarea:focus {
       <div class="menu-content">
         <h3>Rainbow Bowl</h3>
         <p>€ 17.00</p>
-        <p id="soldoutRainbowBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutRainbowBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
           <label for="rainbowBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="rainbowBowlQty" type="button">-</button>
@@ -2726,7 +2725,7 @@ input:focus, select:focus, textarea:focus {
       <div class="menu-content">
         <h3>Spicy Tuna Bowl</h3>
         <p>€ 15.50</p>
-        <p id="soldoutSpicyTunaBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutSpicyTunaBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
           <label for="spicyTunaBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="spicyTunaBowlQty" type="button">-</button>
@@ -2743,7 +2742,7 @@ input:focus, select:focus, textarea:focus {
       <div class="menu-content">
         <h3>Flamed Zalm Bowl</h3>
         <p>€ 16.00</p>
-        <p id="soldoutFlamedZalmBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutFlamedZalmBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
           <label for="flamedZalmBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="flamedZalmBowlQty" type="button">-</button>
@@ -2760,7 +2759,7 @@ input:focus, select:focus, textarea:focus {
       <div class="menu-content">
         <h3>Flamed Tuna Bowl</h3>
         <p>€ 16.00</p>
-        <p id="soldoutFlamedTunaBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutFlamedTunaBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
           <label for="flamedTunaBowlQty">Aantal</label>
           <button class="qty-minus remove-button" data-target="flamedTunaBowlQty" type="button">-</button>
@@ -2789,7 +2788,7 @@ input:focus, select:focus, textarea:focus {
         <div id="xBowlMains"></div>
         <div id="xBowlToppings"></div>
         <div class="new-set-wrap hidden" id="xBowlNewWrap">
-          <span class="new-set-msg">Toegevoegd. Nieuw selecteren?</span>
+          <span class="new-set-msg">Added. Select another?</span>
           <button type="button" class="new-set-button" id="xBowlNew">druk op</button>
         </div>
         <div class="qty-box">
@@ -2816,7 +2815,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Salmon Roll Omakase</h3>
 <p>9 st verrassing samengesteld<br/>€ 16.00</p>
-<p id="soldoutSalmonRoll" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutSalmonRoll" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
 <label for="salmonRollCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="salmonRollCount" type="button">-</button>
@@ -2832,7 +2831,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Dragon Roll Omakase</h3>
 <p>9 st verrassing samengesteld<br/>€ 16.00</p>
-<p id="soldoutDragonRoll" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutDragonRoll" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
 <label for="dragonRollCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="dragonRollCount" type="button">-</button>
@@ -2849,7 +2848,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Beef Roll Omakase</h3>
 <p>9 st verrassing samengesteld<br/>€ 16.00</p>
-<p id="soldoutBeefRoll" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutBeefRoll" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
 <label for="beefRollCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="beefRollCount" type="button">-</button>
@@ -2865,7 +2864,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Chicken Roll Omakase</h3>
 <p>9 st verrassing samengesteld<br/>€ 16.00</p>
-<p id="soldoutChickenRoll" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutChickenRoll" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
 <label for="chickenRollCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="chickenRollCount" type="button">-</button>
@@ -2881,7 +2880,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Nigiri Box Omakase</h3>
 <p>5 stuks nigiri, verrassend samengesteld door de chef<br/>€ 10.00</p>
-<p id="soldoutNigiriBox" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutNigiriBox" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
 <label for="nigiriBoxCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="nigiriBoxCount" type="button">-</button>
@@ -2904,7 +2903,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Salmon sashimi</h3>
 <p>€ 9.00</p>
-<p id="soldoutSalmonSashimi" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutSalmonSashimi" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
 <label for="salmonSashimiQty">Aantal</label>
 <button class="qty-minus remove-button" data-target="salmonSashimiQty" type="button">-</button>
@@ -2920,7 +2919,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Flamed salmon sashimi</h3>
 <p>€ 10.00</p>
-<p id="soldoutFlamedSalmonSashimi" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutFlamedSalmonSashimi" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
 <label for="flamedsalmonSashimiQty">Aantal</label>
 <button class="qty-minus remove-button" data-target="flamedsalmonSashimiQty" type="button">-</button>
@@ -2936,7 +2935,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Tonijn sashimi</h3>
 <p>€ 10.00</p>
-<p id="soldoutTonijnSashimi" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutTonijnSashimi" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
 <label for="tonijnSashimiQty">Aantal</label>
 <button class="qty-minus remove-button" data-target="tonijnSashimiQty" type="button">-</button>
@@ -2952,7 +2951,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Flamed tonijn sashimi</h3>
 <p>€ 10.50</p>
-<p id="soldoutFlamedTonijnSashimi" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutFlamedTonijnSashimi" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
 <label for="flamedtonijnSashimiQty">Aantal</label>
 <button class="qty-minus remove-button" data-target="flamedtonijnSashimiQty" type="button">-</button>
@@ -2969,7 +2968,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Beef sashimi</h3>
 <p>€ 10.00</p>
-<p id="soldoutBeefSashimi" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutBeefSashimi" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
 <label for="beefSashimiQty">Aantal</label>
 <button class="qty-minus remove-button" data-target="beefSashimiQty" type="button">-</button>
@@ -2994,7 +2993,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Zalm crispy rice sandwich</h3>
 <p>€ 7.00</p>
-<p id="soldoutZalmCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutZalmCrispyRiceSandwich" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
 <label for="zalm-crispy-rice-sandwich">Aantal</label>
 <button class="qty-minus remove-button" data-target="zalm-crispy-rice-sandwich" type="button">-</button>
@@ -3012,7 +3011,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Spicytuna crispy rice sandwich</h3>
 <p>€ 7.00</p>
-<p id="soldoutSpicytunaCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutSpicytunaCrispyRiceSandwich" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
 <label for="spicytuna-crispy-rice-sandwich">Aantal</label>
 <button class="qty-minus remove-button" data-target="spicytuna-crispy-rice-sandwich" type="button">-</button>
@@ -3031,7 +3030,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Ebi crispy rice sandwich</h3>
 <p>€ 7.00</p>
-<p id="soldoutEbiCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutEbiCrispyRiceSandwich" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
 <label for="ebiCrispyRiceSandwich">Aantal</label>
 <button class="qty-minus remove-button" data-target="ebiCrispyRiceSandwich" type="button">-</button>
@@ -3048,7 +3047,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Beef crispy rice sandwich</h3>
 <p>€ 7.50</p>
-<p id="soldoutBeefCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutBeefCrispyRiceSandwich" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
 <label for="beefCrispyRiceSandwich">Aantal</label>
 <button class="qty-minus remove-button" data-target="beefCrispyRiceSandwich" type="button">-</button>
@@ -3065,7 +3064,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>California crispy rice sandwich</h3>
 <p>€ 7.50</p>
-<p id="soldoutCaliforniaCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutCaliforniaCrispyRiceSandwich" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
 <label for="californiaCrispyRiceSandwich">Aantal</label>
 <button class="qty-minus remove-button" data-target="californiaCrispyRiceSandwich" type="button">-</button>
@@ -3082,7 +3081,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Chicken crispy rice sandwich</h3>
 <p>€ 7.00</p>
-<p id="soldoutChickenCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutChickenCrispyRiceSandwich" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
 <label for="chickenCrispyRiceSandwich">Aantal</label>
 <button class="qty-minus remove-button" data-target="chickenCrispyRiceSandwich" type="button">-</button>
@@ -3103,7 +3102,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
 <h3>Karaage (Japanse gefrituurde kip)</h3>
 <p>€ 6.50</p>
-<p id="soldoutKaraage" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutKaraage" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
 <label for="snackCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="snackCount" type="button">-</button>
@@ -3120,7 +3119,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Ebi Fry – 4 st</h3>
     <p>€ 6.50</p>
-    <p id="soldoutEbiFry" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutEbiFry" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
       <label for="ebiFryCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="ebiFryCount" type="button">-</button>
@@ -3136,7 +3135,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Ebi kroket 4st</h3>
     <p>€ 5.00</p>
-    <p id="soldoutEbikroket" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutEbikroket" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
       <label for="ebikroketCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="ebikroketCount" type="button">-</button>
@@ -3154,7 +3153,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Spicy Crispy Chicken – 5 st</h3>
     <p>€ 6.50</p>
-    <p id="soldoutSpicyCrispyChicken" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutSpicyCrispyChicken" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
       <label for="spicyCrispyChickenCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="spicyCrispyChickenCount" type="button">-</button>
@@ -3170,7 +3169,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Mini Loempia – 6 st</h3>
     <p>€ 3.50</p>
-    <p id="soldoutMiniLoempia" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutMiniLoempia" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
       <label for="miniLoempiaCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="miniLoempiaCount" type="button">-</button>
@@ -3187,7 +3186,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Chicken Loempia – 2 st</h3>
     <p>€ 5.00</p>
-    <p id="soldoutChickenLoempia" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutChickenLoempia" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
       <label for="chickenLoempiaCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="chickenLoempiaCount" type="button">-</button>
@@ -3204,7 +3203,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Gyoza – 5 st</h3>
     <p>€ 5.00</p>
-    <p id="soldoutGyoza" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutGyoza" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
       <label for="gyozaCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="gyozaCount" type="button">-</button>
@@ -3221,7 +3220,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Inktvis Ringen – 5 st</h3>
     <p>€ 5.00</p>
-    <p id="soldoutInktvisRingen" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutInktvisRingen" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
       <label for="inktvisRingenCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="inktvisRingenCount" type="button">-</button>
@@ -3238,7 +3237,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Sesambal – 5 st</h3>
     <p>€ 5.00</p>
-    <p id="soldoutSesambal" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutSesambal" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
       <label for="sesambalCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="sesambalCount" type="button">-</button>
@@ -3255,7 +3254,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Yakitori – 4 st</h3>
     <p>€ 6.00</p>
-    <p id="soldoutYakitori" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutYakitori" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
       <label for="yakitoriCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="yakitoriCount" type="button">-</button>
@@ -3274,7 +3273,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Edamame</h3>
     <p>€ 4.50</p>
-    <p id="soldoutEdamame" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutEdamame" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
       <label for="edamameCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="edamameCount" type="button">-</button>
@@ -3291,7 +3290,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Kimchi Komkommer</h3>
     <p>€ 4.50</p>
-    <p id="soldoutKimchiKomkommer" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutKimchiKomkommer" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
       <label for="kimchiKomkommerCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="kimchiKomkommerCount" type="button">-</button>
@@ -3308,7 +3307,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Kimchi Kool</h3>
     <p>€ 5.00</p>
-    <p id="soldoutKimchiKool" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutKimchiKool" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
       <label for="kimchiKoolCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="kimchiKoolCount" type="button">-</button>
@@ -3331,7 +3330,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Zeewiersalade – 100g</h3>
     <p>€ 5.00</p>
-    <p id="soldoutZeewiersalade" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutZeewiersalade" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
       <label for="zeewiersaladeCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="zeewiersaladeCount" type="button">-</button>
@@ -3352,7 +3351,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
   <h3>Mochi – Mango</h3>
   <p>€ 4.00</p>
-  <p id="soldoutMochiMango" class="sold-out-msg hidden">Uitverkocht!</p>
+  <p id="soldoutMochiMango" class="sold-out-msg hidden">Sold Out!</p>
   <div class="qty-box">
 <label for="mochiMangoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="mochiMangoCount" type="button">-</button>
@@ -3369,7 +3368,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
   <h3>Mochi – Aardbei</h3>
   <p>€ 4.00</p>
-  <p id="soldoutMochiAardbei" class="sold-out-msg hidden">Uitverkocht!</p>
+  <p id="soldoutMochiAardbei" class="sold-out-msg hidden">Sold Out!</p>
   <div class="qty-box">
 <label for="mochiAardbeiCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="mochiAardbeiCount" type="button">-</button>
@@ -3386,7 +3385,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
   <h3>Mochi – Matcha</h3>
   <p>€ 4.00</p>
-  <p id="soldoutMochiMatcha" class="sold-out-msg hidden">Uitverkocht!</p>
+  <p id="soldoutMochiMatcha" class="sold-out-msg hidden">Sold Out!</p>
   <div class="qty-box">
 <label for="mochiMatchaCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="mochiMatchaCount" type="button">-</button>
@@ -3403,7 +3402,7 @@ input:focus, select:focus, textarea:focus {
 <div class="menu-content">
   <h3>Mochi – Pistachio</h3>
   <p>€ 4.00</p>
-  <p id="soldoutMochiPistachio" class="sold-out-msg hidden">Uitverkocht!</p>
+  <p id="soldoutMochiPistachio" class="sold-out-msg hidden">Sold Out!</p>
   <div class="qty-box">
 <label for="mochiPistachioCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="mochiPistachioCount" type="button">-</button>
@@ -3423,7 +3422,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Cola</h3>
     <p>€ 2.5</p>
-    <p id="soldoutCola" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutCola" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
       <label for="colaCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="colaCount" type="button">-</button>
@@ -3439,7 +3438,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Cola Zero</h3>
     <p>€ 2.50</p>
-    <p id="soldoutColaZero" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutColaZero" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
       <label for="colaZeroCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="colaZeroCount" type="button">-</button>
@@ -3455,7 +3454,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Spa Blauw</h3>
     <p>€ 2.50</p>
-    <p id="soldoutSpaBlauw" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutSpaBlauw" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
       <label for="spaBlauwCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="spaBlauwCount" type="button">-</button>
@@ -3471,7 +3470,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Spa Rood</h3>
     <p>€ 2.50</p>
-    <p id="soldoutSpaRood" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutSpaRood" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
       <label for="spaRoodCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="spaRoodCount" type="button">-</button>
@@ -3487,7 +3486,7 @@ input:focus, select:focus, textarea:focus {
   <div class="menu-content">
     <h3>Red Bull</h3>
     <p>€ 2.50</p>
-    <p id="soldoutRedBull" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutRedBull" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
       <label for="redBullCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="redBullCount" type="button">-</button>
@@ -3500,7 +3499,7 @@ input:focus, select:focus, textarea:focus {
 </section>
 <section id="info">
   <h2>Info</h2>
-  <p>We zijn nog niet open en bevinden ons in de testfase. Nieuwe ontwikkelingen worden tijdig gecommuniceerd.</p>
+  <p>We are not open yet and are in the testing phase. New developments will be communicated in due time.</p>
 </section>
 
 <!-- iPhone 主屏幕提示 -->
@@ -3538,7 +3537,7 @@ const extras = {
     icon: "{{ url_for('static', filename='images/chopsticks.png') }}"
   },
   soyCount: {
-    label: 'Sojasaus',
+    label: 'Soy sauce',
     price: 0,
     icon: "{{ url_for('static', filename='images/sjal.png') }}"
   },
@@ -3548,7 +3547,7 @@ const extras = {
     icon: "{{ url_for('static', filename='images/wasabib.png') }}"
   },
   gemberCount: {
-    label: 'Gember',
+    label: 'Ginger',
     price: 0,
     icon: "{{ url_for('static', filename='images/gembeerr.png') }}"
   }
@@ -4012,7 +4011,7 @@ function applyDiscount() {
       currentDiscount = res.discount_amount;
     } else {
       currentDiscount = 0;
-      alert('Ongeldige kortingscode');
+      alert('Invalid discount code');
     }
     updatePriceBreakdown(currentSubtotal, currentPackaging);
   })
@@ -4545,7 +4544,7 @@ function createSelect(current, onChange) {
 
 function setQty(name, price, qty, packaging = DEFAULT_PACKAGING_FEE, prefs = null) {
   if (isItemSoldOut(name)) {
-    showFeedback('Uitverkocht!', true);
+    showFeedback('Sold Out!', true);
     return;
   }
   price = parseFloat(price);
@@ -4621,7 +4620,7 @@ function updateCart() {
   const extrasContainer = document.getElementById('cartExtrasContainer');
   extrasContainer.innerHTML = '';
   const title = document.createElement('div');
-  title.textContent = '— Benodigdheden —';
+  title.textContent = '— Supplies —';
   title.style.marginTop = '10px';
   title.style.fontWeight = 'bold';
   extrasContainer.appendChild(title);
@@ -4811,7 +4810,7 @@ function showClosedPopup(){
   const popup=document.getElementById('closed-popup');
   const text=document.getElementById('closed-text');
   if(overlay&&popup){
-    if(text) text.textContent = closedMessage || 'Momenteel gesloten';
+    if(text) text.textContent = closedMessage || 'Currently closed';
     overlay.style.display='flex';
     popup.style.display='block';
     setButtonsDisabled(true);
@@ -4870,7 +4869,7 @@ function checkout() {
 
   const paidItems = Object.values(cart).filter(item => item.price > 0 && item.qty > 0);
   if (paidItems.length === 0) {
-    alert('U moet ten minste één gerecht selecteren om te bestellen.');
+    alert('You must select at least one item to order.');
     return;
   }
 
@@ -4880,10 +4879,10 @@ function checkout() {
 
   const missing = getFirstMissingField();
   if (missing) {
-    showFeedback('Vul eerst uw gegevens in', true);
+    showFeedback('Please fill in your details first', true);
     scrollToField(missing);
     if (sliderText && sliderButton && sliderTrack) {
-      sliderText.innerText = 'Schuif om te bestellen';
+      sliderText.innerText = 'Slide to order';
       sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
       sliderTrack.style.pointerEvents = 'auto';
     }
@@ -4898,7 +4897,7 @@ function checkout() {
   const remark = document.getElementById('remark').value.trim();
 
   if (sliderText && sliderButton && sliderTrack) {
-    sliderText.innerText = 'Bezig met verwerken…';
+    sliderText.innerText = 'Processing...';
     sliderButton.innerHTML = `
       <svg class="spinner" width="24" height="24" viewBox="0 0 44 44" fill="none" stroke="white">
         <circle cx="22" cy="22" r="20" stroke-width="4" stroke-linecap="round" stroke-dasharray="125" stroke-dashoffset="0">
@@ -4920,10 +4919,10 @@ function checkout() {
     .join('\n');
 
   orderSummary += `\nStokjes nodig: ${chopstickCount}`;
-  orderSummary += `\nSojasaus: ${soyCount}`;
+  orderSummary += `\nSoy sauce: ${soyCount}`;
   orderSummary += `\nWasabi: ${wasabiCount}`;
-  orderSummary += `\nGember: ${gemberCount}`;
-  if (remark) orderSummary += `\nOpmerking: ${remark}`;
+  orderSummary += `\nGinger: ${gemberCount}`;
+  if (remark) orderSummary += `\nNote: ${remark}`;
 
   const orderType = document.querySelector('input[name="orderType"]:checked').value;
   let customerDetails = '';
@@ -4938,7 +4937,7 @@ function checkout() {
     paymentMethod = document.getElementById('cartPaymentSelect')?.value || document.getElementById('pickupPayment').value;
     document.getElementById('pickupPayment').value = paymentMethod;
 
-    customerDetails = `\n[Afhalen]\nNaam: ${name}\nTelefoon: ${phone}`;
+    customerDetails = `\n[Afhalen]\nName: ${name}\nTelefoon: ${phone}`;
     if (email) customerDetails += `\nEmail: ${email}`;
     customerDetails += `\nAfhaaltijd: ${time}\nBetaalwijze: ${paymentMethod}`;
   } else {
@@ -4956,7 +4955,7 @@ function checkout() {
     const postcodeClean = postcodeRaw.replace(/\s+/g, '');
     const postcode = postcodeClean.slice(0, 4);
     if (allowedPostcodes.length && !allowedPostcodes.includes(postcode)) {
-      alert(`🚫 Wij bezorgen helaas niet in dit postcodegebied (${postcode}).`);
+      alert(`🚫 We do not deliver to this postcode area (${postcode}).`);
       const postcodeField = document.getElementById('deliveryPostcode');
       postcodeField.style.borderColor = 'red';
       postcodeField.focus();
@@ -4965,9 +4964,9 @@ function checkout() {
       document.getElementById('deliveryPostcode').style.borderColor = '';
     }
 
-    customerDetails = `\n[Bezorgen]\nNaam: ${name}\nTelefoon: ${phone}`;
+    customerDetails = `\n[Bezorgen]\nName: ${name}\nTelefoon: ${phone}`;
     if (email) customerDetails += `\nEmail: ${email}`;
-    customerDetails += `\nAdres: ${address} ${houseNumber}\nPostcode: ${postcodeRaw}\nGebied: ${area}\nBezorgtijd: ${time}\nBetaalwijze: ${paymentMethod}`;
+    customerDetails += `\nAddress: ${address} ${houseNumber}\nPostcode: ${postcodeRaw}\nArea: ${area}\nDelivery time: ${time}\nBetaalwijze: ${paymentMethod}`;
   }
 
   const tip = parseFloat(document.getElementById('tipSelect').value);
@@ -4982,12 +4981,12 @@ function checkout() {
 
   let tipLine = '';
   if (tip > 0) {
-    tipLine = `\nFooi: €${tip.toFixed(2)}`;
+    tipLine = `\nTip: €${tip.toFixed(2)}`;
   }
 
   const discountCode = document.getElementById('discountCode').value.trim();
-  const discountLine = `\nKorting: -€${currentDiscount.toFixed(2)} (Code: ${discountCode || 'geen'})`;
-  const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}${tipLine}${discountLine}\nTotaal: €${totalPrice}`;
+  const discountLine = `\nDiscount: -€${currentDiscount.toFixed(2)} (Code: ${discountCode || 'geen'})`;
+  const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}${tipLine}${discountLine}\nTotal: €${totalPrice}`;
 
   const itemsToSend = { ...cart };
   Object.keys(extras).forEach(id => {
@@ -5046,12 +5045,12 @@ function checkout() {
         }
 
         // ✅ 只有非在线支付才显示成功信息
-        showFeedback('Bestelling succesvol verzonden! Bestelnummer: ' + orderNumber);
+        showFeedback('Order successfully submitted! Order number: ' + orderNumber);
         for (const k in cart) delete cart[k];
         sessionStorage.removeItem(FORM_KEY);
         updateCart();
 
-        sliderText.innerText = 'Gelukt!';
+        sliderText.innerText = 'Success!';
          sliderButton.innerHTML = `
            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
            <polyline points="20 6 9 17 4 12"></polyline>
@@ -5062,10 +5061,10 @@ function checkout() {
         setTimeout(() => { window.location.href = '/'; }, 1500);
 
       } else {
-  const errorMsg = data.error || 'Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.';
+  const errorMsg = data.error || 'An error occurred while sending your order. Please try again.';
   showFeedback(errorMsg, true);
         if (sliderText && sliderButton && sliderTrack) {
-          sliderText.innerText = 'Schuif om te betalen';
+          sliderText.innerText = 'Slide to pay';
           sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
           sliderTrack.style.pointerEvents = 'auto';
         }
@@ -5073,9 +5072,9 @@ function checkout() {
     })
     .catch(err => {
       console.error(err);
-      showFeedback('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.', true);
+      showFeedback('An error occurred while sending your order. Please try again.', true);
       if (sliderText && sliderButton && sliderTrack) {
-        sliderText.innerText = 'Schuif om te betalen';
+        sliderText.innerText = 'Slide to pay';
         sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
         sliderTrack.style.pointerEvents = 'auto';
       }
@@ -5368,7 +5367,7 @@ function toggleMobileCart() {
   if (!cartSection.classList.contains('mobile-visible')) {
     const missing = getFirstMissingField();
     if (missing) {
-      showFeedback('Vul eerst uw gegevens in', true);
+      showFeedback('Please fill in your details first', true);
       scrollToField(missing);
       return;
     }
@@ -5694,7 +5693,7 @@ function resetSlider() {
   const padding = getHorizontalPadding(sliderTrack);
   sliderButton.style.left = `${padding.left}px`;
   sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
-  sliderText.innerText = 'Schuif om te bestellen';
+  sliderText.innerText = 'Slide to order';
   sliderTrack.style.pointerEvents = 'auto';
 }
 
@@ -5739,7 +5738,7 @@ function triggerCheckout() {
   sliderButton.style.left = `${padding.left + getMaxSlide()}px`;
 
   // ⏳ 显示处理中
-  sliderText.innerText = 'Bezig met verwerken…';
+  sliderText.innerText = 'Processing...';
   sliderButton.innerHTML = `
 <svg class="spinner" width="24" height="24" viewBox="0 0 44 44" fill="none" stroke="white">
   <circle cx="22" cy="22" r="20" stroke-width="4" stroke-linecap="round" stroke-dasharray="125" stroke-dashoffset="0">
@@ -6148,7 +6147,7 @@ function updateStatus(settings) {
     message = 'This week the store is closed.';
   } else if (!websiteOn) {
     storeOpen = false;
-    message = 'De website is momenteel gesloten';
+    message = 'The website is currently closed';
   } else if (!pickupOrderable && !deliveryOrderable) {
     storeOpen = false;
     message = 'Vandaag afhalen en bezorgen zijn niet meer mogelijk.';
@@ -6175,7 +6174,7 @@ function updateStatus(settings) {
   } else { // bezorgen.checked
     if (!deliveryOrderable) {
       if (pickupOrderable) {
-        message = 'Bezorgen is niet meer mogelijk, maar afhalen is nog beschikbaar.';
+        message = 'Delivery is no longer possible, but pick up is still available.';
         afhalen.checked = true;
         bezorgen.checked = false;
         toggleOrderType();
@@ -6204,7 +6203,7 @@ function updateStatus(settings) {
     if (checkoutBtn) checkoutBtn.disabled = false;
     if (sliderTrack) {
       sliderTrack.style.pointerEvents = 'auto';
-      if (sliderText) sliderText.textContent = 'Schuif om te bestellen';
+      if (sliderText) sliderText.textContent = 'Slide to order';
     }
   } else {
     banner.textContent = message;
@@ -6214,7 +6213,7 @@ function updateStatus(settings) {
     if (checkoutBtn) checkoutBtn.disabled = true;
     if (sliderTrack) {
       sliderTrack.style.pointerEvents = 'none';
-      if (sliderText) sliderText.textContent = 'Momenteel gesloten';
+      if (sliderText) sliderText.textContent = 'Currently closed';
     }
   }
   banner.style.display = 'block';
@@ -6288,7 +6287,7 @@ document.addEventListener('click', e => {
 
 <div id="xBowlAddedModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; z-index:1000;">
   <div style="background:white; padding:20px; border-radius:12px; text-align:center;">
-    <p>Toegevoegd! Nieuwe maken?</p>
+    <p>Added! Make another?</p>
     <div style="display:flex; gap:10px; justify-content:center; margin-top:10px;">
       <button id="xBowlAgain">Ja, graag</button>
       <button id="xBowlClose">Nee, bedankt</button>
