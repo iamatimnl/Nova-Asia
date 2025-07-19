@@ -5118,9 +5118,13 @@ function checkout() {
         close.setDate(close.getDate() + 1);
     }
 
-    let times = [];
-    if (open.getTime() >= now.getTime()) {
-        times.push(oStr);
+    // 只有营业开始时间还有效，才显示开始时间
+    const includeStart = open.getTime() >= now.getTime();
+    if (includeStart) {
+        const firstOpt = document.createElement('option');
+        firstOpt.value = oStr;
+        firstOpt.textContent = oStr;
+        select.appendChild(firstOpt);
     }
 
     let start = now > open ? now : open;
@@ -5131,42 +5135,32 @@ function checkout() {
         const hh = pad(t.getHours());
         const mm = pad(t.getMinutes());
         const timeStr = `${hh}:${mm}`;
+
         if (timeStr === oStr || timeStr === cStr) continue; // 避免重复
-        times.push(timeStr);
-    }
 
-    if (now <= close) {
-        times.push(cStr);
-    }
-
-    // 总是包含最后两个可选时间
-    for (let i = 1; i <= 2; i++) {
-        const t = new Date(close);
-        t.setMinutes(t.getMinutes() - i * timeInterval);
-        if (t >= open) {
-            const hh = pad(t.getHours());
-            const mm = pad(t.getMinutes());
-            const str = `${hh}:${mm}`;
-            if (!times.includes(str)) times.push(str);
-        }
-    }
-
-    times = Array.from(new Set(times)).sort((a, b) => parseTime(a, oStr) - parseTime(b, oStr));
-
-    times.forEach(timeStr => {
         const opt = document.createElement('option');
         opt.value = timeStr;
         opt.textContent = timeStr;
         select.appendChild(opt);
-    });
+    }
 
+    // 只有当前时间还没超过结束时间，才显示结束时间选项
+    if (now <= close) {
+        const lastOpt = document.createElement('option');
+        lastOpt.value = cStr;
+        lastOpt.textContent = cStr;
+        select.appendChild(lastOpt);
+    }
+
+    // 如果所有时间都被过滤掉，显示 "无可用时间"
     if (select.options.length === 0) {
         const opt = document.createElement('option');
         opt.value = '';
-        opt.textContent = 'Geen beschikbare tijd meer';
+        opt.textContent = 'Geen beschikbare tijd meer'; // 无可用时间
         select.appendChild(opt);
     }
 
+    // 保留用户上一次选择的时间（如果还存在）
     if (prev) {
         const option = Array.from(select.options).find(o => o.value === prev);
         if (option) select.value = prev;
