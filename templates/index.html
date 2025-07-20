@@ -5006,8 +5006,8 @@ function checkout() {
 
   const pickupSel = document.getElementById('pickup_time').value;
   const deliverySel = document.getElementById('delivery_time').value;
-  const pickupValue = pickupSel === 'Z.S.M.' ? getAsapTime() : pickupSel;
-  const deliveryValue = deliverySel === 'Z.S.M.' ? getAsapTime() : deliverySel;
+  const pickupValue = pickupSel === 'Z.S.M.' ? getLastSelectTime('pickup_time') : pickupSel;
+  const deliveryValue = deliverySel === 'Z.S.M.' ? getLastSelectTime('delivery_time') : deliverySel;
 
   const tijdslotDisplay = orderType === 'afhalen' ? pickupSel : deliverySel;
 
@@ -5104,6 +5104,16 @@ function checkout() {
     return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
   }
 
+  function getLastSelectTime(selectId) {
+    const sel = document.getElementById(selectId);
+    if (!sel) return '';
+    for (let i = sel.options.length - 1; i >= 0; i--) {
+      const val = sel.options[i].value;
+      if (val && val !== 'Z.S.M.') return val;
+    }
+    return '';
+  }
+
   function getSelectTimes(selectId, startStr){
     const sel = document.getElementById(selectId);
     if(!sel || sel.options.length === 0) return {};
@@ -5121,11 +5131,6 @@ function checkout() {
 
     const prev = select.value; // 保留当前选中值
     select.innerHTML = '';
-
-    const asapOpt = document.createElement('option');
-    asapOpt.value = 'Z.S.M.';
-    asapOpt.textContent = 'Z.S.M.';
-    select.appendChild(asapOpt);
 
     const now = new Date();
     now.setMinutes(now.getMinutes() + offsetMinutes); // 现在时间 + 制作时间缓冲
@@ -5160,20 +5165,29 @@ function checkout() {
 
     const lastTwo = allTimes.slice(-2).map(t => t.str);
 
+    const available = [];
     for (const { time, str } of allTimes) {
         if (time < start && !lastTwo.includes(str)) continue;
-        const opt = document.createElement('option');
-        opt.value = str;
-        opt.textContent = str;
-        select.appendChild(opt);
+        available.push(str);
     }
 
-    // 如果所有时间都被过滤掉，显示 "无可用时间"
-    if (select.options.length === 0) {
+    if (available.length === 0) {
         const opt = document.createElement('option');
         opt.value = '';
-        opt.textContent = 'Geen beschikbare tijd meer'; // 无可用时间
+        opt.textContent = 'Geen beschikbare tijd';
         select.appendChild(opt);
+    } else {
+        const asapOpt = document.createElement('option');
+        asapOpt.value = 'Z.S.M.';
+        asapOpt.textContent = 'Z.S.M.';
+        select.appendChild(asapOpt);
+
+        for (const str of available) {
+            const opt = document.createElement('option');
+            opt.value = str;
+            opt.textContent = str;
+            select.appendChild(opt);
+        }
     }
 
     // 保留用户上一次选择的时间（如果还存在）
