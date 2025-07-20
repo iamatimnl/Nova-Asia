@@ -2140,6 +2140,23 @@ input:focus, select:focus, textarea:focus {
 </div>
 </div>
 </div>
+<!-- Korean Beef Bento -->
+<div class="menu-row menu-item" data-name="Korean Beef Bento" data-packaging="0.2" data-price="25">
+<div class="menu-img">
+<img alt="Korean Beef Bento" src="{{ url_for('static', filename='images/Meatlove bento.png') }}"/>
+</div>
+<div class="menu-content">
+<h3>Korean Beef Bento</h3>
+<p>€ 25.00</p>
+<p id="soldoutKoreanBeefBento" class="sold-out-msg hidden">Uitverkocht!</p>
+<div class="qty-box">
+<label for="koreanBeefBentoCount">Aantal</label>
+<button class="qty-minus remove-button" data-target="koreanBeefBentoCount" type="button">-</button>
+<select id="koreanBeefBentoCount" name="koreanBeefBentoCount"></select>
+<button class="qty-plus add-button" data-target="koreanBeefBentoCount" type="button">+</button>
+</div>
+</div>
+</div>
 <!-- Meatlover Bento -->
 <!-- Meatlover Bento -->
 <div class="menu-row menu-item" data-name="Meatlover Bento" data-packaging="0.2" data-price="25">
@@ -3599,6 +3616,7 @@ let xbentoSetControls;
 const soldoutMap = {
   "Japans Chicken Bento": "soldout_japans_chicken_bento",
   "Korean Chicken Bento": "soldout_korean_chicken_bento",
+  "Korean Beef Bento": "soldout_korean_beef_bento",
   "Meatlover Bento": "soldout_meatlover_bento",
   "Zalm Lover Bento": "soldout_zalm_lover_bento",
   "Ebi Lover Bento": "soldout_ebi_lover_bento",
@@ -6033,6 +6051,7 @@ function updateStatus(settings) {
   const bentoConfig = [
     {name: 'Japans Chicken Bento', key: 'soldout_japans_chicken_bento', qty: 'japansChickenBentoCount', msg: 'soldoutJapansChickenBento'},
     {name: 'Korean Chicken Bento', key: 'soldout_korean_chicken_bento', qty: 'koreanChickenBentoCount', msg: 'soldoutKoreanChickenBento'},
+    {name: 'Korean Beef Bento', key: 'soldout_korean_beef_bento', qty: 'koreanBeefBentoCount', msg: 'soldoutKoreanBeefBento'},
     {name: 'Meatlover Bento', key: 'soldout_meatlover_bento', qty: 'meatloverBentoCount', msg: 'soldoutMeatloverBento'},
     {name: 'Zalm Lover Bento', key: 'soldout_zalm_lover_bento', qty: 'zalmLoverBentoCount', msg: 'soldoutZalmLoverBento'},
     {name: 'Ebi Lover Bento', key: 'soldout_ebi_lover_bento', qty: 'ebiLoverBentoCount', msg: 'soldoutEbiLoverBento'},
