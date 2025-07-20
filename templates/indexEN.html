@@ -5095,6 +5095,41 @@ function checkout() {
     return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
   }
 
+  function generateAfhaalTimeSlots15m(openStr = '08:00', closeStr = '21:30') {
+    const now = new Date();
+    const [oh, om] = openStr.split(':').map(Number);
+    const [ch, cm] = closeStr.split(':').map(Number);
+
+    const openingTime = new Date();
+    openingTime.setHours(oh, om, 0, 0);
+
+    const closingTime = new Date();
+    closingTime.setHours(ch, cm, 0, 0);
+
+    let minTime = new Date(now.getTime() + 30 * 60000);
+    const remainder = minTime.getMinutes() % 15;
+    if (remainder !== 0) {
+      minTime.setMinutes(minTime.getMinutes() + (15 - remainder));
+    }
+    minTime.setSeconds(0, 0);
+
+    const timeSlots = [];
+    let current = new Date(openingTime);
+    while (current <= closingTime) {
+      timeSlots.push(new Date(current));
+      current.setMinutes(current.getMinutes() + 15);
+    }
+
+    const lastTwo = timeSlots.slice(-2).map(t => `${pad(t.getHours())}:${pad(t.getMinutes())}`);
+
+    const filtered = timeSlots.filter(t => {
+      const tStr = `${pad(t.getHours())}:${pad(t.getMinutes())}`;
+      return t >= minTime || lastTwo.includes(tStr);
+    });
+
+    return filtered.map(t => `${pad(t.getHours())}:${pad(t.getMinutes())}`);
+  }
+
   function getSelectTimes(selectId, startStr){
     const sel = document.getElementById(selectId);
     if(!sel || sel.options.length === 0) return {};
@@ -5117,6 +5152,21 @@ function checkout() {
     asapOpt.value = 'Z.S.M.';
     asapOpt.textContent = 'Z.S.M.';
     select.appendChild(asapOpt);
+
+    if (selectId === 'pickup_time') {
+      const slots = generateAfhaalTimeSlots15m(openStr, closeStr);
+      slots.forEach(time => {
+        const opt = document.createElement('option');
+        opt.value = time;
+        opt.textContent = time;
+        select.appendChild(opt);
+      });
+      if (prev) {
+        const option = Array.from(select.options).find(o => o.value === prev);
+        if (option) select.value = prev;
+      }
+      return;
+    }
 
     const now = new Date();
     now.setMinutes(now.getMinutes() + offsetMinutes); // 现在时间 + 制作时间缓冲
