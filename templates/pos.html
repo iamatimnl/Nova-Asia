@@ -142,6 +142,11 @@
     width: 100%;
     max-width: 160px;
   }
+  .pokebowl-sauces select {
+    width: 100%;
+    max-width: 160px;
+    margin-top: 4px;
+  }
   .menu-item button {
     width: 2.2rem;
     height: 2.2rem;
@@ -792,6 +797,8 @@ const xbowlMains=[
 ];
 const xbowlToppings=['geen','Komkommer','Avocado','Sojabonen','Mais','Zeewiersalade','Masago','Inari','Tamago'];
 const XBOWL_TOPPING_PRICE=1.5;
+const SAUCE_OPTIONS=['Geen','Japans mayo','Spicy mayo','Unagi saus','Spicy teriyaki saus','Korean chili saus','Cury mayo','Japans chili saus','Soy saus','Truffel mayo','Wasabi mayo'];
+const POKEBOWL_IDS=['zalmBowlQty','tunaBowlQty','ebiFryBowlQty','chickenKaraageBowlQty','spicyChickenBowlQty','teriyakiChickenBowlQty','teriyakiBeefBowlQty','californiaBowlQty','vegaBowlQty','meatloverBowlQty','rainbowBowlQty','spicyTunaBowlQty','flamedZalmBowlQty','flamedTunaBowlQty'];
 let currentXBowlName="";
 
 function getOptionPrice(cat,name){
@@ -1092,6 +1099,37 @@ function setDragonQty(){
   setQty('Dragon Roll Omakase',price,qty,0.2,prefs);
 }
 
+function updatePokebowlSauces(id,name){
+  const qty=parseInt(document.getElementById(id).value||0);
+  const container=document.getElementById(id+'Sauces');
+  if(!container) return;
+  container.innerHTML='';
+  const existing=(cart[name]&&cart[name].prefs)||[];
+  for(let i=1;i<=qty;i++){
+    const sel=document.createElement('select');
+    SAUCE_OPTIONS.forEach(opt=>{const o=document.createElement('option');o.value=opt;o.textContent=opt;sel.appendChild(o);});
+    sel.value=existing[i-1]||'Geen';
+    sel.dataset.index=i;
+    sel.addEventListener('change',()=>setPokebowlQty(id,name));
+    container.appendChild(sel);
+  }
+  setPokebowlQty(id,name);
+}
+
+function setPokebowlQty(id,name){
+  const sel=document.getElementById(id);
+  const qty=parseInt(sel.value||0);
+  const pack=parseFloat(sel.closest('.menu-item').dataset.packaging||0);
+  const price=parseFloat(sel.closest('.menu-item').dataset.price||0);
+  const container=document.getElementById(id+'Sauces');
+  const prefs=[];
+  for(let i=1;i<=qty;i++){
+    const s=container.querySelector(`select[data-index="${i}"]`);
+    prefs.push(s?s.value:'Geen');
+  }
+  setQty(name,price,qty,pack,prefs);
+}
+
 function isRamenValid(code){
   return document.getElementById(code+'Base').value && document.getElementById(code+'Smaak').value;
 }
@@ -1238,6 +1276,9 @@ document.addEventListener('DOMContentLoaded',()=>{
         sel.addEventListener('change',()=>changeOmakaseQty(0));
       } else if(name==='Dragon Roll Omakase'){
         sel.addEventListener('change',()=>changeDragonQty(0));
+      } else if(POKEBOWL_IDS.includes(sel.id)){
+        sel.addEventListener('change',()=>updatePokebowlSauces(sel.id,name));
+        updatePokebowlSauces(sel.id,name);
       } else {
         sel.addEventListener('change',()=>{ setQty(name,price,parseInt(sel.value),pack); });
       }
@@ -1288,6 +1329,8 @@ document.addEventListener('DOMContentLoaded',()=>{
         changeOmakaseQty(0);
       } else if(parent.dataset.name==='Dragon Roll Omakase'){
         changeDragonQty(0);
+      } else if(POKEBOWL_IDS.includes(sel.id)){
+        updatePokebowlSauces(sel.id,parent.dataset.name);
       } else {
         setQty(parent.dataset.name,parseFloat(parent.dataset.price),val,parseFloat(parent.dataset.packaging||0));
       }
@@ -1305,6 +1348,8 @@ document.addEventListener('DOMContentLoaded',()=>{
         changeOmakaseQty(0);
       } else if(parent.dataset.name==='Dragon Roll Omakase'){
         changeDragonQty(0);
+      } else if(POKEBOWL_IDS.includes(sel.id)){
+        updatePokebowlSauces(sel.id,parent.dataset.name);
       } else {
         setQty(parent.dataset.name,parseFloat(parent.dataset.price),val,parseFloat(parent.dataset.packaging||0));
       }
