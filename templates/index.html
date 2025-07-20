@@ -5147,37 +5147,25 @@ function checkout() {
     }
 
     // 只有营业开始时间还有效，才显示开始时间
-    const includeStart = open.getTime() >= now.getTime();
-    if (includeStart) {
-        const firstOpt = document.createElement('option');
-        firstOpt.value = oStr;
-        firstOpt.textContent = oStr;
-        select.appendChild(firstOpt);
-    }
-
     let start = now > open ? now : open;
     start = new Date(start);
     start.setMinutes(Math.ceil(start.getMinutes() / timeInterval) * timeInterval, 0, 0);
 
-    for (let t = new Date(start); t <= close; t.setMinutes(t.getMinutes() + timeInterval)) {
+    const allTimes = [];
+    for (let t = new Date(open); t <= close; t.setMinutes(t.getMinutes() + timeInterval)) {
         const hh = pad(t.getHours());
         const mm = pad(t.getMinutes());
-        const timeStr = `${hh}:${mm}`;
-
-        if (timeStr === oStr || timeStr === cStr) continue; // 避免重复
-
-        const opt = document.createElement('option');
-        opt.value = timeStr;
-        opt.textContent = timeStr;
-        select.appendChild(opt);
+        allTimes.push({ time: new Date(t), str: `${hh}:${mm}` });
     }
 
-    // 只有当前时间还没超过结束时间，才显示结束时间选项
-    if (now <= close) {
-        const lastOpt = document.createElement('option');
-        lastOpt.value = cStr;
-        lastOpt.textContent = cStr;
-        select.appendChild(lastOpt);
+    const lastTwo = allTimes.slice(-2).map(t => t.str);
+
+    for (const { time, str } of allTimes) {
+        if (time < start && !lastTwo.includes(str)) continue;
+        const opt = document.createElement('option');
+        opt.value = str;
+        opt.textContent = str;
+        select.appendChild(opt);
     }
 
     // 如果所有时间都被过滤掉，显示 "无可用时间"
