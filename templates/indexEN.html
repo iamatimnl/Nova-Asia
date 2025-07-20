@@ -4774,6 +4774,7 @@ let pickupCloseTime = '23:59';
 let deliveryOpenTime = '12:00';
 let deliveryCloseTime = '23:59';
 let timeInterval = 15;
+let showZSM = true;
 let pickupAddress = '';
 let allowedPostcodes = [];
 let currentSettings = {};
@@ -5150,10 +5151,12 @@ function checkout() {
         }
     }
 
-    const asapOpt = document.createElement('option');
-    asapOpt.value = 'Z.S.M.';
-    asapOpt.textContent = 'Z.S.M.';
-    select.appendChild(asapOpt);
+    if (showZSM) {
+        const asapOpt = document.createElement('option');
+        asapOpt.value = 'Z.S.M.';
+        asapOpt.textContent = 'Z.S.M.';
+        select.appendChild(asapOpt);
+    }
 
     // 只有营业开始时间还有效，才显示开始时间
     let start = now > open ? now : open;
@@ -5877,6 +5880,7 @@ function updateStatus(settings) {
   const bubbleSection = document.getElementById('bubble');
   pickupAddress = settings.pickup_address || pickupAddress;
   allowedPostcodes = (settings.delivery_postcodes || '').split(',').map(s => s.trim()).filter(Boolean);
+  showZSM = settings.show_zsm_option !== 'false';
 
   if (bubbleSoldOutMsg && bubbleSection) {
     const soldout = settings.milktea_soldout === 'true';
