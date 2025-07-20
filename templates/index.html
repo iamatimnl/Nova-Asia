@@ -6226,7 +6226,7 @@ function updateStatus(settings) {
   const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const todayName = dayNames[new Date().getDay()];
 
-  const hoursText = `Daily ${settings.open_time} - ${settings.close_time}`;
+  const hoursText = `Dagelijks ${settings.open_time} - ${settings.close_time}`;
   let closedText = '';
   if (allClosed) {
     closedText = ', Closed All Week';
