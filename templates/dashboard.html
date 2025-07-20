@@ -82,6 +82,12 @@
             <option value="{{ n }}" {% if time_interval == n|string %}selected{% endif %}>{{ n }} min</option>
             {% endfor %}
         </select>
+        <br>
+        <label>Z.S.M. optie:</label>
+        <select id="show_zsm_select">
+            <option value="true" {% if show_zsm_option != 'false' %}selected{% endif %}>Aan</option>
+            <option value="false" {% if show_zsm_option == 'false' %}selected{% endif %}>Uit</option>
+        </select>
         <br><br>
 
         <label>奶茶价格 (€):</label>
@@ -684,6 +690,7 @@
                   .filter(Boolean)
                   .join(',');
             const time_interval = document.getElementById('interval_select').value;
+            const show_zsm_option = document.getElementById('show_zsm_select').value;
             const milktea_soldout = document.getElementById('milktea_soldout_select').value;
             const soldout_japans_chicken_bento = document.getElementById('soldout_japans_chicken_bento_select').value;
             const soldout_korean_chicken_bento = document.getElementById('soldout_korean_chicken_bento_select').value;
@@ -773,6 +780,7 @@
                     delivery_end: delivery_end,
                     delivery_postcodes: delivery_postcodes,
                     time_interval: time_interval,
+                    show_zsm_option: show_zsm_option,
                     milktea_soldout: milktea_soldout,
                     soldout_japans_chicken_bento: soldout_japans_chicken_bento,
                     soldout_korean_chicken_bento: soldout_korean_chicken_bento,

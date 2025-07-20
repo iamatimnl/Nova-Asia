@@ -513,6 +513,7 @@ with app.app_context():
         "delivery_start": "11:00",
         "delivery_end": "21:00",
         "time_interval": "15",
+        "show_zsm_option": "true",
         "milktea_soldout": "false",
         "milktea_price": "5",
         "price_zalm_crispy_rice_sandwich": "7",
@@ -1080,6 +1081,7 @@ def dashboard():
         delivery_end=get_value('delivery_end', '21:00'),
         delivery_postcodes=get_value('delivery_postcodes', ''),
         time_interval=get_value('time_interval', '15'),
+        show_zsm_option=get_value('show_zsm_option', 'true'),
         milktea_soldout=get_value('milktea_soldout', 'false'),
         milktea_price=get_value('milktea_price', '5'),
         price_zalm_crispy_rice_sandwich=get_value('price_zalm_crispy_rice_sandwich', '7'),
@@ -1186,6 +1188,7 @@ def update_setting():
     delivery_end_val = data.get('delivery_end', '21:00')
     delivery_postcodes_val = data.get('delivery_postcodes', '')
     time_interval_val = data.get('time_interval', '15')
+    show_zsm_option_val = data.get('show_zsm_option', 'true')
     milktea_soldout_val = data.get('milktea_soldout', 'false')
     soldout_japans_chicken_bento_val = data.get('soldout_japans_chicken_bento', 'false')
     soldout_korean_chicken_bento_val = data.get('soldout_korean_chicken_bento', 'false')
@@ -1272,6 +1275,7 @@ def update_setting():
         ('delivery_end', delivery_end_val),
         ('delivery_postcodes', delivery_postcodes_val),
         ('time_interval', time_interval_val),
+        ('show_zsm_option', show_zsm_option_val),
         ('milktea_soldout', milktea_soldout_val),
         ('soldout_japans_chicken_bento', soldout_japans_chicken_bento_val),
         ('soldout_korean_chicken_bento', soldout_korean_chicken_bento_val),
