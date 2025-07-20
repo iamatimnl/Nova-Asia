@@ -372,11 +372,26 @@
   width: 100%;
   max-width: 170px;
 }
+.pokebowl-sauces {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px; /* 每个select之间的间距 */
+}
 .pokebowl-sauces select {
   width: 100%;
   max-width: 170px;
-  margin-top: 4px;
-}
+  margin-top: px;}
+
+
+
+  @media (max-width: 760px){
+.pokebowl-sauces select {
+  width: 40%; /* 每行最多两个或三个，具体按需求调节 */
+  min-width: 120px; /* 可防止太小 */
+  box-sizing: border-box;
+  font-size: 16px; /* 建议 >=16px 防止 iOS 放大 */
+}}
+ 
   
   .menu-item button,
   .menu-item label {
