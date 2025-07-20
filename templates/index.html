@@ -3158,6 +3158,7 @@ input:focus, select:focus, textarea:focus {
 <select id="snackCount" name="snackCount"></select>
 <button class="qty-plus add-button" data-target="snackCount" type="button">+</button>
 </div>
+<div id="snackCountSauces" class="pokebowl-sauces"></div>
 </div>
 </img></div>
 <!-- Ebi Fry -->
@@ -3175,6 +3176,7 @@ input:focus, select:focus, textarea:focus {
       <select id="ebiFryCount" name="ebiFryCount"></select>
       <button class="qty-plus add-button" data-target="ebiFryCount" type="button">+</button>
     </div>
+    <div id="ebiFryCountSauces" class="pokebowl-sauces"></div>
   </div>
 </div>
  <div class="menu-row menu-item" data-name="Ebi kroket" data-packaging="0.2" data-price="5">
@@ -3191,6 +3193,7 @@ input:focus, select:focus, textarea:focus {
       <select id="ebikroketCount" name="ebikroketCount"></select>
       <button class="qty-plus add-button" data-target="ebikroketCount" type="button">+</button>
     </div>
+    <div id="ebikroketCountSauces" class="pokebowl-sauces"></div>
   </div>
 </div> 
  
@@ -3209,6 +3212,7 @@ input:focus, select:focus, textarea:focus {
       <select id="spicyCrispyChickenCount" name="spicyCrispyChickenCount"></select>
       <button class="qty-plus add-button" data-target="spicyCrispyChickenCount" type="button">+</button>
     </div>
+    <div id="spicyCrispyChickenCountSauces" class="pokebowl-sauces"></div>
   </div>
 </div>
 <div class="menu-row menu-item" data-name="Mini Loempia – 6 st" data-packaging="0.2" data-price="3.5">
@@ -3225,8 +3229,9 @@ input:focus, select:focus, textarea:focus {
       <select id="miniLoempiaCount" name="miniLoempiaCount"></select>
       <button class="qty-plus add-button" data-target="miniLoempiaCount" type="button">+</button>
     </div>
+    <div id="miniLoempiaCountSauces" class="pokebowl-sauces"></div>
   </div>
-</div>  
+</div>
 <!-- Chicken Loempia -->
 <div class="menu-row menu-item" data-name="Chicken Loempia – 2 st" data-packaging="0.2" data-price="5">
   <div class="menu-img">
@@ -3242,6 +3247,7 @@ input:focus, select:focus, textarea:focus {
       <select id="chickenLoempiaCount" name="chickenLoempiaCount"></select>
       <button class="qty-plus add-button" data-target="chickenLoempiaCount" type="button">+</button>
     </div>
+    <div id="chickenLoempiaCountSauces" class="pokebowl-sauces"></div>
   </div>
 </div>
 <!-- Gyoza -->
@@ -3259,6 +3265,7 @@ input:focus, select:focus, textarea:focus {
       <select id="gyozaCount" name="gyozaCount"></select>
       <button class="qty-plus add-button" data-target="gyozaCount" type="button">+</button>
     </div>
+    <div id="gyozaCountSauces" class="pokebowl-sauces"></div>
   </div>
 </div>
 <!-- Inktvis Ringen -->
@@ -3276,6 +3283,7 @@ input:focus, select:focus, textarea:focus {
       <select id="inktvisRingenCount" name="inktvisRingenCount"></select>
       <button class="qty-plus add-button" data-target="inktvisRingenCount" type="button">+</button>
     </div>
+    <div id="inktvisRingenCountSauces" class="pokebowl-sauces"></div>
   </div>
 </div>
 <!-- Crispy Rijst -->
@@ -3629,7 +3637,7 @@ const xbowlMains = [
 const xbowlToppings=['geen','Komkommer','Avocado','Sojabonen','Mais','Zeewiersalade','Masago','Inari','Tamago'];
 const XBOWL_TOPPING_PRICE=1.5;
 const SAUCE_OPTIONS=['Geen','Japans mayo','Spicy mayo','Unagi saus','Spicy teriyaki saus','Korean chili saus','Cury mayo','Japans chili saus','Soy saus','Truffel mayo','Wasabi mayo'];
-const POKEBOWL_IDS=['zalmBowlQty','tunaBowlQty','ebiFryBowlQty','chickenKaraageBowlQty','spicyChickenBowlQty','teriyakiChickenBowlQty','teriyakiBeefBowlQty','californiaBowlQty','unagiBowlQty','vegaBowlQty','meatloverBowlQty','rainbowBowlQty','spicyTunaBowlQty','flamedZalmBowlQty','flamedTunaBowlQty'];
+const POKEBOWL_IDS=['zalmBowlQty','tunaBowlQty','ebiFryBowlQty','chickenKaraageBowlQty','spicyChickenBowlQty','teriyakiChickenBowlQty','teriyakiBeefBowlQty','californiaBowlQty','unagiBowlQty','vegaBowlQty','meatloverBowlQty','rainbowBowlQty','spicyTunaBowlQty','flamedZalmBowlQty','flamedTunaBowlQty','snackCount','ebiFryCount','ebikroketCount','spicyCrispyChickenCount','miniLoempiaCount','chickenLoempiaCount','gyozaCount','inktvisRingenCount'];
 let currentXBowlName = '';
 let currentPackaging = 0;
 let currentSubtotal = 0;
