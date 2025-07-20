@@ -4208,35 +4208,40 @@ function setDragonQty() {
   setQty('Dragon Roll Omakase', price, qty, DEFAULT_PACKAGING_FEE, prefs);
 }
 
-function updatePokebowlSauces(id,name){
-  const qty=parseInt(document.getElementById(id).value||0);
-  const container=document.getElementById(id+'Sauces');
-  if(!container) return;
-  container.innerHTML='';
-  const existing=(cart[name]&&cart[name].prefs)||[];
-  for(let i=1;i<=qty;i++){
-    const sel=document.createElement('select');
-    SAUCE_OPTIONS.forEach(opt=>{const o=document.createElement('option');o.value=opt;o.textContent=opt;sel.appendChild(o);});
-    sel.value=existing[i-1]||'Geen';
-    sel.dataset.index=i;
-    sel.addEventListener('change',()=>setPokebowlQty(id,name));
+function updatePokebowlSauces(id, name) {
+  const qty = parseInt(document.getElementById(id).value || 0);
+  const container = document.getElementById(id + 'Sauces');
+  if (!container) return;
+  container.innerHTML = '';
+  const existing = (cart[name] && cart[name].prefs) || [];
+  for (let i = 1; i <= qty; i++) {
+    const sel = document.createElement('select');
+    SAUCE_OPTIONS.forEach(opt => {
+      const o = document.createElement('option');
+      o.value = opt;
+      o.textContent = opt;
+      sel.appendChild(o);
+    });
+    sel.value = existing[i - 1] || 'Geen saus';
+    sel.dataset.index = i;
+    sel.addEventListener('change', () => setPokebowlQty(id, name));
     container.appendChild(sel);
   }
-  setPokebowlQty(id,name);
+  setPokebowlQty(id, name);
 }
 
-function setPokebowlQty(id,name){
-  const sel=document.getElementById(id);
-  const qty=parseInt(sel.value||0);
-  const pack=parseFloat(sel.closest('.menu-item').dataset.packaging||DEFAULT_PACKAGING_FEE);
-  const price=parseFloat(sel.closest('.menu-item').dataset.price||0);
-  const container=document.getElementById(id+'Sauces');
-  const prefs=[];
-  for(let i=1;i<=qty;i++){
-    const s=container.querySelector(`select[data-index="${i}"]`);
-    prefs.push(s?s.value:'Geen');
+function setPokebowlQty(id, name) {
+  const sel = document.getElementById(id);
+  const qty = parseInt(sel.value || 0);
+  const pack = parseFloat(sel.closest('.menu-item').dataset.packaging || DEFAULT_PACKAGING_FEE);
+  const price = parseFloat(sel.closest('.menu-item').dataset.price || 0);
+  const container = document.getElementById(id + 'Sauces');
+  const prefs = [];
+  for (let i = 1; i <= qty; i++) {
+    const s = container.querySelector(`select[data-index="${i}"]`);
+    prefs.push(s ? s.value : 'Geen saus');
   }
-  setQty(name,price,qty,pack,prefs);
+  setQty(name, price, qty, pack, prefs);
 }
 
 function getXBowlSelections(){
