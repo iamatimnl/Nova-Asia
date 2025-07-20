@@ -2120,7 +2120,15 @@ input:focus, select:focus, textarea:focus {
 <img alt="Korean Chicken Bento" src="{{ url_for('static', filename='images/chicken-bento.jpg') }}"/>
 </div>
 <div class="menu-content">
-<h3>Korean Chicken Bento<img src="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/辣椒.svg" alt="辣椒图标" width="40" height="40" /> </h3>
+<h3 style="display: flex; align-items: center; gap: 6px;">
+  Korean Chicken Bento
+  <img src="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/辣椒.svg"
+       alt="辣椒图片"
+       width="18"
+       height="18"
+       style="display: inline-block;" />
+</h3>
+
 <p>€ 22.00</p>
 <p id="soldoutKoreanChickenBento" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
