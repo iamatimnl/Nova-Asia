@@ -2298,22 +2298,22 @@ input:focus, select:focus, textarea:focus {
 <p id="soldoutXbento" class="sold-out-msg hidden">Sold Out!</p>
 <div class="bubble-option">
 <select id="xBentoMain">
-<option value="">Hoofdgerecht</option>
+<option value="">Main dish</option>
 </select>
 </div>
 <div class="bubble-option">
 <select id="xBentoSide">
-<option value="">Bijgerecht</option>
+<option value="">Side dish</option>
 </select>
 </div>
 <div class="bubble-option">
   <select id="xBentoRice">
-<option value="">Rijstsoort</option>
+<option value="">Rice type</option>
   </select>
 </div>
 <div class="bubble-option">
   <select id="xBentoVeg">
-    <option value="">Groente</option>
+    <option value="">Vegetable</option>
   </select>
 </div>
     <div class="new-set-wrap hidden" id="xBentoNewWrap">
@@ -2777,10 +2777,10 @@ input:focus, select:focus, textarea:focus {
       <div class="menu-content">
         <h3>X-Bowl</h3>
         <p id="xBowlSummary" class="xbowl-summary"></p>
-        <p id="xBowlPrice" class="xbowl-summary">Prijs afhankelijk van keuzes</p>
+        <p id="xBowlPrice" class="xbowl-summary">Price depends on selections</p>
         <div class="bubble-option">
           <select id="xBowlBase">
-            <option value="">Basis</option>
+            <option value="">Base</option>
             <option value="Sushi rijst" data-price="4">Sushi rijst</option>
             <option value="IJsbergsla" data-price="5">IJsbergsla</option>
             <option value="Tempura crispy rijst" data-price="6">Tempura crispy rijst</option>
@@ -3565,7 +3565,7 @@ const xbowlBases = [
   {name:'Tempura crispy rijst', price:6}
 ];
 const xbowlMains = [
-  {name:'geen', price:0},
+  {name:'none', price:0},
   {name:'Zalm', price:9},
   {name:'Tonijn', price:9},
   {name:'Gamba', price:8},
@@ -3578,7 +3578,7 @@ const xbowlMains = [
   {name:'Spicy tuna', price:9},
   {name:'Krabstick', price:8}
 ];
-const xbowlToppings=['geen','Komkommer','Avocado','Sojabonen','Mais','Zeewiersalade','Masago','Inari','Tamago'];
+const xbowlToppings=['none','Komkommer','Avocado','Sojabonen','Mais','Zeewiersalade','Masago','Inari','Tamago'];
 const XBOWL_TOPPING_PRICE=1.5;
 let currentXBowlName = '';
 let currentPackaging = 0;
@@ -3851,13 +3851,13 @@ function populateXbentoSelectors(){
   const riceSel=document.getElementById('xBentoRice');
   const vegSel=document.getElementById('xBentoVeg');
   const curMain=mainSel.value,curSide=sideSel.value,curRice=riceSel.value,curVeg=vegSel.value;
-  mainSel.innerHTML='<option value="">Hoofdgerecht</option>';
+  mainSel.innerHTML='<option value="">Main dish</option>';
   xbentoOptions.main.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.textContent=o.name;if(o.name===curMain) opt.selected=true;mainSel.appendChild(opt);});
-  sideSel.innerHTML='<option value="">Bijgerecht</option>';
+  sideSel.innerHTML='<option value="">Side dish</option>';
   xbentoOptions.side.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.textContent=o.name;if(o.name===curSide) opt.selected=true;sideSel.appendChild(opt);});
-  riceSel.innerHTML='<option value="">Rijstsoort</option>';
+  riceSel.innerHTML='<option value="">Rice type</option>';
   xbentoOptions.rice.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.textContent=o.name;if(o.name===curRice) opt.selected=true;riceSel.appendChild(opt);});
-  vegSel.innerHTML='<option value="">Groente</option>';
+  vegSel.innerHTML='<option value="">Vegetable</option>';
   xbentoOptions.groente.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.textContent=o.name;if(o.name===curVeg) opt.selected=true;vegSel.appendChild(opt);});
 }
 
@@ -4162,13 +4162,13 @@ function updateXBowlDisplay(){
   let price=0;
   if(baseOpt&&baseOpt.dataset.price) price+=parseFloat(baseOpt.dataset.price);
   mains.forEach(o=>{price+=parseFloat(o.dataset.price||0);});
-  const paidTops = toppings.filter(t => t.toLowerCase() !== 'geen');
+  const paidTops = toppings.filter(t => t.toLowerCase() !== 'none');
   price += paidTops.length * XBOWL_TOPPING_PRICE;
   const item=document.querySelector('.menu-item[data-name="X-Bowl"]');
   if(item){
     item.dataset.price=price;
     const p=document.getElementById('xBowlPrice');
-    if(p) p.textContent=price?`€ ${price.toFixed(2)}`:'Prijs afhankelijk van keuzes';
+    if(p) p.textContent=price?`€ ${price.toFixed(2)}`:'Price depends on selections';
     const info=document.getElementById('xBowlSummary');
     if(info){
       const mainNames=mains.map(o=>o.value).join(', ');
@@ -4228,14 +4228,14 @@ function changeXbowlQty(delta) {
 function createXBowlMainSelect(){
   const div=document.createElement('div');
   const sel=document.createElement('select');
-  sel.innerHTML='<option value="">Hoofdingredient</option>';
+  sel.innerHTML='<option value="">Main ingredient</option>';
   xbowlMains.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.dataset.price=o.price;opt.textContent=o.name;sel.appendChild(opt);});
   const del=document.createElement('button');del.type='button';del.textContent='❌';
   del.addEventListener('click',()=>{div.remove();ensureXBowlMain();updateXBowlDisplay();updateXBowlControls();changeXbowlQty(0);});
   sel.addEventListener('change',()=>{
     const val = sel.value.toLowerCase();
-    if(sel.value && val !== 'geen' && div===document.querySelector('#xBowlMains').lastElementChild){
-      if(confirm('Wil je extra portie?')){
+    if(sel.value && val !== 'none' && div===document.querySelector('#xBowlMains').lastElementChild){
+      if(confirm('Would you like an extra portion?')){
         document.getElementById('xBowlMains').appendChild(createXBowlMainSelect());
       }
     }
@@ -4255,8 +4255,8 @@ function createXBowlToppingSelect(){
   del.addEventListener('click',()=>{div.remove();ensureXBowlTopping();updateXBowlDisplay();updateXBowlControls();changeXbowlQty(0);});
   sel.addEventListener('change',()=>{
     const val = sel.value.toLowerCase();
-    if(sel.value && val !== 'geen' && div===document.querySelector('#xBowlToppings').lastElementChild){
-      if(confirm('Wil je extra topping toevoegen?')){
+    if(sel.value && val !== 'none' && div===document.querySelector('#xBowlToppings').lastElementChild){
+      if(confirm('Would you like to add an extra topping?')){
         document.getElementById('xBowlToppings').appendChild(createXBowlToppingSelect());
       }
     }
@@ -4332,16 +4332,16 @@ function clearXBowlSet(){
   document.getElementById('xBowlBase').addEventListener('change', () => { updateXBowlDisplay(); updateXBowlControls(); changeXbowlQty(0); });
   document.getElementById('xBowlNew').addEventListener('click', clearXBowlSet);
   document.querySelector('.qty-plus[data-target="xBowlQty"]').addEventListener('click', () => {
-    if (!isXbowlValid()) { alert('🥗 Basis en hoofdingrediënt vereist.'); return; }
+    if (!isXbowlValid()) { alert('🥗 Base and main ingredient required.'); return; }
     changeXbowlQty(1);
   });
   document.querySelector('.qty-minus[data-target="xBowlQty"]').addEventListener('click', () => {
-    if (!isXbowlValid()) { alert('🥗 Basis en hoofdingrediënt vereist.'); return; }
+    if (!isXbowlValid()) { alert('🥗 Base and main ingredient required.'); return; }
     changeXbowlQty(-1);
   });
   document.getElementById('xBowlQty').addEventListener('change', () => {
     if (!isXbowlValid()) {
-      alert('🥗 Basis en hoofdingrediënt vereist.');
+      alert('🥗 Base and main ingredient required.');
       document.getElementById('xBowlQty').value = 0;
       return;
     }
@@ -4360,7 +4360,7 @@ function clearXBowlSet(){
   // 🧋 奶茶按钮加减
   document.querySelector('.qty-plus[data-target="bubbleTeaQty"]').addEventListener('click', () => {
     if (!isBubbleTeaValid()) {
-      alert("🧋 Kies eerst type, smaak en topping voor je bubble tea.");
+      alert("🧋 Please select type, flavor and topping for your bubble tea first.");
       return;
     }
     changeBubbleQty(1);
@@ -4368,7 +4368,7 @@ function clearXBowlSet(){
 
   document.querySelector('.qty-minus[data-target="bubbleTeaQty"]').addEventListener('click', () => {
     if (!isBubbleTeaValid()) {
-      alert("🧋 Kies eerst type, smaak en topping voor je bubble tea.");
+      alert("🧋 Please select type, flavor and topping for your bubble tea first.");
       return;
     }
     changeBubbleQty(-1);
@@ -4377,7 +4377,7 @@ function clearXBowlSet(){
   // 🍱 Xbento 按钮加减（保留一次即可）
   document.querySelector('.qty-plus[data-target="xBentoQty"]').addEventListener('click', () => {
     if (!isXbentoValid()) {
-      alert("🍱 Kies eerst hoofdgerecht, bijgerecht, rijstsoort en groente voor je Xbento.");
+      alert("🍱 Please choose main dish, side dish, rice type and vegetable for your Xbento first.");
       return;
     }
     changeXbentoQty(1);
@@ -4385,7 +4385,7 @@ function clearXBowlSet(){
 
   document.querySelector('.qty-minus[data-target="xBentoQty"]').addEventListener('click', () => {
     if (!isXbentoValid()) {
-      alert("🍱 Kies eerst hoofdgerecht, bijgerecht, rijstsoort en groente voor je Xbento.");
+      alert("🍱 Please choose main dish, side dish, rice type and vegetable for your Xbento first.");
       return;
     }
     changeXbentoQty(-1);
@@ -4396,7 +4396,7 @@ function clearXBowlSet(){
   // 🧋 奶茶 select 直接选择数量时
   document.getElementById('bubbleTeaQty').addEventListener('change', () => {
     if (!isBubbleTeaValid()) {
-      alert("🧋 Kies eerst type, smaak en topping voor je bubble tea.");
+      alert("🧋 Please select type, flavor and topping for your bubble tea first.");
       document.getElementById('bubbleTeaQty').value = 0;
       return;
     }
@@ -4406,7 +4406,7 @@ function clearXBowlSet(){
   // 🍱 Xbento select 直接选择数量时
   document.getElementById('xBentoQty').addEventListener('change', () => {
     if (!isXbentoValid()) {
-      alert("🍱 Kies eerst hoofdgerecht, bijgerecht, rijstsoort en groente voor je Xbento.");
+      alert("🍱 Please choose main dish, side dish, rice type and vegetable for your Xbento first.");
       document.getElementById('xBentoQty').value = 0;
       return;
     }
@@ -4500,15 +4500,15 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById(code + 'Base').addEventListener('change', () => updateRamenControls(code));
     document.getElementById(code + 'Smaak').addEventListener('change', () => updateRamenControls(code));
     document.querySelector(`.qty-plus[data-target="${code}Qty"]`).addEventListener('click', () => {
-      if (!isRamenValid(code)) { alert('🍜 Kies eerst base en smaak voor je ramen.'); return; }
+      if (!isRamenValid(code)) { alert('🍜 Please select base and flavor for your ramen first.'); return; }
       changeRamenQty(code, 1);
     });
     document.querySelector(`.qty-minus[data-target="${code}Qty"]`).addEventListener('click', () => {
-      if (!isRamenValid(code)) { alert('🍜 Kies eerst base en smaak voor je ramen.'); return; }
+      if (!isRamenValid(code)) { alert('🍜 Please select base and flavor for your ramen first.'); return; }
       changeRamenQty(code, -1);
     });
     qty.addEventListener('change', () => {
-      if (!isRamenValid(code)) { alert('🍜 Kies eerst base en smaak voor je ramen.'); qty.value = 0; return; }
+      if (!isRamenValid(code)) { alert('🍜 Please select base and flavor for your ramen first.'); qty.value = 0; return; }
       changeRamenQty(code, 0);
     });
     document.getElementById(code + 'New').addEventListener('click', () => clearRamenSet(code));
@@ -4601,7 +4601,7 @@ function updateCart() {
     li.appendChild(sel);
     if (item.prefs) {
       const prefTitle = document.createElement('div');
-      prefTitle.textContent = 'Voorkeur:';
+      prefTitle.textContent = 'Preference:';
       const ul = document.createElement('ul');
       item.prefs.forEach((p, i) => {
         const pli = document.createElement('li');
@@ -4914,13 +4914,13 @@ function checkout() {
       let line = `${name} x ${item.qty}`;
       if (item.prefs) {
         const prefsText = item.prefs.map((p, i) => `${i + 1}. ${p}`).join('\n   ');
-        line += `\n   Voorkeur:\n   ${prefsText}`;
+        line += `\n   Preference:\n   ${prefsText}`;
       }
       return line;
     })
     .join('\n');
 
-  orderSummary += `\nStokjes nodig: ${chopstickCount}`;
+  orderSummary += `\nChopsticks needed: ${chopstickCount}`;
   orderSummary += `\nSoy sauce: ${soyCount}`;
   orderSummary += `\nWasabi: ${wasabiCount}`;
   orderSummary += `\nGinger: ${gemberCount}`;
@@ -4939,9 +4939,9 @@ function checkout() {
     paymentMethod = document.getElementById('cartPaymentSelect')?.value || document.getElementById('pickupPayment').value;
     document.getElementById('pickupPayment').value = paymentMethod;
 
-    customerDetails = `\n[Afhalen]\nName: ${name}\nTelefoon: ${phone}`;
+    customerDetails = `\n[Pickup]\nName: ${name}\nPhone: ${phone}`;
     if (email) customerDetails += `\nEmail: ${email}`;
-    customerDetails += `\nAfhaaltijd: ${time}\nBetaalwijze: ${paymentMethod}`;
+    customerDetails += `\nPickup time: ${time}\nPayment method: ${paymentMethod}`;
   } else {
     const name = document.getElementById('deliveryName').value.trim();
     const phone = document.getElementById('deliveryPhone').value.trim();
@@ -4966,9 +4966,9 @@ function checkout() {
       document.getElementById('deliveryPostcode').style.borderColor = '';
     }
 
-    customerDetails = `\n[Bezorgen]\nName: ${name}\nTelefoon: ${phone}`;
+    customerDetails = `\n[Delivery]\nName: ${name}\nPhone: ${phone}`;
     if (email) customerDetails += `\nEmail: ${email}`;
-    customerDetails += `\nAddress: ${address} ${houseNumber}\nPostcode: ${postcodeRaw}\nArea: ${area}\nDelivery time: ${time}\nBetaalwijze: ${paymentMethod}`;
+    customerDetails += `\nAddress: ${address} ${houseNumber}\nPostcode: ${postcodeRaw}\nArea: ${area}\nDelivery time: ${time}\nPayment method: ${paymentMethod}`;
   }
 
   const tip = parseFloat(document.getElementById('tipSelect').value);
@@ -4987,7 +4987,7 @@ function checkout() {
   }
 
   const discountCode = document.getElementById('discountCode').value.trim();
-  const discountLine = `\nDiscount: -€${currentDiscount.toFixed(2)} (Code: ${discountCode || 'geen'})`;
+  const discountLine = `\nDiscount: -€${currentDiscount.toFixed(2)} (Code: ${discountCode || 'none'})`;
   const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}${tipLine}${discountLine}\nTotal: €${totalPrice}`;
 
   const itemsToSend = { ...cart };
@@ -5208,11 +5208,11 @@ function checkout() {
     };
 
     if (afhalen.checked && !pickupAvailable) {
-      showFeedback('Vandaag is afhalen niet mogelijk.', true);
+      showFeedback('Pickup is not available today.', true);
       bezorgen.checked = true;
     }
     if (bezorgen.checked && !deliveryAvailable) {
-      showFeedback('Vandaag is bezorging niet mogelijk.', true);
+      showFeedback('Delivery is not available today.', true);
       afhalen.checked = true;
     }
    if (afhalen.checked) {
@@ -5244,7 +5244,7 @@ function checkout() {
       updateCartPaymentOptions();
     } else {
       transferValues(afhalenFields, bezorgenFields);
-      infoBox.textContent = 'Wij bezorgen in de volgende postcodegebieden:\n' + allowedPostcodes.join(', ');
+      infoBox.textContent = 'We deliver to the following postcode areas:\n' + allowedPostcodes.join(', ');
 
       bezorgenFields.classList.remove('hidden');
       afhalenFields.classList.add('hidden');
@@ -5277,7 +5277,7 @@ function checkout() {
     // 格式检查
     if (!formatRegex.test(raw)) {
       this.style.borderColor = 'red';
-      hint.textContent = 'Postcode moet het formaat 1234AB hebben (zonder spatie).';
+      hint.textContent = 'Postcode must be in the format 1234AB (no space).';
       return;
     }
 
@@ -5285,7 +5285,7 @@ function checkout() {
     const postcode = raw.slice(0, 4); // 取前4位数字
     if (allowedPostcodes.length && !allowedPostcodes.includes(postcode)) {
       this.style.borderColor = 'red';
-      hint.textContent = `🚫 Wij bezorgen niet in dit postcodegebied (${postcode}).`;
+      hint.textContent = `🚫 We do not deliver to this postcode area (${postcode}).`;
     } else {
       this.style.borderColor = '';
       hint.textContent = '';
@@ -5708,7 +5708,7 @@ function validateOrderAmount() {
     saveCart();
     resetSlider();
     isSubmitting = false;
-    alert('Sorry, de minimum bezorgbedrag is 20 euro.');
+    alert('Sorry, the minimum delivery amount is 20 euros.');
     window.location.href = '/';
     return false;
   }
@@ -5718,7 +5718,7 @@ function validateOrderAmount() {
     saveCart();
     resetSlider();
     isSubmitting = false;
-    alert('Sorry, u heeft nog niks gekozen.');
+    alert('Sorry, you have not selected anything yet.');
     window.location.href = '/';
     return false;
   }
@@ -6153,23 +6153,23 @@ function updateStatus(settings) {
     message = 'The website is currently closed';
   } else if (!pickupOrderable && !deliveryOrderable) {
     storeOpen = false;
-    message = 'Vandaag afhalen en bezorgen zijn niet meer mogelijk.';
+    message = 'Pickup and delivery are no longer possible today.';
   } else if (afhalen.checked) {
     if (!pickupOrderable) {
       if (deliveryOrderable) {
-        message = 'Afhalen is niet meer mogelijk, maar bezorgen is nog beschikbaar.';
+        message = 'Pickup is no longer possible, but delivery is still available.';
         bezorgen.checked = true;
         afhalen.checked = false;
         toggleOrderType();
         storeOpen = true;
       } else {
         storeOpen = false;
-        message = 'Vandaag afhalen en bezorgen zijn niet meer mogelijk.';
+        message = 'Pickup and delivery are no longer possible today.';
       }
     } else {
       storeOpen = true;
       if (pickupTooLate) {
-        message = 'Vandaag afhalen is niet meer mogelijk.';
+        message = 'Pickup is no longer possible today.';
       } else {
         message = '';
       }
@@ -6184,12 +6184,12 @@ function updateStatus(settings) {
         storeOpen = true;
       } else {
         storeOpen = false;
-        message = 'Vandaag afhalen en bezorgen zijn niet meer mogelijk.';
+        message = 'Pickup and delivery are no longer possible today.';
       }
     } else {
       storeOpen = true;
       if (deliveryTooLate) {
-        message = 'Vandaag bezorgen we niet meer.';
+        message = 'We no longer deliver today.';
       } else {
         message = '';
       }
