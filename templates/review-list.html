@@ -49,22 +49,27 @@
       padding: 20px;
     }
 
-    .readable-content {
-  color: #000000; /* 强制字体为黑色 */
+   .readable-content {
+  color: #000;  /* 黑色文字 */
   opacity: 0;
-  transform: scale(0.88) translateY(50px);
+  transform: scale(0.95) translateY(40px);
   transition: 
-    opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), 
-    transform 0.6s cubic-bezier(0.22, 1.12, 0.36, 1);
+    opacity 0.35s ease, 
+    transform 0.6s ease;
 
-  background: rgba(255, 254, 254, 0.25);
+  background: rgba(255, 255, 255, 0.08);          /* 更薄，更通透 */
+  border: 1px solid rgba(255, 255, 255, 0.18);    /* 毛玻璃边缘感 */
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-  padding: 20px;
-  border-radius: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 16px 20px;
+  border-radius: 18px;
+
   will-change: opacity, transform;
+
+  /* 移除高度限制，靠内容撑开 */
+  min-height: auto;
 }
 
 
