@@ -4998,8 +4998,8 @@ function checkout() {
 
   const pickupSel = document.getElementById('pickup_time').value;
   const deliverySel = document.getElementById('delivery_time').value;
-  const pickupValue = pickupSel === 'Z.S.M.' ? getAsapTime() : pickupSel;
-  const deliveryValue = deliverySel === 'Z.S.M.' ? getAsapTime() : deliverySel;
+  const pickupValue = pickupSel === 'ASAP' ? getAsapTime() : pickupSel;
+  const deliveryValue = deliverySel === 'ASAP' ? getAsapTime() : deliverySel;
 
   const tijdslotDisplay = orderType === 'afhalen' ? pickupSel : deliverySel;
 
@@ -5145,7 +5145,7 @@ function checkout() {
         if (now >= lastTime) {
             const opt = document.createElement('option');
             opt.value = '';
-            opt.textContent = 'Geen beschikbare tijd';
+            opt.textContent = 'No available time';
             select.appendChild(opt);
             return;
         }
@@ -5153,8 +5153,8 @@ function checkout() {
 
     if (showZSM) {
         const asapOpt = document.createElement('option');
-        asapOpt.value = 'Z.S.M.';
-        asapOpt.textContent = 'Z.S.M.';
+        asapOpt.value = 'ASAP';
+        asapOpt.textContent = 'ASAP';
         select.appendChild(asapOpt);
     }
 
