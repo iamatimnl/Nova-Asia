@@ -1639,11 +1639,13 @@ function submitOrder() {
   function populateTimeOptions(selectId,offsetMinutes){
     const select=document.getElementById(selectId);
     if(!select) return;
+    const prev=select.value;
     select.innerHTML='';
     const asap=document.createElement('option');
     asap.value='Z.S.M.';
     asap.textContent='Z.S.M.';
     select.appendChild(asap);
+
     const now=new Date();
     now.setMinutes(now.getMinutes()+offsetMinutes);
 
@@ -1656,14 +1658,26 @@ function submitOrder() {
     start=new Date(start);
     start.setMinutes(Math.ceil(start.getMinutes()/15)*15,0,0);
 
-    for(let t=start;t<=close;t.setMinutes(t.getMinutes()+15)){
+    const allTimes=[];
+    for(let t=new Date(open); t<=close; t.setMinutes(t.getMinutes()+15)){
       const hh=pad(t.getHours());
       const mm=pad(t.getMinutes());
-      const timeStr=`${hh}:${mm}`;
+      allTimes.push({time:new Date(t), str:`${hh}:${mm}`});
+    }
+
+    const lastTwo=allTimes.slice(-2).map(t=>t.str);
+
+    for(const {time,str} of allTimes){
+      if(time<start && !lastTwo.includes(str)) continue;
       const opt=document.createElement('option');
-      opt.value=timeStr;
-      opt.textContent=timeStr;
+      opt.value=str;
+      opt.textContent=str;
       select.appendChild(opt);
+    }
+
+    if(prev){
+      const option=Array.from(select.options).find(o=>o.value===prev);
+      if(option) select.value=prev;
     }
   }
 
