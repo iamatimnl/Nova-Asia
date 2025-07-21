@@ -40,10 +40,6 @@ from flask import Flask, send_from_directory, render_template
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
-def send_email_notification(order_text):
-    """Disabled stub for email notifications."""
-    print(f"send_email_notification disabled: {order_text}")
-
 
 # 初始化 Flask
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -1802,7 +1798,6 @@ def logout():
 # 启动
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000)
-
 
 
 
