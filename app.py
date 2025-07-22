@@ -532,6 +532,8 @@ with app.app_context():
         "soldout_dimsum_bento": "false",
         "soldout_lamskotelet_bento": "false",
         "soldout_unagi_bento": "false",
+        "soldout_tuna_bento": "false",
+        "soldout_ribeye_bento": "false",
         "soldout_veggie_bento": "false",
         "soldout_sushi_bento": "false",
         "soldout_salmon_roll": "false",
@@ -1101,6 +1103,8 @@ def dashboard():
         soldout_dimsum_bento=get_value('soldout_dimsum_bento', 'false'),
         soldout_lamskotelet_bento=get_value('soldout_lamskotelet_bento', 'false'),
         soldout_unagi_bento=get_value('soldout_unagi_bento', 'false'),
+        soldout_tuna_bento=get_value('soldout_tuna_bento', 'false'),
+        soldout_ribeye_bento=get_value('soldout_ribeye_bento', 'false'),
         soldout_veggie_bento=get_value('soldout_veggie_bento', 'false'),
         soldout_sushi_bento=get_value('soldout_sushi_bento', 'false'),
         soldout_salmon_roll=get_value('soldout_salmon_roll', 'false'),
@@ -1202,6 +1206,8 @@ def update_setting():
     soldout_dimsum_bento_val = data.get('soldout_dimsum_bento', 'false')
     soldout_lamskotelet_bento_val = data.get('soldout_lamskotelet_bento', 'false')
     soldout_unagi_bento_val = data.get('soldout_unagi_bento', 'false')
+    soldout_tuna_bento_val = data.get('soldout_tuna_bento', 'false')
+    soldout_ribeye_bento_val = data.get('soldout_ribeye_bento', 'false')
     soldout_veggie_bento_val = data.get('soldout_veggie_bento', 'false')
     soldout_sushi_bento_val = data.get('soldout_sushi_bento', 'false')
     soldout_salmon_roll_val = data.get('soldout_salmon_roll', 'false')
@@ -1290,6 +1296,8 @@ def update_setting():
         ('soldout_dimsum_bento', soldout_dimsum_bento_val),
         ('soldout_lamskotelet_bento', soldout_lamskotelet_bento_val),
         ('soldout_unagi_bento', soldout_unagi_bento_val),
+        ('soldout_tuna_bento', soldout_tuna_bento_val),
+        ('soldout_ribeye_bento', soldout_ribeye_bento_val),
         ('soldout_veggie_bento', soldout_veggie_bento_val),
         ('soldout_sushi_bento', soldout_sushi_bento_val),
         ('soldout_salmon_roll', soldout_salmon_roll_val),
