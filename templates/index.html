@@ -3229,6 +3229,24 @@ input:focus, select:focus, textarea:focus {
       <button class="qty-plus add-button" data-target="spicyCrispyChickenCount" type="button">+</button>
     </div>
     <div id="spicyCrispyChickenCountSauces" class="pokebowl-sauces"></div>
+    </div>
+</div>
+<!-- Japans Zalm Nugget -->
+<div class="menu-row menu-item" data-name="Japans Zalm Nugget" data-packaging="0.2" data-price="6.5">
+  <div class="menu-img">
+    <img alt="Japans Zalm Nugget" loading="lazy" src="{{ url_for('static', filename='images/JZN.png') }}">
+    </img></div>
+  <div class="menu-content">
+    <h3>Japans Zalm Nugget</h3>
+    <p>€ 6.50</p>
+    <p id="soldoutJapansZalmNugget" class="sold-out-msg hidden">Uitverkocht!</p>
+    <div class="qty-box">
+      <label for="japansZalmNuggetCount">Aantal</label>
+      <button class="qty-minus remove-button" data-target="japansZalmNuggetCount" type="button">-</button>
+      <select id="japansZalmNuggetCount" name="japansZalmNuggetCount"></select>
+      <button class="qty-plus add-button" data-target="japansZalmNuggetCount" type="button">+</button>
+    </div>
+    <div id="japansZalmNuggetCountSauces" class="pokebowl-sauces"></div>
   </div>
 </div>
 <div class="menu-row menu-item" data-name="Mini Loempia – 6 st" data-packaging="0.2" data-price="3.5">
@@ -3712,6 +3730,7 @@ const soldoutMap = {
   "Karaage": "soldout_karaage",
   "Ebi Fry": "soldout_ebi_fry",
   "Spicy Crispy Chicken": "soldout_spicy_crispy_chicken",
+  "Japans Zalm Nugget": "soldout_japans_zalm_nugget",
   "Chicken Loempia": "soldout_chicken_loempia",
   "Gyoza": "soldout_gyoza",
   "Inktvis Ringen": "soldout_inktvis_ringen",
@@ -6077,6 +6096,7 @@ function updateStatus(settings) {
     {name: 'Ebi Fry – 4 st', key: 'soldout_ebi_fry', qty: 'ebiFryCount', msg: 'soldoutEbiFry'},
     {name: 'Spicy Crispy Chicken – 5 st', key: 'soldout_spicy_crispy_chicken', qty: 'spicyCrispyChickenCount', msg: 'soldoutSpicyCrispyChicken'},
     {name: 'Chicken Loempia – 2 st', key: 'soldout_chicken_loempia', qty: 'chickenLoempiaCount', msg: 'soldoutChickenLoempia'},
+    {name: 'Japans Zalm Nugget', key: 'soldout_japans_zalm_nugget', qty: 'japansZalmNuggetCount', msg: 'soldoutJapansZalmNugget'},
     {name: 'Gyoza – 5 st', key: 'soldout_gyoza', qty: 'gyozaCount', msg: 'soldoutGyoza'},
     {name: 'Inktvis Ringen – 5 st', key: 'soldout_inktvis_ringen', qty: 'inktvisRingenCount', msg: 'soldoutInktvisRingen'},
     {name: 'Sesambal – 5 st', key: 'soldout_sesambal', qty: 'sesambalCount', msg: 'soldoutSesambal'},
