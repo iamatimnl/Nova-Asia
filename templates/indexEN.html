@@ -3237,27 +3237,6 @@ input:focus, select:focus, textarea:focus {
     <div id="miniLoempiaCountSauces" class="pokebowl-sauces"></div>
   </div>
 </div>
-<!-- Japanese Salmon Nugget -->
-<div class="menu-row menu-item" data-name="Japanese Salmon Nugget" data-packaging="0.2" data-price="6.5">
-  <div class="menu-img">
-    <img alt="Japanese Salmon Nugget" loading="lazy" src="{{ url_for('static', filename='images/JZN.png') }}">
-  </div>
-  <div class="menu-content">
-    <h3>Japanese Salmon Nugget</h3>
-    <p>€ 6.50</p>
-    <p id="soldoutJapansZalmNugget" class="sold-out-msg hidden">Sold out!</p>
-    <div class="qty-box">
-      <label for="japansZalmNuggetCount">Quantity</label>
-      <button class="qty-minus remove-button" data-target="japansZalmNuggetCount" type="button">-</button>
-      <select id="japansZalmNuggetCount" name="japansZalmNuggetCount"></select>
-      <button class="qty-plus add-button" data-target="japansZalmNuggetCount" type="button">+</button>
-    </div>
-    <div id="japansZalmNuggetCountSauces" class="pokebowl-sauces"></div>
-  </div>
-</div>
-
-
-  
 <!-- Chicken Loempia -->
 <div class="menu-row menu-item" data-name="Chicken Spring Rolls – 2 pcs" data-packaging="0.2" data-price="5">
   <div class="menu-img">
@@ -3663,7 +3642,7 @@ const xbowlMains = [
 const xbowlToppings=['none','Cucumber','Avocado','Soybeans','Corn','Seaweed salad','Masago','Inari','Tamago'];
 const XBOWL_TOPPING_PRICE=1.5;
 const SAUCE_OPTIONS=['No saus','Japanese mayo','Spicy mayo','Unagi sauce','Spicy teriyaki sauce','Korean chili sauce','Curry mayo','Japanese chili sauce','Soy sauce','Truffle mayo','Wasabi mayo'];
-const POKEBOWL_IDS=['zalmBowlQty','tunaBowlQty','ebiFryBowlQty','chickenKaraageBowlQty','spicyChickenBowlQty','teriyakiChickenBowlQty','teriyakiBeefBowlQty','californiaBowlQty','unagiBowlQty','vegaBowlQty','meatloverBowlQty','rainbowBowlQty','spicyTunaBowlQty','flamedZalmBowlQty','flamedTunaBowlQty','snackCount','ebiFryCount','ebikroketCount','spicyCrispyChickenCount','miniLoempiaCount','japansZalmNuggetCount','chickenLoempiaCount','gyozaCount','inktvisRingenCount'];
+const POKEBOWL_IDS=['zalmBowlQty','tunaBowlQty','ebiFryBowlQty','chickenKaraageBowlQty','spicyChickenBowlQty','teriyakiChickenBowlQty','teriyakiBeefBowlQty','californiaBowlQty','unagiBowlQty','vegaBowlQty','meatloverBowlQty','rainbowBowlQty','spicyTunaBowlQty','flamedZalmBowlQty','flamedTunaBowlQty','snackCount','ebiFryCount','ebikroketCount','spicyCrispyChickenCount','miniLoempiaCount','chickenLoempiaCount','gyozaCount','inktvisRingenCount'];
 let currentXBowlName = '';
 let currentPackaging = 0;
 let currentSubtotal = 0;
@@ -3722,7 +3701,6 @@ const soldoutMap = {
   "Karaage": "soldout_karaage",
   "Ebi Fry": "soldout_ebi_fry",
   "Spicy Crispy Chicken": "soldout_spicy_crispy_chicken",
-  "Japanese Salmon Nugget": "soldout_japans_zalm_nugget"
   "Chicken Loempia": "soldout_chicken_loempia",
   "Gyoza": "soldout_gyoza",
   "Inktvis Ringen": "soldout_inktvis_ringen",
@@ -6087,7 +6065,6 @@ function updateStatus(settings) {
     {name: 'Gyoza – 5 st', key: 'soldout_gyoza', qty: 'gyozaCount', msg: 'soldoutGyoza'},
     {name: 'Inktvis Ringen – 5 st', key: 'soldout_inktvis_ringen', qty: 'inktvisRingenCount', msg: 'soldoutInktvisRingen'},
     {name: 'Sesambal – 5 pcs', key: 'soldout_sesambal', qty: 'sesambalCount', msg: 'soldoutSesambal'},
-    {name: 'Japans Zalm Nugget',key: 'soldout_japans_zalm_nugget', qty: 'japansZalmNuggetCount', msg: 'soldoutJapansZalmNugget'},
     {name: 'Yakitori – 4 pcs', key: 'soldout_yakitori', qty: 'yakitoriCount', msg: 'soldoutYakitori'},
     {name: 'Mini Spring Rolls – 6 pcs', key: 'soldout_mini_loempia', qty: 'miniLoempiaCount', msg: 'soldoutMiniLoempia'},
     {name: 'Edamame', key: 'soldout_edamame', qty: 'edamameCount', msg: 'soldoutEdamame'},
