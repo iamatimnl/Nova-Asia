@@ -2070,58 +2070,7 @@ input:focus, select:focus, textarea:focus {
       line-height: 1;">0</span>
 </button>
 <img alt="Back to top" id="back-to-top-logo" src="{{ url_for('static', filename='images/Logo.png') }}"/>
-<section id="bubble">
-<div class="menu-group">
-<h2 style="margin-top: -8px; font-size: 1.5rem; color: #333; text-align: center; font-weight: bold;">
-  Bubble Tea
-</h2>
-<div class="menu-row menu-item" data-name="Bubble Tea" data-packaging="0.2" data-price="5">
-<div class="menu-img">
-<img alt="Bubble Tea" src="{{ url_for('static', filename='images/bubble-tea-main.jpg') }}"/>
-</div>
-<div class="menu-content">
-<h3>Bubble Tea</h3>
-<p>€ 5.00</p>
-<p id="bubbleSoldOut" class="sold-out-msg hidden">Uitverkocht!</p>
-<div class="bubble-option">
-<select id="bubbleType">
-<option value="">Base</option>
-<option value="Green Tea">Green Tea</option>
-<option value="Milk Tea">Milk Tea</option>
-<option value="Milkshake">Milkshake</option>
-</select>
-</div>
-<div class="bubble-option">
-<select id="bubbleFlavor">
-<option value="">Smaak</option>
-<option value="Mango">Mango</option>
-<option value="Appel">Appel</option>
-<option value="Matcha">Matcha</option>
-<option value="Brown Sugar">Brown Sugar</option>
-</select>
-</div>
-<div class="bubble-option">
-  <select id="bubbleTopping">
-<option value="">Topping</option>
-<option value="Appel Popping">Appel Popping</option>
-<option value="Perzik Popping">Perzik Popping</option>
-  <option value="Tapioca">Tapioca</option>
-  </select>
-</div>
-        <div class="new-set-wrap hidden" id="bubbleNewWrap">
-          <span class="new-set-msg">Toegevoegd aan winkelwagen!</span>
-          <button type="button" class="new-set-button" id="bubbleNew">Selecteer een nieuwe optie</button>
-        </div>
-<div class="qty-box">
-  <label for="bubbleTeaQty">Aantal</label>
-<button class="qty-minus remove-button" data-target="bubbleTeaQty" type="button">-</button>
-<select id="bubbleTeaQty"></select>
-<button class="qty-plus add-button" data-target="bubbleTeaQty" type="button">+</button>
-</div>
-</div>
-</div>
-</div>
-</section>
+
 <section id="bento">
 <div class="menu-group">
 <h2 style="margin-top: -8px; font-size: 1.5rem; color: #333; text-align: center; font-weight: bold;">
@@ -3590,6 +3539,59 @@ input:focus, select:focus, textarea:focus {
 </div>
 </div>
 </section>
+<section id="bubble">
+<div class="menu-group">
+<h2 style="margin-top: -8px; font-size: 1.5rem; color: #333; text-align: center; font-weight: bold;">
+  Bubble Tea
+</h2>
+<div class="menu-row menu-item" data-name="Bubble Tea" data-packaging="0.2" data-price="5">
+<div class="menu-img">
+<img alt="Bubble Tea" src="{{ url_for('static', filename='images/bubble-tea-main.jpg') }}"/>
+</div>
+<div class="menu-content">
+<h3>Bubble Tea</h3>
+<p>€ 5.00</p>
+<p id="bubbleSoldOut" class="sold-out-msg hidden">Uitverkocht!</p>
+<div class="bubble-option">
+<select id="bubbleType">
+<option value="">Base</option>
+<option value="Green Tea">Green Tea</option>
+<option value="Milk Tea">Milk Tea</option>
+<option value="Milkshake">Milkshake</option>
+</select>
+</div>
+<div class="bubble-option">
+<select id="bubbleFlavor">
+<option value="">Smaak</option>
+<option value="Mango">Mango</option>
+<option value="Appel">Appel</option>
+<option value="Matcha">Matcha</option>
+<option value="Brown Sugar">Brown Sugar</option>
+</select>
+</div>
+<div class="bubble-option">
+  <select id="bubbleTopping">
+<option value="">Topping</option>
+<option value="Appel Popping">Appel Popping</option>
+<option value="Perzik Popping">Perzik Popping</option>
+  <option value="Tapioca">Tapioca</option>
+  </select>
+</div>
+        <div class="new-set-wrap hidden" id="bubbleNewWrap">
+          <span class="new-set-msg">Toegevoegd aan winkelwagen!</span>
+          <button type="button" class="new-set-button" id="bubbleNew">Selecteer een nieuwe optie</button>
+        </div>
+<div class="qty-box">
+  <label for="bubbleTeaQty">Aantal</label>
+<button class="qty-minus remove-button" data-target="bubbleTeaQty" type="button">-</button>
+<select id="bubbleTeaQty"></select>
+<button class="qty-plus add-button" data-target="bubbleTeaQty" type="button">+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+  
 <section id="info">
   <h2>Info</h2>
   <p>We zijn nog niet open en bevinden ons in de testfase. Nieuwe ontwikkelingen worden tijdig gecommuniceerd.</p>
