@@ -88,11 +88,11 @@ th:last-child {
        <th>Email</th>
        <th>Items</th>
        <th>Opmerking</th>
-       <th>Fooi</th>
+       <th>Ordernummer</th>
        <th>Totaal</th>
        <th>Adres</th>
        <th>Betaalwijze</th>
-       <th>Ordernummer</th>
+       <th>Fooi</th>
        <th>Acties</th>
       </tr>
     </thead>
@@ -119,7 +119,7 @@ th:last-child {
           </ul>
         </td>
        <td>{{ order.opmerking or '-' }}</td>
-       <td>€{{ '%.2f' % (order.fooi or order.tip or 0) }}</td>
+       <td>{{ order.order_number or '' }}</td>
 
         <td>€{{ '%.2f' % (order.totaal or 0) }}</td>
 
@@ -132,7 +132,7 @@ th:last-child {
           {% else %}-{% endif %}
         </td>
         <td>{{ order.payment_method }}</td>
-        <td>{{ order.order_number or '' }}</td>
+        <td>€{{ '%.2f' % (order.fooi or order.tip or 0) }}</td>
         <td>
           <button onclick="toggleComplete(this)"
             data-number="{{ order.order_number }}"

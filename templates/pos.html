@@ -1905,11 +1905,11 @@ function formatCurrency(value){
         <td>${order.email || '-'}</td>
         <td><ul>${items}</ul></td>
         <td>${remark || '-'}</td>
-        <td>€${parseFloat(fooi).toFixed(2)}</td>
+        <td>${order.order_number || '-'}</td>
         <td>€${parseFloat(order.totaal).toFixed(2)}</td>
         <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
         <td>${order.payment_method || ''}</td>
-        <td>${order.order_number || '-'}</td>
+        <td>€${parseFloat(fooi).toFixed(2)}</td>
         <td><button onclick="toggleComplete(this)"
           data-number="${order.order_number}"
           data-name="${order.customer_name || ''}"
