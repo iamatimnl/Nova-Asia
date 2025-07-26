@@ -2031,6 +2031,14 @@ function formatCurrency(value){
   }
 
   ${order.payment_method ? `<div><strong>Betaalwijze:</strong> ${order.payment_method}</div>` : ''}
+
+  <div class="card-actions" style="margin-top: 12px;">
+    <button class="btn-klaar" onclick="toggleComplete(this)" data-number="${order.order_number}" data-name="${order.customer_name || ''}" data-phone="${order.phone || ''}" data-email="${order.email || ''}" data-type="${isDelivery ? 'bezorg' : 'afhaal'}">
+      Klaar
+    </button>
+    <button class="btn-bewerk" onclick="editOrder(this)">Bewerk</button>
+    <button class="btn-annuleer" onclick="cancelOrder(this)">Annuleer</button>
+  </div>
 `;
 
 
