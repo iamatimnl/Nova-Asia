@@ -1866,11 +1866,11 @@ input:focus, select:focus, textarea:focus {
 <!-- Afhalen 表单 -->
 <div id="afhalenFields">
 <label>Naam:</label>
-<input id="pickupName" type="text"/>
+<input id="pickupName" type="text" autocomplete="name"/>
 <label>Telefoonnummer:</label>
-<input id="pickupPhone" type="tel"/>
+<input id="pickupPhone" type="tel" autocomplete="tel"/>
 <label>Email:</label>
-<input id="pickupEmail" type="email" required/>
+<input id="pickupEmail" type="email" autocomplete="email"/>
 <label>Tijd van afhalen:</label>
 <select id="pickup_time"></select>
 <label>Betaalmethode:</label>
@@ -1883,20 +1883,28 @@ input:focus, select:focus, textarea:focus {
 <!-- Bezorgen 表单（默认隐藏） -->
 <div class="hidden" id="bezorgenFields">
 <label>Naam:</label>
-<input id="deliveryName" type="text"/>
+<input id="deliveryName" type="text" autocomplete="name"/>
+
 <label>Telefoonnummer:</label>
-<input id="deliveryPhone" type="tel"/>
+<input id="deliveryPhone" type="tel" autocomplete="tel"/>
+
 <label>Email:</label>
-<input id="deliveryEmail" type="email" required/>
+<input id="deliveryEmail" type="email" required autocomplete="email"/>
+
 <label>Adres:</label>
-<input id="deliveryAddress" type="text"/>
+<input id="deliveryAddress" type="text" autocomplete="street-address"/>
+
 <label>Huisnummer:</label>
-<input id="deliveryHouseNumber" type="text"/>
+<input id="deliveryHouseNumber" type="text" autocomplete="address-line2"/>
+
 <label>Postcode:</label>
-<input id="deliveryPostcode" type="text"/>
+<input id="deliveryPostcode" type="text" autocomplete="postal-code"/>
+
 <label>Gebied:</label>
-<input id="deliveryArea" type="text"/>
+<input id="deliveryArea" type="text" autocomplete="address-level2"/>
+
 <div id="mapLinkContainer" style="margin-top: 4px;"></div>
+
 <label>Bezorgtijd:</label>
 <select id="delivery_time"></select>
 <label>Betaalmethode:</label>
@@ -3641,6 +3649,48 @@ input:focus, select:focus, textarea:focus {
 
 
 <script>
+
+  const pickupFields = [
+    'pickupName',
+    'pickupPhone',
+    'pickupEmail'
+  ];
+
+  const deliveryFields = [
+    'deliveryName',
+    'deliveryPhone',
+    'deliveryEmail',
+    'deliveryAddress',
+    'deliveryHouseNumber',
+    'deliveryPostcode',
+    'deliveryArea'
+  ];
+
+  // 页面加载时自动填入历史记录
+  window.addEventListener('DOMContentLoaded', () => {
+    [...pickupFields, ...deliveryFields].forEach(id => {
+      const value = localStorage.getItem('customer_' + id);
+      if (value) {
+        const el = document.getElementById(id);
+        if (el) el.value = value;
+      }
+    });
+  });
+
+  // 提交前保存历史记录
+  function saveCustomerInfo() {
+    [...pickupFields, ...deliveryFields].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        localStorage.setItem('customer_' + id, el.value);
+      }
+    });
+  }
+
+  // 自动绑定在 <form> 提交事件上（确保你页面中表单用 <form> 标签包住）
+  document.querySelector('form').addEventListener('submit', saveCustomerInfo);
+
+  
 const cart = {};
 const extras = {
   chopstickCount: {
