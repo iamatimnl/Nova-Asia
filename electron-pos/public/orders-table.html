@@ -12,7 +12,7 @@
 .order-card {
   background: #e3cfcfff;
   color: #1a1a1a;
-  border-radius: 18px;
+  border-radius: 12px;
   border: 1px solid #ddd;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   width: 340px;
@@ -51,7 +51,28 @@
   color: #333;
 }
 
+.card-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+}
 
+.card-actions button {
+  flex: 1;
+  margin: 0 4px;
+  font-size: 13px;
+}
+
+.order-card.completed {
+  background-color: #c8e6c9 !important; /* 绿色背景 */
+  border-color: #2e7d32;
+  transition: background-color 0.3s ease;
+}
+
+.order-card.cancelled {
+  background-color: #e0e0e0 !important; /* 灰色背景表示已取消 */
+  border-color: #999;
+}
 
 .card-actions .btn-klaar {
   background-color: #28a745;
@@ -162,71 +183,62 @@
       <p><strong>Fooi:</strong> €{{ '%.2f' % (order.fooi or order.tip or 0) }}</p>
     </div>
 
-    <!-- ✅ 修复 card-actions 正确关闭 -->
-    <div class="card-actions">
-      <button class="btn-klaar" onclick="toggleComplete(this)"
-        data-number="{{ order.order_number }}"
-        data-name="{{ order.customer_name or '' }}"
-        data-phone="{{ order.phone or '' }}"
-        data-email="{{ order.email or '' }}"
-        data-type="{{ 'bezorg' if is_delivery else 'afhaal' }}">
-        {{ 'Undone' if order.is_completed else 'Klaar' }}
-      </button>
-      <button class="btn-bewerk" onclick="editOrder(this)">Bewerk</button>
-      <button class="btn-annuleer" onclick="cancelOrder(this)">Annuleer</button>
-      <span class="notify"></span>
-    </div>
-  </div>
+    
   {% endfor %}
 </div>
 
 <script>
-  function orderComplete(btn) {
-    const status = btn.nextElementSibling;
-    const payload = {
-      order_number: btn.dataset.number,
-      name: btn.dataset.name,
-      phone: btn.dataset.phone,
-      email: btn.dataset.email,
-      order_type: btn.dataset.type
-    };
-    fetch('https://flask-order-api.onrender.com/api/order_complete', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    }).then(r => {
-      if (r.ok) {
-        status.textContent = 'Notificatie verzonden';
-      } else {
-        status.textContent = 'Notificatie mislukt';
-      }
-    }).catch(() => {
+ function orderComplete(btn) {
+  const status = btn.closest('.order-card').querySelector('.notify');
+  const payload = {
+    order_number: btn.dataset.number,
+    name: btn.dataset.name,
+    phone: btn.dataset.phone,
+    email: btn.dataset.email,
+    order_type: btn.dataset.type
+  };
+  fetch('https://flask-order-api.onrender.com/api/order_complete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).then(r => {
+    if (r.ok) {
+      status.textContent = 'Notificatie verzonden';
+    } else {
       status.textContent = 'Notificatie mislukt';
-    });
-  }
-function toggleComplete(btn) {
+    }
+  }).catch(() => {
+    status.textContent = 'Notificatie mislukt';
+  });
+}
+function toggleCardComplete(btn) {
   const card = btn.closest('.order-card');
-  const id = card.dataset.id;
+  const id = btn.dataset.id;
   const done = !card.classList.contains('completed');
+
   fetch(`/api/orders/${id}/status`, {
     method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({is_completed: done})
-  }).then(r=>r.json()).then(() => {
-    if(done) orderComplete(btn);
-    fetchOrders();
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ is_completed: done })
+  }).then(r => r.json()).then(() => {
+    if (done) orderComplete(btn); // 发送邮件
+    card.classList.toggle('completed', done); // 加绿色背景
+    const notify = card.querySelector('.notify');
+    if (notify) notify.textContent = done ? 'Voltooid' : '';
   });
 }
 
+
 function cancelOrder(btn) {
-  const card = btn.closest('.order-card');
-  const id = card.dataset.id;
+  const row = btn.closest('tr') || btn.closest('.order-card'); // ✅ 支持两种结构
+  const id = btn.dataset.id || row.dataset.id;
   fetch(`/api/orders/${id}/status`, {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({is_cancelled: true})
   }).then(()=>fetchOrders());
 }
+
 
 function parseItemsString(str, existing){
   const result = {};
@@ -243,6 +255,9 @@ function parseItemsString(str, existing){
 }
 
 function editOrder(btn) {
+  const row = btn.closest('tr') || btn.closest('.order-card');
+  const id = btn.dataset.id || row.dataset.id;
+  const data = JSON.parse(row.dataset.order || '{}'); // 💡你需要提前为卡片设置这个属性
   const card = btn.closest('.order-card');
   const id = card.dataset.id;
   const data = JSON.parse(card.dataset.order || '{}');
