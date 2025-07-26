@@ -84,7 +84,6 @@
 
 .order-card {
   position: relative; /* ✅ 添加这个 */
-  ...
 }
 
 .type-afhalen {
@@ -120,7 +119,6 @@
 }
 .order-card {
   position: relative; /* ✅ 使 ::before 相对定位有效 */
-  ...
 }
 
 
@@ -230,6 +228,20 @@ function cancelOrder(btn) {
   }).then(()=>fetchOrders());
 }
 
+function parseItemsString(str, existing){
+  const result = {};
+  if(!str) return result;
+  str.split(',').forEach(part => {
+    const [name, qty] = part.split('=').map(s => s.trim());
+    const q = parseInt(qty, 10);
+    if(name && q > 0){
+      const price = existing && existing[name] ? existing[name].price : 0;
+      result[name] = {qty: q, price};
+    }
+  });
+  return result;
+}
+
 function editOrder(btn) {
   const card = btn.closest('.order-card');
   const id = card.dataset.id;
@@ -288,6 +300,11 @@ function editOrder(btn) {
       fooi: parseFloat(fooi) || 0
     })
   }).then(()=>fetchOrders());
+}
+
+function fetchOrders(){
+  // eenvoudige herlaad als fetch-logica ontbreekt
+  location.reload();
 }
 
 </script>
