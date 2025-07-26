@@ -124,7 +124,7 @@ function parseTimeToMinutes(str){
 
 function getSortKey(order){
   const isDelivery=['delivery','bezorgen'].includes(order.order_type);
-  const t=isDelivery ? (order.delivery_time||order.deliveryTime) : (order.pickup_time||order.pickupTime);
+  const t=order.tijdslot_display || (isDelivery ? (order.delivery_time||order.deliveryTime) : (order.pickup_time||order.pickupTime));
   return parseTimeToMinutes(t);
 }
 
@@ -167,6 +167,7 @@ function insertSorted(tbody,tr){
   const remark = order.opmerking || order.remark || '';
   const pickup = order.pickup_time || order.pickupTime;
   const delivery = order.delivery_time || order.deliveryTime;
+  const tijdslot = order.tijdslot_display || (isDelivery ? delivery : pickup);
 
   let time = order.created_at || '';
   if (time && time.length > 5) {
@@ -181,7 +182,7 @@ function insertSorted(tbody,tr){
   tr.innerHTML = `
   <td>${order.created_date || ''}</td>
   <td>${time}</td>
-  <td>${isDelivery ? (delivery || '-') : (pickup || '-')}</td>
+  <td>${tijdslot || '-'}</td>
   <td>${isDelivery ? 'Bezorgen' : 'Afhalen'}</td>
   <td>${order.customer_name || ''}</td>
   <td>${order.phone || ''}</td>
