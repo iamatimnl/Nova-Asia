@@ -4037,6 +4037,18 @@ const storageOk = (() => {
   }
 })();
 
+const LOCAL_INFO_KEY = 'customerInfo';
+const localOk = (() => {
+  try {
+    const t = '__test_local';
+    localStorage.setItem(t, t);
+    localStorage.removeItem(t);
+    return true;
+  } catch (e) {
+    return false;
+  }
+})();
+
 function saveOrderForm() {
   if (!storageOk) return;
   const data = { orderType: document.querySelector('input[name="orderType"]:checked')?.id };
@@ -4070,6 +4082,40 @@ function attachFormListeners() {
   document.querySelectorAll('#afhalenFields input, #afhalenFields select, #bezorgenFields input, #bezorgenFields select, #checkbox-group select, #remark, #discountCode, #tipSelect, input[name="orderType"]').forEach(el => {
     ['input', 'change'].forEach(evt => el.addEventListener(evt, saveOrderForm));
   });
+}
+
+function saveCustomerInfo() {
+  if (!localOk) return;
+  const fields = [
+    'pickupName','pickupPhone','pickupEmail',
+    'deliveryName','deliveryPhone','deliveryEmail',
+    'deliveryAddress','deliveryHouseNumber','deliveryPostcode','deliveryArea'
+  ];
+  const data = { orderType: document.querySelector('input[name="orderType"]:checked')?.id };
+  fields.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.value.trim()) data[id] = el.value.trim();
+  });
+  localStorage.setItem(LOCAL_INFO_KEY, JSON.stringify(data));
+}
+
+function loadCustomerInfo() {
+  if (!localOk) return;
+  const stored = localStorage.getItem(LOCAL_INFO_KEY);
+  if (!stored) return;
+  const data = JSON.parse(stored);
+  Object.keys(data).forEach(id => {
+    if (id === 'orderType') return;
+    const el = document.getElementById(id);
+    if (el && !el.value) el.value = data[id];
+  });
+  if (data.orderType) {
+    const radio = document.getElementById(data.orderType);
+    if (radio && !document.querySelector('input[name="orderType"]:checked')) {
+      radio.checked = true;
+      toggleOrderType();
+    }
+  }
 }
 
 function formatEuro(val) {
@@ -4803,6 +4849,7 @@ function updateCart() {
 document.addEventListener('DOMContentLoaded', () => {
   loadCart();
   loadOrderForm();
+  loadCustomerInfo();
   attachFormListeners();
   updateCart();
 });
@@ -5184,6 +5231,7 @@ function checkout() {
     .then(data => {
       if (data.status === 'ok') {
         beep();
+        saveCustomerInfo();
 
         if (paymentMethod === 'online' && data.paymentLink) {
           // ✅ 在线支付直接跳转
