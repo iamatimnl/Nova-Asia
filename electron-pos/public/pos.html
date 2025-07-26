@@ -1987,6 +1987,10 @@ function formatCurrency(value){
   // 创建卡片
   const card = document.createElement('div');
   card.className = 'order-card';
+  if (order.id) card.dataset.id = order.id;
+  card.dataset.order = JSON.stringify(order);
+  if(order.is_cancelled) card.classList.add('cancelled');
+  else if(order.is_completed) card.classList.add('completed');
   if (highlight) {
     card.classList.add('new-order');
     setTimeout(() => card.classList.remove('new-order'), 10000);
@@ -2038,6 +2042,7 @@ function formatCurrency(value){
     </button>
     <button class="btn-bewerk" onclick="editOrder(this)">Bewerk</button>
     <button class="btn-annuleer" onclick="cancelOrder(this)">Annuleer</button>
+    <span class="notify"></span>
   </div>
 `;
 
@@ -2058,6 +2063,132 @@ function fetchOrders() {
     .catch(err => {
       console.error("订单拉取失败", err);
     });
+}
+
+function orderComplete(btn) {
+  const row = btn.closest('.order-card') || btn.closest('tr');
+  const status = row ? row.querySelector('.notify') : null;
+  const payload = {
+    order_number: btn.dataset.number,
+    name: btn.dataset.name,
+    phone: btn.dataset.phone,
+    email: btn.dataset.email,
+    order_type: btn.dataset.type
+  };
+  fetch('https://flask-order-api.onrender.com/api/order_complete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).then(r => {
+    if(status) status.textContent = r.ok ? 'Notificatie verzonden' : 'Notificatie mislukt';
+  }).catch(() => {
+    if(status) status.textContent = 'Notificatie mislukt';
+  });
+}
+
+function toggleComplete(btn) {
+  const row = btn.closest('tr') || btn.closest('.order-card');
+  if(!row) return;
+  const id = btn.dataset.id || row.dataset.id;
+  const done = !row.classList.contains('completed');
+  fetch(`/api/orders/${id}/status`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ is_completed: done })
+  }).then(r => r.json()).then(() => {
+    if(done) orderComplete(btn);
+    if(row.tagName === 'TR') {
+      fetchOrders();
+    } else {
+      row.classList.toggle('completed', done);
+      const notify = row.querySelector('.notify');
+      if(notify) notify.textContent = done ? 'Voltooid' : '';
+    }
+  });
+}
+
+function cancelOrder(btn) {
+  const row = btn.closest('tr') || btn.closest('.order-card');
+  if(!row) return;
+  const id = btn.dataset.id || row.dataset.id;
+  fetch(`/api/orders/${id}/status`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ is_cancelled: true })
+  }).then(() => {
+    if(row.tagName === 'TR') {
+      fetchOrders();
+    } else {
+      row.classList.add('cancelled');
+    }
+  });
+}
+
+function parseItemsString(str, existing) {
+  const result = {};
+  if (!str) return result;
+  str.split(',').forEach(part => {
+    const [name, qty] = part.split('=').map(s => s.trim());
+    const q = parseInt(qty, 10);
+    if (name && q > 0) {
+      const price = existing && existing[name] ? existing[name].price : 0;
+      result[name] = { qty: q, price };
+    }
+  });
+  return result;
+}
+
+function editOrder(btn) {
+  const row = btn.closest('tr') || btn.closest('.order-card');
+  if(!row) return;
+  const id = btn.dataset.id || row.dataset.id;
+  const data = JSON.parse(row.dataset.order || '{}');
+
+  const name = prompt('Naam', data.customer_name || '');
+  if (name === null) return;
+  const phone = prompt('Telefoon', data.phone || '');
+  if (phone === null) return;
+  const email = prompt('Email', data.email || '');
+  if (email === null) return;
+  const street = prompt('Straat', data.street || '');
+  if (street === null) return;
+  const number = prompt('Huisnummer', data.house_number || '');
+  if (number === null) return;
+  const postcode = prompt('Postcode', data.postcode || '');
+  if (postcode === null) return;
+  const city = prompt('Plaats', data.city || '');
+  if (city === null) return;
+  const pickup = prompt('Afhaaltijd', data.pickup_time || '');
+  if (pickup === null) return;
+  const delivery = prompt('Bezorgtijd', data.delivery_time || '');
+  if (delivery === null) return;
+
+  const itemsStr = Object.entries(data.items || {}).map(([n,i])=>`${n}=${i.qty}`).join(', ');
+  const newItemsInput = prompt('Items (naam=qty, gescheiden door komma)', itemsStr);
+  if (newItemsInput === null) return;
+
+  const payment = prompt('Betaalwijze', data.payment_method || '');
+  if (payment === null) return;
+
+  const totaal = prompt('Totaal', data.totaal != null ? data.totaal : '');
+  if (totaal === null) return;
+
+  const fooi = prompt('Fooi', data.fooi != null ? data.fooi : (data.tip || '0'));
+  if (fooi === null) return;
+
+  fetch(`/api/orders/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      customer_name: name, phone, email,
+      street, house_number: number, postcode, city,
+      pickup_time: pickup, delivery_time: delivery,
+      items: parseItemsString(newItemsInput, data.items || {}),
+      payment_method: payment,
+      totaal: parseFloat(totaal) || 0,
+      fooi: parseFloat(fooi) || 0
+    })
+  }).then(() => fetchOrders());
 }
 
 
