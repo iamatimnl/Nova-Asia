@@ -269,7 +269,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255,255,255,0.95);
+    background: #403030;
     backdrop-filter: blur(8px);
     overflow: auto;
     transform: translateX(-100%);
@@ -279,7 +279,7 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.12);
   }
   .orders-slide.visible { transform: translateX(0); }
-  .orders-panel table { width:100%; border-collapse: collapse; }
+ 
   @media (max-width: 768px) {
     .orders-panel table { display:block; overflow-x:auto; white-space:nowrap; }
   }
@@ -303,24 +303,44 @@
     border-color:var(--accent-color);
     box-shadow:0 0 0 2px rgba(63,92,75,0.2);
   }
-  #closeToday {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    width: 66px; /* 方形按钮 */
-    height: 46px;
-    background: #f0f0f0; /* 默认浅灰背景 */
-    border: 1px solid #d0d0d0; /* 细浅灰边框 */
-    border-radius: 4px; /* 微圆角，接近 Windows 风格 */
-    cursor: pointer;
-    font-size: 20px; /* 显眼 X */
-    font-weight: bold;
-    color: #333; /* 默认深灰 X */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
+ #closeToday {
+  position: sticky;
+  top: 10px;
+  margin-left: auto;        /* 推到右侧 */
+  width: 50px;
+  height: 50px;
+   background-color: #e81123;  /* Windows 红色关闭按钮 */
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  font-family: "Segoe UI", sans-serif;
+  cursor: pointer;
+  box-shadow: 0 0 4px rgba(0,0,0,0.3);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
 }
+
+
+#closeToday:hover {
+  background: #ff3b30;
+  color: #fff;
+  border-color: #ff3b30;
+  transform: scale(1.05);
+}
+
+
+#closeToday:hover {
+  background: #ff3b30;
+  color: #fff;
+  border-color: #ff3b30;
+  transform: scale(1.05);
+}
+
 
 #closeToday:hover {
     background: #e81123; /* Windows 红色 */
@@ -536,13 +556,13 @@
     .pos-layout { flex-direction: column; align-items: center; }
     .center-area { width:100%; margin-right:0; }
   }
-  .orders-table td, .orders-table th {
-  white-space: nowrap;
-  padding: 8px;
-}
+
 /* 默认隐藏圆按钮 */
 .today-toggle {
   display: none;
+}
+body.today-open {
+  overflow: hidden;
 }
 
 /* 手机显示圆按钮，隐藏长按钮 */
@@ -750,7 +770,13 @@ body.today-open .today-toggle {
 
 <!-- 自定义新订单弹窗 -->
 <div id="order-modal" class="modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; justify-content:center; align-items:center;">
-  <div style="background:#fff; border-radius:10px; padding:20px; max-width:500px; width:90%; box-shadow:0 0 20px rgba(0,0,0,0.3);">
+  <div style="background:#fff; border-radius:10px; padding:20px; max-width:500px; width:90%; box-shadow:0 0 20px rgba(0,0,0,0.3); position:relative;">
+    
+    <!-- ✅ 放在这里 -->
+    <div id="zsm-badge" style="display: none; position: absolute; top: 10px; right: 10px; background: red; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold;">
+      Z.S.M.
+    </div>
+
     <h2>Nieuwe bestelling</h2>
     <p><strong>Bestelnummer:</strong> <span id="modal-order-id"></span></p>
     <p><strong>Klant:</strong> <span id="modal-customer-name"></span></p>
@@ -759,11 +785,16 @@ body.today-open .today-toggle {
     <p><strong>Opmerking:</strong> <span id="modal-remark"></span></p>
     <p><strong>Totaal:</strong> <span id="modal-total"></span></p>
     <label><strong>Afhaal-/bezorgtijd:</strong></label><br>
-    <input type="time" id="modal-time" style="margin-bottom:15px;" />
+    <div id="modal-time-wrapper" style="margin-bottom:15px;">
+      <input type="time" id="modal-time" />
+      <div id="Z.S.M.-display" style="font-weight:bold; display:none;">Z.S.M.</div>
+    </div>
+
     <br>
     <button id="modal-confirm" style="padding:8px 16px;">✅ Bevestigen</button>
   </div>
 </div>
+
 
 
 <script>
@@ -1173,84 +1204,106 @@ function setQty(name,price,qty,packaging=0,prefs=null){
   }
   updateCart();
 }
-function updateCart(){
-  const list=document.getElementById('cart');
-  list.innerHTML='';
-  let subtotal=0;
-  let packagingTotal=0;
-  let count=0;
-  Object.entries(cart).forEach(([name,item])=>{
-    const li=document.createElement('li');
-    const sel=createSelect(item.qty,val=>{
-      const menuItem=document.querySelector(`[data-name="${name}"]`);
-      if(menuItem){
-        const qtyInput=menuItem.querySelector('select');
-        if(qtyInput) qtyInput.value=val;
-      }
-      setQty(name,item.price,val,item.packaging,item.prefs);
-      if(name==='Bento Sushi Omakase'){
-        document.getElementById('sushiBentoCount').value=val;
-        updateOmakasePrefs();
-      } else if(name==='Dragon Roll Omakase'){
-        document.getElementById('dragonRollCount').value=val;
-        updateDragonPrefs();
-      }
-    });
-    const rowTotal=item.qty*item.price;
-    const displayName=item.displayName||name;
-    li.textContent=`${displayName} - €${rowTotal.toFixed(2)} `;
-    if(item.custom){
-      const delBtn=document.createElement('button');
-      delBtn.textContent='🗑';
-      delBtn.addEventListener('click',()=>{ delete cart[name]; updateCart(); });
+function updateCart() {
+  const list = document.getElementById('cart');
+  list.innerHTML = '';
+  let subtotal = 0;
+  let packagingTotal = 0;
+  let count = 0;
+
+  Object.entries(cart).forEach(([name, item]) => {
+    const li = document.createElement('li');
+
+    const displayName = item.displayName || name;
+
+    const rowTotal = item.qty * item.price;
+
+    const label = document.createElement('span');
+    label.textContent = `${displayName} x ${item.qty} - €${rowTotal.toFixed(2)} `;
+
+    li.appendChild(label);
+
+    if (item.custom) {
+      const delBtn = document.createElement('button');
+      delBtn.textContent = '🗑';
+      delBtn.addEventListener('click', () => {
+        delete cart[name];
+        updateCart();
+      });
       li.appendChild(delBtn);
-    }else{
+    } else {
+      const sel = createSelect(item.qty, val => {
+        const menuItem = document.querySelector(`[data-name="${name}"]`);
+        if (menuItem) {
+          const qtyInput = menuItem.querySelector('select');
+          if (qtyInput) qtyInput.value = val;
+        }
+        setQty(name, item.price, val, item.packaging, item.prefs);
+
+        if (name === 'Bento Sushi Omakase') {
+          document.getElementById('sushiBentoCount').value = val;
+          updateOmakasePrefs();
+        } else if (name === 'Dragon Roll Omakase') {
+          document.getElementById('dragonRollCount').value = val;
+          updateDragonPrefs();
+        }
+      });
       li.appendChild(sel);
     }
-    if(item.prefs){
-      const title=document.createElement('div');
-      title.textContent='Voorkeur:';
-      const ul=document.createElement('ul');
-      item.prefs.forEach((p,i)=>{
-        const liP=document.createElement('li');
-        liP.textContent=`${i+1}. ${p}`;
+
+    if (item.prefs) {
+      const title = document.createElement('div');
+      title.textContent = 'Voorkeur:';
+      const ul = document.createElement('ul');
+      item.prefs.forEach((p, i) => {
+        const liP = document.createElement('li');
+        liP.textContent = `${i + 1}. ${p}`;
         ul.appendChild(liP);
       });
       li.appendChild(title);
       li.appendChild(ul);
     }
+
     list.appendChild(li);
-    if(item.qty>0){
-      subtotal+=rowTotal;
-      packagingTotal+=(item.packaging||0)*item.qty;
+
+    if (item.qty > 0) {
+      subtotal += rowTotal;
+      packagingTotal += (item.packaging || 0) * item.qty;
     }
-    count+=item.qty;
+
+    count += item.qty;
   });
 
-  const delivery=document.getElementById('typeDelivery').checked ? 2.5 : 0;
-  const discountType=document.getElementById('discountType').value;
-  let discountVal=parseFloat(document.getElementById('discountValue').value)||0;
-  let discount=0;
-  if(discountType==='amount'){ discount=Math.min(discountVal,subtotal); }
-  else if(discountType==='percent'){ discount=Math.min(discountVal,100)/100*subtotal; }
-  if(discount<0||isNaN(discount)) discount=0;
+  const delivery = document.getElementById('typeDelivery').checked ? 2.5 : 0;
+
+  const discountType = document.getElementById('discountType').value;
+  let discountVal = parseFloat(document.getElementById('discountValue').value) || 0;
+  let discount = 0;
+  if (discountType === 'amount') {
+    discount = Math.min(discountVal, subtotal);
+  } else if (discountType === 'percent') {
+    discount = Math.min(discountVal, 100) / 100 * subtotal;
+  }
+  if (discount < 0 || isNaN(discount)) discount = 0;
 
   const total = subtotal + packagingTotal + delivery - discount;
   const btwBase = delivery ? total - delivery : total;
   const btw = btwBase * 0.09;
 
-  const fmt=n=>`€${n.toFixed(2).replace('.',',')}`;
-  document.getElementById('summarySubtotal').textContent=fmt(subtotal);
-  document.getElementById('summaryPackaging').textContent=fmt(packagingTotal);
-  document.getElementById('summaryDelivery').textContent=fmt(delivery);
-  document.getElementById('summaryDeliveryRow').classList.toggle('hidden',!delivery);
-  document.getElementById('summaryDiscount').textContent=discount ? `- ${fmt(discount)}` : '€0,00';
-  document.getElementById('summaryBtw').textContent=fmt(btw);
-  document.getElementById('total').textContent=fmt(total);
+  const fmt = n => `€${n.toFixed(2).replace('.', ',')}`;
 
-  const badge=document.getElementById('cartCount');
-  if(badge) badge.textContent=count;
+  document.getElementById('summarySubtotal').textContent = fmt(subtotal);
+  document.getElementById('summaryPackaging').textContent = fmt(packagingTotal);
+  document.getElementById('summaryDelivery').textContent = fmt(delivery);
+  document.getElementById('summaryDeliveryRow').classList.toggle('hidden', !delivery);
+  document.getElementById('summaryDiscount').textContent = discount ? `- ${fmt(discount)}` : '€0,00';
+  document.getElementById('summaryBtw').textContent = fmt(btw);
+  document.getElementById('total').textContent = fmt(total);
+
+  const badge = document.getElementById('cartCount');
+  if (badge) badge.textContent = count;
 }
+
 
 function addCustomPrice(){
   const input=document.getElementById('customPrice');
@@ -1879,112 +1932,211 @@ function formatCurrency(value){
     tbody.appendChild(tr);
   }
 
-  // 添加订单到表格
-  function addRow(order, highlight=false) {
-    const tbody = document.querySelector('.orders-panel tbody');
-    if (!tbody) return;
+ function addRow(order, highlight = false) {
+  const container = document.querySelector('.orders-cards');
+  if (!container) return;
 
-    const tr = document.createElement('tr');
-    if (order.id) tr.dataset.id = order.id;
-    tr.dataset.order = JSON.stringify(order);
-    if(order.is_cancelled) tr.classList.add('cancelled');
-    else if(order.is_completed) tr.classList.add('completed');
-    const isDelivery = ['delivery', 'bezorgen'].includes(order.order_type);
-    const items = Object.entries(order.items || {}).map(([n, i]) => `<li>${n} x ${i.qty}</li>`).join('');
-    let fooi = parseFloat(order.fooi ?? order.tip);
-    if (isNaN(fooi)) {
-      fooi = 0;
-    }
-    if(!('totaal' in order)){
-      console.warn('⚠️ totaal 字段缺失，请联系后端');
-    }
-    const remark = order.opmerking || order.remark || '';
-    const pickup = order.pickup_time || order.pickupTime;
-    const delivery = order.delivery_time || order.deliveryTime;
-    const tijdslot = order.tijdslot_display || (isDelivery ? delivery : pickup);
+  const isDelivery = ['delivery', 'bezorgen'].includes(order.order_type);
 
-    let time = order.created_at || '';
-    if (time && time.length > 5) {
-      if (time.includes('T')) {
-        const d = new Date(time);
-        if (!isNaN(d)) time = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
-      } else if (time.includes(' ')) {
-        time = time.split(' ')[1].slice(0,5);
-      }
-    }
-      tr.innerHTML = `
-        <td>${order.created_date || ''}</td>
-        <td>${time}</td>
-        <td>${tijdslot || '-'}</td>
-        <td>${isDelivery ? 'Bezorgen' : 'Afhalen'}</td>
-        <td>${order.customer_name || ''}</td>
-        <td>${order.phone || ''}</td>
-        <td>${order.email || '-'}</td>
-        <td><ul>${items}</ul></td>
-        <td>${remark || '-'}</td>
-        <td>${order.order_number || '-'}</td>
-        <td>€${parseFloat(order.totaal).toFixed(2)}</td>
-        <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
-        <td>${order.payment_method || ''}</td>
-        <td>€${parseFloat(fooi).toFixed(2)}</td>
-        <td><button onclick="toggleComplete(this)"
-          data-number="${order.order_number}"
-          data-name="${order.customer_name || ''}"
-          data-phone="${order.phone || ''}"
-          data-email="${order.email || ''}"
-          data-type="${isDelivery ? 'bezorg' : 'afhaal'}">${order.is_completed ? 'Undone' : 'Klaar'}</button>
-          <button onclick="editOrder(this)">Bewerk</button>
-          <button onclick="cancelOrder(this)">Annuleer</button>
-          <span class="notify"></span></td>`;
-      
-    tr.dataset.sortKey = getSortKey(order);
-    if(highlight){
-      tr.classList.add('new-order');
-      setTimeout(()=>tr.classList.remove('new-order'),10000);
-    }
-    insertSorted(tbody, tr);
-    updateTodayBadge();
-    return tr;
+  // 商品列表
+  const items = Object.entries(order.items || {}).map(([n, i]) => {
+    const displayName = i.displayName || i.name || n;
+    const rowTotal = (i.qty * (i.price || 0)).toFixed(2).replace('.', ',');
+    return `<li>${i.qty} x ${displayName} = €${rowTotal}</li>`;
+  }).join('');
+
+  // 小计 + 包装费
+  let subtotal = 0;
+  let verpakkingskosten = 0;
+  Object.entries(order.items || {}).forEach(([_, i]) => {
+    subtotal += (i.price || 0) * i.qty;
+    verpakkingskosten += (i.packaging || 0) * i.qty;
+  });
+  const verpakkingDisplay = verpakkingskosten.toFixed(2).replace('.', ',');
+
+  // 配送费 + 小费
+  const bezorgkosten = parseFloat(order.bezorgkosten || order.delivery_cost || 0) || 0;
+  let fooi = parseFloat(order.fooi || order.tip || 0);
+  if (isNaN(fooi)) fooi = 0;
+  const fooiDisplay = fooi.toFixed(2).replace('.', ',');
+
+  // 实际应付总价
+  let totaal = parseFloat(order.totaal || order.total || 0);
+  if (isNaN(totaal)) totaal = 0;
+  const totaalDisplay = totaal.toFixed(2).replace('.', ',');
+
+  // 计算理论总价（不打折情况下）
+  const theoretischTotaal = subtotal + verpakkingskosten + bezorgkosten + fooi;
+
+  // 判断 Korting
+  let korting = theoretischTotaal - totaal;
+  const showKorting = korting >= 0.01;
+  const kortingDisplay = korting.toFixed(2).replace('.', ',');
+
+  // 地址处理
+  const address = isDelivery
+    ? `${order.street || ''} ${order.house_number || ''}, ${order.postcode || ''} ${order.city || ''}`.trim()
+    : '-';
+
+  // 时间槽处理
+  let tijdslot = order.tijdslot_display || (isDelivery ? order.delivery_time : order.pickup_time);
+  if (!tijdslot || tijdslot.trim() === '') {
+    tijdslot = 'ZSM';
   }
-   
+
+  // 创建卡片
+  const card = document.createElement('div');
+  card.className = 'order-card';
+  if (highlight) {
+    card.classList.add('new-order');
+    setTimeout(() => card.classList.remove('new-order'), 10000);
+  }
+
+  card.innerHTML = `
+  <div><strong>Ordernummer:</strong> ${order.order_number || ''}</div>
+  <div class="tijdslot-hoofd">
+    <div>
+      <strong class="${isDelivery ? 'type-bezorging' : 'type-afhalen'}">
+  ${isDelivery ? 'Bezorging' : 'Afhalen'}
+</strong>
+
+      <span class="tijdslot" style="color: #e67e22; font-weight: bold; text-transform: uppercase;">
+        ${tijdslot}
+      </span>
+      &nbsp;&nbsp;<span class="created-at" style="color: #888;">Besteld om: ${order.created_at || '-'}</span>
+    </div>
+  </div>
+
+  <div><strong>Naam:</strong> ${order.customer_name || ''}</div>
+  <div><strong>Telefoon:</strong> ${order.phone || ''}</div>
+  ${
+    order.email
+      ? `<div><strong>Email:</strong> <a href="mailto:${order.email}">${order.email}</a></div>`
+      : ''
+  }
+
+  <div><strong>Items:</strong><ul>${items}</ul></div>
+  ${order.opmerking ? `<div><strong>Opmerking:</strong> ${order.opmerking}</div>` : ''}
+  ${verpakkingskosten > 0 ? `<div><strong>Verpakkingskosten:</strong> €${verpakkingDisplay}</div>` : ''}
+  ${showKorting ? `<div><strong>Korting:</strong> -€${kortingDisplay}</div>` : ''}
+  <div><strong>Totaal:</strong> €${totaalDisplay}</div>
+  ${fooi > 0 ? `<div><strong>Fooi:</strong> €${fooiDisplay}</div>` : ''}
+
+  ${
+    address !== '-'
+      ? `<div><strong>Adres:</strong> ${address} 
+          <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}" target="_blank" style="margin-left:6px;">📍Maps</a>
+        </div>`
+      : ''
+  }
+
+  ${order.payment_method ? `<div><strong>Betaalwijze:</strong> ${order.payment_method}</div>` : ''}
+`;
+
+
+  container.appendChild(card);
+  return card;
+}
+
+function fetchOrders() {
+  fetch('/pos/orders_today?json=1')
+    .then(r => r.json())
+    .then(data => {
+      const container = document.querySelector('.orders-cards');
+      if (!container) return;
+      container.innerHTML = '';
+      data.sort((a, b) => getSortKey(a) - getSortKey(b)).forEach(order => addRow(order));
+    })
+    .catch(err => {
+      console.error("订单拉取失败", err);
+    });
+}
+
+
+
+
 
 const orderQueue = [];
 let isModalActive = false;
 let currentOrder = null;
 
 socket.on('new_order', order => {
-
   console.log('🆕 Nieuwe bestelling ontvangen!', order);
-  if (window.electronAPI && window.electronAPI.playDing) {
-   window.electronAPI.playDing();
+
+  // 检查 order 是否有编号
+  if (!order || !order.order_number) {
+    console.warn("❌ 接收到的订单无有效 order_number:", order);
   }
 
-  const row = addRow(order, true); // 添加订单到表格
+  // 播声音
+  if (window.electronAPI?.playDing) {
+    window.electronAPI.playDing();
+  }
 
-  orderQueue.push(order); // 加入弹窗队列
-  if (!isModalActive) showNextOrderModal(); // 没有弹窗时立刻开始弹窗                            
+  // 尝试添加订单卡片
+  try {
+    const row = addRow(order, true);
+    console.log("✅ 卡片添加成功", row);
+  } catch (err) {
+    console.error("❌ addRow 失败", err);
+  }
+
+  // 加入队列
+  orderQueue.push(order);
+  console.log("📥 已加入 orderQueue，当前队列长度:", orderQueue.length);
+
+  // 显示弹窗
+  if (!isModalActive) {
+    console.log("📢 弹出订单提示框");
+    showNextOrderModal();
+  } else {
+    console.log("⏳ 弹窗已激活，等待当前处理完成...");
+  }
 });
 
 function showNextOrderModal() {
-  if (orderQueue.length === 0) return;
+  if (orderQueue.length === 0) {
+    console.log("📭 队列为空，不弹出弹窗");
+    return;
+  }
+
   currentOrder = orderQueue.shift();
   isModalActive = true;
+  console.log("📦 显示弹窗订单:", currentOrder.order_number);
 
-  // 填充弹窗内容
   document.getElementById('modal-order-id').textContent = currentOrder.order_number || '-';
   document.getElementById('modal-customer-name').textContent = currentOrder.customer_name || '-';
-  document.getElementById('modal-address').textContent = currentOrder.street ? `${currentOrder.street} ${currentOrder.house_number} ${currentOrder.postcode} ${currentOrder.city}` : '-';
+  document.getElementById('modal-address').textContent = currentOrder.street
+    ? `${currentOrder.street} ${currentOrder.house_number} ${currentOrder.postcode} ${currentOrder.city}`
+    : '-';
   document.getElementById('modal-items').innerHTML = Object.entries(currentOrder.items || {})
     .map(([name, i]) => `${name} x ${i.qty}`).join('<br>');
   document.getElementById('modal-remark').textContent = currentOrder.opmerking || '-';
   document.getElementById('modal-total').textContent = formatCurrency(currentOrder.totaal || currentOrder.total || 0);
 
   const timeInput = document.getElementById('modal-time');
-  const tijdslot = currentOrder.pickup_time || currentOrder.delivery_time || '';
-  timeInput.value = tijdslot.length === 5 ? tijdslot : '';
+  const zsmDisplay = document.getElementById('Z.S.M.-display');
+  const zsmBadge = document.getElementById('zsm-badge');
+
+ const tijdslotRaw = currentOrder.tijdslot || currentOrder.pickup_time || currentOrder.delivery_time || '';
+const tijdslot = tijdslotRaw.toLowerCase().replace(/[^a-z]/g, '');
+const isZSM = tijdslot === '' || ['zsm', 'zsmsm', 'asap'].includes(tijdslot);
+
+
+// ✅ 控制右上角 Z.S.M. 徽章显示
+if (zsmBadge) zsmBadge.style.display = isZSM ? 'block' : 'none';
+
+// ✅ 不管是不是 Z.S.M.，都显示时间输入框 + 原始时间值（保持一致）
+timeInput.style.display = 'inline-block';
+timeInput.value = tijdslotRaw || '';
+
 
   document.getElementById('order-modal').style.display = 'flex';
+  console.log("✅ 弹窗已显示！");
 }
+
+
+
 
 document.getElementById('modal-confirm').addEventListener('click', async () => {
   const tijdslotOrigineel = currentOrder.pickup_time || currentOrder.delivery_time || '';
@@ -2050,17 +2202,7 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
   });
 
   // 轮询作为备份
-  function fetchOrders() {
-  fetch('/pos/orders_today?json=1')
-    .then(r => r.json())
-    .then(data => {
-      const tbody = document.querySelector('.orders-panel tbody');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-      data.sort((a,b)=>getSortKey(a)-getSortKey(b)).forEach(o=>addRow(o));
-      updateTodayBadge();
-    }).catch(() => {});
- }
+  
 
 
   function startPolling() {
