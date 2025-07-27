@@ -142,11 +142,21 @@ def generate_excel_today(include_cancelled: bool = False):
     output.seek(0)
     return output
 
-@app.route("/api/orders/<order_number>")
+@app.route("/api/orders/<order_number>", methods=["GET"])
 def get_order_details(order_number):
     order = Order.query.filter_by(order_number=order_number).first()
     if not order:
         return jsonify({"error": "Order not found"}), 404
+
+    # 安全处理 items 字段
+    try:
+        items = json.loads(order.items or '{}')
+    except Exception:
+        try:
+            import ast
+            items = ast.literal_eval(order.items or '{}')
+        except Exception:
+            items = {}
 
     return jsonify({
         "order_number": order.order_number,
@@ -166,18 +176,10 @@ def get_order_details(order_number):
         "opmerking": order.opmerking,
         "is_completed": order.is_completed,
         "is_cancelled": order.is_cancelled,
-        "items": json.loads(order.items or '{}')
-    })
+        "items": items,
+        "created_at": order.created_at.isoformat() if order.created_at else None,
+    }), 200
 
-
-
-@app.route('/api/orders/<order_number>', methods=['GET'])
-def get_order_by_number(order_number):
-    order = Order.query.filter_by(order_number=order_number).first()
-    if order:
-        return jsonify(order_to_dict(order)), 200
-    else:
-        return jsonify({"error": "Order not found"}), 404
 
 def order_to_dict(order):
     try:
