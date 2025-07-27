@@ -1938,118 +1938,152 @@ function formatCurrency(value){
 
   const isDelivery = ['delivery', 'bezorgen'].includes(order.order_type);
 
-  // 商品列表
-  const items = Object.entries(order.items || {}).map(([n, i]) => {
-    const displayName = i.displayName || i.name || n;
-    const rowTotal = (i.qty * (i.price || 0)).toFixed(2).replace('.', ',');
-    return `<li>${i.qty} x ${displayName} = €${rowTotal}</li>`;
-  }).join('');
+  // 商品列表处理
+  const items = Object.entries(order.items || {})
+    .sort(([, a], [, b]) => {
+      const priceA = a.price || 0;
+      const priceB = b.price || 0;
+      if (priceA === 0 && priceB !== 0) return 1;
+      if (priceA !== 0 && priceB === 0) return -1;
+      const nameA = (a.displayName || a.name || '').toUpperCase();
+      const nameB = (b.displayName || b.name || '').toUpperCase();
+      return nameA.localeCompare(nameB);
+    })
+    .map(([n, i]) => {
+      const isFree = (i.price || 0) === 0;
+      const displayNameRaw = i.displayName || i.name || n;
+      const displayName = isFree ? displayNameRaw.toLowerCase() : displayNameRaw.toUpperCase();
+      const rowTotal = (i.qty * (i.price || 0)).toFixed(2).replace('.', ',');
+      return `<li>${i.qty} x ${displayName} = €${rowTotal}</li>`;
+    }).join('');
 
-  // 小计 + 包装费
+  // 金额小计等
   let subtotal = 0;
   let verpakkingskosten = 0;
-  Object.entries(order.items || {}).forEach(([_, i]) => {
+  Object.values(order.items || {}).forEach(i => {
     subtotal += (i.price || 0) * i.qty;
     verpakkingskosten += (i.packaging || 0) * i.qty;
   });
-  const verpakkingDisplay = verpakkingskosten.toFixed(2).replace('.', ',');
 
-  // 配送费 + 小费
+  const verpakkingDisplay = verpakkingskosten.toFixed(2).replace('.', ',');
   const bezorgkosten = parseFloat(order.bezorgkosten || order.delivery_cost || 0) || 0;
-  let fooi = parseFloat(order.fooi || order.tip || 0);
-  if (isNaN(fooi)) fooi = 0;
+  let fooi = parseFloat(order.fooi || order.tip || 0); if (isNaN(fooi)) fooi = 0;
   const fooiDisplay = fooi.toFixed(2).replace('.', ',');
 
-  // 实际应付总价
   let totaal = parseFloat(order.totaal || order.total || 0);
   if (isNaN(totaal)) totaal = 0;
   const totaalDisplay = totaal.toFixed(2).replace('.', ',');
 
-  // 计算理论总价（不打折情况下）
   const theoretischTotaal = subtotal + verpakkingskosten + bezorgkosten + fooi;
-
-  // 判断 Korting
   let korting = theoretischTotaal - totaal;
   const showKorting = korting >= 0.01;
   const kortingDisplay = korting.toFixed(2).replace('.', ',');
 
-  // 地址处理
+  // 地址与时间
   const address = isDelivery
     ? `${order.street || ''} ${order.house_number || ''}, ${order.postcode || ''} ${order.city || ''}`.trim()
     : '-';
 
-  // 时间槽处理
-  let tijdslot = order.tijdslot_display || (isDelivery ? order.delivery_time : order.pickup_time);
-  if (!tijdslot || tijdslot.trim() === '') {
-    tijdslot = 'ZSM';
-  }
+  let tijdslotRaw = order.tijdslot_display || (isDelivery ? order.delivery_time : order.pickup_time);
+let tijdslot = (tijdslotRaw || '').trim().toUpperCase();
 
-  // 创建卡片
+// 处理 ZSM 自动时间 +30min 检测
+if (tijdslot && tijdslot.match(/^\d{2}:\d{2}$/) && order.created_at) {
+  try {
+    const createdAt = new Date(order.created_at);
+    const [h, m] = tijdslot.split(':').map(Number);
+    const tijdDate = new Date(createdAt);
+    tijdDate.setHours(h);
+    tijdDate.setMinutes(m);
+
+    const diffMin = Math.abs((tijdDate - createdAt) / 60000); // 差值（分钟）
+    if (diffMin >= 29 && diffMin <= 31) {
+      tijdslot = 'ZSM';
+    }
+  } catch (e) {}
+}
+
+if (!tijdslot || tijdslot === 'ZSM') tijdslot = 'ZSM';
+
+
+
+  // ✅ 创建外层 wrapper
+  const wrapper = document.createElement('div');
+  wrapper.className = 'order-card-wrapper';
+
+  // ✅ 创建 order-card（内容部分）
   const card = document.createElement('div');
   card.className = 'order-card';
   if (order.id) card.dataset.id = order.id;
   card.dataset.order = JSON.stringify(order);
-  if(order.is_cancelled) card.classList.add('cancelled');
-  else if(order.is_completed) card.classList.add('completed');
+  if (order.is_cancelled) card.classList.add('cancelled');
+  else if (order.is_completed) card.classList.add('completed');
   if (highlight) {
     card.classList.add('new-order');
     setTimeout(() => card.classList.remove('new-order'), 10000);
   }
 
   card.innerHTML = `
-  <div><strong>Ordernummer:</strong> ${order.order_number || ''}</div>
-  <div class="tijdslot-hoofd">
-    <div>
-      <strong class="${isDelivery ? 'type-bezorging' : 'type-afhalen'}">
-  ${isDelivery ? 'Bezorging' : 'Afhalen'}
-</strong>
-
-      <span class="tijdslot" style="color: #e67e22; font-weight: bold; text-transform: uppercase;">
-        ${tijdslot}
-      </span>
-      &nbsp;&nbsp;<span class="created-at" style="color: #888;">Besteld om: ${order.created_at || '-'}</span>
+    <div><strong>Ordernummer:</strong> ${order.order_number || ''}</div>
+    <div class="tijdslot-hoofd">
+      <div>
+        <strong class="${isDelivery ? 'type-bezorging' : 'type-afhalen'}">
+          ${isDelivery ? 'Bezorging' : 'Afhalen'}
+        </strong>
+        <span class="tijdslot" style="color: #e67e22; font-weight: bold; text-transform: uppercase;">
+          ${tijdslot}
+        </span>
+        &nbsp;&nbsp;<span class="created-at" style="color: #888;">Besteld om: ${order.created_at || '-'}</span>
+      </div>
     </div>
-  </div>
+    <div><strong>Naam:</strong> ${order.customer_name || ''}</div>
+    <div><strong>Telefoon:</strong> ${order.phone || ''}</div>
+    ${order.email ? `<div><strong>Email:</strong> <a href="mailto:${order.email}">${order.email}</a></div>` : ''}
+    <div><strong>Items:</strong><ul>${items}</ul></div>
+    ${order.opmerking ? `<div><strong>Opmerking:</strong> ${order.opmerking}</div>` : ''}
+    ${verpakkingskosten > 0 ? `<div><strong>Verpakkingskosten:</strong> €${verpakkingDisplay}</div>` : ''}
+    ${showKorting ? `<div><strong>Korting:</strong> -€${kortingDisplay}</div>` : ''}
+    <div><strong>Totaal:</strong> €${totaalDisplay}</div>
+    ${fooi > 0 ? `<div><strong>Fooi:</strong> €${fooiDisplay}</div>` : ''}
+    ${address !== '-' ? `<div><strong>Adres:</strong> ${address}
+      <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}" target="_blank" style="margin-left:6px;">📍Maps</a>
+    </div>` : ''}
+    ${order.payment_method ? `<div><strong>Betaalwijze:</strong> ${order.payment_method}</div>` : ''}
+  `;
 
-  <div><strong>Naam:</strong> ${order.customer_name || ''}</div>
-  <div><strong>Telefoon:</strong> ${order.phone || ''}</div>
-  ${
-    order.email
-      ? `<div><strong>Email:</strong> <a href="mailto:${order.email}">${order.email}</a></div>`
-      : ''
-  }
-
-  <div><strong>Items:</strong><ul>${items}</ul></div>
-  ${order.opmerking ? `<div><strong>Opmerking:</strong> ${order.opmerking}</div>` : ''}
-  ${verpakkingskosten > 0 ? `<div><strong>Verpakkingskosten:</strong> €${verpakkingDisplay}</div>` : ''}
-  ${showKorting ? `<div><strong>Korting:</strong> -€${kortingDisplay}</div>` : ''}
-  <div><strong>Totaal:</strong> €${totaalDisplay}</div>
-  ${fooi > 0 ? `<div><strong>Fooi:</strong> €${fooiDisplay}</div>` : ''}
-
-  ${
-    address !== '-'
-      ? `<div><strong>Adres:</strong> ${address} 
-          <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}" target="_blank" style="margin-left:6px;">📍Maps</a>
-        </div>`
-      : ''
-  }
-
-  ${order.payment_method ? `<div><strong>Betaalwijze:</strong> ${order.payment_method}</div>` : ''}
-
-  <div class="card-actions" style="margin-top: 12px;">
-    <button class="btn-klaar" onclick="toggleComplete(this)" data-number="${order.order_number}" data-name="${order.customer_name || ''}" data-phone="${order.phone || ''}" data-email="${order.email || ''}" data-type="${isDelivery ? 'bezorg' : 'afhaal'}">
+  // ✅ 创建按钮区域，外置
+  const actions = document.createElement('div');
+  actions.className = 'card-actions';
+  actions.innerHTML = `
+    <button class="btn-klaar" onclick="toggleComplete(this)"
+      data-number="${order.order_number}"
+      data-name="${order.customer_name || ''}"
+      data-phone="${order.phone || ''}"
+      data-email="${order.email || ''}"
+      data-type="${isDelivery ? 'bezorg' : 'afhaal'}">
       Klaar
     </button>
     <button class="btn-bewerk" onclick="editOrder(this)">Bewerk</button>
-    <button class="btn-annuleer" onclick="cancelOrder(this)">Annuleer</button>
+    <button class="btn-annuleer" onclick="toggleCancel(this)"
+  data-number="${order.order_number}"
+  data-name="${order.customer_name || ''}"
+  data-phone="${order.phone || ''}"
+  data-email="${order.email || ''}"
+  data-type="${isDelivery ? 'bezorg' : 'afhaal'}"
+  data-id="${order.id}">
+  Annuleer
+</button>
+
     <span class="notify"></span>
-  </div>
-`;
+  `;
 
+  // ✅ 组装结构
+  wrapper.appendChild(card);
+  wrapper.appendChild(actions);
+  container.appendChild(wrapper);
 
-  container.appendChild(card);
-  return card;
 }
+
 
 function fetchOrders() {
   fetch('/pos/orders_today?json=1')
@@ -2087,42 +2121,67 @@ function orderComplete(btn) {
 }
 
 function toggleComplete(btn) {
-  const row = btn.closest('tr') || btn.closest('.order-card');
-  if(!row) return;
+  const wrapper = btn.closest('.order-card-wrapper');
+  const row = wrapper ? wrapper.querySelector('.order-card') : null;
+  if (!row) return;
+
   const id = btn.dataset.id || row.dataset.id;
   const done = !row.classList.contains('completed');
+
   fetch(`/api/orders/${id}/status`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ is_completed: done })
   }).then(r => r.json()).then(() => {
-    if(done) orderComplete(btn);
-    if(row.tagName === 'TR') {
-      fetchOrders();
-    } else {
-      row.classList.toggle('completed', done);
-      const notify = row.querySelector('.notify');
-      if(notify) notify.textContent = done ? 'Voltooid' : '';
-    }
+    if (done) orderComplete(btn);
+    row.classList.toggle('completed', done);
+    const notify = wrapper.querySelector('.notify');
+    if (notify) notify.textContent = done ? 'Voltooid' : '';
   });
 }
 
-function cancelOrder(btn) {
-  const row = btn.closest('tr') || btn.closest('.order-card');
-  if(!row) return;
+function orderCancelNotify(btn) {
+  const row = btn.closest('.order-card') || btn.closest('tr');
+  const status = row ? row.querySelector('.notify') : null;
+  const payload = {
+    order_number: btn.dataset.number,
+    name: btn.dataset.name,
+    phone: btn.dataset.phone,
+    email: btn.dataset.email,
+    order_type: btn.dataset.type
+  };
+
+  fetch('https://flask-order-api.onrender.com/api/order_cancelled', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).then(r => {
+    if (status) status.textContent = r.ok ? '' : '';
+  }).catch(() => {
+    if (status) status.textContent = '';
+  });
+}
+function toggleCancel(btn) {
+  const wrapper = btn.closest('.order-card-wrapper');
+  const row = wrapper ? wrapper.querySelector('.order-card') : null;
+  if (!row) return;
+
   const id = btn.dataset.id || row.dataset.id;
+  const cancelled = !row.classList.contains('cancelled');
+
   fetch(`/api/orders/${id}/status`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ is_cancelled: true })
-  }).then(() => {
-    if(row.tagName === 'TR') {
-      fetchOrders();
-    } else {
-      row.classList.add('cancelled');
-    }
+    body: JSON.stringify({ is_cancelled: cancelled })
+  }).then(r => r.json()).then(() => {
+    if (cancelled) orderCancelNotify(btn);
+    row.classList.toggle('cancelled', cancelled);
+    const notify = wrapper.querySelector('.notify');
+    if (notify) notify.textContent = cancelled ? 'Geannuleerd' : '';
   });
 }
+
+
 
 function parseItemsString(str, existing) {
   const result = {};
