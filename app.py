@@ -142,6 +142,35 @@ def generate_excel_today(include_cancelled: bool = False):
     output.seek(0)
     return output
 
+@app.route("/api/orders/<order_number>")
+def get_order_details(order_number):
+    order = Order.query.filter_by(order_number=order_number).first()
+    if not order:
+        return jsonify({"error": "Order not found"}), 404
+
+    return jsonify({
+        "order_number": order.order_number,
+        "order_type": order.order_type,
+        "customer_name": order.customer_name,
+        "phone": order.phone,
+        "email": order.email,
+        "street": order.street,
+        "house_number": order.house_number,
+        "postcode": order.postcode,
+        "city": order.city,
+        "totaal": order.totaal,
+        "payment_method": order.payment_method,
+        "tijdslot_display": order.tijdslot_display,
+        "pickup_time": order.pickup_time,
+        "delivery_time": order.delivery_time,
+        "opmerking": order.opmerking,
+        "is_completed": order.is_completed,
+        "is_cancelled": order.is_cancelled,
+        "items": json.loads(order.items or '{}')
+    })
+
+
+
 @app.route('/api/orders/<order_number>', methods=['GET'])
 def get_order_by_number(order_number):
     order = Order.query.filter_by(order_number=order_number).first()
