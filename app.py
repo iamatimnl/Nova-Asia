@@ -142,44 +142,13 @@ def generate_excel_today(include_cancelled: bool = False):
     output.seek(0)
     return output
 
-@app.route("/api/orders/<order_number>", methods=["GET"])
-def get_order_details(order_number):
+@app.route('/api/orders/<order_number>', methods=['GET'])
+def get_order_by_number(order_number):
     order = Order.query.filter_by(order_number=order_number).first()
-    if not order:
+    if order:
+        return jsonify(order_to_dict(order)), 200
+    else:
         return jsonify({"error": "Order not found"}), 404
-
-    # 安全处理 items 字段
-    try:
-        items = json.loads(order.items or '{}')
-    except Exception:
-        try:
-            import ast
-            items = ast.literal_eval(order.items or '{}')
-        except Exception:
-            items = {}
-
-    return jsonify({
-        "order_number": order.order_number,
-        "order_type": order.order_type,
-        "customer_name": order.customer_name,
-        "phone": order.phone,
-        "email": order.email,
-        "street": order.street,
-        "house_number": order.house_number,
-        "postcode": order.postcode,
-        "city": order.city,
-        "totaal": order.totaal,
-        "payment_method": order.payment_method,
-        "tijdslot_display": order.tijdslot_display,
-        "pickup_time": order.pickup_time,
-        "delivery_time": order.delivery_time,
-        "opmerking": order.opmerking,
-        "is_completed": order.is_completed,
-        "is_cancelled": order.is_cancelled,
-        "items": items,
-        "created_at": order.created_at.isoformat() if order.created_at else None,
-    }), 200
-
 
 def order_to_dict(order):
     try:
@@ -1829,7 +1798,6 @@ def logout():
 # 启动
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000)
-
 
 
 
