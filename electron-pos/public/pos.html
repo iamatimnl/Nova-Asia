@@ -2183,11 +2183,22 @@ function openDeliveryModal(btn) {
     select.appendChild(option);
   });
 
-  document.getElementById('deliveryModal').style.display = 'block';
+  const modal = document.getElementById('deliveryModal');
+  if (typeof modal.showModal === 'function') {
+    modal.showModal();
+  } else {
+    modal.setAttribute('open', '');
+  }
 }
 
 function closeDeliveryModal() {
-  document.getElementById('deliveryModal').style.display = 'none';
+  const modal = document.getElementById('deliveryModal');
+  if (typeof modal.close === 'function') {
+    modal.close();
+  } else {
+    modal.removeAttribute('open');
+    modal.style.display = 'none';
+  }
   currentDeliveryBtn = null;
 }
 
@@ -2223,6 +2234,8 @@ function confirmDeliveryPerson() {
 
   closeDeliveryModal();
 }
+
+document.getElementById('confirmDelivery').addEventListener('click', confirmDeliveryPerson);
 
 
 
