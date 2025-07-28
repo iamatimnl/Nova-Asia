@@ -449,6 +449,7 @@ class Order(db.Model):
     items = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     totaal = db.Column(db.Float)
+    verpakkingskosten = db.Column(db.Float, default=0.0)
     fooi = db.Column(db.Float, default=0.0)
     discount_code = db.Column(db.String(50))  # ✅ 新增
     discount_amount = db.Column(db.Float, default=0.0)  # ✅ 新增
