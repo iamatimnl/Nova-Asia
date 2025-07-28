@@ -3866,18 +3866,22 @@ document.getElementById('cartOrderTypeSelect').addEventListener('change', functi
   const selected = this.value;
 
   if (selected !== currentOrderType) {
-    // ✅ 自动切换滑块按钮（radio）
-    document.getElementById(selected).checked = true;
-
-    // ✅ 调用已有滑块处理函数
-    if (typeof toggleOrderType === 'function') {
-      toggleOrderType();
+    // ✅ 自动切换滑块按钮（radio）并触发相应事件
+    const radio = document.getElementById(selected);
+    if (radio) {
+      radio.checked = true;
+      radio.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
     // ✅ 切换图标
     updateOrderTypeIcon(selected);
 
-    // ✅ 自动滚动到配送方式区域
+    // ✅ 移动端关闭购物车后再滚动至配送区域
+    const cartSection = document.getElementById('mobileCart');
+    if (cartSection && cartSection.classList.contains('mobile-visible')) {
+      toggleMobileCart();
+    }
+
     const deliveryOptions = document.getElementById('delivery-options');
     if (deliveryOptions) {
       deliveryOptions.scrollIntoView({ behavior: 'smooth' });
