@@ -161,17 +161,33 @@ def order_to_dict(order):
             items = {}
 
     return {
+        "id": order.id,
         "order_number": order.order_number,
+        "order_type": order.order_type,
         "customer_name": order.customer_name,
         "phone": order.phone,
         "email": order.email,
+        "street": order.street,
+        "house_number": order.house_number,
+        "postcode": order.postcode,
+        "city": order.city,
+        "adres": f"{order.street} {order.house_number}, {order.postcode} {order.city}",
+        "pickup_time": order.pickup_time,
+        "delivery_time": order.delivery_time,
+        "tijdslot": order.tijdslot_display,
         "payment_method": order.payment_method,
         "totaal": order.totaal,
+        "verpakkingskosten": order.verpakkingskosten,
+        "fooi": order.fooi,
+        "discount_code": order.discount_code,
+        "discount_amount": order.discount_amount,
+        "opmerking": order.opmerking,
         "items": items,
         "created_at": order.created_at.isoformat() if order.created_at else None,
         "is_completed": order.is_completed,
         "is_cancelled": order.is_cancelled
     }
+
 
 def generate_pdf_today(include_cancelled: bool = False):
     today = datetime.now(NL_TZ).date()
@@ -704,12 +720,7 @@ def pos():
     # 之前会在此向 POS 页面推送今日订单信息，现已不再需要
     return render_template("pos.html")
 
-@app.route('/api/orders/<order_number>', methods=['GET'])
-def get_order_by_number(order_number):
-    order = Order.query.filter_by(order_number=order_number).first()
-    if not order:
-        return jsonify({"error": "Order not found"}), 404
-    return jsonify(order.to_dict())
+
 
 # 接收前端订单提交
 @app.route('/api/orders', methods=["POST"])
