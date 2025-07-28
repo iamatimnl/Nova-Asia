@@ -5515,7 +5515,17 @@ function checkout() {
     }
     updatePriceBreakdown(currentSubtotal, currentPackaging);
     storeOpen = afhalen.checked ? pickupAvailable : deliveryAvailable;
-  }
+    
+    // 同步下拉菜单和图标，保持双向联动
+    const selected = afhalen.checked ? 'afhalen' : 'bezorgen';
+    const selectEl = document.getElementById('cartOrderTypeSelect');
+    if (selectEl) selectEl.value = selected;
+
+    if (selected !== currentOrderType) {
+      updateOrderTypeIcon(selected);
+      currentOrderType = selected;
+    }
+ }
 
   // 初始化执行一次
   toggleOrderType();
