@@ -73,6 +73,8 @@
     <table>
       <tr><td>Totale omzet</td><td id="totalOmzet">€0,00</td></tr>
       <tr><td>Pin betaling</td><td id="totalPin">€0,00</td></tr>
+      <tr><td>Geannuleerd (aantal / bedrag)</td><td id="totalCancelled">0 / €0,00</td></tr>
+
       <tr><td>Online betaling</td><td id="totalOnline">€0,00</td></tr>
       <tr><td>Contant</td><td id="totalContant">€0,00</td></tr>
       <tr><td>Op rekening</td><td id="totalCredit">€0,00</td></tr>
@@ -91,96 +93,110 @@
     }
 
     function loadOrders(url, mode = 'today', label = '') {
-      fetch(url)
-        .then(r => r.json())
-        .then(data => {
-          const tbody = document.querySelector('#ordersTable tbody');
-          const table = document.getElementById('ordersTable');
-          const msg = document.getElementById('noOrders');
-          tbody.innerHTML = '';
-          let total = 0, pin = 0, online = 0, contant = 0, credit = 0;
+  fetch(url)
+    .then(r => r.json())
+    .then(data => {
+      const tbody = document.querySelector('#ordersTable tbody');
+      const table = document.getElementById('ordersTable');
+      const msg = document.getElementById('noOrders');
+      tbody.innerHTML = '';
 
-          if (data.length) {
-            table.style.display = '';
-            msg.style.display = 'none';
-          } else {
-            table.style.display = 'none';
-            msg.style.display = 'block';
-          }
+      // 初始化统计数据
+      let total = 0, pin = 0, online = 0, contant = 0, credit = 0;
+      let cancelled = 0, cancelledCount = 0;
 
-          const heading = document.getElementById('dayHeading');
-          if (mode === 'today') {
-            heading.textContent = `Vandaag – ${label}`;
-          } else if (mode === 'date') {
-            heading.textContent = `Bestellingen van ${label}`;
-          } else if (mode === 'range') {
-            heading.textContent = `Bestellingen van ${label}`;
-          }
+      // 显示或隐藏订单表格
+      if (data.length) {
+        table.style.display = '';
+        msg.style.display = 'none';
+      } else {
+        table.style.display = 'none';
+        msg.style.display = 'block';
+      }
 
-          data.forEach(order => {
-            const tr = document.createElement('tr');
-            tr.dataset.id = order.id;
-            tr.dataset.order = JSON.stringify(order);
-            if (order.is_cancelled) tr.classList.add('cancelled');
-            else if (order.is_completed) tr.classList.add('completed');
+      // 设置标题
+      const heading = document.getElementById('dayHeading');
+      if (mode === 'today') {
+        heading.textContent = `Vandaag – ${label}`;
+      } else if (mode === 'date') {
+        heading.textContent = `Bestellingen van ${label}`;
+      } else if (mode === 'range') {
+        heading.textContent = `Bestellingen van ${label}`;
+      }
 
-            const isDelivery = ['delivery', 'bezorgen'].includes((order.order_type || '').toLowerCase());
-            const items = Object.entries(order.items || {}).map(([n, i]) => `<li>${n} x ${i.qty}</li>`).join('');
+      // 渲染每一行订单
+      data.forEach(order => {
+        const tr = document.createElement('tr');
+        tr.dataset.id = order.id;
+        tr.dataset.order = JSON.stringify(order);
+        if (order.is_cancelled) tr.classList.add('cancelled');
+        else if (order.is_completed) tr.classList.add('completed');
 
-            let fooi = parseFloat(order.fooi);
-            if (isNaN(fooi)) fooi = 0;
+        const isDelivery = ['delivery', 'bezorgen'].includes((order.order_type || '').toLowerCase());
+        const items = Object.entries(order.items || {}).map(([n, i]) => `<li>${n} x ${i.qty}</li>`).join('');
 
-            let tot = order.totaal ?? order.total ?? 0;
-            if (typeof tot === 'string') {
-              tot = parseFloat(tot.replace(/[^\d,.-]/g, '').replace(',', '.'));
-            }
+        let fooi = parseFloat(order.fooi);
+        if (isNaN(fooi)) fooi = 0;
 
-            if (!order.is_cancelled) {
-              total += tot;
-              const method = String(order.payment_method || '').toLowerCase();
-              if (method.includes('pin')) pin += tot;
-              else if (method.includes('online')) online += tot;
-              else if (method.includes('contant')) contant += tot;
-              else if (method.includes('rekening')) credit += tot;
-            }
+        let tot = order.totaal ?? order.total ?? 0;
+        if (typeof tot === 'string') {
+          tot = parseFloat(tot.replace(/[^\d,.-]/g, '').replace(',', '.'));
+        }
 
-            tr.innerHTML = `
-              <td>${order.id || ''}</td>
-              <td>${order.created_date || ''}</td>
-              <td>${order.created_at || ''}</td>
-              <td>${isDelivery ? (order.delivery_time || order.deliveryTime || '-') : (order.pickup_time || order.pickupTime || '-')}</td>
-              <td>${isDelivery ? 'Bezorgen' : 'Afhalen'}</td>
-              <td>${order.customer_name || ''}</td>
-              <td>${order.phone || ''}</td>
-              <td>${order.email || '-'}</td>
-              <td><ul>${items}</ul></td>
-              <td>${order.opmerking || order.remark || '-'}</td>
-              <td>${formatCurrency(fooi)}</td>
-              <td>${formatCurrency(tot)}</td>
-              <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
-              <td>${order.payment_method || ''}</td>
-              <td><button onclick="toggleComplete(this)"
-                data-number="${order.order_number}"
-                data-name="${order.customer_name || ''}"
-                data-phone="${order.phone || ''}"
-                data-email="${order.email || ''}"
-                data-type="${isDelivery ? 'bezorg' : 'afhaal'}">${order.is_completed ? 'Undone' : 'Klaar'}</button>
-                <button onclick="editOrder(this)">Bewerk</button>
-                <button onclick="cancelOrder(this)">Annuleer</button>
-                <span class="notify"></span></td>
-            `;
-            tbody.appendChild(tr);
-          });
+        // 累加统计：如果取消则记录取消额，否则归类至各支付方式
+        if (order.is_cancelled) {
+          cancelled += tot || 0;
+          cancelledCount++;
+        } else {
+          total += tot;
+          const method = String(order.payment_method || '').toLowerCase();
+          if (method.includes('pin')) pin += tot;
+          else if (method.includes('online')) online += tot;
+          else if (method.includes('contant')) contant += tot;
+          else if (method.includes('rekening')) credit += tot;
+        }
 
-          document.getElementById('totals').style.display = data.length ? '' : 'none';
-          document.getElementById('totalOmzet').textContent = formatCurrency(total);
-          document.getElementById('totalPin').textContent = formatCurrency(pin);
-          document.getElementById('totalOnline').textContent = formatCurrency(online);
-          document.getElementById('totalContant').textContent = formatCurrency(contant);
-          document.getElementById('totalCredit').textContent = formatCurrency(credit);
-        })
-        .catch(() => { alert('Fout bij het ophalen van gegevens.'); });
-    }
+        // 插入表格行
+        tr.innerHTML = `
+          <td>${order.id || ''}</td>
+          <td>${order.created_date || ''}</td>
+          <td>${order.created_at || ''}</td>
+          <td>${isDelivery ? (order.delivery_time || order.deliveryTime || '-') : (order.pickup_time || order.pickupTime || '-')}</td>
+          <td>${isDelivery ? 'Bezorgen' : 'Afhalen'}</td>
+          <td>${order.customer_name || ''}</td>
+          <td>${order.phone || ''}</td>
+          <td>${order.email || '-'}</td>
+          <td><ul>${items}</ul></td>
+          <td>${order.opmerking || order.remark || '-'}</td>
+          <td>${formatCurrency(fooi)}</td>
+          <td>${formatCurrency(tot)}</td>
+          <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
+          <td>${order.payment_method || ''}</td>
+          <td><button onclick="toggleComplete(this)"
+            data-number="${order.order_number}"
+            data-name="${order.customer_name || ''}"
+            data-phone="${order.phone || ''}"
+            data-email="${order.email || ''}"
+            data-type="${isDelivery ? 'bezorg' : 'afhaal'}">${order.is_completed ? 'Undone' : 'Klaar'}</button>
+            <button onclick="editOrder(this)">Bewerk</button>
+            <button onclick="cancelOrder(this)">Annuleer</button>
+            <span class="notify"></span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // 显示 omzet overzicht
+      document.getElementById('totals').style.display = data.length ? '' : 'none';
+      document.getElementById('totalOmzet').textContent = formatCurrency(total);
+      document.getElementById('totalPin').textContent = formatCurrency(pin);
+      document.getElementById('totalOnline').textContent = formatCurrency(online);
+      document.getElementById('totalContant').textContent = formatCurrency(contant);
+      document.getElementById('totalCredit').textContent = formatCurrency(credit);
+      document.getElementById('totalCancelled').textContent = `${cancelledCount} / ${formatCurrency(cancelled)}`;
+    })
+    .catch(() => { alert('Fout bij het ophalen van gegevens.'); });
+}
+
 
     function fetchOrders() {
       const now = new Date();
