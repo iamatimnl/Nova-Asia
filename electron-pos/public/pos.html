@@ -2119,19 +2119,20 @@ function orderComplete(btn) {
 
   const payload = {
     order_number: orderData.order_number || btn.dataset.number,
-    name: orderData.customer_name || btn.dataset.name,
+    customer_name: orderData.customer_name || btn.dataset.name,
     phone: orderData.phone || btn.dataset.phone,
     email: orderData.email || btn.dataset.email,
     order_type: orderType,
-    tijdslot: orderData.tijdslot || orderData.delivery_time || orderData.pickup_time || '',
+    tijdslot_display: orderData.tijdslot || orderData.delivery_time || orderData.pickup_time || '',
+    totaal: orderData.totaal || orderData.total || '',
+    payment_method: orderData.payment_method || '',
+    opmerking: orderData.opmerking || '',
     street: orderData.street || '',
     house_number: orderData.house_number || '',
     postcode: orderData.postcode || '',
     city: orderData.city || '',
-    opmerking: orderData.opmerking || '',
-    totaal: orderData.totaal || orderData.total || '',
-    payment_method: orderData.payment_method || '',
-    created_at: orderData.created_at || ''
+    delivery_person: '',
+    delivery_chat_id: ''
   };
 
   // 👇 如果是配送订单，弹出配送员选择菜单
@@ -2227,19 +2228,18 @@ function confirmDeliveryPerson() {
 
   const payload = {
     order_number: orderData.order_number || btn.dataset.number,
-    name: orderData.customer_name || btn.dataset.name,
+    customer_name: orderData.customer_name || btn.dataset.name,
     phone: orderData.phone || btn.dataset.phone,
     email: orderData.email || btn.dataset.email,
     order_type: btn.dataset.type,
-    tijdslot: orderData.tijdslot || orderData.delivery_time || orderData.pickup_time || '',
+    tijdslot_display: orderData.tijdslot || orderData.delivery_time || orderData.pickup_time || '',
+    totaal: orderData.totaal || orderData.total || '',
+    payment_method: orderData.payment_method || '',
+    opmerking: orderData.opmerking || '',
     street: orderData.street || '',
     house_number: orderData.house_number || '',
     postcode: orderData.postcode || '',
     city: orderData.city || '',
-    opmerking: orderData.opmerking || '',
-    totaal: orderData.totaal || orderData.total || '',
-    payment_method: orderData.payment_method || '',
-    created_at: orderData.created_at || '',
     delivery_person: person.name,
     delivery_chat_id: person.chat_id
   };
@@ -2268,10 +2268,20 @@ function orderCancelNotify(btn) {
   const status = row ? row.querySelector('.notify') : null;
   const payload = {
     order_number: btn.dataset.number,
-    name: btn.dataset.name,
+    customer_name: btn.dataset.name,
     phone: btn.dataset.phone,
     email: btn.dataset.email,
-    order_type: btn.dataset.type
+    order_type: btn.dataset.type,
+    tijdslot_display: '',
+    totaal: '',
+    payment_method: '',
+    opmerking: '',
+    street: '',
+    house_number: '',
+    postcode: '',
+    city: '',
+    delivery_person: '',
+    delivery_chat_id: ''
   };
 
   fetch('https://flask-order-api.onrender.com/api/order_cancelled', {
