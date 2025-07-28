@@ -439,7 +439,33 @@ class Order(db.Model):
     is_completed = db.Column(db.Boolean, default=False)
     is_cancelled = db.Column(db.Boolean, default=False)
 
-
+# ✅ 添加的位置
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "order_number": self.order_number,
+            "order_type": self.order_type,
+            "customer_name": self.customer_name,
+            "phone": self.phone,
+            "email": self.email,
+            "pickup_time": self.pickup_time,
+            "delivery_time": self.delivery_time,
+            "tijdslot": self.tijdslot_display,
+            "payment_method": self.payment_method,
+            "postcode": self.postcode,
+            "house_number": self.house_number,
+            "street": self.street,
+            "city": self.city,
+            "opmerking": self.opmerking,
+            "items": json.loads(self.items or '{}'),
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "totaal": self.totaal,
+            "fooi": self.fooi,
+            "discount_code": self.discount_code,
+            "discount_amount": self.discount_amount,
+            "is_completed": self.is_completed,
+            "is_cancelled": self.is_cancelled
+        }
 
 class Setting(db.Model):
     __tablename__ = 'settings'
@@ -678,6 +704,12 @@ def pos():
     # 之前会在此向 POS 页面推送今日订单信息，现已不再需要
     return render_template("pos.html")
 
+@app.route('/api/orders/<order_number>', methods=['GET'])
+def get_order_by_number(order_number):
+    order = Order.query.filter_by(order_number=order_number).first()
+    if not order:
+        return jsonify({"error": "Order not found"}), 404
+    return jsonify(order.to_dict())
 
 # 接收前端订单提交
 @app.route('/api/orders', methods=["POST"])
