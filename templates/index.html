@@ -1952,40 +1952,58 @@ input:focus, select:focus, textarea:focus {
   <!-- 左侧: Winkelwagen 商品列表 -->
 <div class="cart-left">  
   <div class="cart-items">
-
-    <!-- 标题 + 支付选择器在同一行 -->
     <div style="
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
-">
-  <span style="font-weight: bold; font-size: 1.4rem; color: #333; white-space: nowrap;">
-    Overzicht:
-   <img
-  id="cartIcon"
-  src="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/online.svg"
-  alt="Payment icon"
-  style="height: 24px; vertical-align: middle; margin-bottom: 5px;"
-/>
-
-
-  </span>
-
-  <select id="cartPaymentSelect" style="
-    flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    ">
+      <!-- 配送方式显示 -->
+      <span style="display: flex; align-items: center; gap: 6px;">
+  <select id="cartOrderTypeSelect" style="
     padding: 6px 10px;
     border-radius: 6px;
     border: 1px solid #ccc;
     font-size: 1rem;
+    width: 120px;
   ">
-    <option value="online" selected>Online betaling</option>
-    <option value="contant">Contant</option>
-    <option value="pin">Pin</option>
-    <option value="oprekening">Op rekening</option>
+    <option value="afhalen">Afhaal</option>
+    <option value="bezorgen">Bezorg</option>
   </select>
-</div>
+  <img
+    id="orderTypeIcon"
+    src="/static/images/pickup.svg"
+    alt="Order type icon"
+    style="height: 24px; margin-left: 4px;"
+  />
+</span>
+
+
+
+      <!-- 支付方式 + 图标 -->
+      <span style="display: flex; align-items: center; gap: 6px;">
+        <select id="cartPaymentSelect" style="
+          padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  width: 180px;
+        ">
+          <option value="online" selected>Online betaling</option>
+          <option value="contant">Contant</option>
+          <option value="pin">Pin</option>
+          <option value="oprekening">Op rekening</option>
+        </select>
+        <img
+          id="cartIcon"
+          src="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/online.svg"
+          alt="Payment icon"
+          style="height: 24px; vertical-align: middle;"
+        />
+      </span>
+    </div>
+
 
 
     <!-- 购物车商品列表 -->
@@ -3827,17 +3845,51 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
+// ✅ 当前配送方式初始状态（根据滑块判断）
+let currentOrderType = document.getElementById('afhalen').checked ? 'afhalen' : 'bezorgen';
 
+// ✅ 更新图标函数（包含尺寸设置）
+function updateOrderTypeIcon(value) {
+  const icon = document.getElementById('orderTypeIcon');
+  icon.src = value === 'afhalen'
+    ? "/static/images/pickup.png"
+    : "/static/images/delivery.png";
 
+  // ✅ 设置图标尺寸
+  icon.style.height = '24px';
+  icon.style.width = '24px';
+  icon.style.objectFit = 'contain';
+}
 
+// ✅ 监听配送方式下拉菜单切换
+document.getElementById('cartOrderTypeSelect').addEventListener('change', function () {
+  const selected = this.value;
 
+  if (selected !== currentOrderType) {
+    // ✅ 自动切换滑块按钮（radio）
+    document.getElementById(selected).checked = true;
 
+    // ✅ 调用已有滑块处理函数
+    if (typeof toggleOrderType === 'function') {
+      toggleOrderType();
+    }
 
+    // ✅ 切换图标
+    updateOrderTypeIcon(selected);
 
+    // ✅ 自动滚动到配送方式区域
+    const deliveryOptions = document.getElementById('delivery-options');
+    if (deliveryOptions) {
+      deliveryOptions.scrollIntoView({ behavior: 'smooth' });
+    }
 
+    // ✅ 更新当前状态
+    currentOrderType = selected;
+  }
+});
 
-
-
+// ✅ 页面初始化时同步一次图标
+updateOrderTypeIcon(currentOrderType);
 
 
 
