@@ -72,6 +72,7 @@
     <h2>Omzet Overzicht</h2>
     <table>
       <tr><td>Totale omzet</td><td id="totalOmzet">€0,00</td></tr>
+      <tr><td>BTW (9%)</td><td id="btwAmount">€0,00</td></tr>
       <tr><td>Pin betaling</td><td id="totalPin">€0,00</td></tr>
       <tr><td>Geannuleerd (aantal / bedrag)</td><td id="totalCancelled">0 / €0,00</td></tr>
 
@@ -188,6 +189,7 @@
       // 显示 omzet overzicht
       document.getElementById('totals').style.display = data.length ? '' : 'none';
       document.getElementById('totalOmzet').textContent = formatCurrency(total);
+      document.getElementById('btwAmount').textContent = formatCurrency(total * 0.09);
       document.getElementById('totalPin').textContent = formatCurrency(pin);
       document.getElementById('totalOnline').textContent = formatCurrency(online);
       document.getElementById('totalContant').textContent = formatCurrency(contant);
