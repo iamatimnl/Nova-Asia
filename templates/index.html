@@ -1807,11 +1807,13 @@ input:focus, select:focus, textarea:focus {
   font-size: 2em;
   display: flex;
   align-items: center;
+  justify-content: center;  /* ✅ 水平居中 */
+  text-align: center;
 }
 
 .logo-desktop {
-  display: none;            /* 默认隐藏 */
-  height: 1.2em;            /* 比字体稍大一点 */
+  display: none;             /* 默认隐藏 */
+  height: 1.8em;             /* ✅ 稍大于文字（可调 1.5 ~ 2.0em） */
   margin-right: 0.5em;
   vertical-align: middle;
 }
