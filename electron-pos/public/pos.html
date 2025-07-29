@@ -746,6 +746,7 @@ dialog::backdrop {
 
   
 </style>
+<script src="js/simple-qrcode.js"></script>
 </head>
 <body>
 <div class="navbar-container" id="navbar-container">
@@ -1723,8 +1724,11 @@ function updateQRCode(){
   if(street && house && pc && city){
     const address=`${street} ${house}, ${pc} ${city}`;
     const googleMapsLink=`https://www.google.com/maps?q=${encodeURIComponent(address)}`;
-    const qrCodeUrl=`https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=${encodeURIComponent(googleMapsLink)}`;
-    img.src=qrCodeUrl;
+    if(window.SimpleQR){
+      img.src=SimpleQR.generate(googleMapsLink,200);
+    } else {
+      img.src='';
+    }
     linkContainer.innerHTML=`<a href="${googleMapsLink}" target="_blank" style="color: var(--accent-color); text-decoration: underline;">Open in Google Maps</a>`;
     container.classList.remove('hidden');
   }else{
