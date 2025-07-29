@@ -1,4 +1,12 @@
 <style>
+  :root {
+    --card-bg: #fff;
+    --card-radius: 12px;
+    --card-shadow: 0 4px 12px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.1);
+    --action-bg: rgba(255,255,255,0.6);
+    --action-border: 1px solid rgba(0,0,0,0.05);
+  }
+
 .orders-cards {
   display: flex;
   margin-top: -8px;
@@ -14,12 +22,17 @@
   flex: 0 0 340px;
   display: flex;
   flex-direction: column;
-  background: #fdfdfd;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  border: var(--action-border);
   overflow: hidden;
   top: -20px;                  /* ✅ 向上移动 */
-  /* margin-top: -15px; ❌ 不需要，容易和 gap 冲突 */
+  transition: transform 0.15s ease;
+}
+
+.order-card-wrapper:hover {
+  transform: translateY(-2px);
 }
 
 
@@ -28,6 +41,9 @@
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--secondary-color, #333);
+  background: transparent;
 }
 
 .card-header {
@@ -57,51 +73,53 @@
   justify-content: space-between;
   padding: 10px 12px;
   gap: 6px;
-  background: #f3f3f3;
-  border-top: 1px solid #ddd;
+  background: var(--action-bg);
+  border-top: var(--action-border);
+  backdrop-filter: blur(10px);
 }
 
 .card-actions button {
   flex: 1;
   font-size: 13px;
   padding: 6px 10px;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   border: none;
+  transition: background-color 0.2s;
 }
 
 .btn-klaar {
-  background-color: #28a745;
-  color: white;
+  background-color: #4caf50;
+  color: #fff;
 }
 
 .btn-bewerk {
-  background-color: #ffc107;
-  color: black;
+  background-color: #ffd560;
+  color: #333;
 }
 
 .btn-annuleer {
-  background-color: #dc3545;
-  color: white;
+  background-color: #e76f51;
+  color: #fff;
 }
 
 /* 状态样式 */
 .order-card.completed {
-  background-color: #557556 !important;
-  color: white;
+  background-color: #e6f4ea !important;
+  color: #2e7d32;
 }
 
 .order-card.cancelled {
-  background-color: #865050 !important;
-  color: white;
+  background-color: #fce8e6 !important;
+  color: #c62828;
 }
 
 .type-afhalen {
-  color: #007e33;
+  color: #2e7d32;
 }
 
 .type-bezorging {
-  color: #184ed8;
+  color: #0066cc;
 }
 
 .orders-cards {
@@ -114,8 +132,8 @@
   position: absolute;
   top: 8px;
   right: 10px;
-  background: #010a5cff;
-  color: white;
+  background: var(--accent-color, #3f5c4b);
+  color: #fff;
   font-size: 13px;
   font-weight: bold;
   border-radius: 50%;
@@ -124,7 +142,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 3px rgba(0,0,0,0.3);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 .order-card {
   position: relative; /* ✅ 让 ::before 定位生效 */
