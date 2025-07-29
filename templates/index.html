@@ -1826,6 +1826,10 @@ input:focus, select:focus, textarea:focus {
 }
 
 
+body.mobile-mode .menu-container {
+  flex-direction: column;
+  padding: 10px;
+}
 
 
 
@@ -3766,6 +3770,24 @@ input:focus, select:focus, textarea:focus {
 
 
 <script>
+
+
+
+
+function applyMobileLayoutIfPortrait() {
+    const isPortrait = window.innerHeight > window.innerWidth;
+    if (isPortrait) {
+        document.body.classList.add("mobile-mode");
+    } else {
+        document.body.classList.remove("mobile-mode");
+    }
+}
+
+window.addEventListener('load', applyMobileLayoutIfPortrait);
+window.addEventListener('resize', applyMobileLayoutIfPortrait);
+
+
+  
 const cart = {};
 const extras = {
   chopstickCount: {
