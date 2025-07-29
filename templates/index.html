@@ -41,54 +41,37 @@
   }
 
  :root {
-    /* 🌿 主背景色 - 和风奶白 */
-  --primary-color: #F5F7FA; /* 清爽浅灰主背景 */
+  /* 🌿 主背景色 - 奶茶底 */
+  --primary-color: #f9f4ef; /* 柔和米奶色 */
 
-    /* 🌸 局部背景色（标签、卡片、背景块） */
-  
- --section-alt-bg: linear-gradient(
-    to bottom,
-    rgba(245, 247, 250, 0.95),
-    rgba(235, 238, 243, 0.9),
-    rgba(225, 228, 233, 0.85)
-  );
+  /* 🌸 局部背景色（如卡片、浮层） */
+  --section-alt-bg: #f2e9dc; /* 稍深一点的奶咖色 */
 
   --off-white-frosted: linear-gradient(
-  to bottom,
-  rgba(240, 242, 245, 0.9),
-  rgba(223, 226, 230, 0.85),
-  rgba(210, 214, 219, 0.8)
-);
+    to bottom,
+    rgba(255, 250, 240, 0.92),
+    rgba(245, 235, 225, 0.88),
+    rgba(240, 230, 220, 0.85)
+  );
 
+  /* 🖌️ 主按钮色 */
+  --accent-color: #6b4f3b; /* 温暖浓咖色 - 稳重主按钮 */
+  --accent-secondary: #a58b72; /* 次按钮色 - 奶茶拿铁色 */
 
-    /* 🖌️ 按钮色 */
-    --accent-color: #34495E; /* 深蓝灰主按钮 */
-    --accent-secondary: #7F8C8D; /* 中性灰次按钮 */
+  /* 📝 文字色 */
+  --secondary-color: #3e2f24; /* 深棕 - 清晰不刺眼 */
 
-    /* 📝 文字色 */
-    --secondary-color: #2C3E50; /* 深灰蓝正文文字 */
+  /* ✨ 点缀色 */
+  --accent-highlight: #e59c4b; /* 蜂蜜橘 - 轻盈而有强调 */
+  --sakura: #d87474; /* 柔和樱花红 - 比原来的不刺眼 */
+  --gold: #caa26a; /* 浅金色 - 用于高亮价格/图标 */
 
-    /* ✨ 点缀色 */
-    --accent-highlight: #F39C12; /* 暖橙强调，hover、价格标签 */
-    --sakura: #E74C3C; /* 成熟红点缀，小标签、hover图标 */
-    --gold: #D4AF37; /* 经典金色，用于小图标、hover描边 */
-
-    /* 🌈 渐变色 */
-    --accent-gradient-start: #F39C12; /* 暖橙渐变起点 */
-    --accent-gradient-mid: #B9770E; /* 焦糖高光 */
-    --accent-gradient-end: #34495E; /* 深蓝收尾 */
+  /* 🌈 渐变色（用于按钮等） */
+  --accent-gradient-start: #e6b980; /* 奶橘渐变起点 */
+  --accent-gradient-mid: #c59569;   /* 中段焦糖 */
+  --accent-gradient-end: #8e4a19;   /* 深咖终点 */
 }
 
-  .frosted-glass {
-  background: var(--off-white); /* 可切换为 --off-white */
-  backdrop-filter: blur(12px);       /* 毛玻璃模糊强度 */
-  -webkit-backdrop-filter: blur(12px); /* 兼容 Safari */
-  border-radius: 16px;               /* 柔和圆角 */
-  border: 1px solid rgba(255, 255, 255, 0.3); /* 细边框 */
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);  /* 轻微阴影 */
-  padding: 2rem;
-  color: var(--accent-color);  /* 字体颜色与品牌主色搭配 */
-}
 
   button,
   input,
@@ -365,7 +348,7 @@
   width: 60%;
   margin: 2px 0;
   padding: 4px 6px;
-  font-size: 0.6rem;
+  font-size: 0.8rem;
   border-radius: 10px;
   border: 1px solid #ccc;
   background: rgba(255, 255, 255, 0.7);
@@ -407,7 +390,7 @@
   .menu-item label {
     margin: 2px 0;
     padding: 4px 6px;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     border-radius: 10px;
     border: 1px solid #ccc;
    
@@ -424,7 +407,7 @@
   .menu-item button {
     width: 2.2rem;
     height: 2.2rem;
-    font-size: 1rem;
+    font-size: 1.2rem;
     padding: 0;
     display: inline-flex;
     align-items: center;
@@ -660,6 +643,7 @@
     flex: 1 1 auto;
     display: flex;
     width: 600px;
+    font-size: large;
     flex-direction: column;
     overflow: hidden;
     border-top-left-radius: 16px;
@@ -690,6 +674,7 @@
     flex: 0 0 auto;
     width: 100%;
     position: static;
+    font-size: larger;
     padding: 16px;
     background: linear-gradient(to bottom, #fff0dd,  rgba(240, 235, 220, 0.83), #eae8e8);
     backdrop-filter: blur(6px);
@@ -936,6 +921,7 @@
 
 .checkout-btn:hover {
   filter: brightness(1.07);
+  transform: scale(0.95); /* 加上这一行：让悬停时微缩 */
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.3),
     inset 0 -3px 6px rgba(0, 0, 0, 0.18),
@@ -943,7 +929,8 @@
 }
 
 .checkout-btn:active {
-  transform: translateY(2px);
+  
+  transform: translateY(3px);
   box-shadow:
     inset 0 2px 4px rgba(0, 0, 0, 0.25),
     0 2px 4px rgba(0, 0, 0, 0.2);
@@ -1123,7 +1110,7 @@ input:focus, select:focus, textarea:focus {
 .cart-section textarea {
   width: 100%;
   padding: 10px 12px;
-  font-size: 1rem;
+  font-size: 1.4rem;
   border-radius: 12px;
   border: 1px solid #ccc;
   box-sizing: border-box;
@@ -1138,7 +1125,7 @@ input:focus, select:focus, textarea:focus {
 .price-details {
   text-align: left;
   margin-top: 10px;
-  font-size: 0.95rem;
+  font-size: 1.25rem;
 }
 .price-details .price-row {
   display: flex;
@@ -1154,7 +1141,7 @@ input:focus, select:focus, textarea:focus {
   padding-top: 4px;
 }
 .price-details .btw-note {
-  font-size: 0.85rem;
+  font-size: 0.99rem;
   color: #555;
   text-align: right;
 }
@@ -1178,6 +1165,51 @@ input:focus, select:focus, textarea:focus {
     width: 100%;
     font-size: 0.8rem;
     padding: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cart-section textarea {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 0.85rem;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    resize: vertical;
+  }
+
+  .cart-section textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+  }
+
+  .price-details {
+    text-align: left;
+    margin-top: 10px;
+    font-size: 0.95rem; /* 小屏缩小字体 */
+  }
+
+  .price-details .price-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 4px 0;
+  }
+
+  .price-details select {
+    width: auto;
+  }
+
+  .price-details .total-row {
+    font-weight: bold;
+    border-top: 1px solid #ccc;
+    padding-top: 4px;
+  }
+
+  .price-details .btw-note {
+    font-size: 0.8rem;
+    color: #555;
+    text-align: right;
   }
 }
 
@@ -1214,7 +1246,7 @@ input:focus, select:focus, textarea:focus {
   width: 50px;
   margin-top: 2px;
   padding: 4px;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
 }
 
 
@@ -1380,14 +1412,14 @@ input:focus, select:focus, textarea:focus {
 
 /* Increase font size on larger screens for better readability */
 @media (min-width: 768px) {
-  html { font-size: 18px; }
-  body { font-size: 1.4rem !important; }
-  h1 { font-size: 2.6rem !important; }
-  h2 { font-size: 2.2rem !important; }
-  h3 { font-size: 1.8rem !important; }
-  h4 { font-size: 1.6rem !important; }
-  h5 { font-size: 1.4rem !important; }
-  h6 { font-size: 1.3rem !important; }
+  html { font-size: 19px; }
+  body { font-size: 1.5rem !important; }
+  h1 { font-size: 2.7rem !important; }
+  h2 { font-size: 2.3rem !important; }
+  h3 { font-size: 1.9rem !important; }
+  h4 { font-size: 1.7rem !important; }
+  h5 { font-size: 1.5rem !important; }
+  h6 { font-size: 1.4rem !important; }
   p,
   label,
   input,
@@ -2025,7 +2057,7 @@ body.portrait-mode #cart-toggle {
 </section>
 <section id="checkbox-group">
 <div class="checkbox-group">
-<h2>Benodigdheden </h2>
+<h2>Benodigdheden</h2>
 <p style="margin-top: -12px; font-size: 0.95rem; color: #6A994E; text-align: center;">
     Geef aan wat u nodig heeft. Voorkom verspilling, denk aan het milieu. 🌱
 </p>
@@ -2078,7 +2110,7 @@ body.portrait-mode #cart-toggle {
       <span style="display: flex; align-items: center; gap: 6px;">
   <select id="cartOrderTypeSelect" style="
     padding: 6px 10px;
-    border-radius: 6px;
+    border-radius: 10px;
     border: 1px solid #ccc;
     font-size: 1rem;
     width: 120px;
@@ -2100,10 +2132,10 @@ body.portrait-mode #cart-toggle {
       <span style="display: flex; align-items: center; gap: 6px;">
         <select id="cartPaymentSelect" style="
           padding: 6px 10px;
-  border-radius: 6px;
+  border-radius: 10px;
   border: 1px solid #ccc;
   font-size: 1rem;
-  width: 180px;
+  width: 190px;
         ">
           <option value="online" selected>Online betaling</option>
           <option value="contant">Contant</option>
@@ -2132,15 +2164,15 @@ body.portrait-mode #cart-toggle {
   <!-- 右侧: 结算区域 -->
   <div class="cart-summary pretty-gradient">
 
-    <button id="closeCartBtn" onclick="toggleMobileCart()" style="background: none; border: none; padding: 6px; cursor: pointer;">
-  <img src="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/close.svg" alt="Close" style="width: 30px; height: 30px;">
-
+   <button id="closeCartBtn" onclick="toggleMobileCart()" style="background: none; border: none; padding: 6px; cursor: pointer;">
+  <img src="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/close.svg" alt="Close" style="width: 30px; height: 30px;"> Terug
 </button>
 
-    <div id="cartExtrasContainer"></div>
-   <label for="remark" style="display:block; margin-top:10px; font-weight: bold;">Opmerking:</label>
 
-    <textarea id="remark" placeholder="Bijv. geen komkomer, extra mayo" rows="2"></textarea>
+    <div id="cartExtrasContainer"></div>
+
+    <textarea id="remark" placeholder="Opmerking: bijv. geen komkommer,extra avocado" rows="2"></textarea>
+
 
     <div class="price-details">
       <div class="price-row"><span>Subtotaal:</span> <span id="subtotalDisplay">€0,00</span></div>
@@ -5083,11 +5115,7 @@ function updateCart() {
 
   const extrasContainer = document.getElementById('cartExtrasContainer');
   extrasContainer.innerHTML = '';
-  const title = document.createElement('div');
-  title.textContent = '— Benodigdheden —';
-  title.style.marginTop = '10px';
-  title.style.fontWeight = 'bold';
-  extrasContainer.appendChild(title);
+  
 
   const row = document.createElement('div');
   row.className = 'cart-extras';
