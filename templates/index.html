@@ -1799,6 +1799,36 @@ input:focus, select:focus, textarea:focus {
     display: block !important;
   }
 }
+
+
+
+
+.logo-heading {
+  font-size: 2em;
+  display: flex;
+  align-items: center;
+}
+
+.logo-desktop {
+  display: none;            /* 默认隐藏 */
+  height: 1.2em;            /* 比字体稍大一点 */
+  margin-right: 0.5em;
+  vertical-align: middle;
+}
+
+/* 在桌面端显示图片 */
+@media (min-width: 768px) {
+  .logo-desktop {
+    display: inline-block;
+  }
+}
+
+
+
+
+
+
+  
 </style>
 
 
@@ -1848,7 +1878,12 @@ input:focus, select:focus, textarea:focus {
 <div class="indicator" id="indicator"></div>
 </nav>
 </div>
-<h1>Nova Asia Online Bestellen</h1>
+<h1 class="logo-heading">
+  <img src="static/images/Logo.png" alt="Nova Asia Logo" class="logo-desktop" />
+  Nova Asia Online Bestellen
+</h1>
+
+
 <section id="delivery-options">
 <div class="delivery-options">
 <h2>Kies uw bestelmethode</h2>
