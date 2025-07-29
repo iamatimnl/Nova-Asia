@@ -20,7 +20,7 @@
 
 <!-- 启用 Android 全屏 Web App 模式 -->
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#3F5148">
 
 <style>
   body {
@@ -40,41 +40,41 @@
 
  :root {
     /* 🌿 主背景色 - 和风奶白 */
-    --primary-color: #FAF8F1; /* 和风白主背景（轻柔、干净） */
+  --primary-color: #F9F5F0; /* 柔和暖白主背景 */
 
     /* 🌸 局部背景色（标签、卡片、背景块） */
   
  --section-alt-bg: linear-gradient(
     to bottom,
-   rgba(248, 240, 225, 0.92),  /* 顶部浅米黄 */
-   rgba(244, 232, 210, 0.88),  /* 中段米金 */
-   rgba(240, 225, 200, 0.84)  /* 底部稍深 */
+   rgba(250, 246, 239, 0.92),
+   rgba(243, 236, 227, 0.88),
+   rgba(236, 229, 219, 0.84)
   );
 
   --off-white-frosted: linear-gradient(
   to bottom,
-  rgba(215, 207, 197, 0.9),
-  rgba(156, 151, 145, 0.85),
-  rgba(147, 141, 132, 0.8)
+  rgba(236, 231, 223, 0.9),
+  rgba(215, 208, 200, 0.85),
+  rgba(200, 193, 185, 0.8)
 );
 
 
     /* 🖌️ 按钮色 */
-    --accent-color: #4E342E; /* 焦糖色主按钮 */
-    --accent-secondary: #A47148; /* 木质棕次按钮 */
+    --accent-color: #3F5148; /* 深森林绿主按钮 */
+    --accent-secondary: #9A7B68; /* 温润棕次按钮 */
 
     /* 📝 文字色 */
-    --secondary-color: #4A4A4A; /* 深灰正文文字，避免死黑 */
+    --secondary-color: #333333; /* 深灰正文文字，避免死黑 */
 
     /* ✨ 点缀色 */
-    --accent-highlight: #E1C16E; /* 浅金强调，hover、价格标签 */
-    --sakura: #D48B8B; /* 樱花粉点缀，小标签、hover图标 */
-    --gold: #C8A95C; /* 柔和金色，用于小图标、hover描边 */
+    --accent-highlight: #E0B76E; /* 暖金强调，hover、价格标签 */
+    --sakura: #E29595; /* 樱花粉点缀，小标签、hover图标 */
+    --gold: #D4B483; /* 柔和金色，用于小图标、hover描边 */
 
     /* 🌈 渐变色 */
-    --accent-gradient-start: #E09142; /* 奶茶金渐变起点 */
-    --accent-gradient-mid: #6A2E14; /* 焦糖高光 */
-    --accent-gradient-end: #4E342E; /* 深焦糖收尾 */
+    --accent-gradient-start: #FBC07A; /* 暖橙渐变起点 */
+    --accent-gradient-mid: #CC8A5A; /* 焦糖高光 */
+    --accent-gradient-end: #3F5148; /* 深绿收尾 */
 }
 
   .frosted-glass {
@@ -85,7 +85,7 @@
   border: 1px solid rgba(255, 255, 255, 0.3); /* 细边框 */
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);  /* 轻微阴影 */
   padding: 2rem;
-  color: #3a2d1a;  /* 深一点的字体颜色，与奶茶底色搭配 */
+  color: var(--accent-color);  /* 字体颜色与品牌主色搭配 */
 }
 
   button,
@@ -112,7 +112,7 @@
  
   height: 64px;
 
-  background: #f6e2c79a;
+  background: #ede7e0a8;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 
@@ -213,7 +213,7 @@
     top: 0px;
     height: 42px; /* ✅ 移动端稍微降低高度 */
     border-radius: 26px; /* ✅ 移动端圆角更柔和 */
-    background: #f6e2c7bd;
+    background: #ede7e0bd;
     backdrop-filter: blur(12px);  
 
   }
@@ -246,7 +246,7 @@
  }
 
   .apply-discount-btn:hover {
-  background-color: 	#E6B422; /* 与结账按钮一致的深色悬停色 */
+  background-color: 	var(--accent-highlight); /* 与结账按钮一致的深色悬停色 */
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); /* 悬停时增加轻微阴影 */
   transform: scale(0.97); /* 悬停时轻微缩放反馈 */
  }
@@ -361,7 +361,7 @@
   border: 1px solid #ccc;
   background: rgba(255, 255, 255, 0.7);
   box-sizing: border-box;
-  color: #4E342E;
+  color: var(--accent-color);
 }
 /* Ensure Omakase preference dropdowns keep full width */
 #omakasePrefs select {
@@ -437,7 +437,7 @@
 }
 
 .add-button:hover {
-  background: #d3741c;
+  background: #546860;
 }
 
 .remove-button {
@@ -447,12 +447,12 @@
 }
 
 .remove-button:hover {
-  background: #ff7b94;
+  background: #f3a6a6;
 }
 
 .new-set-button {
   all: unset !important;
-  background: #ff7b94!important;
+  background: var(--sakura)!important;
   color: white !important;
   border: none !important;
   border-radius: 8px !important;
@@ -481,7 +481,7 @@
 
 .new-set-msg {
   font-size: 2.6rem;  /* 稍微加大，更友好 */
-  color: #ff7b94;
+  color: var(--sakura);
   font-weight: 500;
   letter-spacing: 0.3px;
   margin: 0;
@@ -559,7 +559,7 @@
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
 
-  background: linear-gradient(to bottom, #ffffff, #e8e3dc,#f6e2c7);
+  background: linear-gradient(to bottom, #ffffff, #e8e3dc,#ede7e0);
     backdrop-filter: blur(6px);
   position: relative;
 }
@@ -570,7 +570,7 @@
 .cart-section.mobile-visible .cart-summary {
   width: 100%;
   flex: 0 0 auto;
-    background: linear-gradient(to bottom, #f6e2c7, #e5dfd8, #eae8e8);
+    background: linear-gradient(to bottom, #ede7e0, #e5dfd8, #eae8e8);
     backdrop-filter: blur(6px);
   border-bottom-left-radius: 16px;
   margin-top: 0px;
@@ -666,7 +666,7 @@
 
   /* 所有购物车商品文字统一金色 */
   .cart-left li {
-    color: #4E342E;
+    color: var(--accent-color);
   }
 
   .cart-items {
@@ -1023,7 +1023,7 @@
   top: 80px;
   left: 50%;
   transform: translateX(-50%);
-  background: #f6e2c7; /* 焦糖色主按钮 */
+  background: #ede7e0; /* 温柔米白按钮背景 */
   color: #111111; /* 卡片、按钮背景的局部白 */
   padding: 10px 20px;
   border-radius: 8px;
@@ -1567,7 +1567,7 @@ input:focus, select:focus, textarea:focus {
   padding: 0 8px;
   box-sizing: border-box;
   border-radius: 26px;
-  background: #f6e2c7bd;
+  background: #ede7e0bd;
   backdrop-filter: blur(12px); 
 }
 
@@ -1764,7 +1764,7 @@ input:focus, select:focus, textarea:focus {
 
 
 .clipboard-content {
-  color: #4E342E;
+  color: var(--accent-color);
   font-size: 1rem;
   line-height: 1.5;
 }
