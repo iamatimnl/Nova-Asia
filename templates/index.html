@@ -213,7 +213,7 @@
  
 
   /* 移动端专用样式（小于 768px 时生效） */
-  @media (max-width: 767px) {
+@media (max-width: 767px) {
 
   .navbar-container {
     width: 100%; /* ✅ 移动端缩小药丸宽度 */
@@ -1831,33 +1831,6 @@ input:focus, select:focus, textarea:focus {
     display: inline-block;
   }
 }
-body.portrait-mode .menu-container {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: flex-start !important; /* 强制左对齐 */
-}
-
-body.portrait-mode .menu-item {
-  align-self: stretch;
-  text-align: left;
-  justify-content: flex-start !important;
-  align-items: flex-start !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  display: flex !important;
-  flex-direction: row;
-  gap: 12px; /* 图文之间的间距 */
-}
-
-body.portrait-mode .menu-item img {
-  display: block;
-  margin: 0;
-  max-width: 90px; /* 根据需要限制大小 */
-}
-
-body.portrait-mode .menu-item .menu-text {
-  text-align: left;
-}
 
 
 body.portrait-mode .menu-container {
@@ -1907,112 +1880,12 @@ body.portrait-mode .desktop-only {
 body.portrait-mode .mobile-only {
   display: block !important;
 }
-/* Use mobile cart and navbar styles when portrait mode is active */
-body.portrait-mode #cart-toggle,
-body.portrait-mode #closeCartBtn,
-body.portrait-mode .slider-container {
-  display: block !important;
-}
-body.portrait-mode .cart-section {
-  position: static;
-  display: none;
-}
-body.portrait-mode .cart-section.mobile-visible {
-  display: flex !important;
-}
-body.portrait-mode .navbar-container {
-  width: 100%;
-  top: 0;
-  height: 42px;
-  border-radius: 26px;
-  background: #ede7e0bd;
-  backdrop-filter: blur(12px);
-}
-body.portrait-mode .navbar {
-  border-radius: 26px;
-}
-body.portrait-mode .navbar a {
-  padding: 12px 16px;
-  font-size: 0.8rem;
-}
-body.portrait-mode .indicator {
-  top: 1px;
-  left: 3px;
-  height: calc(100% - 3px);
-  border-radius: 26px;
-}
 body.portrait-mode .order-type-text {
   font-size: 0.8rem;
   font-weight: 400;
 }
 body.portrait-mode .clipboard {
   display: none;
-}
-
-/* Portrait mode: left align section content and enlarge fonts */
-body.portrait-mode section {
-  text-align: left;
-  font-size: 1.2rem;
-}
-
-/* In portrait mode menu items align left so they don't cover the cart */
-body.portrait-mode .menu-item {
-  margin-left: 0;
-  margin-right: auto;
-}
-
-/* Keep cart section right aligned but enlarge fonts */
-/* 🌿 竖屏模式下：购物车文字整体变大两号 */
-body.portrait-mode .cart-left,
-body.portrait-mode .cart-summary {
-  font-size: 1.2rem;     /* 原为 1rem 或 0.95rem，提升两个等级 */
-  line-height: 1.5;
-}
-/* 🌿 竖屏模式下放大滑动按钮和文本 */
-body.portrait-mode .slider-container {
-  transform: translateX(-50%) scale(1); /* 不缩小 */
-}
-
-body.portrait-mode .slider-button {
-  width: 72px;
-  height: 72px;
-  font-size: 32px;
-}
-
-body.portrait-mode .slider-text {
-  font-size: 16px;
-}
-
-body.portrait-mode .apply-discount-btn {
-  margin-left: 8px;
-  padding: 8px 16px;
-  background: linear-gradient(145deg, #2c2c2c, #1a1a1a);
-  color: #f9d571;
-  border: none;
-  border-radius: 24px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 16px;
-  line-height: 1;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  box-shadow:
-    4px 4px 8px rgba(0, 0, 0, 0.6),
-    inset -1px -1px 2px rgba(255, 255, 255, 0.05),
-    inset 1px 1px 3px rgba(0, 0, 0, 0.4);
-  transition: transform 0.1s ease, box-shadow 0.3s ease;
-}
-
-body.portrait-mode .apply-discount-btn:active {
-  transform: scale(0.90);
-  color: #ffbc03;
-  box-shadow:
-    2px 2px 4px rgba(0, 0, 0, 0.7),
-    inset 2px 2px 6px rgba(0, 0, 0, 0.5),
-    inset -1px -1px 2px rgba(255, 255, 255, 0.05);
 }
 
 
@@ -3965,7 +3838,6 @@ function togglePortraitMode() {
     } else {
         document.body.classList.remove('portrait-mode');
     }
-    showMobileCartButtonIfNeeded();
 }
 
 window.addEventListener('load', togglePortraitMode);
@@ -5932,7 +5804,7 @@ function checkout() {
 <script>
 function showMobileCartButtonIfNeeded() {
   const toggleBtn = document.getElementById('cart-toggle');
-  if (window.innerWidth < 768 || document.body.classList.contains('portrait-mode')) {
+  if (window.innerWidth < 768) {
     toggleBtn.style.display = 'block';
   } else {
     toggleBtn.style.display = 'none';
@@ -5942,7 +5814,6 @@ function showMobileCartButtonIfNeeded() {
 showMobileCartButtonIfNeeded();
 
 window.addEventListener('resize', showMobileCartButtonIfNeeded);
-window.addEventListener('orientationchange', showMobileCartButtonIfNeeded);
 </script>
 <script>
 const backTopLogo = document.getElementById('back-to-top-logo');
