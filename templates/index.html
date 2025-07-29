@@ -1852,6 +1852,7 @@ input:focus, select:focus, textarea:focus {
 <a href="#bento">Bento Box</a>
 <a href="#Ramen">Ramen</a>
 <a href="#Pokebowl">Pokebowl</a>
+<a href="#Teppanyaki">Teppanyaki Rijst</a>
 <a href="#sushi">Omakase Sushi</a>
 <a href="#sashimi">Sashimi</a>
 <a href="#Crispy-rice-sandwich">Crispy Rice</a>
@@ -2889,6 +2890,75 @@ input:focus, select:focus, textarea:focus {
     </div>
 
 
+</div>
+</section>
+<section id="Teppanyaki">
+  <h2>Teppanyaki Rijst</h2>
+  <div class="menu-section">
+    <div class="menu-row menu-item" data-name="Teppanyaki Shrimp" data-price="18" data-packaging="0.2">
+      <div class="menu-img">
+        <img src="{{ url_for('static', filename='images/REBI.png') }}" alt="Teppanyaki Shrimp" />
+      </div>
+      <div class="menu-content">
+        <h3>Garnaal</h3>
+        <p>€ 18.00</p>
+        <p id="soldoutTeppShrimp" class="sold-out-msg hidden">Uitverkocht!</p>
+        <div class="qty-box">
+          <label for="teppShrimpQty">Aantal</label>
+          <button class="qty-minus remove-button" data-target="teppShrimpQty" type="button">-</button>
+          <select id="teppShrimpQty" name="teppShrimpQty"></select>
+          <button class="qty-plus add-button" data-target="teppShrimpQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-row menu-item" data-name="Teppanyaki Beef" data-price="18" data-packaging="0.2">
+      <div class="menu-img">
+        <img src="{{ url_for('static', filename='images/RBEEF.png') }}" alt="Teppanyaki Beef" />
+      </div>
+      <div class="menu-content">
+        <h3>Rundvlees</h3>
+        <p>€ 18.00</p>
+        <p id="soldoutTeppBeef" class="sold-out-msg hidden">Uitverkocht!</p>
+        <div class="qty-box">
+          <label for="teppBeefQty">Aantal</label>
+          <button class="qty-minus remove-button" data-target="teppBeefQty" type="button">-</button>
+          <select id="teppBeefQty" name="teppBeefQty"></select>
+          <button class="qty-plus add-button" data-target="teppBeefQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-row menu-item" data-name="Teppanyaki Chicken" data-price="18" data-packaging="0.2">
+      <div class="menu-img">
+        <img src="{{ url_for('static', filename='images/RCHICKEN.png') }}" alt="Teppanyaki Chicken" />
+      </div>
+      <div class="menu-content">
+        <h3>Kip</h3>
+        <p>€ 18.00</p>
+        <p id="soldoutTeppChicken" class="sold-out-msg hidden">Uitverkocht!</p>
+        <div class="qty-box">
+          <label for="teppChickenQty">Aantal</label>
+          <button class="qty-minus remove-button" data-target="teppChickenQty" type="button">-</button>
+          <select id="teppChickenQty" name="teppChickenQty"></select>
+          <button class="qty-plus add-button" data-target="teppChickenQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-row menu-item" data-name="Teppanyaki Char Siu" data-price="18" data-packaging="0.2">
+      <div class="menu-img">
+        <img src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}" alt="Teppanyaki Char Siu" />
+      </div>
+      <div class="menu-content">
+        <h3>Char Siu (BBQ-varkensvlees)</h3>
+        <p>€ 18.00</p>
+        <p id="soldoutTeppCharSiu" class="sold-out-msg hidden">Uitverkocht!</p>
+        <div class="qty-box">
+          <label for="teppCharSiuQty">Aantal</label>
+          <button class="qty-minus remove-button" data-target="teppCharSiuQty" type="button">-</button>
+          <select id="teppCharSiuQty" name="teppCharSiuQty"></select>
+          <button class="qty-plus add-button" data-target="teppCharSiuQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 <section id="sushi">
@@ -3804,6 +3874,10 @@ const soldoutMap = {
   "Beef": "soldout_beef_ramen",
   "Ribeye": "soldout_ribeye_ramen",
   "Chasiu": "soldout_chasiu_ramen",
+  "Teppanyaki Shrimp": "soldout_teppanyaki_shrimp",
+  "Teppanyaki Beef": "soldout_teppanyaki_beef",
+  "Teppanyaki Chicken": "soldout_teppanyaki_chicken",
+  "Teppanyaki Char Siu": "soldout_teppanyaki_char_siu",
   "Karaage": "soldout_karaage",
   "Ebi Fry": "soldout_ebi_fry",
   "Spicy Crispy Chicken": "soldout_spicy_crispy_chicken",
@@ -6398,7 +6472,26 @@ function updateStatus(settings) {
     {name: 'Chasiu', key: 'soldout_chasiu_ramen', qty: 'chasiuQty', msg: 'soldoutChasiuRamen'}
   ];
 
+  const teppanyakiConfig = [
+    {name: 'Teppanyaki Shrimp', key: 'soldout_teppanyaki_shrimp', qty: 'teppShrimpQty', msg: 'soldoutTeppShrimp'},
+    {name: 'Teppanyaki Beef', key: 'soldout_teppanyaki_beef', qty: 'teppBeefQty', msg: 'soldoutTeppBeef'},
+    {name: 'Teppanyaki Chicken', key: 'soldout_teppanyaki_chicken', qty: 'teppChickenQty', msg: 'soldoutTeppChicken'},
+    {name: 'Teppanyaki Char Siu', key: 'soldout_teppanyaki_char_siu', qty: 'teppCharSiuQty', msg: 'soldoutTeppCharSiu'}
+  ];
+
   ramenConfig.forEach(cfg => {
+    const itemEl = document.querySelector(`[data-name="${cfg.name}"]`);
+    if (!itemEl) return;
+    const soldout = settings[cfg.key] === 'true';
+    const msgEl = document.getElementById(cfg.msg);
+    if (msgEl) msgEl.classList.toggle('hidden', !soldout);
+    itemEl.querySelectorAll('select, button').forEach(el => { el.disabled = soldout; });
+    if (soldout && document.getElementById(cfg.qty)) {
+      document.getElementById(cfg.qty).value = 0;
+    }
+  });
+
+  teppanyakiConfig.forEach(cfg => {
     const itemEl = document.querySelector(`[data-name="${cfg.name}"]`);
     if (!itemEl) return;
     const soldout = settings[cfg.key] === 'true';
