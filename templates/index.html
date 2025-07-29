@@ -1831,6 +1831,33 @@ input:focus, select:focus, textarea:focus {
     display: inline-block;
   }
 }
+body.portrait-mode .menu-container {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important; /* 强制左对齐 */
+}
+
+body.portrait-mode .menu-item {
+  align-self: stretch;
+  text-align: left;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  display: flex !important;
+  flex-direction: row;
+  gap: 12px; /* 图文之间的间距 */
+}
+
+body.portrait-mode .menu-item img {
+  display: block;
+  margin: 0;
+  max-width: 90px; /* 根据需要限制大小 */
+}
+
+body.portrait-mode .menu-item .menu-text {
+  text-align: left;
+}
 
 
 body.portrait-mode .menu-container {
@@ -1901,33 +1928,10 @@ body.portrait-mode .menu-item {
 }
 
 /* Keep cart section right aligned but enlarge fonts */
-body.portrait-mode .cart-section {
-  font-size: 1.6rem;
-}
-
-/* 🌿 竖屏模式：section 和菜单内容左对齐 */
-body.portrait-mode section {
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-/* 🌿 竖屏模式：菜单内容左对齐 */
-body.portrait-mode .menu-item .menu-content {
-  align-items: flex-start;
-  text-align: left;
-}
-
-/* 🌿 竖屏模式：菜单图片向左对齐显示 */
-body.portrait-mode .menu-item img {
-  object-position: left center;
-}
-
 /* 🌿 竖屏模式下：购物车文字整体变大两号 */
 body.portrait-mode .cart-left,
 body.portrait-mode .cart-summary {
-  font-size: 1.3rem;     /* 原为 1rem 或 0.95rem，提升两个等级 */
+  font-size: 1.2rem;     /* 原为 1rem 或 0.95rem，提升两个等级 */
   line-height: 1.5;
 }
 /* 🌿 竖屏模式下放大滑动按钮和文本 */
@@ -1944,6 +1948,7 @@ body.portrait-mode .slider-button {
 body.portrait-mode .slider-text {
   font-size: 16px;
 }
+
 body.portrait-mode .apply-discount-btn {
   margin-left: 8px;
   padding: 8px 16px;
@@ -1975,6 +1980,7 @@ body.portrait-mode .apply-discount-btn:active {
     inset 2px 2px 6px rgba(0, 0, 0, 0.5),
     inset -1px -1px 2px rgba(255, 255, 255, 0.05);
 }
+
 
 
 
