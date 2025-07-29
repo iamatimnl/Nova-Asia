@@ -1888,6 +1888,20 @@ body.portrait-mode .clipboard {
   display: none;
 }
 
+/* Hide desktop checkout panel and enable mobile cart in portrait */
+body.portrait-mode .checkout-panel {
+  display: none !important;
+}
+body.portrait-mode .cart-section {
+  display: none !important;
+}
+body.portrait-mode .cart-section.mobile-visible {
+  display: flex !important;
+}
+body.portrait-mode #cart-toggle {
+  display: flex !important;
+}
+
 
 
 
@@ -3832,7 +3846,9 @@ body.portrait-mode .clipboard {
 
 
 function togglePortraitMode() {
-    const isPortrait = window.matchMedia('(orientation: portrait)').matches;
+    const mqPortrait = window.matchMedia('(orientation: portrait)').matches;
+    const ratioPortrait = window.innerHeight > window.innerWidth;
+    const isPortrait = mqPortrait || ratioPortrait;
     if (isPortrait) {
         document.body.classList.add('portrait-mode');
     } else {
