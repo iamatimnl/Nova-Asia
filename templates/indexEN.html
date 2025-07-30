@@ -3819,6 +3819,22 @@ body.portrait-mode #cart-toggle {
     </div>
   </div>
 </div>
+<div class="menu-row menu-item" data-name="Heineken 330ml" data-packaging="0.15" data-price="3">
+  <div class="menu-img">
+    <img alt="Heineken 330ml" loading="lazy" src="{{ url_for('static', filename='images/HEINEKEN.png') }}">
+  </div>
+  <div class="menu-content">
+    <h3>Heineken 330ml</h3>
+    <p>€ 3.00</p>
+    <p id="soldoutHeineken" class="sold-out-msg hidden">Sold Out!</p>
+    <div class="qty-box">
+      <label for="heinekenCount">Quantity</label>
+      <button class="qty-minus remove-button" data-target="heinekenCount" type="button">-</button>
+      <select id="heinekenCount" name="heinekenCount"></select>
+      <button class="qty-plus add-button" data-target="heinekenCount" type="button">+</button>
+    </div>
+  </div>
+</div>
 </div>
 </section>
 
