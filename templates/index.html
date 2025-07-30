@@ -1394,6 +1394,8 @@ input:focus, select:focus, textarea:focus {
   margin-top: 8px;
 }
 
+
+
 #xBowlMains > div,
 #xBowlToppings > div {
   flex: 0 0 calc(50% - 3px);
@@ -1433,6 +1435,26 @@ input:focus, select:focus, textarea:focus {
   width: 100%;
   font-size: 0.8rem;
   padding: 4px;
+}
+@media (min-width: 768px) {
+  #xBowlBase,
+  #xBowlMains select,
+  #xBowlToppings select {
+    width: 280px !important;          /* 统一宽度 */
+    max-width: 100% !important;
+    font-size: 1.3rem !important;
+    padding: 6px 10px !important;
+    border: 1px solid #aaa !important;
+    border-radius: 6px !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    box-sizing: border-box !important;
+  }
+
+  #xBowlMains > div,
+  #xBowlToppings > div {
+    flex: 0 0 280px !important;
+    max-width: 280px !important;
+  }
 }
 
 /* Increase font size on larger screens for better readability */
@@ -1505,6 +1527,23 @@ input:focus, select:focus, textarea:focus {
   touch-action: pan-y;
   
 }
+.p-h3 {
+  font-size: 1.9rem !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  margin: 0 0 8px 0 !important;
+  color: #3e2f24;
+}
+
+/* 手机端优化：≤ 767px */
+@media (max-width: 767px) {
+  .p-h3 {
+    font-size: 1.3rem !important;
+    line-height: 1.3 !important;
+    margin-bottom: 6px !important;
+  }
+}
+
 
 .slider-button {
   width: 61px;
@@ -2500,8 +2539,7 @@ body.portrait-mode #cart-toggle {
 <img alt="Xbento" src="{{ url_for('static', filename='images/xbento.png') }}"/>
 </div>
 <div class="menu-content">
-<h3>Xbento (stel zelf samen)</h3>
-<p>Vanaf € X</p>
+<p class="p-h3">Xbento Vanaf € X</p>
 <p id="soldoutXbento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="bubble-option">
 <select id="xBentoMain">
