@@ -753,6 +753,75 @@
       </div>
     </div>
 
+</div>
+</section>
+<section id="Teppanyaki">
+  <h2>Teppanyaki Gebakken Rijst-Japanse stijl</h2>
+  <div class="menu-section">
+    <div class="menu-row menu-item" data-name="Teppanyaki Shrimp" data-price="18" data-packaging="0.2">
+      <div class="menu-img">
+        <img src="{{ url_for('static', filename='images/REBI.png') }}" alt="Teppanyaki Shrimp" />
+      </div>
+      <div class="menu-content">
+        <h3>Garnaal</h3>
+        <p>€ 18.00</p>
+        <p id="soldoutTeppShrimp" class="sold-out-msg hidden">Uitverkocht!</p>
+        <div class="qty-box">
+
+          <button class="qty-minus remove-button" data-target="teppShrimpQty" type="button">-</button>
+          <select id="teppShrimpQty" name="teppShrimpQty"></select>
+          <button class="qty-plus add-button" data-target="teppShrimpQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-row menu-item" data-name="Teppanyaki Beef" data-price="18" data-packaging="0.2">
+      <div class="menu-img">
+        <img src="{{ url_for('static', filename='images/RBEEF.png') }}" alt="Teppanyaki Beef" />
+      </div>
+      <div class="menu-content">
+        <h3>Rundvlees</h3>
+        <p>€ 18.00</p>
+        <p id="soldoutTeppBeef" class="sold-out-msg hidden">Uitverkocht!</p>
+        <div class="qty-box">
+
+          <button class="qty-minus remove-button" data-target="teppBeefQty" type="button">-</button>
+          <select id="teppBeefQty" name="teppBeefQty"></select>
+          <button class="qty-plus add-button" data-target="teppBeefQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-row menu-item" data-name="Teppanyaki Chicken" data-price="18" data-packaging="0.2">
+      <div class="menu-img">
+        <img src="{{ url_for('static', filename='images/RCHICKEN.png') }}" alt="Teppanyaki Chicken" />
+      </div>
+      <div class="menu-content">
+        <h3>Kip</h3>
+        <p>€ 18.00</p>
+        <p id="soldoutTeppChicken" class="sold-out-msg hidden">Uitverkocht!</p>
+        <div class="qty-box">
+
+          <button class="qty-minus remove-button" data-target="teppChickenQty" type="button">-</button>
+          <select id="teppChickenQty" name="teppChickenQty"></select>
+          <button class="qty-plus add-button" data-target="teppChickenQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-row menu-item" data-name="Teppanyaki Char Siu" data-price="18" data-packaging="0.2">
+      <div class="menu-img">
+        <img src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}" alt="Teppanyaki Char Siu" />
+      </div>
+      <div class="menu-content">
+        <h3>Char Siu (BBQ-varkensvlees)</h3>
+        <p>€ 18.00</p>
+        <p id="soldoutTeppCharSiu" class="sold-out-msg hidden">Uitverkocht!</p>
+        <div class="qty-box">
+
+          <button class="qty-minus remove-button" data-target="teppCharSiuQty" type="button">-</button>
+          <select id="teppCharSiuQty" name="teppCharSiuQty"></select>
+          <button class="qty-plus add-button" data-target="teppCharSiuQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 <section id="sushi">
