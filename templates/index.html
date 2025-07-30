@@ -4923,7 +4923,8 @@ function clearXBowlSet(){
     qtyId: 'xBentoQty',
     wrapId: 'xBentoNewWrap',
     buttonId: 'xBentoNew',
-    fieldIds: ['xBentoMain','xBentoSide','xBentoRice','xBentoVeg']
+    fieldIds: ['xBentoMain','xBentoSide','xBentoRice','xBentoVeg'],
+    onClear: () => updateXbentoDisplay()  // ✅ 添加这个确保价格归零显示提示
   });
   xbentoSetControls.update();
 
