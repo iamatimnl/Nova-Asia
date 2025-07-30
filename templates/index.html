@@ -4260,14 +4260,27 @@ function getXbentoPrice(){
 }
 
 function updateXbentoDisplay(){
-  const price=getXbentoPrice();
-  const item=document.querySelector('.menu-item[data-name="Xbento"]');
+  const main = document.getElementById('xBentoMain').value;
+  const side = document.getElementById('xBentoSide').value;
+  const rice = document.getElementById('xBentoRice').value;
+  const veg = document.getElementById('xBentoVeg').value;
+
+  const item = document.querySelector('.menu-item[data-name="Xbento"]');
+  const p = item?.querySelector('p');
+
+  // 如果一个都没选，就显示提示语
+  if (!main && !side && !rice && !veg) {
+    if (p) p.textContent = "Xbento Zelf Samenstellen";
+    return;
+  }
+
+  const price = getXbentoPrice();
   if(item){
-    item.dataset.price=price;
-    const p=item.querySelector('p');
-    if(p) p.textContent=`€ ${price.toFixed(2)}`;
+    item.dataset.price = price;
+    if(p) p.textContent = `€ ${price.toFixed(2)}`;
   }
 }
+
 
 function applyCrispyPrices(prices){
   const map={
