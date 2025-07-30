@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0" name="viewport"/>
-<title>Nova Asia Bestellen</title>
+<title>Nova Asia Ordering</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Quicksand:wght@400;700&family=Noto+Sans:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
 <!-- 网页标签图标 -->
 <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/assets/Logo.png">
@@ -13,14 +13,16 @@
 
 
 
-<!-- 启用 iOS 全屏 Web App 模式 -->
+<!-- iOS 设置 -->
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Nova Asia">
 
-<!-- 启用 Android 全屏 Web App 模式 -->
+<!-- Android 设置 -->
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#3F5148">
+<meta name="theme-color" content="#F9F5F0">
+
+
 
 <style>
   body {
@@ -131,6 +133,8 @@
  
   border-radius: 26px;
 }
+
+
 
 
   .nav-categories {
@@ -534,6 +538,100 @@
 }
 
 
+/* 🟡 portrait-mode 下 apply-discount-btn */
+body.portrait-mode .apply-discount-btn {
+  margin-left: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(145deg, #2c2c2c, #1a1a1a);
+  color: #ffffff;
+  border: none;
+  border-radius: 24px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;   /* 👉 放大字体，适配高分辨率竖屏 */
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    4px 4px 8px rgba(0, 0, 0, 0.6),
+    inset -1px -1px 2px rgba(255, 255, 255, 0.05),
+    inset 1px 1px 3px rgba(0, 0, 0, 0.4);
+  transition: transform 0.1s ease, box-shadow 0.3s ease;
+}
+
+body.portrait-mode .apply-discount-btn:active {
+  transform: scale(0.90);
+  color: #ffbc03;
+  box-shadow:
+    2px 2px 4px rgba(0, 0, 0, 0.7),
+    inset 2px 2px 6px rgba(0, 0, 0, 0.5),
+    inset -1px -1px 2px rgba(255, 255, 255, 0.05);
+}
+/* === Portrait Mode: 覆盖竖屏状态下购物车显示 === */
+body.portrait-mode .cart-section.mobile-visible {
+  display: flex !important;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 100vw;
+  height: 100dvh; /* 动态适配地址栏收起后的高度 */
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 2000;
+  justify-content: flex-start;
+  align-items: stretch;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+body.portrait-mode .cart-section.mobile-visible .cart-left {
+  width: 100vw;
+  max-height: 100%;
+  flex: 1 1 auto;
+
+  padding: 0 24px;         /* ✅ 原 8px 太小，左右统一改为 24px */
+  margin-left: 5px;              /* ✅ 移除右边负 margin */
+  box-sizing: border-box;
+
+  font-size: 1.05rem;
+  line-height: 1.4;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+
+  background: linear-gradient(to bottom, #ffffff, #e8e3dc, #ede7e0);
+  backdrop-filter: blur(6px);
+  position: relative;
+}
+
+
+/* 列表字体颜色 */
+body.portrait-mode .cart-section.mobile-visible .cart-left li {
+  color: #000000;
+}
+
+body.portrait-mode .cart-section.mobile-visible .cart-summary {
+  width: 100%;
+  flex: 0 0 auto;
+  background: linear-gradient(to bottom, #ede7e0, #e5dfd8, #eae8e8);
+  backdrop-filter: blur(6px);
+  border-bottom-left-radius: 16px;
+
+  margin-left: 10px;
+  padding: 16px 24px;   /* ✅ 左右都有 padding，避免内容贴边 */
+  box-sizing: border-box;
+
+  position: relative;
+}
+
+/* Portrait 模式下关闭按钮定位 */
+body.portrait-mode .cart-section.mobile-visible .cart-summary #closeCartBtn {
+  top: 16px;
+  right: 4px;
+}
 
 
 
@@ -799,8 +897,18 @@
   right: -5px;
   display: inline-block;
 }
+body.portrait-mode #closeCartBtn {
+  display: block !important;
+}
 
-
+/* Portrait 模式：放大徽标角标 */
+body.portrait-mode #cart-badge {
+  font-size: 20px;
+  padding: 4px 10px;
+  top: -10px;
+  right: -10px;
+  box-shadow: 0 0 0 2px #1a1a1a; /* 可选描边增强对比 */
+}
 .delivery-options {
   max-width: 500px;
   margin: auto;
@@ -1273,6 +1381,86 @@ input:focus, select:focus, textarea:focus {
   padding: 4px;
   font-size: 0.9rem;
 }
+/* === Portrait 模式下购物车内的 textarea 优化 === */
+body.portrait-mode .cart-section textarea {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 1rem;
+  border-radius: 16px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+body.portrait-mode .cart-section textarea:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+/* === Portrait 模式下价格明细块优化 === */
+body.portrait-mode .price-details {
+  text-align: left;
+  margin-top: 12px;
+  font-size: 1.1rem;  /* ⬆️ 字体略放大适配高分辨率 */
+}
+
+body.portrait-mode .price-details .price-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 6px 0;
+}
+
+body.portrait-mode .price-details select {
+  width: auto;
+  font-size: 1rem;
+}
+
+body.portrait-mode .price-details .total-row {
+  font-weight: bold;
+  border-top: 1px solid #ccc;
+  padding-top: 6px;
+}
+
+body.portrait-mode .price-details .btw-note {
+  font-size: 0.95rem;
+  color: #555;
+  text-align: right;
+}
+
+
+/* === Portrait 模式下额外选项容器 === */
+body.portrait-mode #cartExtrasContainer {
+  text-align: center;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+/* extras row inside cart */
+body.portrait-mode .cart-extras {
+  display: flex;
+  justify-content: space-around;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+/* 单个额外项：对齐、图片尺寸、下拉大小 */
+body.portrait-mode .cart-extra-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+body.portrait-mode .cart-extra-item img {
+  width: 56px;  /* ⬆️ 放大图标 */
+  height: 56px;
+}
+
+body.portrait-mode .cart-extra-item select {
+  width: 64px;
+  margin-top: 4px;
+  padding: 6px;
+  font-size: 1rem;
+}
 
 
 
@@ -1616,19 +1804,11 @@ input:focus, select:focus, textarea:focus {
   animation: ios-shine 3s linear infinite;
 }
 
+
 .spinner {
   width: 32px;
   height: 32px;
-  border-radius: 50%;
   position: relative;
-  margin: auto;
-}
-
-
-
-.spinner {
-  width: 32px;
-  height: 32px;
   border-radius: 50%;
   background: conic-gradient(
     #f3d112 0deg,
@@ -1648,6 +1828,43 @@ input:focus, select:focus, textarea:focus {
   100% { transform: rotate(360deg); }
 }
 
+/* === Portrait 模式下：slider 容器整体放大 === */
+body.portrait-mode .slider-container {
+  transform: translateX(-50%) scale(1.4); /* 👉 放大 1.4 倍 */
+  width: 20vw;                            /* 更宽，适配大屏 */
+  max-width: 400px;
+  border-radius: 50px;
+  height: 90px;                           /* 原 64px → 放大 */
+  bottom: 48px;                           /* 底部提高一点 */
+}
+
+/* Portrait 模式下滑块按钮加大 */
+body.portrait-mode .slider-button {
+  width: 88px;
+  height: 88px;
+
+  font-size: 40px;                        /* 字体更醒目 */
+}
+
+/* Portrait 模式下 slider 中的提示文字加大 */
+body.portrait-mode .slider-text {
+  font-size: 18px;                        /* 提示文字放大 */
+  font-weight: 700;
+}
+
+/* Portrait 模式下滑块轨道调整 */
+body.portrait-mode .slider-track {
+  margin-left: -8px;
+  padding: 0 28px;
+  border-radius: 42px;
+  background: #747373e0;
+}
+
+/* Portrait 模式下加载旋转动画的 spinner 放大 */
+body.portrait-mode .spinner {
+  width: 48px;
+  height: 48px;
+}
 
 
 
@@ -1998,6 +2215,39 @@ body.portrait-mode .cart-section.mobile-visible {
 }
 body.portrait-mode #cart-toggle {
   display: flex !important;
+}
+
+/* 🛒购物篮按钮 - 适中放大为 144px */
+body.portrait-mode #cart-toggle {
+  width: 144px;
+  height: 144px;
+  bottom: 32px;
+  right: 32px;
+  font-size: 52px; /* 用于 emoji 或字体图标 */
+  border-radius: 24px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+/* 🔝回到顶部按钮 - 同样放大，间隔拉高 */
+body.portrait-mode #back-to-top-logo {
+  display: block;
+  width: 144px;
+  height: 144px;
+  bottom: 200px; /* 确保和购物车之间有充分空间 */
+  right: 32px;
+  background-color: #444;
+  border-radius: 24px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+  z-index: 998;
+}
+
+/* ⬆️ 确保图标或图像适应容器 */
+body.portrait-mode #cart-toggle svg,
+body.portrait-mode #back-to-top-logo svg,
+body.portrait-mode #back-to-top-logo img {
+  width: 100%;
+  height: 100%;
 }
 
 
@@ -3946,16 +4196,19 @@ function togglePortraitMode() {
     const mqPortrait = window.matchMedia('(orientation: portrait)').matches;
     const ratioPortrait = window.innerHeight > window.innerWidth;
     const isPortrait = mqPortrait || ratioPortrait;
-    if (isPortrait) {
-        document.body.classList.add('portrait-mode');
-    } else {
-        document.body.classList.remove('portrait-mode');
-    }
+
+    // ✅ 判断是否为大屏竖屏（如 Surface、iPad），排除手机
+    const isLargeScreen = window.innerWidth > 600;
+
+    // ✅ 给 body 加类名
+    document.body.classList.toggle('portrait-mode', isPortrait && isLargeScreen);
+    document.body.classList.toggle('mobile-portrait', isPortrait && !isLargeScreen);
 }
 
 window.addEventListener('load', togglePortraitMode);
 window.addEventListener('resize', togglePortraitMode);
 window.addEventListener('orientationchange', togglePortraitMode);
+
 
 
   
@@ -6003,124 +6256,75 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const navLinks = document.querySelectorAll('.nav-categories a:not(.review-link)');
-      const sections = Array.from(navLinks).map(link => document.querySelector(link.getAttribute('href')));
-      const indicator = document.getElementById('indicator');
-      const navbarContainer = document.getElementById('navbar-container');
+  document.addEventListener('DOMContentLoaded', () => {
+    const navLinks = document.querySelectorAll('.nav-categories a:not(.review-link)');
+    const sections = Array.from(navLinks).map(link => document.querySelector(link.getAttribute('href')));
+    const indicator = document.getElementById('indicator');
+    const navbarContainer = document.getElementById('navbar-container');
 
-      function updateIndicator(activeLink) {
-        const rect = activeLink.getBoundingClientRect();
-        const containerRect = navbarContainer.getBoundingClientRect();
-        const scrollLeft = navbarContainer.scrollLeft;
-        indicator.style.width = `${rect.width}px`;
-        indicator.style.transform = `translateX(${rect.left - containerRect.left + scrollLeft}px)`;
-      }
+    function updateIndicator(activeLink) {
+      const rect = activeLink.getBoundingClientRect();
+      const containerRect = navbarContainer.getBoundingClientRect();
+      const scrollLeft = navbarContainer.scrollLeft;
+      indicator.style.width = `${rect.width}px`;
+      indicator.style.transform = `translateX(${rect.left - containerRect.left + scrollLeft}px)`;
+    }
 
-      // 手动平滑滚动函数（更快）
-      function scrollToOffset(container, targetOffset, duration = 150) {
-        const start = container.scrollLeft;
-        const distance = targetOffset - start;
-        const startTime = performance.now();
+    function scrollToOffset(container, targetOffset, duration = 150) {
+      const start = container.scrollLeft;
+      const distance = targetOffset - start;
+      const startTime = performance.now();
 
-        function animate(time) {
-          const elapsed = time - startTime;
-          const progress = Math.min(elapsed / duration, 1);
-          container.scrollLeft = start + distance * progress;
-          if (progress < 1) {
-            requestAnimationFrame(animate);
-          }
-        }
-
-        requestAnimationFrame(animate);
-      }
-
-      function scrollActiveLinkIntoView(activeLink) {
-        if (window.innerWidth <= 768) {
-          const container = navbarContainer;
-          const containerRect = container.getBoundingClientRect();
-          const linkRect = activeLink.getBoundingClientRect();
-          const offset = linkRect.left - containerRect.left + container.scrollLeft;
-          scrollToOffset(container, offset, 150); // 更快的平滑滚动
+      function animate(time) {
+        const elapsed = time - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        container.scrollLeft = start + distance * progress;
+        if (progress < 1) {
+          requestAnimationFrame(animate);
         }
       }
 
-      function updateActiveNav() {
-        let currentSection = sections[0];
-        for (let section of sections) {
-          const rect = section.getBoundingClientRect();
-          if (rect.top <= 100) {
-            currentSection = section;
-          }
+      requestAnimationFrame(animate);
+    }
+
+    function scrollActiveLinkIntoView(activeLink) {
+      if (window.innerWidth <= 768) {
+        const container = navbarContainer;
+        const containerRect = container.getBoundingClientRect();
+        const linkRect = activeLink.getBoundingClientRect();
+        const offset = linkRect.left - containerRect.left + container.scrollLeft;
+        scrollToOffset(container, offset, 150);
+      }
+    }
+
+    function updateActiveNav() {
+      let currentSection = sections[0];
+      for (let section of sections) {
+        const rect = section.getBoundingClientRect();
+        if (rect.top <= 100) {
+          currentSection = section;
         }
-
-        navLinks.forEach(link => link.classList.remove('active'));
-        const activeLink = Array.from(navLinks).find(link => link.getAttribute('href') === `#${currentSection.id}`);
-        if (activeLink) {
-          activeLink.classList.add('active');
-          updateIndicator(activeLink);
-          scrollActiveLinkIntoView(activeLink);
-        }
       }
 
-      window.addEventListener('scroll', updateActiveNav);
-      window.addEventListener('resize', () => {
-        const activeLink = document.querySelector('.navbar a.active');
-        if (activeLink) updateIndicator(activeLink);
-      });
-
-      updateActiveNav();
-    });
-
-
-   
-  </script>
-<script>
-  const sections = document.querySelectorAll("section[id]");
-  const navLinks = document.querySelectorAll(".nav-link");
-  const indicator = document.querySelector(".indicator");
-
-  function updateActiveLink() {
-    let currentSectionId = "";
-
-    sections.forEach((section) => {
-      const rect = section.getBoundingClientRect();
-      if (rect.top <= 100 && rect.bottom >= 100) {
-        currentSectionId = section.id;
+      navLinks.forEach(link => link.classList.remove('active'));
+      const activeLink = Array.from(navLinks).find(link => link.getAttribute('href') === `#${currentSection.id}`);
+      if (activeLink) {
+        activeLink.classList.add('active');
+        updateIndicator(activeLink);
+        scrollActiveLinkIntoView(activeLink);
       }
+    }
+
+    window.addEventListener('scroll', updateActiveNav);
+    window.addEventListener('resize', () => {
+      const activeLink = document.querySelector('.nav-categories a.active');
+      if (activeLink) updateIndicator(activeLink);
     });
 
-    navLinks.forEach((link) => {
-      link.classList.remove("active");
-      const hrefId = link.getAttribute("href")?.replace("#", "");
-      if (hrefId === currentSectionId) {
-        link.classList.add("active");
-
-        const linkRect = link.getBoundingClientRect();
-        const navRect = link.parentElement.getBoundingClientRect();
-        const offsetLeft = linkRect.left - navRect.left;
-        const offsetWidth = link.offsetWidth;
-
-        // 使用 transform 来移动 .indicator
-        indicator.style.transform = `translateX(${offsetLeft}px)`;
-        indicator.style.width = `${offsetWidth}px`;
-      }
-    });
-  }
-
-  window.addEventListener("scroll", updateActiveLink);
-  window.addEventListener("load", updateActiveLink);
-</script>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const buttons = document.querySelectorAll("button");
-    const vibrate = () => { if (navigator.vibrate) navigator.vibrate(50); };
-    buttons.forEach(btn => {
-      btn.addEventListener("mousedown", vibrate);
-      btn.addEventListener("touchstart", vibrate, { passive: true });
-    });
+    updateActiveNav();
   });
 </script>
+
 <script>
 window.addEventListener('DOMContentLoaded', () => {
   const track = document.getElementById('typeSliderTrack');
