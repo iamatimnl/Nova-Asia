@@ -458,6 +458,13 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
   transition: all 0.2s ease !important;
 }
+@media (min-width: 768px) {
+  .new-set-button {
+    padding: 8px 16px !important;
+    font-size: 1.5rem !important;
+    border-radius: 10px !important;
+  }
+}
 
 .new-set-button:active {
   transform: scale(0.95) !important;
@@ -470,8 +477,8 @@
 }
 
 .new-set-msg {
-  font-size: 2rem;  /* 稍微加大，更友好 */
-  color: var(--sakura);
+  font-size: 1rem;  /* 稍微加大，更友好 */
+  color: white;
   font-weight: 200;
   letter-spacing: 0.2px;
   margin: 0;
@@ -480,15 +487,17 @@
 
 
 @media (min-width: 768px) {
-.new-set-msg {
-  font-size: 20rem;  /* 稍微加大，更友好 */
-  color: var(--sakura);
-  font-weight: 600;
-  letter-spacing: 0.8px;
-  margin: 0;
-  line-height: 16;
+  .new-set-msg {
+    font-size: 2.2rem !important;
+    color: white;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    margin: 0;
+    line-height: 1.4;
+  }
 }
-}
+
+
 .sold-out-msg {
   color: red;
   font-weight: bold;
@@ -2492,6 +2501,7 @@ body.portrait-mode #cart-toggle {
 </div>
 <div class="menu-content">
 <h3>Xbento (stel zelf samen)</h3>
+<p>Vanaf € X</p>
 <p id="soldoutXbento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="bubble-option">
 <select id="xBentoMain">
