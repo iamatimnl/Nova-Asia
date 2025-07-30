@@ -6345,17 +6345,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function scrollActiveLinkIntoView(activeLink) {
-  const isPortrait = window.matchMedia("(orientation: portrait)").matches;
-  const isMobileWidth = window.innerWidth <= 768;
-
-  if (isMobileWidth || isPortrait) {
-    const container = navbarContainer;
-    const containerRect = container.getBoundingClientRect();
-    const linkRect = activeLink.getBoundingClientRect();
-    const offset = linkRect.left - containerRect.left + container.scrollLeft;
-    scrollToOffset(container, offset, 150);
-  }
-}
+      const container = navbarContainer;
+      const containerRect = container.getBoundingClientRect();
+      const linkRect = activeLink.getBoundingClientRect();
+      const offset = linkRect.left - containerRect.left + container.scrollLeft;
+      scrollToOffset(container, offset - 20); // 向左偏移一点看起来更自然
+    }
 
     function updateActiveNav() {
       let currentSection = sections[0];
@@ -6373,6 +6368,13 @@ document.addEventListener('DOMContentLoaded', () => {
         updateIndicator(activeLink);
         scrollActiveLinkIntoView(activeLink);
       }
+    }
+
+    // 初始高亮第一个链接
+    const firstActive = navLinks[0];
+    if (firstActive) {
+      updateIndicator(firstActive);
+      scrollActiveLinkIntoView(firstActive);
     }
 
     window.addEventListener('scroll', updateActiveNav);
