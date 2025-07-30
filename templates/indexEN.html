@@ -4943,7 +4943,7 @@ function clearRamenSet(code) {
   updateRamenControls(code);
 }
 
-function initNewSetControls({qtyId, wrapId, buttonId, fieldIds}) {
+function initNewSetControls({qtyId, wrapId, buttonId, fieldIds, onClear}) {
   const qtyEl = document.getElementById(qtyId);
   const wrapEl = document.getElementById(wrapId);
   const btn = document.getElementById(buttonId);
@@ -4959,6 +4959,7 @@ function initNewSetControls({qtyId, wrapId, buttonId, fieldIds}) {
     fieldIds.forEach(id => { document.getElementById(id).value = ''; });
     qtyEl.value = 0;
     update();
+    if (typeof onClear === 'function') onClear();  // ✅ 增加这一行
   }
 
   fieldIds.forEach(id => document.getElementById(id).addEventListener('change', update));
