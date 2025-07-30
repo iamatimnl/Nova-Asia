@@ -933,6 +933,18 @@ body.portrait-mode #cart-badge {
   font-weight: 500;
   font-size: 0.95rem;
 }
+/* Portrait mode: enlarge base fonts and controls for better readability */
+body.portrait-mode {
+  font-size: 20px;
+}
+
+body.portrait-mode button,
+body.portrait-mode select,
+body.portrait-mode input,
+body.portrait-mode textarea {
+  font-size: 1.1em;
+}
+
 
 .delivery-options input,
 .delivery-options select {
@@ -1842,7 +1854,7 @@ body.portrait-mode .slider-container {
 body.portrait-mode .slider-button {
   width: 88px;
   height: 88px;
-
+  margin-left: -16px; 
   font-size: 40px;                        /* 字体更醒目 */
 }
 
@@ -1850,11 +1862,12 @@ body.portrait-mode .slider-button {
 body.portrait-mode .slider-text {
   font-size: 18px;                        /* 提示文字放大 */
   font-weight: 700;
+  
 }
 
 /* Portrait 模式下滑块轨道调整 */
 body.portrait-mode .slider-track {
-  margin-left: -8px;
+  margin-left: 0px;
   padding: 0 28px;
   border-radius: 42px;
   background: #747373e0;
