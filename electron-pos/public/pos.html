@@ -110,6 +110,10 @@
     background: var(--off-white);
     margin-bottom: 20px;
   }
+  
+
+
+
   section:nth-child(even) { background: var(--section-alt-bg); }
   h1,h2,h3,h4,h5,h6,p { text-align: center; }
   .menu-item {
@@ -305,19 +309,20 @@
   }
  #closeToday {
   position: sticky;
+   margin-right: 15px;  
   top: 10px;
   margin-left: auto;        /* 推到右侧 */
   width: 50px;
   height: 50px;
-   background-color: #e81123;  /* Windows 红色关闭按钮 */
+  background-color: transparent;
   border: none;
-  border-radius: 12px;
+  border-radius: 0px;
   color: white;
-  font-size: 20px;
-  font-weight: bold;
-  font-family: "Segoe UI", sans-serif;
+  font-size: 40px;
+  
+ 
   cursor: pointer;
-  box-shadow: 0 0 4px rgba(0,0,0,0.3);
+
   z-index: 9999;
   display: flex;
   align-items: center;
@@ -742,11 +747,130 @@ dialog::backdrop {
   font-weight: bold;
   font-size: 12px;
 }
+.form-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .form-row label {
+    flex: 0 0 110px;
+    margin-right: 8px;
+    font-weight: 500;
+  }
+  .form-row input,
+  .form-row select {
+    flex: 1;
+    padding: 6px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+ .order-type-switch {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  margin-left: 8px; /* 控制整体右移 */
+}
+
+.order-btn input {
+  display: none;
+}
+
+.order-type-switch {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  margin-left: 8px; /* 右移一点 */
+}
+
+.order-btn input {
+  display: none;
+}
+
+.order-btn span {
+  display: block;
+  padding: 8px 16px;
+  border: 1px solid var(--accent-color);
+  border-radius: 8px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.5);
+  color: #1a2e28;
+  font-weight: 500;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.order-btn span:hover {
+  background: rgba(255, 255, 255, 0.7);
+  transform: scale(1.03);
+}
+
+.order-btn input:checked + span {
+  background: linear-gradient(to bottom, #d8f4e7, #a9e5cd);
+  color: #1a2e28;
+  font-weight: 600;
+  border: none; /* ✅ 移除边框 */
+  
+}
+
+ 
+.order-type-switch {
+  margin-left: 88px; /* 你可以改成 12px / 16px 看效果 */
+}
+.checkout-panel label {
+  display: block;
+  text-align: left;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 6px 0;
+}
+
+.summary-row label {
+  flex: 1;
+  text-align: left;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.discount-group,
+.custom-price-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.discount-group select,
+.discount-group input,
+.custom-price-group input {
+  padding: 6px 8px;
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+#addCustomPrice {
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  border-radius: 10px;
+  background-color: #b3d4ff;
+  color: #333;
+  border: none;
+   margin-top: -3px; /* 向上移动 */
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+#addCustomPrice:hover {
+  background-color: #a3c8ff;
+}
 
 
   
 </style>
-<script src="js/simple-qrcode.js"></script>
 </head>
 <body>
 <div class="navbar-container" id="navbar-container">
@@ -756,6 +880,7 @@ dialog::backdrop {
       <a href="#bubble">Bubble Tea</a>
       <a href="#bento">Bento Box</a>
       <a href="#Ramen">Ramen</a>
+      <a href="#Teppanyaki">Teppanyaki Gebakken Rijst</a>
       <a href="#Pokebowl">Pokebowl</a>
       <a href="#sushi">Omakase Sushi</a>
       <a href="#sashimi">Sashimi</a>
@@ -798,104 +923,160 @@ dialog::backdrop {
       <div class="supply-row">
         <img alt="Sojasaus" class="supply-img photo" src="{{ url_for('static', filename='images/soja saus.webp') }}"/>
         <div class="supply-content">
-          <label for="soyCount">Aantal sojasaus flesjes</label>
+          <label for="soyCount">Aantal sojasaus</label>
           <select id="soyCount" class="supply-select"></select>
         </div>
       </div>
       <div class="supply-row">
         <img alt="Gember" class="supply-img photo" src="{{ url_for('static', filename='images/gembeerr.png') }}"/>
         <div class="supply-content">
-          <label for="gemberCount">Aantal gember porties</label>
+          <label for="gemberCount">Aantal gember</label>
           <select id="gemberCount" class="supply-select"></select>
         </div>
       </div>
       <div class="supply-row">
         <img alt="Wasabi" class="supply-img photo" src="{{ url_for('static', filename='images/wasabib.png') }}"/>
         <div class="supply-content">
-          <label for="wasabiCount">Aantal wasabi flesjes</label>
+          <label for="wasabiCount">Aantal wasabi</label>
           <select id="wasabiCount" class="supply-select"></select>
         </div>
       </div>
-      <div>Subtotaal: <span id="summarySubtotal">€0,00</span></div>
-      <div>Verpakkingskosten: <span id="summaryPackaging">€0,00</span></div>
-      <div id="summaryDeliveryRow" class="hidden">Bezorgkosten: <span id="summaryDelivery">€0,00</span></div>
-      <div>
-        Korting:
-        <select id="discountType">
-          <option value="amount">€</option>
-          <option value="percent">%</option>
-        </select>
-        <input id="discountValue" type="number" value="0" min="0" step="0.01" />
-        <span id="summaryDiscount">€0,00</span>
-      </div>
-      <div>
-        Eigen Invoer:
-        <input id="customPrice" type="number" min="0" step="0.01" />
-        <button id="addCustomPrice" type="button">Toevoegen</button>
-      </div>
-      <div>BTW (9%): <span id="summaryBtw">€0,00</span></div>
-      <div><strong>Totaal: <span id="total">€0,00</span></strong></div>
-      <label for="remark" style="display:block;margin-top:10px;">Opmerking:</label>
-      <textarea id="remark" rows="2" placeholder="Bijv. geen komkomer, extra mayo"></textarea>
+      <div class="summary-row">
+  <label>Subtotaal:</label>
+  <span id="summarySubtotal">€0,00</span>
+</div>
+
+<div class="summary-row">
+  <label>Verpakkingskosten:</label>
+  <span id="summaryPackaging">€0,00</span>
+</div>
+
+<div id="summaryDeliveryRow" class="summary-row hidden">
+  <label>Bezorgkosten:</label>
+  <span id="summaryDelivery">€0,00</span>
+</div>
+
+<div class="summary-row">
+  <label for="discountValue">Korting:</label>
+  <div class="discount-group">
+    <select id="discountType">
+      <option value="amount">€</option>
+      <option value="percent">%</option>
+    </select>
+    <input id="discountValue" type="number" value="0" min="0" step="0.01" />
+    <span id="summaryDiscount">€0,00</span>
+  </div>
+</div>
+
+<div class="summary-row">
+  <label for="customPrice">Eigen Invoer:</label>
+  <div class="custom-price-group">
+    <input id="customPrice" type="number" min="0" step="0.01" />
+    <button id="addCustomPrice" type="button">Toevoegen</button>
+  </div>
+</div>
+
+<div class="summary-row">
+  <label>BTW (9%):</label>
+  <span id="summaryBtw">€0,00</span>
+</div>
+
+<div class="summary-row">
+  <label><strong>Totaal:</strong></label>
+  <strong><span id="total">€0,00</span></strong>
+</div>
+
+<label for="remark" style="display:block;margin-top:10px;">Opmerking:</label>
+<textarea id="remark" rows="2" placeholder="Bijv. geen komkomer, extra mayo"></textarea>
+
     </div>
     <div class="checkout-panel">
-      <section id="customer-info">
-        <div class="delivery-options">
-          <h2>Klantgegevens</h2>
+  <section id="customer-info">
+    <div class="delivery-options">
+      <h2 style="margin-bottom: 6px;">Besteltype</h2>
+      <div class="order-type-switch">
+        <label class="order-btn">
+          <input type="radio" id="typePickup" name="orderType" value="pickup" checked />
+          <span>Afhalen</span>
+        </label>
+        <label class="order-btn">
+          <input type="radio" id="typeDelivery" name="orderType" value="delivery" />
+          <span>Bezorging</span>
+        </label>
+      </div>
+
+      <h2 style="margin-top: 16px;">Klantgegevens</h2>
+
+      <div class="form-row">
         <label for="custName">Naam</label>
         <input id="custName" type="text" placeholder="Naam" />
-        <label for="custPhone">Telefoonnummer</label>
+      </div>
+
+      <div class="form-row">
+        <label for="custPhone">Telefoon</label>
         <input id="custPhone" type="tel" placeholder="Telefoonnummer" />
-        <div class="order-type-switch">
-          <label class="order-btn">
-            <input type="radio" id="typePickup" name="orderType" value="pickup" checked />
-            <span>Afhalen</span>
-          </label>
-          <label class="order-btn">
-            <input type="radio" id="typeDelivery" name="orderType" value="delivery" />
-            <span>Bezorging</span>
-          </label>
-        </div>
-        <div id="pickupFields" style="margin-top:10px;">
+      </div>
+
+      <!-- Pickup Fields -->
+      <div id="pickupFields" style="margin-top: 10px;">
+        <div class="form-row">
           <label for="pickup_time">Pickup Tijd*</label>
           <select id="pickup_time"></select>
-          <label for="pickupPayment">Betaalmethode*</label>
-          <select id="pickupPayment">
-  <option value="pin" selected>Pin</option>
-  <option value="cash">Contant</option>
-  <option value="oprekening">Oprekening</option>
-</select>
-
         </div>
-        <div id="deliveryFields" class="hidden" style="margin-top:10px;">
+        <div class="form-row">
+          <label for="pickupPayment">Betaalwijze*</label>
+          <select id="pickupPayment">
+            <option value="pin" selected>Pin</option>
+            <option value="cash">Contant</option>
+            <option value="oprekening">Oprekening</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Delivery Fields -->
+      <div id="deliveryFields" class="hidden" style="margin-top:10px;">
+        <div class="form-row">
           <label for="postcode">Postcode*</label>
           <input id="postcode" type="text" placeholder="1234AB" />
+        </div>
+        <div class="form-row">
           <label for="houseNumber">Huisnummer*</label>
           <input id="houseNumber" type="text" placeholder="1" />
+        </div>
+        <div class="form-row">
           <label for="street">Straat*</label>
           <input id="street" type="text" placeholder="Straat" />
+        </div>
+        <div class="form-row">
           <label for="city">Plaats*</label>
           <input id="city" type="text" placeholder="Plaats" />
-          <label for="delivery_time">Bezorgtijd (optioneel)</label>
+        </div>
+        <div class="form-row">
+          <label for="delivery_time">Bezorgtijd</label>
           <select id="delivery_time"></select>
-          <label for="deliveryPayment">Betaalmethode*</label>
+        </div>
+        <div class="form-row">
+          <label for="deliveryPayment">Betaalwijze*</label>
           <select id="deliveryPayment">
-  <option value="pin" selected>Pin</option>
-  <option value="cash">Contant</option>
-  <option value="oprekening">Oprekening</option>
-</select>
+            <option value="pin" selected>Pin</option>
+            <option value="cash">Contant</option>
+            <option value="oprekening">Oprekening</option>
+          </select>
+        </div>
+      </div>
 
-        </div>
-        <div id="qrCodeContainer" class="hidden" style="text-align:center;margin-top:10px;">
-          <p><strong>📍 Scan voor navigatie:</strong></p>
-          <img id="qrCodePreview" src="" alt="QR Code" />
-          <div id="mapsLinkContainer" style="margin-top:4px;"></div>
-        </div>
-        </div>
-      </section>
-      <button id="submitOrder">Submit Order</button>
+      <!-- QR Code Section -->
+      <div id="qrCodeContainer" class="hidden" style="margin-top:10px;">
+        <p><strong>📍 Scan voor navigatie:</strong></p>
+        <img id="qrCodePreview" src="" alt="QR Code" style="display:block; margin:auto;" />
+        <div id="mapsLinkContainer" style="text-align:left; margin-top:4px;"></div>
+      </div>
     </div>
-  </div>
+  </section>
+
+  
+
+  <button id="submitOrder">Submit Order</button>
 </div>
 <button id="cartToggle" class="cart-toggle">🛒<span id="cartCount" class="badge">0</span></button>
 <button id="toggleToday" class="today-btn">
@@ -1664,12 +1845,6 @@ function toggleToday(){
 }
 
 
-
-
-
-
-
-  
 function showTodayOrders(){
   const panel=document.getElementById('todayOrders');
   if(!panel.classList.contains('visible')){
@@ -1697,22 +1872,28 @@ function toggleAddress(){
   }
   updateCart();
 }
-async function fetchAddress(){
-  const pc=document.getElementById('postcode').value.trim();
-  const num=document.getElementById('houseNumber').value.trim();
-  if(pc && num){
-    const url=`https://api.postcodeapi.nu/v3/lookup/${encodeURIComponent(pc)}/${encodeURIComponent(num)}`;
-    try{
-      const res=await fetch(url,{headers:{'X-Api-Key':'juW6MEgEeL2BEM0rInEtB5a15BqXjWwO3YqrdH0z'}});
-      if(res.ok){
-        const d=await res.json();
-        if(d.street) document.getElementById('street').value=d.street;
-        if(d.city) document.getElementById('city').value=d.city;
-      }
-    }catch(e){console.warn('Adres ophalen mislukt');}
-    updateQRCode();
+async function fetchAddress() {
+  const pc = document.getElementById('postcode').value.trim();
+  const num = document.getElementById('houseNumber').value.trim();
+  if (!pc || !num) return;
+
+  const url = `https://flask-order-api.onrender.com/api/postcode?postcode=${encodeURIComponent(pc)}&number=${encodeURIComponent(num)}`;
+  try {
+    const res = await fetch(url);
+    if (res.ok) {
+      const d = await res.json();
+      if (d.street) document.getElementById('street').value = d.street;
+      if (d.city) document.getElementById('city').value = d.city;
+      updateQRCode();  // 成功后更新二维码
+    } else {
+      console.warn('API error:', res.status);
+    }
+  } catch (e) {
+    console.warn('Adres ophalen mislukt', e);
   }
 }
+
+
 function updateQRCode(){
   const street=document.getElementById('street').value.trim();
   const house=document.getElementById('houseNumber').value.trim();
@@ -1724,11 +1905,9 @@ function updateQRCode(){
   if(street && house && pc && city){
     const address=`${street} ${house}, ${pc} ${city}`;
     const googleMapsLink=`https://www.google.com/maps?q=${encodeURIComponent(address)}`;
-    if(window.SimpleQR){
-      img.src=SimpleQR.generate(googleMapsLink,200);
-    } else {
-      img.src='';
-    }
+    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(googleMapsLink)}`;
+
+    img.src=qrCodeUrl;
     linkContainer.innerHTML=`<a href="${googleMapsLink}" target="_blank" style="color: var(--accent-color); text-decoration: underline;">Open in Google Maps</a>`;
     container.classList.remove('hidden');
   }else{
