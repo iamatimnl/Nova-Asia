@@ -1881,11 +1881,22 @@ function formatCurrency(value){
     const tbody = document.querySelector('.orders-panel tbody');
     return tbody ? tbody.children.length : 0;
   }
+
   function updateTodayBadge(){
-    const count = getOrderCount();
-    document.querySelectorAll('.today-badge').forEach(badge => {
-      badge.textContent = hasNewOrder ? 'New' : count;
-    });
+    fetch('/pos/orders_today?json=1')
+      .then(r => r.json())
+      .then(data => {
+        const count = Array.isArray(data) ? data.length : getOrderCount();
+        document.querySelectorAll('.today-badge').forEach(badge => {
+          badge.textContent = hasNewOrder ? 'New' : count;
+        });
+      })
+      .catch(() => {
+        const count = getOrderCount();
+        document.querySelectorAll('.today-badge').forEach(badge => {
+          badge.textContent = hasNewOrder ? 'New' : count;
+        });
+      });
   }
 
   
