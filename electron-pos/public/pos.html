@@ -1920,22 +1920,31 @@ function updateQRCode(){
 function clearForm(){
   // 🟢 Ensure checkout fields are enabled for a new order
   document.querySelectorAll('#customer-info input, #customer-info select, #customer-info textarea')
-    .forEach(el=>{ el.disabled=false; });
+    .forEach(el => { el.disabled = false; });
 
-  ['custName','custPhone','pickup_time','delivery_time','postcode','houseNumber','street','city'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.value='';
+  ['custName','custPhone','pickup_time','delivery_time','postcode','houseNumber','street','city'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.value = '';
   });
-  ['pickupPayment','deliveryPayment','chopstickCount','soyCount','gemberCount','wasabiCount'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.value=el.options[0].value;
+
+  ['pickupPayment','deliveryPayment','chopstickCount','soyCount','gemberCount','wasabiCount'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.value = el.options[0].value;
   });
-  document.getElementById('remark').value='';
-  document.querySelectorAll('.product-list select').forEach(sel=>{ sel.selectedIndex=0; });
-  for(const k in cart) delete cart[k];
+
+  document.getElementById('remark').value = '';
+
+  // ✅ 清空打折类型和金额
+  document.getElementById('discountType').value = 'amount';
+  document.getElementById('discountValue').value = '';
+
+  document.querySelectorAll('.product-list select').forEach(sel => { sel.selectedIndex = 0; });
+
+  for (const k in cart) delete cart[k];
   updateCart();
   toggleAddress();
 }
+
 
 function generateOrderNumber(){
   const now = new Date();
