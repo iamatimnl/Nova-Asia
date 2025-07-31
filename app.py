@@ -829,7 +829,9 @@ def api_orders():
         summary_data = data.get("summary") or {}
         order.verpakkingskosten = float(summary_data.get("packaging") or 0)
         order.bezorgkosten = float(summary_data.get("delivery") or 0)
-        if summary_data.get("discountAmount") is not None:
+        if summary_data.get("discount_amount") is not None:
+            order.discount_amount = float(summary_data.get("discount_amount") or 0)
+        elif summary_data.get("discountAmount") is not None:
             order.discount_amount = float(summary_data.get("discountAmount") or 0)
 
         # 3. 保存订单到数据库

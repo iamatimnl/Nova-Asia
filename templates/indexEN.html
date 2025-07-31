@@ -5505,6 +5505,15 @@ function checkout() {
 
   const tijdslotDisplay = orderType === 'afhalen' ? pickupSel : deliverySel;
 
+  const summary = {
+    subtotal: subtotal.toFixed(2),
+    packaging: packagingFee.toFixed(2),
+    delivery: deliveryFee.toFixed(2),
+    discount_amount: currentDiscount.toFixed(2),
+    btw: btw.toFixed(2),
+    total: totalPrice
+  };
+
   fetch('https://flask-order-api.onrender.com/submit_order', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -5534,7 +5543,8 @@ function checkout() {
       discountAmount: currentDiscount.toFixed(2),
       discountCode: discountCode,
       message,
-      email
+      email,
+      summary
     })
   })
     .then(res => res.json())
