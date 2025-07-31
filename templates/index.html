@@ -5869,14 +5869,13 @@ function checkout() {
 
   const orderNumber = generateOrderNumber();
 
-  let tipLine = '';
-  if (tip > 0) {
-    tipLine = `\nFooi: €${tip.toFixed(2)}`;
-  }
-
   const discountCode = document.getElementById('discountCode').value.trim();
+  const deliveryLine = deliveryFee > 0 ? `\nBezorgkosten: €${deliveryFee.toFixed(2)}` : '';
+  const packagingLine = packagingFee > 0 ? `\nVerpakkingskosten: €${packagingFee.toFixed(2)}` : '';
+  const tipLine = tip > 0 ? `\nFooi: €${tip.toFixed(2)}` : '';
   const discountLine = `\nKorting: -€${currentDiscount.toFixed(2)} (Code: ${discountCode || 'geen'})`;
-  const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}${tipLine}${discountLine}\nTotaal: €${totalPrice}`;
+
+  const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}${deliveryLine}${packagingLine}${tipLine}${discountLine}\nTotaal: €${totalPrice}`;
 
   const itemsToSend = { ...cart };
   Object.keys(extras).forEach(id => {
@@ -5888,22 +5887,21 @@ function checkout() {
   const deliverySel = document.getElementById('delivery_time').value;
   const pickupValue = pickupSel === 'Z.S.M.' ? getAsapTime() : pickupSel;
   const deliveryValue = deliverySel === 'Z.S.M.' ? getAsapTime() : deliverySel;
-
   const tijdslotDisplay = orderType === 'afhalen' ? pickupSel : deliverySel;
 
   fetch('https://flask-order-api.onrender.com/submit_order', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      orderType: orderType,
+      orderType,
       name: orderType === 'afhalen' ? document.getElementById('pickupName').value.trim() : document.getElementById('deliveryName').value.trim(),
       phone: orderType === 'afhalen' ? document.getElementById('pickupPhone').value.trim() : document.getElementById('deliveryPhone').value.trim(),
-      email: email,
+      email,
       customerEmail: email,
       pickup_time: orderType === 'afhalen' ? pickupValue : '',
       delivery_time: orderType === 'bezorgen' ? deliveryValue : '',
       tijdslot_display: tijdslotDisplay,
-      paymentMethod: paymentMethod,
+      paymentMethod,
       postcode: orderType === 'bezorgen' ? document.getElementById('deliveryPostcode').value.trim() : '',
       house_number: orderType === 'bezorgen' ? document.getElementById('deliveryHouseNumber').value.trim() : '',
       street: orderType === 'bezorgen' ? document.getElementById('deliveryAddress').value.trim() : '',
@@ -5918,9 +5916,8 @@ function checkout() {
       btw: btw.toFixed(2),
       totaal: isNaN(total) ? "0.00" : total.toFixed(2),
       discountAmount: currentDiscount.toFixed(2),
-      discountCode: discountCode,
-      message,
-      email
+      discountCode,
+      message
     })
   })
     .then(res => res.json())
@@ -5928,32 +5925,24 @@ function checkout() {
       if (data.status === 'ok') {
         beep();
         saveCustomerInfo();
-
         if (paymentMethod === 'online' && data.paymentLink) {
-          // ✅ 在线支付直接跳转
           window.location.href = data.paymentLink;
           return;
         }
-
-        // ✅ 只有非在线支付才显示成功信息
         showFeedback('Bestelling succesvol verzonden! Bestelnummer: ' + orderNumber);
         for (const k in cart) delete cart[k];
         sessionStorage.removeItem(FORM_KEY);
         updateCart();
-
         sliderText.innerText = 'Gelukt!';
-         sliderButton.innerHTML = `
-           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-           <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>`;
-
+        sliderButton.innerHTML = `
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>`;
         sliderTrack.style.pointerEvents = 'none';
-
         setTimeout(() => { window.location.href = '/'; }, 1500);
-
       } else {
-  const errorMsg = data.error || 'Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.';
-  showFeedback(errorMsg, true);
+        const errorMsg = data.error || 'Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.';
+        showFeedback(errorMsg, true);
         if (sliderText && sliderButton && sliderTrack) {
           sliderText.innerText = 'Schuif om te betalen';
           sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
