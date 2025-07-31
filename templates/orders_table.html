@@ -90,6 +90,7 @@ th:last-child {
        <th>Opmerking</th>
        <th>Ordernummer</th>
        <th>Totaal</th>
+       <th>Bezorgkosten</th>
        <th>Adres</th>
        <th>Betaalwijze</th>
        <th>Fooi</th>
@@ -122,6 +123,11 @@ th:last-child {
        <td>{{ order.order_number or '' }}</td>
 
         <td>€{{ '%.2f' % (order.totaal or 0) }}</td>
+        <td>
+          {% if is_delivery %}
+            €{{ '%.2f' % (order.bezorgkosten or 0) }}
+          {% else %}-{% endif %}
+        </td>
 
         <td>
           {% if is_delivery %}
