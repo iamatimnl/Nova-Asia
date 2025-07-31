@@ -2399,12 +2399,12 @@ body.portrait-mode .cart-badge {
 <input id="deliveryPhone" type="tel"/>
 <label>Email:</label>
 <input id="deliveryEmail" type="email" required/>
-<label>Adres:</label>
-<input id="deliveryAddress" type="text"/>
-<label>Huisnummer:</label>
-<input id="deliveryHouseNumber" type="text"/>
 <label>Postcode:</label>
 <input id="deliveryPostcode" type="text"/>
+<label>Huisnummer:</label>
+<input id="deliveryHouseNumber" type="text"/>
+<label>Adres:</label>
+<input id="deliveryAddress" type="text"/>
 <label>Gebied:</label>
 <input id="deliveryArea" type="text"/>
 <div id="mapLinkContainer" style="margin-top: 4px;"></div>
@@ -6200,11 +6200,9 @@ function checkout() {
     const postcode = postcodeInput.value.trim();
     const number = houseNumInput.value.trim();
     if (!postcode || !number) return;
-    const url = `https://api.postcodeapi.nu/v3/lookup/${encodeURIComponent(postcode)}/${encodeURIComponent(number)}`;
+    const url = `https://flask-order-api.onrender.com/api/spikkl?postcode=${encodeURIComponent(postcode)}&number=${encodeURIComponent(number)}`;
     try {
-      const res = await fetch(url, {
-        headers: { 'X-Api-Key': 'juW6MEgEeL2BEM0rInEtB5a15BqXjWwO3YqrdH0z' }
-      });
+      const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
         if (data.street && !streetInput.value) streetInput.value = data.street;
@@ -6231,8 +6229,10 @@ function checkout() {
     }
   }
 
-  postcodeInput.addEventListener('blur', () => { autofillAddress(); updateMapLink(); });
-  houseNumInput.addEventListener('blur', () => { autofillAddress(); updateMapLink(); });
+  ['blur', 'change'].forEach(evt => {
+    postcodeInput.addEventListener(evt, () => { autofillAddress(); updateMapLink(); });
+    houseNumInput.addEventListener(evt, () => { autofillAddress(); updateMapLink(); });
+  });
   streetInput.addEventListener('blur', updateMapLink);
   areaInput.addEventListener('blur', updateMapLink);
 </script>
