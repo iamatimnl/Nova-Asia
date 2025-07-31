@@ -2,6 +2,9 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 const wavPlayer = require('node-wav-player');
+const escpos = require('escpos');
+escpos.USB = require('escpos-usb');
+
 
 // 使用 __dirname 来动态定位路径，避免硬编码绝对路径
 const dingPath = path.join(__dirname, 'assets', 'ding.wav');
@@ -70,4 +73,68 @@ ipcMain.on('stop-ding', () => {
 app.on('window-all-closed', () => {
   if (flaskProcess) flaskProcess.kill();
   if (process.platform !== 'darwin') app.quit();
+});
+
+
+
+ipcMain.handle('print-receipt', async (event, orderText, orderData = {}) => {
+  try {
+    const device = new escpos.USB();
+    const printer = new escpos.Printer(device);
+
+    device.open(() => {
+      printer
+        .encode('UTF-8')
+        .align('CT')
+        .style('B')
+        .size(2, 2)
+        .text('Nova Asia')
+        .size(1, 1)
+        .style('NORMAL')
+        .text('------------------------------')
+        .align('LT')
+        .text(`Bestelnummer: ${orderData.order_number || '-'}`)
+        .text(`Naam: ${orderData.customer_name || '-'}`)
+        .text(`Type: ${orderData.order_type === 'pickup' ? 'Afhalen' : 'Bezorgen'}`)
+        .text(`Tijd: ${orderData.pickup_time || orderData.delivery_time || '-'}`)
+        .text(`Adres: ${orderData.street || ''} ${orderData.house_number || ''}`)
+        .text(`${orderData.postcode || ''} ${orderData.city || ''}`)
+        .text('------------------------------')
+        .text('Items:');
+
+      for (const [name, item] of Object.entries(orderData.items || {})) {
+        const qty = item.qty || 0;
+        const price = item.price || 0;
+        const total = (qty * price).toFixed(2);
+        printer.text(`${qty} x ${name}  = €${total}`);
+      }
+
+      printer.text('------------------------------');
+
+      if (orderData.verpakking != null)
+        printer.text(`Verpakkingskosten: €${parseFloat(orderData.verpakking).toFixed(2)}`);
+      if (orderData.bezorging != null)
+        printer.text(`Bezorgkosten:     €${parseFloat(orderData.bezorging).toFixed(2)}`);
+      if (orderData.korting != null)
+        printer.text(`Korting:         -€${parseFloat(orderData.korting).toFixed(2)}`);
+      if (orderData.btw != null)
+        printer.text(`BTW:              €${parseFloat(orderData.btw).toFixed(2)}`);
+
+      printer
+        .style('B')
+        .text(`TOTAAL:           €${parseFloat(orderData.totaal).toFixed(2)}`)
+        .style('NORMAL');
+
+      printer.text('------------------------------');
+      printer.text(`Opmerking: ${orderData.opmerking || '-'}`);
+      printer.text('');
+      printer.align('CT');
+      printer.text('Bedankt voor uw bestelling!');
+      printer.text('Bestel via www.novaasia.nl');
+      printer.text('en ontvang 3% herhaalkorting!');
+      printer.cut().close();
+    });
+  } catch (err) {
+    console.error('❌ 打印失败:', err);
+  }
 });
