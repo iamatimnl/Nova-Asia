@@ -573,6 +573,24 @@ body.today-open .today-toggle {
   .today-toggle { display: none; }
 }
 
+/* Toast notification */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100%);
+  background: rgba(0,0,0,0.8);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 10000;
+}
+.toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
   
 </style>
 <script src="/static/js/simple-qrcode.js"></script>
@@ -1549,6 +1567,8 @@ function clearForm(){
   for (const k in cart) delete cart[k];
   updateCart();
   toggleAddress();
+  const nameInput = document.getElementById('custName');
+  if (nameInput) nameInput.focus();
 }
 
 
@@ -1663,14 +1683,14 @@ function submitOrder() {
     .then(r => r.json())
     .then(res => {
       if (res.success || res.status === 'ok') {
-        alert('Bestelling succesvol verzonden! Bestelnummer: ' + orderNumber);
+        showToast('Bestelling succesvol verzonden! Bestelnummer: ' + orderNumber);
         clearForm();
         fetchOrders();
       } else {
-        alert('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.');
+        showToast('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.');
       }
     })
-    .catch(() => alert('Verzendfout – server niet bereikbaar.'));
+    .catch(() => showToast('Verzendfout – server niet bereikbaar.'));
 }
 
 
@@ -2092,6 +2112,18 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
       clearInterval(pollTimer);
       pollTimer = null;
     }
+  }
+
+  function showToast(msg) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('visible'));
+    setTimeout(() => {
+      toast.classList.remove('visible');
+      setTimeout(() => toast.remove(), 300);
+    }, 2000);
   }
 
   const xbowlModal=document.getElementById('xBowlAddedModal');
