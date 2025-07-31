@@ -160,6 +160,14 @@ def order_to_dict(order):
         except Exception:
             items = {}
 
+    subtotal = sum(
+        float(i.get("price", 0)) * int(i.get("qty", 0))
+        for i in items.values()
+    )
+    delivery_calc = order.totaal + order.discount_amount - subtotal - order.verpakkingskosten - (order.fooi or 0)
+    delivery_calc = round(delivery_calc, 2)
+    delivery = order.bezorgkosten if order.bezorgkosten not in [None, 0] else max(delivery_calc, 0)
+
     return {
         "id": order.id,
         "order_number": order.order_number,
@@ -178,6 +186,7 @@ def order_to_dict(order):
         "payment_method": order.payment_method,
         "totaal": order.totaal,
         "verpakkingskosten": order.verpakkingskosten,
+        "bezorgkosten": delivery,
         "fooi": order.fooi,
         "discount_code": order.discount_code,
         "discount_amount": order.discount_amount,
@@ -185,6 +194,7 @@ def order_to_dict(order):
         "items": items,
         "created_at": order.created_at.isoformat() if order.created_at else None,
         "is_completed": order.is_completed,
+        "bezorging": delivery,
         "is_cancelled": order.is_cancelled
     }
 
@@ -336,6 +346,13 @@ def orders_to_dicts(orders):
             except Exception:
                 o.items_dict = {}
         totaal = o.totaal or 0
+        subtotal = sum(
+            float(i.get("price", 0)) * int(i.get("qty", 0))
+            for i in o.items_dict.values()
+        )
+        delivery_calc = totaal + o.discount_amount - subtotal - o.verpakkingskosten - (o.fooi or 0)
+        delivery_calc = round(delivery_calc, 2)
+        delivery = o.bezorgkosten if o.bezorgkosten not in [None, 0] else max(delivery_calc, 0)
         result.append({
             "id": o.id,
             "order_type": o.order_type,
@@ -359,8 +376,11 @@ def orders_to_dicts(orders):
             "items": o.items_dict,
             "total": totaal,
             "totaal": totaal,
+            "verpakkingskosten": o.verpakkingskosten,
+            "bezorgkosten": delivery,
             "fooi": o.fooi or 0,
             "order_number": o.order_number,
+            "korting": o.discount_amount,
             "is_completed": o.is_completed,
             "is_cancelled": o.is_cancelled
         })
@@ -451,6 +471,7 @@ class Order(db.Model):
     totaal = db.Column(db.Float)
     verpakkingskosten = db.Column(db.Float, default=0.0)
     fooi = db.Column(db.Float, default=0.0)
+    bezorgkosten = db.Column(db.Float, default=0.0)
     discount_code = db.Column(db.String(50))  # ✅ 新增
     discount_amount = db.Column(db.Float, default=0.0)  # ✅ 新增
     is_completed = db.Column(db.Boolean, default=False)
@@ -477,9 +498,12 @@ class Order(db.Model):
             "items": json.loads(self.items or '{}'),
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "totaal": self.totaal,
+            "verpakkingskosten": self.verpakkingskosten,
+            "bezorgkosten": self.bezorgkosten,
             "fooi": self.fooi,
             "discount_code": self.discount_code,
             "discount_amount": self.discount_amount,
+            "bezorging": self.bezorgkosten,
             "is_completed": self.is_completed,
             "is_cancelled": self.is_cancelled
         }
@@ -801,6 +825,12 @@ def api_orders():
             for i in items.values()
         )
         order.totaal = float(data.get("totaal") or subtotal)
+
+        summary_data = data.get("summary") or {}
+        order.verpakkingskosten = float(summary_data.get("packaging") or 0)
+        order.bezorgkosten = float(summary_data.get("delivery") or 0)
+        if summary_data.get("discountAmount") is not None:
+            order.discount_amount = float(summary_data.get("discountAmount") or 0)
 
         # 3. 保存订单到数据库
         db.session.add(order)
@@ -1745,8 +1775,11 @@ def pos_orders_today():
             "items": o.items_dict,
             "total": totaal,   # ✅ 关键是这里：使用数据库中的 totaal
             "totaal": totaal,
+            "verpakkingskosten": o.verpakkingskosten,
+            "bezorgkosten": o.bezorgkosten,
             "fooi": o.fooi or 0,
             "order_number": o.order_number,  # ✅ 加上这行
+            "korting": o.discount_amount,
             "is_completed": o.is_completed,
             "is_cancelled": o.is_cancelled
         })

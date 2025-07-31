@@ -2342,6 +2342,7 @@ function addRow(order, highlight = false) {
 
   const verpakkingDisplay = verpakkingskosten.toFixed(2).replace('.', ',');
   const bezorgkosten = parseFloat(order.bezorgkosten || order.delivery_cost || 0) || 0;
+  const bezorgDisplay = bezorgkosten.toFixed(2).replace('.', ',');
   let fooi = parseFloat(order.fooi || order.tip || 0); if (isNaN(fooi)) fooi = 0;
   const fooiDisplay = fooi.toFixed(2).replace('.', ',');
 
@@ -2409,6 +2410,7 @@ function addRow(order, highlight = false) {
     <div><strong>Items:</strong><ul>${items}</ul></div>
     ${order.opmerking ? `<div><strong>Opmerking:</strong> ${order.opmerking}</div>` : ''}
     ${verpakkingskosten > 0 ? `<div><strong>Verpakkingskosten:</strong> €${verpakkingDisplay}</div>` : ''}
+    ${bezorgkosten > 0 ? `<div><strong>Bezorgkosten:</strong> €${bezorgDisplay}</div>` : ''}
     ${showKorting ? `<div><strong>Korting:</strong> -€${kortingDisplay}</div>` : ''}
     <div><strong>Totaal:</strong> €${totaalDisplay}</div>
     ${fooi > 0 ? `<div><strong>Fooi:</strong> €${fooiDisplay}</div>` : ''}
