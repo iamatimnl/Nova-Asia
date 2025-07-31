@@ -1,7 +1,7 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  // ✅ 打开新窗口（例如 login.html → pos）
+  // ✅ 打开新窗口（目前你用不到可省略）
   openWindow: (file) => {
     ipcRenderer.send('open-window', file);
   },
@@ -12,6 +12,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // ✅ 停止提示音
   stopDing: () => ipcRenderer.send('stop-ding'),
 
-  // ✅ 可选：用于接收登录成功的通知
+  // ✅ 打印小票（发送订单文本到主进程）
+  printReceipt: (text) => ipcRenderer.invoke('print-receipt', text),
+
+  // ✅ 登录成功回调（保留）
   onLoginSuccess: (callback) => ipcRenderer.on('login-success', callback)
 });
