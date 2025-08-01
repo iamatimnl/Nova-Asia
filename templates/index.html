@@ -44,7 +44,7 @@
 
  :root {
   /* 🌿 主背景色 - 奶茶底 */
-  --primary-color: #f9f4ef; /* 柔和米奶色 */
+  --primary-color: #f2e9d8;
 
   /* 🌸 局部背景色（如卡片、浮层） */
   --section-alt-bg: #f2e9dc; /* 稍深一点的奶咖色 */
@@ -99,8 +99,8 @@
  
   height: 70px;
 
-  background: #ede7e0a8;
-  backdrop-filter: blur(16px);
+  background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(16px);
 
 
@@ -151,7 +151,7 @@
   .navbar a {
     flex: 0 0 auto;
     padding: 14px 20px;
-    color: var(--accent-color);
+    color:rgba(66, 30, 3, 0.985);
     text-decoration: none;
     font-weight: bold;
     border-radius: 26px;
@@ -248,23 +248,27 @@
  }
  
   section {
-    height: auto;
-    padding: 40px 20px;
-    box-sizing: border-box;
-    border-bottom: 1px solid #ccc;
-    border-radius: 16px;
-    background: linear-gradient(
-  to bottom,
-  rgba(249, 242, 227, 0.93),  /* 顶部奶白 */
-  rgba(248, 243, 232, 0.88),  /* 中段温柔米白 */
-  rgba(240, 235, 220, 0.83)  /* 底部偏暖黄 */
-);
-    margin-bottom: 20px;
-  }
+  height: auto;
+  padding: 40px 20px;
+  box-sizing: border-box;
+  border: none;
+  border-radius: 16px;
 
-  section:nth-child(even) {
-    background: var(--section-alt-bg);
-  }
+  /* 半透明白色背景 */
+  background: rgba(255, 255, 255, 0.6);
+
+  /* 毛玻璃模糊效果 */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  margin-bottom: 20px;
+}
+
+/* 偶数节背景一致，保持统一 */
+section:nth-child(even) {
+  background: rgba(255, 255, 255, 0.6);
+}
+
 
   h1,
   h2,
@@ -762,50 +766,43 @@ body.portrait-mode .cart-section.mobile-visible .cart-summary #closeCartBtn {
 
   /* 左侧商品列表 */
   .cart-left {
-    flex: 1 1 auto;
-    display: flex;
-    width: 600px;
-    font-size: large;
-    flex-direction: column;
-    overflow: hidden;
-    border-top-left-radius: 16px;
-    background: linear-gradient(to bottom, rgba(248, 243, 232, 0.88),  rgba(240, 235, 220, 0.83),#fff0dd);
-    backdrop-filter: blur(6px);
-    box-shadow:
-    0 -4px 8px rgba(224, 176, 126, 0.15), /* 上侧淡棕光 */
-    -4px 0 8px rgba(224, 176, 126, 0.15); /* 左侧淡棕光 */
+  flex: 1 1 auto;
+  display: flex;
+  width: 600px;
+  font-size: large;
+  flex-direction: column;
+  overflow: hidden;
+  margin-top: 5px;
 
-    padding: 16px;
+  background: linear-gradient(to top, #fdfaf6c0, #f0e6d7d2);
+  backdrop-filter: blur(8px);
+  padding: 16px;
 
-  }
+ 
+}
 
-  /* 所有购物车商品文字统一金色 */
-  .cart-left li {
-    color: var(--accent-color);
-    font-size: 1.2rem;
-  }
+.cart-left li {
+  color: var(--accent-color);
+  font-size: 1.2rem;
+}
 
-  .cart-items {
-    flex: 1;
-    
-    overflow-y: auto;
-    padding-bottom: 16px;
-  }
+.cart-items {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 16px;
+}
 
-  /* 结算区固定在面板底部 */
-  .cart-summary {
-    flex: 0 0 auto;
-    width: 100%;
-    position: static;
-    font-size: larger;
-    padding: 16px;
-    background: linear-gradient(to bottom, #fff0dd,  rgba(240, 235, 220, 0.83), #eae8e8);
-    backdrop-filter: blur(6px);
-    border-bottom-left-radius: 16px;
-    box-shadow: 
-    -4px 0 8px rgba(224, 176, 126, 0.15), /* 左侧淡棕光 */
-    0 4px 8px rgba(224, 176, 126, 0.15);  /* 下侧淡棕光 */
-    }
+.cart-summary {
+  flex: 0 0 auto;
+  width: 100%;
+  position: static;
+  font-size: larger;
+
+  background: linear-gradient(to bottom, #fdfaf6d2, #f0e6d7d9);
+  backdrop-filter: blur(8px);
+  padding: 20px;
+
+}
 
   /* 移动端相关按钮桌面隐藏 */
   #cart-toggle, #closeCartBtn, .slider-container {
@@ -1902,7 +1899,7 @@ body.portrait-mode .spinner {
   padding: 0 8px;
   box-sizing: border-box;
   border-radius: 26px;
-  background: #ede7e0bd;
+  background: #f2e9d8;
   backdrop-filter: blur(12px); 
 }
 
@@ -1957,7 +1954,7 @@ body.portrait-mode .spinner {
     height: 65px;
     font-size: 1.4rem;
     border-radius: 30px;
-    background: rgba(255, 232, 205, 0.25);
+    background: #f2e9d8;
     backdrop-filter: blur(14px);
   }
 
@@ -2072,7 +2069,7 @@ body.portrait-mode .spinner {
   top: 670px;            /* 距离页面顶端 80px */
   left: 6px;             /* 贴右边 */
   width: 600px;
-  background: var(--off-white);
+  background: yellow;
   padding: 16px;
   text-align: center;
   border-top-right-radius: 16px;
