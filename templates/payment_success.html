@@ -25,50 +25,80 @@
     body {
       font-family: 'Noto Sans', 'Open Sans', sans-serif;
       padding: 20px;
-      max-width: 1200px;
-      margin: auto;
+      max-width: 100%;
+      margin: 0;
       background: var(--primary-color);
       color: var(--secondary-color);
-      padding-top: 60px;
       text-align: center;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      box-sizing: border-box;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
     }
 
     h1 {
       font-family: 'Poppins', 'Quicksand', sans-serif;
+      font-size: 2rem;
+      margin-bottom: 1rem;
     }
 
     .btn-home {
       display: inline-block;
       margin-top: 20px;
-      padding: 10px 20px;
+      padding: 12px 24px;
       background: var(--accent-color);
       color: var(--off-white);
       text-decoration: none;
       border-radius: 8px;
+      font-size: 1rem;
+      transition: background 0.3s ease;
+    }
+
+    .btn-home:hover {
+      background: var(--accent-secondary);
+    }
+
+    @media screen and (min-width: 768px) {
+      body {
+        font-size: 1.2rem;
+      }
+
+      h1 {
+        font-size: 2.3rem;
+      }
+
+      .btn-home {
+        font-size: 1.1rem;
+        padding: 14px 28px;
+      }
     }
   </style>
 </head>
 <body>
- <h1>✅ Betaling geslaagd / Bedankt voor uw bestelling!</h1>
-<p>Uw betaling is succesvol ontvangen. We gaan direct met uw bestelling aan de slag.</p>
-
-  <p id="order-number"></p>
-<a href="/" class="btn-home">Terug naar homepagina</a>
-
+  <div class="container">
+    <h1>✅ Betaling geslaagd / Bedankt voor uw bestelling!</h1>
+    <p>Uw betaling is succesvol ontvangen. We gaan direct met uw bestelling aan de slag.</p>
+    <p id="order-number"></p>
+    <a href="/" class="btn-home">Terug naar homepagina</a>
+  </div>
 
   <script>
-    // ✅ 清空购物车和表单
+    // 清空购物车和表单
     sessionStorage.removeItem('novaCart');
     sessionStorage.removeItem('orderForm');
 
-    // ✅ 显示订单号（如果存在）
+    // 显示订单号（如果存在）
     const urlParams = new URLSearchParams(window.location.search);
     const orderId = urlParams.get('order_id');
     if (orderId) {
       document.getElementById('order-number').innerText = `Uw ordernummer: #${orderId}`;
     }
 
-    // ✅ 自动跳转回首页
+    // 自动跳转回首页
     setTimeout(function () {
       window.location.href = '/';
     }, 1000);
