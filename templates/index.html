@@ -67,11 +67,13 @@
   --accent-highlight: #e59c4b; /* 蜂蜜橘 - 轻盈而有强调 */
   --sakura: #d87474; /* 柔和樱花红 - 比原来的不刺眼 */
   --gold: #caa26a; /* 浅金色 - 用于高亮价格/图标 */
+--accent-gradient-start: #ffbf66; /* 淡木纹米色 */
+--accent-gradient-mid: #da9f5f;   /* 原木浅棕 */
+--accent-gradient-end: #78491f;   /* 栗壳棕 */
 
-  /* 🌈 渐变色（用于按钮等） */
-  --accent-gradient-start: #e6b980; /* 奶橘渐变起点 */
-  --accent-gradient-mid: #c59569;   /* 中段焦糖 */
-  --accent-gradient-end: #8e4a19;   /* 深咖终点 */
+
+
+
 }
 
 
@@ -99,7 +101,7 @@
  
   height: 70px;
 
-  background: rgba(255, 255, 255, 0.718);
+  background: rgba(255, 255, 255, 0.545);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(16px);
 
@@ -151,7 +153,7 @@
   .navbar a {
     flex: 0 0 auto;
     padding: 14px 20px;
-    color:rgba(66, 30, 3, 0.985);
+    color:#3e2f24;
     text-decoration: none;
     font-weight: bold;
     border-radius: 26px;
@@ -210,7 +212,7 @@
     height: 42px; /* ✅ 移动端稍微降低高度 */
     border-radius: 26px; /* ✅ 移动端圆角更柔和 */
     
-    background: rgba(255, 255, 255, 0.718);
+    background: rgba(255, 255, 255, 0.56);
     backdrop-filter: blur(12px);  
 
   }
@@ -247,28 +249,7 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); /* 悬停时增加轻微阴影 */
   transform: scale(0.97); /* 悬停时轻微缩放反馈 */
  }
- 
-  section {
-  height: auto;
-  padding: 40px 20px;
-  box-sizing: border-box;
-  border: none;
-  border-radius: 16px;
 
-  /* 半透明白色背景 */
-  background: #fdfaf6c0;
-
-  /* 毛玻璃模糊效果 */
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-
-  margin-bottom: 20px;
-}
-
-/* 偶数节背景一致，保持统一 */
-section:nth-child(even) {
-  background: #fdfaf6c0;
-}
 
 
   h1,
@@ -775,7 +756,7 @@ body.portrait-mode .cart-section.mobile-visible .cart-summary #closeCartBtn {
   overflow: hidden;
   margin-top: 5px;
 
-  background: #fdfaf6c0;
+  background: #f7f1e4;
   backdrop-filter: blur(18px);
   padding: 16px;
 
@@ -799,7 +780,7 @@ body.portrait-mode .cart-section.mobile-visible .cart-summary #closeCartBtn {
   position: static;
   font-size: larger;
 
-  background: #fdfaf6c0;
+  background: #f7f1e4;
   backdrop-filter: blur(18px);
   padding: 20px;
 
@@ -907,25 +888,28 @@ body.portrait-mode #cart-badge {
   right: -10px;
   box-shadow: 0 0 0 2px #1a1a1a; /* 可选描边增强对比 */
 }
+section {
+  background: #f7f1e4; /* #f2e9d8 */
+  padding: 40px 20px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+
 .delivery-options {
-  max-width: 700px;
-  margin: auto;
+  background: #ffffffcc; /* 半透明白，保持轻盈但有层次 */
+  border: 1px solid #e5dbc8; /* 与主题色协调的浅边框 */
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5); /* 外阴影 + 内部高光，增加立体感 */
   padding: 24px;
   font-size: 1rem;
-  background: #f2e9d8;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 16px;
-
-  /* 添加立体阴影 */
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-
-  /* 添加高光边框来模拟厚度 */
- 
-
   text-align: left;
-  transition: all 0.3s ease;
+  border-radius: 16px;
+  max-width: 700px;
+  margin: auto;
 }
+
+
 
 .delivery-options h2 {
   text-align: center;
@@ -1915,7 +1899,9 @@ body.portrait-mode .spinner {
   width: 90%;
   max-width: 340px;
   height: 50px;
-  background: rgba(255, 232, 205, 0.213);
+  background: #3f3f3f; /* 更纯深灰色，不要透明 */
+  box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.2), 
+              0 2px 8px rgba(0, 0, 0, 0.15); /* 内外阴影提升立体感 */
   backdrop-filter: blur(12px);
   transition: box-shadow 0.3s ease, border 0.3s ease;
   border-radius: 26px;
@@ -1930,7 +1916,9 @@ body.portrait-mode .spinner {
   padding: 0 8px;
   box-sizing: border-box;
   border-radius: 26px;
-  background: rgba(255,255,255,0.65);
+  background:#3e2f24;
+  box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.2), 
+              0 2px 8px rgba(0, 0, 0, 0.15); /* 内外阴影提升立体感 */
   backdrop-filter: blur(12px); 
 }
 
