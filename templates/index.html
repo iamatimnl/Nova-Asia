@@ -911,7 +911,7 @@ body.portrait-mode #cart-badge {
   max-width: 700px;
   margin: auto;
   padding: 24px;
-
+  font-size: 1rem;
   background: #f2e9d8;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -1165,6 +1165,27 @@ body.portrait-mode textarea {
   }
 }
 
+.contact-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 6px; /* 控制行距紧凑，但有呼吸感 */
+}
+
+.contact-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1rem;
+}
+
+.contact-line img {
+  height: 20px;
+}
+
+.contact-line a {
+  color: var(--accent-color);
+  text-decoration: underline;
+}
 
 .feedback {
   position: fixed;
@@ -6129,22 +6150,22 @@ function checkout() {
   transferValues(bezorgenFields, afhalenFields);
   const map = encodeURIComponent(pickupAddress);
   infoBox.innerHTML = `
-  <span style="display: inline-flex; align-items: center; gap: 6px; margin-top: 4px;">
-    <img src="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/home.svg" alt="Home Icon" style="height: 20px;">
-    <a href="https://www.google.com/maps?q=${map}" target="_blank" style="color: var(--accent-color); text-decoration: underline;">
-      ${pickupAddress}
-    </a>
-  </span><br>
-
-  <span style="display: inline-flex; align-items: center; gap: 6px; margin-top: 4px;">
-    <img src="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/phone.svg" alt="Phone Icon" style="height: 20px;">
-    <a href="tel:0622599566" style="color: var(--accent-color); text-decoration: underline;">0622599566</a>
-  </span><br>
-
-  <span style="display: inline-flex; align-items: center; gap: 6px; margin-top: 4px;">
-    <img src="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/email.svg" alt="Email Icon" style="height: 20px;">
-    <a href="mailto:novaasianl@gmail.com" style="color: var(--accent-color); text-decoration: underline;">novaasianl@gmail.com</a>
+ <div class="contact-lines">
+  <span class="contact-line">
+    <img src="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/home.svg" alt="Home Icon">
+    <a href="https://www.google.com/maps?q=${map}" target="_blank">${pickupAddress}</a>
   </span>
+
+  <span class="contact-line">
+    <img src="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/phone.svg" alt="Phone Icon">
+    <a href="tel:0622599566">0622599566</a>
+  </span>
+
+  <span class="contact-line">
+    <img src="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/email.svg" alt="Email Icon">
+    <a href="mailto:novaasianl@gmail.com">novaasianl@gmail.com</a>
+  </span>
+</div>
 `;
 
 
