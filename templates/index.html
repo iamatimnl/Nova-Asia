@@ -99,7 +99,7 @@
  
   height: 70px;
 
-  background: rgba(255,255,255,0.65);
+  background: rgba(255, 255, 255, 0.718);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(16px);
 
@@ -209,7 +209,8 @@
     top: 0px;
     height: 42px; /* ✅ 移动端稍微降低高度 */
     border-radius: 26px; /* ✅ 移动端圆角更柔和 */
-    background: #ede7e0bd;
+    
+    background: rgba(255, 255, 255, 0.718);
     backdrop-filter: blur(12px);  
 
   }
@@ -907,19 +908,28 @@ body.portrait-mode #cart-badge {
   box-shadow: 0 0 0 2px #1a1a1a; /* 可选描边增强对比 */
 }
 .delivery-options {
-  max-width: 500px;
+  max-width: 700px;
   margin: auto;
   padding: 24px;
+
   background: #f2e9d8;
-   
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(96, 94, 94, 0.05);
+
+  /* 添加立体阴影 */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  /* 添加高光边框来模拟厚度 */
+ 
+
   text-align: left;
+  transition: all 0.3s ease;
 }
 
 .delivery-options h2 {
   text-align: center;
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   margin-bottom: 24px;
 }
 
