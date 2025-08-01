@@ -1,6 +1,6 @@
-<!DOCTYPE html>
+<span class="nav-spacer"></span><span class="nav-spacer"></span><span class="nav-spacer"></span><span class="nav-spacer"></span><span class="nav-spacer"></span><span class="nav-spacer"></span><span class="nav-spacer"></span><span class="nav-spacer"></span><span class="nav-spacer"></span><span class="nav-spacer"></span><span class="nav-spacer"></span><span class="nav-spacer"></span><span class="nav-spacer"></span><span class="nav-spacer"></span><span class="nav-spacer"></span><span class="nav-spacer"></span><span class="nav-spacer"></span><span class="nav-spacer"></span><span class="nav-spacer"></span><span class="nav-spacer"></span><!DOCTYPE html>
 
-<html lang="nl">
+<html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0" name="viewport"/>
@@ -13,16 +13,14 @@
 
 
 
-<!-- iOS 设置 -->
+<!-- 启用 iOS 全屏 Web App 模式 -->
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Nova Asia">
 
-<!-- Android 设置 -->
+<!-- 启用 Android 全屏 Web App 模式 -->
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#F9F5F0">
-
-
+<meta name="theme-color" content="#ffffff">
 
 <style>
   body {
@@ -133,8 +131,6 @@
  
   border-radius: 26px;
 }
-
-
 
 
   .nav-categories {
@@ -538,100 +534,6 @@
 }
 
 
-/* 🟡 portrait-mode 下 apply-discount-btn */
-body.portrait-mode .apply-discount-btn {
-  margin-left: 8px;
-  padding: 8px 16px;
-  background: linear-gradient(145deg, #2c2c2c, #1a1a1a);
-  color: #ffffff;
-  border: none;
-  border-radius: 24px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 16px;   /* 👉 放大字体，适配高分辨率竖屏 */
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow:
-    4px 4px 8px rgba(0, 0, 0, 0.6),
-    inset -1px -1px 2px rgba(255, 255, 255, 0.05),
-    inset 1px 1px 3px rgba(0, 0, 0, 0.4);
-  transition: transform 0.1s ease, box-shadow 0.3s ease;
-}
-
-body.portrait-mode .apply-discount-btn:active {
-  transform: scale(0.90);
-  color: #ffbc03;
-  box-shadow:
-    2px 2px 4px rgba(0, 0, 0, 0.7),
-    inset 2px 2px 6px rgba(0, 0, 0, 0.5),
-    inset -1px -1px 2px rgba(255, 255, 255, 0.05);
-}
-/* === Portrait Mode: 覆盖竖屏状态下购物车显示 === */
-body.portrait-mode .cart-section.mobile-visible {
-  display: flex !important;
-  flex-direction: column;
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  width: 100vw;
-  height: 100dvh; /* 动态适配地址栏收起后的高度 */
-  background: rgba(0, 0, 0, 0.6);
-  z-index: 2000;
-  justify-content: flex-start;
-  align-items: stretch;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-body.portrait-mode .cart-section.mobile-visible .cart-left {
-  width: 100vw;
-  max-height: 100%;
-  flex: 1 1 auto;
-
-  padding: 0 24px;         /* ✅ 原 8px 太小，左右统一改为 24px */
-  margin-left: 5px;              /* ✅ 移除右边负 margin */
-  box-sizing: border-box;
-
-  font-size: 1.05rem;
-  line-height: 1.4;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
-
-  background: linear-gradient(to bottom, #ffffff, #e8e3dc, #ede7e0);
-  backdrop-filter: blur(6px);
-  position: relative;
-}
-
-
-/* 列表字体颜色 */
-body.portrait-mode .cart-section.mobile-visible .cart-left li {
-  color: #000000;
-}
-
-body.portrait-mode .cart-section.mobile-visible .cart-summary {
-  width: 100%;
-  flex: 0 0 auto;
-  background: linear-gradient(to bottom, #ede7e0, #e5dfd8, #eae8e8);
-  backdrop-filter: blur(6px);
-  border-bottom-left-radius: 16px;
-
-  margin-left: 10px;
-  padding: 16px 24px;   /* ✅ 左右都有 padding，避免内容贴边 */
-  box-sizing: border-box;
-
-  position: relative;
-}
-
-/* Portrait 模式下关闭按钮定位 */
-body.portrait-mode .cart-section.mobile-visible .cart-summary #closeCartBtn {
-  top: 16px;
-  right: 4px;
-}
 
 
 
@@ -897,18 +799,8 @@ body.portrait-mode .cart-section.mobile-visible .cart-summary #closeCartBtn {
   right: -5px;
   display: inline-block;
 }
-body.portrait-mode #closeCartBtn {
-  display: block !important;
-}
 
-/* Portrait 模式：放大徽标角标 */
-body.portrait-mode #cart-badge {
-  font-size: 20px;
-  padding: 4px 10px;
-  top: -10px;
-  right: -10px;
-  box-shadow: 0 0 0 2px #1a1a1a; /* 可选描边增强对比 */
-}
+
 .delivery-options {
   max-width: 500px;
   margin: auto;
@@ -933,18 +825,6 @@ body.portrait-mode #cart-badge {
   font-weight: 500;
   font-size: 0.95rem;
 }
-/* Portrait mode: enlarge base fonts and controls for better readability */
-body.portrait-mode {
-  font-size: 20px;
-}
-
-body.portrait-mode button,
-body.portrait-mode select,
-body.portrait-mode input,
-body.portrait-mode textarea {
-  font-size: 1.1em;
-}
-
 
 .delivery-options input,
 .delivery-options select {
@@ -1393,86 +1273,6 @@ input:focus, select:focus, textarea:focus {
   padding: 4px;
   font-size: 0.9rem;
 }
-/* === Portrait 模式下购物车内的 textarea 优化 === */
-body.portrait-mode .cart-section textarea {
-  width: 100%;
-  padding: 14px 16px;
-  font-size: 1rem;
-  border-radius: 16px;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-  resize: vertical;
-}
-
-body.portrait-mode .cart-section textarea:focus {
-  outline: none;
-  border-color: var(--accent-color);
-}
-
-/* === Portrait 模式下价格明细块优化 === */
-body.portrait-mode .price-details {
-  text-align: left;
-  margin-top: 12px;
-  font-size: 1.1rem;  /* ⬆️ 字体略放大适配高分辨率 */
-}
-
-body.portrait-mode .price-details .price-row {
-  display: flex;
-  justify-content: space-between;
-  margin: 6px 0;
-}
-
-body.portrait-mode .price-details select {
-  width: auto;
-  font-size: 1rem;
-}
-
-body.portrait-mode .price-details .total-row {
-  font-weight: bold;
-  border-top: 1px solid #ccc;
-  padding-top: 6px;
-}
-
-body.portrait-mode .price-details .btw-note {
-  font-size: 0.95rem;
-  color: #555;
-  text-align: right;
-}
-
-
-/* === Portrait 模式下额外选项容器 === */
-body.portrait-mode #cartExtrasContainer {
-  text-align: center;
-  padding: 12px;
-  box-sizing: border-box;
-}
-
-/* extras row inside cart */
-body.portrait-mode .cart-extras {
-  display: flex;
-  justify-content: space-around;
-  gap: 12px;
-  margin-top: 6px;
-}
-
-/* 单个额外项：对齐、图片尺寸、下拉大小 */
-body.portrait-mode .cart-extra-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-body.portrait-mode .cart-extra-item img {
-  width: 56px;  /* ⬆️ 放大图标 */
-  height: 56px;
-}
-
-body.portrait-mode .cart-extra-item select {
-  width: 64px;
-  margin-top: 4px;
-  padding: 6px;
-  font-size: 1rem;
-}
 
 
 
@@ -1816,11 +1616,19 @@ body.portrait-mode .cart-extra-item select {
   animation: ios-shine 3s linear infinite;
 }
 
+.spinner {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  position: relative;
+  margin: auto;
+}
+
+
 
 .spinner {
   width: 32px;
   height: 32px;
-  position: relative;
   border-radius: 50%;
   background: conic-gradient(
     #f3d112 0deg,
@@ -1840,44 +1648,6 @@ body.portrait-mode .cart-extra-item select {
   100% { transform: rotate(360deg); }
 }
 
-/* === Portrait 模式下：slider 容器整体放大 === */
-body.portrait-mode .slider-container {
-  transform: translateX(-50%) scale(1.4); /* 👉 放大 1.4 倍 */
-  width: 20vw;                            /* 更宽，适配大屏 */
-  max-width: 400px;
-  border-radius: 50px;
-  height: 90px;                           /* 原 64px → 放大 */
-  bottom: 48px;                           /* 底部提高一点 */
-}
-
-/* Portrait 模式下滑块按钮加大 */
-body.portrait-mode .slider-button {
-  width: 88px;
-  height: 88px;
-  margin-left: -16px; 
-  font-size: 40px;                        /* 字体更醒目 */
-}
-
-/* Portrait 模式下 slider 中的提示文字加大 */
-body.portrait-mode .slider-text {
-  font-size: 18px;                        /* 提示文字放大 */
-  font-weight: 700;
-  
-}
-
-/* Portrait 模式下滑块轨道调整 */
-body.portrait-mode .slider-track {
-  margin-left: 0px;
-  padding: 0 28px;
-  border-radius: 42px;
-  background: #747373e0;
-}
-
-/* Portrait 模式下加载旋转动画的 spinner 放大 */
-body.portrait-mode .spinner {
-  width: 48px;
-  height: 48px;
-}
 
 
 
@@ -2082,18 +1852,6 @@ body.portrait-mode .spinner {
     4px 0 8px rgba(224, 176, 126, 0.15);
   z-index: 1000;       /* 确保它在上层可见 */
 }
-body.portrait-mode #cart-toggle {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: #6b4f3b;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  padding: 16px;
-  z-index: 999;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
 
 
 
@@ -2242,64 +2000,6 @@ body.portrait-mode #cart-toggle {
   display: flex !important;
 }
 
-/* 🛒购物篮按钮 - 适中放大为 144px */
-body.portrait-mode #cart-toggle {
-  width: 144px;
-  height: 144px;
-  bottom: 32px;
-  right: 32px;
-  font-size: 52px; /* 用于 emoji 或字体图标 */
-  border-radius: 24px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
-  z-index: 999;
-}
-
-/* 🔝回到顶部按钮 - 同样放大，间隔拉高 */
-body.portrait-mode #back-to-top-logo {
-  display: block;
-  width: 144px;
-  height: 144px;
-  bottom: 200px; /* 确保和购物车之间有充分空间 */
-  right: 32px;
-  background-color: #444;
-  border-radius: 24px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
-  z-index: 998;
-}
-
-/* ⬆️ 确保图标或图像适应容器 */
-body.portrait-mode #cart-toggle svg,
-body.portrait-mode #back-to-top-logo svg,
-body.portrait-mode #back-to-top-logo img {
-  width: 100%;
-  height: 100%;
-}
-.cart-badge {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  background-color: red;
-  color: white;
-  border-radius: 50%;
-  padding: 2px 6px;
-  font-size: 0.75rem;
-  font-weight: bold;
-  line-height: 1;
-  z-index: 10;
-}
-@media (max-width: 767px) {
-  .cart-badge {
-    top: -4px;
-    right: -4px;
-    font-size: 0.75rem;
-    padding: 2px 5px;
-  }
-}
-body.portrait-mode .cart-badge {
-  transform: scale(2);
-  transform-origin: top right;
-}
-
 
 
 
@@ -2320,19 +2020,19 @@ body.portrait-mode .cart-badge {
 <div class="navbar-container" id="navbar-container">
 <nav class="navbar" id="navbar">
 <div class="nav-categories">
-<a href="#delivery-options">Bestelwijze</a>
-<a href="#checkbox-group">Benodigdheden</a>
+<a href="#delivery-options">Order Method</a>
+<a href="#checkbox-group">Supplies</a>
 <a href="#bento">Bento Box</a>
 <a href="#Ramen">Ramen</a>
 <a href="#Pokebowl">Pokebowl</a>
-<a href="#Teppanyaki">Teppanyaki Gebakken Rijst</a>
+<a href="#Teppanyaki">Teppanyaki Fried Rice</a>
 <a href="#sushi">Omakase Sushi</a>
 <a href="#sashimi">Sashimi</a>
 <a href="#Crispy-rice-sandwich">Crispy Rice</a>
 <a href="#snack">Snack</a>
 <a href="#dessert">Dessert</a>
 <a href="#drinks">Drinks</a>
-<a href="#bubble">Bubble Tea</a>
+<a href="#bubble">Bubble Tea</a>  
 <a href="#info">Info</a>
 <a href="#wapp">Wapp</a>
 
@@ -2342,27 +2042,14 @@ body.portrait-mode .cart-badge {
 
 </div>
 <a href="#" class="home-btn" id="homeBtn" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">Home</a>
-<a href="/en" class="review-link lang-switch" title="Switch to English" style="display: inline-flex; align-items: center; gap: 8px;">
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="21" viewBox="0 0 60 40" style="border-radius: 4px; box-shadow: 0 0 2px rgba(0,0,0,0.3);">
-    <rect width="60" height="40" fill="#012169"/>
-    <path d="M0,0 L60,40 M60,0 L0,40" stroke="#fff" stroke-width="6"/>
-    <path d="M0,0 L60,40 M60,0 L0,40" stroke="#C8102E" stroke-width="4"/>
-    <path d="M30,0 V40 M0,20 H60" stroke="#fff" stroke-width="10"/>
-    <path d="M30,0 V40 M0,20 H60" stroke="#C8102E" stroke-width="6"/>
-  </svg>
-</a>
+<a href="/" class="review-link lang-switch" title="Switch to Dutch">NED</a>
 <div class="indicator" id="indicator"></div>
 </nav>
 </div>
-<h1 class="logo-heading">
-  <img src="static/images/Logo.png" alt="Nova Asia Logo" class="logo-desktop" />
-  Nova Asia Online Bestellen
-</h1>
-
-
+<h1>Order Online at Nova Asia</h1>
 <section id="delivery-options">
 <div class="delivery-options">
-<h2>Kies uw bestelmethode</h2>
+<h2>Choose your order method</h2>
 <div id="status-banner"></div>
 <div id="hours-info"></div>
 <div class="order-type-slider">
@@ -2376,68 +2063,68 @@ body.portrait-mode .cart-badge {
 <div class="info-text" id="locationInfo" style="white-space: pre-line; font-size: 0.95rem; margin-top: 8px;"></div>
 <!-- Afhalen 表单 -->
 <div id="afhalenFields">
-<label>Naam:</label>
+<label>Name:</label>
 <input id="pickupName" type="text"/>
-<label>Telefoonnummer:</label>
+<label>Phone number:</label>
 <input id="pickupPhone" type="tel"/>
 <label>Email:</label>
 <input id="pickupEmail" type="email" required/>
-<label>Tijd van afhalen:</label>
+<label>Pickup time:</label>
 <select id="pickup_time"></select>
-<label>Betaalmethode:</label>
+<label>Payment method:</label>
 <select id="pickupPayment">
-<option value="online" selected>Online betaling</option>
-<option value="contant">Contant</option>
-<option value="pin">Pin</option>
+<option value="online" selected>Online payment</option>
+<option value="contant">Cash</option>
+<option value="pin">Card</option>
 </select>
 </div>
 <!-- Bezorgen 表单（默认隐藏） -->
 <div class="hidden" id="bezorgenFields">
-<label>Naam:</label>
+<label>Name:</label>
 <input id="deliveryName" type="text"/>
-<label>Telefoonnummer:</label>
+<label>Phone number:</label>
 <input id="deliveryPhone" type="tel"/>
 <label>Email:</label>
 <input id="deliveryEmail" type="email" required/>
+<label>Address:</label>
+<input id="deliveryAddress" type="text"/>
+<label>House number:</label>
+<input id="deliveryHouseNumber" type="text"/>
 <label>Postcode:</label>
 <input id="deliveryPostcode" type="text"/>
-<label>Huisnummer:</label>
-<input id="deliveryHouseNumber" type="text"/>
-<label>Adres:</label>
-<input id="deliveryAddress" type="text"/>
-<label>Gebied:</label>
+<label>Area:</label>
 <input id="deliveryArea" type="text"/>
 <div id="mapLinkContainer" style="margin-top: 4px;"></div>
-<label>Bezorgtijd:</label>
+<label>Delivery time:</label>
 <select id="delivery_time"></select>
-<label>Betaalmethode:</label>
+<label>Payment method:</label>
 <select id="deliveryPayment">
-<option value="online" selected>Online betaling</option>
-<option value="contant">Contant</option>
-<option value="oprekening">Op rekening</option>
+<option value="online" selected>Online payment</option>
+<option value="contant">Cash</option>
+<option value="oprekening">On account</option>
 </select>
 </div>
 </div>
 </section>
 <section id="checkbox-group">
 <div class="checkbox-group">
-<h2>Benodigdheden</h2>
+<h2>Supplies </h2>
 <p style="margin-top: -12px; font-size: 0.95rem; color: #6A994E; text-align: center;">
-    Geef aan wat u nodig heeft. Voorkom verspilling, denk aan het milieu. 🌱
+    Specify what you need. Avoid waste, think of the environment. 🌱
 </p>
 <div class="supply-row">
-    <img alt="Stokjes" class="supply-img photo" src="{{ url_for('static', filename='images/chopsticks.png') }}"/>
+    <img alt="Chopsticks" class="supply-img photo" src="{{ url_for('static', filename='images/chopsticks.png') }}"/>
     <div class="supply-content">
-        <label for="chopstickCount">Aantal stokjes</label>
+        <label for="chopstickCount">Chopsticks</label>
         <select class="supply-select" id="chopstickCount"></select>
     </div>
 </div>
 
-<!-- Sojasaus -->
+<!-- Soy sauce -->
 <div class="supply-row">
-<img alt="Sojasaus" class="supply-img photo" src="{{ url_for('static', filename='images/sjal.png') }}"/>
+<img alt="Soy sauce" class="supply-img photo" src="{{ url_for('static', filename='images/sjal.png') }}"/>
 <div class="supply-content">
-<label for="soyCount">Aantal sojasaus</label>
+<label for="soyCount">Soy sauce</label>
 <select class="supply-select" id="soyCount"></select>
 </div>
 </div>
@@ -2445,15 +2132,15 @@ body.portrait-mode .cart-badge {
 <div class="supply-row">
 <img alt="Wasabi" class="supply-img photo" src="{{ url_for('static', filename='images/wasabib.png') }}"/>
 <div class="supply-content">
-<label for="wasabiCount">Aantal wasabi</label>
+<label for="wasabiCount">Amount of wasabi</label>
 <select class="supply-select" id="wasabiCount"></select>
 </div>
 </div>
-<!-- Gember -->
+<!-- Ginger -->
 <div class="supply-row">
-<img alt="Gember" class="supply-img photo" src="{{ url_for('static', filename='images/gembeerr.png') }}"/>
+<img alt="Ginger" class="supply-img photo" src="{{ url_for('static', filename='images/gembeerr.png') }}"/>
 <div class="supply-content">
-<label for="gemberCount">Aantal gember</label>
+<label for="gemberCount">Amount of ginger</label>
 <select class="supply-select" id="gemberCount"></select>
 </div>
 </div>
@@ -2463,58 +2150,40 @@ body.portrait-mode .cart-badge {
   <!-- 左侧: Winkelwagen 商品列表 -->
 <div class="cart-left">  
   <div class="cart-items">
+
+    <!-- 标题 + 支付选择器在同一行 -->
     <div style="
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 12px;
-    ">
-      <!-- 配送方式显示 -->
-      <span style="display: flex; align-items: center; gap: 6px;">
-  <select id="cartOrderTypeSelect" style="
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+">
+  <span style="font-weight: bold; font-size: 1.4rem; color: #333; white-space: nowrap;">
+    Summary:
+   <img
+  id="cartIcon"
+  src="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/online.svg"
+  alt="Payment icon"
+  style="height: 24px; vertical-align: middle; margin-bottom: 5px;"
+/>
+
+
+  </span>
+
+  <select id="cartPaymentSelect" style="
+    flex: 1;
     padding: 6px 10px;
-    border-radius: 10px;
+    border-radius: 6px;
     border: 1px solid #ccc;
     font-size: 1rem;
-    width: 120px;
   ">
-    <option value="afhalen">Afhaal</option>
-    <option value="bezorgen">Bezorg</option>
+    <option value="online" selected>Online payment</option>
+    <option value="contant">Cash</option>
+    <option value="pin">Card</option>
+    <option value="oprekening">On account</option>
   </select>
-  <img
-    id="orderTypeIcon"
-    src="/static/images/pickup.svg"
-    alt="Order type icon"
-    style="height: 24px; margin-left: 4px;"
-  />
-</span>
-
-
-
-      <!-- 支付方式 + 图标 -->
-      <span style="display: flex; align-items: center; gap: 6px;">
-        <select id="cartPaymentSelect" style="
-          padding: 6px 10px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-  width: 190px;
-        ">
-          <option value="online" selected>Online betaling</option>
-          <option value="contant">Contant</option>
-          <option value="pin">Pin</option>
-          <option value="oprekening">Op rekening</option>
-        </select>
-        <img
-          id="cartIcon"
-          src="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/online.svg"
-          alt="Payment icon"
-          style="height: 24px; vertical-align: middle;"
-        />
-      </span>
-    </div>
-
+</div>
 
 
     <!-- 购物车商品列表 -->
@@ -2528,66 +2197,74 @@ body.portrait-mode .cart-badge {
   <!-- 右侧: 结算区域 -->
   <div class="cart-summary pretty-gradient">
 
-   <button id="closeCartBtn" onclick="toggleMobileCart()" style="background: none; border: none; padding: 6px; cursor: pointer;">
-  <img src="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/close.svg" alt="Close" style="width: 30px; height: 30px;"> Terug
+    <button id="closeCartBtn" onclick="toggleMobileCart()" style="background: none; border: none; padding: 6px; cursor: pointer;">
+  <img src="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/close.svg" alt="Close" style="width: 30px; height: 30px;">
+
 </button>
 
-
     <div id="cartExtrasContainer"></div>
+   <label for="remark" style="display:block; margin-top:10px; font-weight: bold;">Note:</label>
 
-    <textarea id="remark" placeholder="Opmerking: bijv. geen komkommer,extra avocado" rows="2"></textarea>
-
+    <textarea id="remark" placeholder="e.g. no cucumber, extra mayo" rows="2"></textarea>
 
     <div class="price-details">
-      <div class="price-row"><span>Subtotaal:</span> <span id="subtotalDisplay">€0,00</span></div>
-      <div class="price-row"><span>Verpakkingskosten:</span> <span id="packagingDisplay">€0,00</span></div>
-      <div class="price-row" id="deliveryRow"><span>Bezorgkosten:</span> <span id="deliveryDisplay">€2,50</span></div>
+      <div class="price-row"><span>Subtotal:</span> <span id="subtotalDisplay">€0,00</span></div>
+      <div class="price-row"><span>Packaging costs:</span> <span id="packagingDisplay">€0,00</span></div>
+      <div class="price-row" id="deliveryRow"><span>Delivery fee:</span> <span id="deliveryDisplay">€2,50</span></div>
       <div class="spacer"></div>
       <div class="spacer"></div>
       <div class="spacer"></div>
       <div class="spacer"></div>
       <div class="price-row">
-        <label for="discountCode">Kortingscode:</label>
+        <label for="discountCode">Discount code:</label>
         <input id="discountCode" />
         <!-- 桌面端按钮（原样保留） -->
         <button id="validateDiscountBtn" class="apply-discount-btn" type="button">Apply</button>
 
       </div>
-      <div class="price-row" id="discountRow" style="display:none;"><span>Korting:</span> <span id="discountDisplay">- €0,00</span></div>
+      <div class="price-row" id="discountRow" style="display:none;"><span>Discount:</span> <span id="discountDisplay">- €0,00</span></div>
       <div class="spacer"></div>
       <div class="spacer"></div>
       <div class="price-row">
-  <label for="tipSelect">Fooi:</label>
+  <label for="tipSelect">Tip:</label>
   <select id="tipSelect" style="width: 85px; border-radius: 6px;"></select>
 </div>
 
-      <div class="price-row"><span>BTW (9%):</span> <span id="btwDisplay">€0,00</span></div>
-      <div class="price-row total-row"><span>Totaal:</span> <span id="totalDisplay">€0,00</span></div>
-      <div class="btw-note">Alle prijzen zijn inclusief BTW</div>
+      <div class="price-row"><span>VAT (9%):</span> <span id="btwDisplay">€0,00</span></div>
+      <div class="price-row total-row"><span>Total:</span> <span id="totalDisplay">€0,00</span></div>
+      <div class="btw-note">All prices include VAT</div>
     </div>
      
     <!-- 桌面端正常结账按钮 -->
-    <button class="checkout-btn desktop-only" onclick="checkout()">Afrekenen &amp; Betalen</button>
-
+    <button class="checkout-btn desktop-only" onclick="checkout()">Checkout &amp; Pay</button>
     <!-- 移动端滑动确认按钮 -->
     <div class="slider-container mobile-only">
       <div class="slider-track" id="sliderTrack">
         <div class="slider-button" id="sliderButton">➜</div>
-        <span class="slider-text" id="sliderText">Schuif om te bestellen</span>
+        <span class="slider-text" id="sliderText">Slide to order</span>
       </div>
     </div>
   </div>
 </div>
 <div class="clipboard">
-  <div class="clipboard-header">📋 <strong>Mededeling</strong></div>
+  <div class="clipboard-header">📋 <strong>Notice</strong></div>
   <div class="clipboard-content">
-    <p>Vandaag zijn we gesloten wegens onderhoud. Bedankt voor uw begrip!</p>
+    <p>We are closed today for maintenance. Thank you for your understanding!</p>
   </div>
 </div>
 <button id="cart-toggle" onclick="toggleMobileCart()">
   <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" width="30" height="30"    viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M256 256v128M320 320H192M80 176a16 16 0 00-16 16v216c0 30.24 25.76 56 56 56h272c30.24 0 56-24.51 56-54.75V192a16 16 0 00-16-16zM160 176v-32a96 96 0 0196-96h0a96 96 0 0196 96v32"/></svg>
-  <span id="cart-count" class="cart-badge">0</span>
-
+  <span id="cart-count" style="
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: red;
+      color: white;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      line-height: 1;">0</span>
 </button>
 <img alt="Back to top" id="back-to-top-logo" src="{{ url_for('static', filename='images/Logo.png') }}"/>
 
@@ -2604,9 +2281,9 @@ body.portrait-mode .cart-badge {
 <div class="menu-content">
 <h3>Japans Chicken Bento</h3>
 <p>€ 22.00</p>
-<p id="soldoutJapansChickenBento" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutJapansChickenBento" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="japansChickenBentoCount">Quantity</label>
 <button class="qty-minus remove-button" data-target="japansChickenBentoCount" type="button">-</button>
 <select id="japansChickenBentoCount" name="japansChickenBentoCount"></select>
 <button class="qty-plus add-button" data-target="japansChickenBentoCount" type="button">+</button>
@@ -2621,11 +2298,10 @@ body.portrait-mode .cart-badge {
 <div class="menu-content">
 <h3>Korean Spicy Chicken Bento 🌶</h3>
 
-
 <p>€ 22.00</p>
-<p id="soldoutKoreanChickenBento" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutKoreanChickenBento" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="koreanChickenBentoCount">Quantity</label>
 <button class="qty-minus remove-button" data-target="koreanChickenBentoCount" type="button">-</button>
 <select id="koreanChickenBentoCount" name="koreanChickenBentoCount"></select>
 <button class="qty-plus add-button" data-target="koreanChickenBentoCount" type="button">+</button>
@@ -2640,9 +2316,9 @@ body.portrait-mode .cart-badge {
 <div class="menu-content">
 <h3>Korean Beef Bento</h3>
 <p>€ 25.00</p>
-<p id="soldoutKoreanBeefBento" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutKoreanBeefBento" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="koreanBeefBentoCount">Quantity</label>
 <button class="qty-minus remove-button" data-target="koreanBeefBentoCount" type="button">-</button>
 <select id="koreanBeefBentoCount" name="koreanBeefBentoCount"></select>
 <button class="qty-plus add-button" data-target="koreanBeefBentoCount" type="button">+</button>
@@ -2658,26 +2334,26 @@ body.portrait-mode .cart-badge {
 <div class="menu-content">
 <h3>Meatlover Bento</h3>
 <p>€ 25.00</p>
-<p id="soldoutMeatloverBento" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutMeatloverBento" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="meatloverBentoCount">Quantity</label>
 <button class="qty-minus remove-button" data-target="meatloverBentoCount" type="button">-</button>
 <select id="meatloverBentoCount" name="meatloverBentoCount"></select>
 <button class="qty-plus add-button" data-target="meatloverBentoCount" type="button">+</button>
 </div>
 </div>
 </div>
-<!-- Zalm Lover Bento -->
-<div class="menu-row menu-item" data-name="Zalm Lover Bento" data-packaging="0.2" data-price="23">
+<!-- Salmon Lover Bento -->
+<div class="menu-row menu-item" data-name="Salmon Lover Bento" data-packaging="0.2" data-price="23">
 <div class="menu-img">
-<img alt="Zalm Lover Bento" src="{{ url_for('static', filename='images/zalm-lover-bento.jpg') }}"/>
+<img alt="Salmon Lover Bento" src="{{ url_for('static', filename='images/zalm-lover-bento.jpg') }}"/>
 </div>
 <div class="menu-content">
-<h3>Zalm Lover Bento</h3>
+<h3>Salmon Lover Bento</h3>
 <p>€ 23.00</p>
-<p id="soldoutZalmLoverBento" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutZalmLoverBento" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="zalmLoverBentoCount">Quantity</label>
 <button class="qty-minus remove-button" data-target="zalmLoverBentoCount" type="button">-</button>
 <select id="zalmLoverBentoCount" name="zalmLoverBentoCount"></select>
 <button class="qty-plus add-button" data-target="zalmLoverBentoCount" type="button">+</button>
@@ -2692,9 +2368,9 @@ body.portrait-mode .cart-badge {
 <div class="menu-content">
 <h3>Ebi Lover Bento</h3>
 <p>€ 23.00</p>
-<p id="soldoutEbiLoverBento" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutEbiLoverBento" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="ebiLoverBentoCount">Quantity</label>
 <button class="qty-minus remove-button" data-target="ebiLoverBentoCount" type="button">-</button>
 <select id="ebiLoverBentoCount" name="ebiLoverBentoCount"></select>
 <button class="qty-plus add-button" data-target="ebiLoverBentoCount" type="button">+</button>
@@ -2709,9 +2385,9 @@ body.portrait-mode .cart-badge {
 <div class="menu-content">
 <h3>Surf &amp; Turf Bento</h3>
 <p>€ 25.00</p>
-<p id="soldoutSurfTurfBento" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutSurfTurfBento" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="surfTurfBentoCount">Quantity</label>
 <button class="qty-minus remove-button" data-target="surfTurfBentoCount" type="button">-</button>
 <select id="surfTurfBentoCount" name="surfTurfBentoCount"></select>
 <button class="qty-plus add-button" data-target="surfTurfBentoCount" type="button">+</button>
@@ -2726,28 +2402,29 @@ body.portrait-mode .cart-badge {
 <div class="menu-content">
 <h3>Dimsum Bento</h3>
 <p>€ 20.00</p>
-<p id="soldoutDimsumBento" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutDimsumBento" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="dimsumBentoCount">Quantity</label>
 <button class="qty-minus remove-button" data-target="dimsumBentoCount" type="button">-</button>
 <select id="dimsumBentoCount" name="dimsumBentoCount"></select>
 <button class="qty-plus add-button" data-target="dimsumBentoCount" type="button">+</button>
 </div>
 </div>
 </div>
-<!-- Lamskotelet Bento -->
-<div class="menu-row menu-item" data-name="Lamskotelet Bento" data-packaging="0.2" data-price="30">
+<!-- Lamb Chop Bento -->
+<div class="menu-row menu-item" data-name="Lamb Chop Bento" data-packaging="0.2" data-price="30">
 <div class="menu-img">
-<img alt="Lamskotelet Bento" src="{{ url_for('static', filename='images/lamskotelet-bento.jpg') }}"/>
+<img alt="Lamb Chop Bento" src="{{ url_for('static', filename='images/lamskotelet-bento.jpg') }}"/>
 </div>
 <div class="menu-content">
-<h3>Lamskotelet(NZL) Bento</h3>
-
+<h3 style="font-weight: 500; font-size: 1.2em; letter-spacing: 0.3px;">
+  Lamb Chop <span style="color: #888;">(NZL)</span> Bento
+</h3>
 
 <p>€ 30.00</p>
-<p id="soldoutLamskoteletBento" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutLamskoteletBento" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="lamsBentoCount">Quantity</label>
 <button class="qty-minus remove-button" data-target="lamsBentoCount" type="button">-</button>
 <select id="lamsBentoCount" name="lamsBentoCount"></select>
 <button class="qty-plus add-button" data-target="lamsBentoCount" type="button">+</button>
@@ -2762,9 +2439,9 @@ body.portrait-mode .cart-badge {
 <div class="menu-content">
 <h3>Unagi Bento</h3>
 <p>€ 24.00</p>
-<p id="soldoutUnagiBento" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutUnagiBento" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="unagiBentoCount">Quantity</label>
 <button class="qty-minus remove-button" data-target="unagiBentoCount" type="button">-</button>
 <select id="unagiBentoCount" name="unagiBentoCount"></select>
 <button class="qty-plus add-button" data-target="unagiBentoCount" type="button">+</button>
@@ -2779,9 +2456,9 @@ body.portrait-mode .cart-badge {
 <div class="menu-content">
 <h3>Tuna Bento</h3>
 <p>€ 25.00</p>
-<p id="soldoutTunaBento" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutTunaBento" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="tunaBentoCount">Quantity</label>
 <button class="qty-minus remove-button" data-target="tunaBentoCount" type="button">-</button>
 <select id="tunaBentoCount" name="tunaBentoCount"></select>
 <button class="qty-plus add-button" data-target="tunaBentoCount" type="button">+</button>
@@ -2796,9 +2473,9 @@ body.portrait-mode .cart-badge {
 <div class="menu-content">
 <h3>Veggie Bento</h3>
 <p>€ 20.00</p>
-<p id="soldoutVeggieBento" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutVeggieBento" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="veggieBentoCount">Quantity</label>
 <button class="qty-minus remove-button" data-target="veggieBentoCount" type="button">-</button>
 <select id="veggieBentoCount" name="veggieBentoCount"></select>
 <button class="qty-plus add-button" data-target="veggieBentoCount" type="button">+</button>
@@ -2812,10 +2489,10 @@ body.portrait-mode .cart-badge {
 <div class="menu-content">
 <h3>Bento Sushi Omakase</h3>
 <p>€ 22.00</p>
-<p id="soldoutSushiBento" class="sold-out-msg hidden">Uitverkocht!</p>
-<p class="menu-description">±16st Verrassing van de chef!</p>
+<p id="soldoutSushiBento" class="sold-out-msg hidden">Sold Out!</p>
+<p class="menu-description">16pcs chef's choice!</p>
 <div class="qty-box">
-
+<label for="sushiBentoCount">Quantity</label>
 <button class="qty-minus remove-button" data-target="sushiBentoCount" type="button">-</button>
 <select id="sushiBentoCount" name="sushiBentoCount"></select>
 <button class="qty-plus add-button" data-target="sushiBentoCount" type="button">+</button>
@@ -2831,33 +2508,33 @@ body.portrait-mode .cart-badge {
 </div>
 <div class="menu-content">
 <p class="p-h3">Xbento Vanaf € X</p>
-<p id="soldoutXbento" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutXbento" class="sold-out-msg hidden">Sold Out!</p>
 <div class="bubble-option">
 <select id="xBentoMain">
-<option value="">Hoofdgerecht</option>
+<option value="">Main dish</option>
 </select>
 </div>
 <div class="bubble-option">
 <select id="xBentoSide">
-<option value="">Bijgerecht</option>
+<option value="">Side dish</option>
 </select>
 </div>
 <div class="bubble-option">
   <select id="xBentoRice">
-<option value="">Rijstsoort</option>
+<option value="">Rice type</option>
   </select>
 </div>
 <div class="bubble-option">
   <select id="xBentoVeg">
-    <option value="">Groente</option>
+    <option value="">Vegetable</option>
   </select>
 </div>
     <div class="new-set-wrap hidden" id="xBentoNewWrap">
-      <span class="new-set-msg">Toegevoegd aan winkelwagen!</span>
-      <button type="button" class="new-set-button" id="xBentoNew">Selecteer een nieuwe optie</button>
+      <span class="new-set-msg">Added. Select another?</span>
+      <button type="button" class="new-set-button" id="xBentoNew">Add</button>
     </div>
 <div class="qty-box">
-
+  <label for="xBentoQty">Quantity</label>
 <button class="qty-minus remove-button" data-target="xBentoQty" type="button">-</button>
 <select class="qty-select" id="xBentoQty" name="xBentoQty"></select>
 <button class="qty-plus add-button" data-target="xBentoQty" type="button">+</button>
@@ -2866,7 +2543,7 @@ body.portrait-mode .cart-badge {
 </div>
 </div>
 </section>
-<!-- Pokebowl Section -->
+<!-- Ramen Section -->
 <section id="Ramen">
 <h2>Ramen</h2>
 <div class="menu-section">
@@ -2878,7 +2555,7 @@ body.portrait-mode .cart-badge {
     <div class="menu-content">
       <h3>Ebi Furai</h3>
       <p>€ 18.00</p>
-      <p id="soldoutEbiRamen" class="sold-out-msg hidden">Uitverkocht!</p>
+      <p id="soldoutEbiRamen" class="sold-out-msg hidden">Sold Out!</p>
       <div class="bubble-option">
         <select id="ebiBase">
           <option value="">Base</option>
@@ -2888,17 +2565,17 @@ body.portrait-mode .cart-badge {
       </div>
       <div class="bubble-option">
         <select id="ebiSmaak">
-          <option value="">Smaak</option>
+          <option value="">Flavor</option>
           <option value="Miso">Miso</option>
-          <option value="Soyu">Shoyu</option>
+          <option value="Soyu">Soyu</option>
         </select>
       </div>
       <div class="new-set-wrap hidden" id="ebiNewWrap">
-        <span class="new-set-msg">Toegevoegd aan winkelwagen!</span>
-        <button type="button" class="new-set-button" id="ebiNew">Selecteer een nieuwe optie</button>
+        <span class="new-set-msg">Added. Select another?</span>
+        <button type="button" class="new-set-button" id="ebiNew">Add</button>
       </div>
       <div class="qty-box">
-
+        <label for="ebiQty">Quantity</label>
         <button class="qty-minus remove-button" data-target="ebiQty" type="button">-</button>
         <select id="ebiQty"></select>
         <button class="qty-plus add-button" data-target="ebiQty" type="button">+</button>
@@ -2908,12 +2585,12 @@ body.portrait-mode .cart-badge {
   <!-- Chicken Ramen -->
   <div class="menu-row menu-item" data-code="chicken" data-name="Chicken" data-packaging="0.2" data-price="18">
     <div class="menu-img">
-      <img alt="Chicken Ramen" src="{{ url_for('static', filename='images/RCHICKEN.png') }}"/>
+      <img alt="Chicken Ramen" src="{{ url_for('static',  filename='images/RCHICKEN.png') }}"/>
     </div>
     <div class="menu-content">
       <h3>Chicken</h3>
       <p>€ 18.00</p>
-      <p id="soldoutChickenRamen" class="sold-out-msg hidden">Uitverkocht!</p>
+      <p id="soldoutChickenRamen" class="sold-out-msg hidden">Sold Out!</p>
       <div class="bubble-option">
         <select id="chickenBase">
           <option value="">Base</option>
@@ -2923,17 +2600,17 @@ body.portrait-mode .cart-badge {
       </div>
       <div class="bubble-option">
         <select id="chickenSmaak">
-          <option value="">Smaak</option>
+          <option value="">Flavor</option>
           <option value="Miso">Miso</option>
-          <option value="Soyu">Shoyu</option>
+          <option value="Soyu">Soyu</option>
         </select>
       </div>
       <div class="new-set-wrap hidden" id="chickenNewWrap">
-        <span class="new-set-msg">Toegevoegd aan winkelwagen!</span>
-        <button type="button" class="new-set-button" id="chickenNew">Selecteer een nieuwe optie</button>
+        <span class="new-set-msg">Added. Select another?</span>
+        <button type="button" class="new-set-button" id="chickenNew">Add</button>
       </div>
       <div class="qty-box">
-  
+        <label for="chickenQty">Quantity</label>
         <button class="qty-minus remove-button" data-target="chickenQty" type="button">-</button>
         <select id="chickenQty"></select>
         <button class="qty-plus add-button" data-target="chickenQty" type="button">+</button>
@@ -2948,7 +2625,7 @@ body.portrait-mode .cart-badge {
     <div class="menu-content">
       <h3>Beef</h3>
       <p>€ 18.00</p>
-      <p id="soldoutBeefRamen" class="sold-out-msg hidden">Uitverkocht!</p>
+      <p id="soldoutBeefRamen" class="sold-out-msg hidden">Sold Out!</p>
       <div class="bubble-option">
         <select id="beefBase">
           <option value="">Base</option>
@@ -2958,17 +2635,17 @@ body.portrait-mode .cart-badge {
       </div>
       <div class="bubble-option">
         <select id="beefSmaak">
-          <option value="">Smaak</option>
+          <option value="">Flavor</option>
           <option value="Miso">Miso</option>
-          <option value="Soyu">Shoyu</option>
+          <option value="Soyu">Soyu</option>
         </select>
       </div>
       <div class="new-set-wrap hidden" id="beefNewWrap">
-        <span class="new-set-msg">Toegevoegd aan winkelwagen!</span>
-        <button type="button" class="new-set-button" id="beefNew">Selecteer een nieuwe optie</button>
+        <span class="new-set-msg">Added. Select another?</span>
+        <button type="button" class="new-set-button" id="beefNew">Add</button>
       </div>
       <div class="qty-box">
-
+        <label for="beefQty">Quantity</label>
         <button class="qty-minus remove-button" data-target="beefQty" type="button">-</button>
         <select id="beefQty"></select>
         <button class="qty-plus add-button" data-target="beefQty" type="button">+</button>
@@ -2983,7 +2660,7 @@ body.portrait-mode .cart-badge {
     <div class="menu-content">
       <h3>Ribeye</h3>
       <p>€ 18.00</p>
-      <p id="soldoutRibeyeRamen" class="sold-out-msg hidden">Uitverkocht!</p>
+      <p id="soldoutRibeyeRamen" class="sold-out-msg hidden">Sold Out!</p>
       <div class="bubble-option">
         <select id="ribeyeBase">
           <option value="">Base</option>
@@ -2993,17 +2670,17 @@ body.portrait-mode .cart-badge {
       </div>
       <div class="bubble-option">
         <select id="ribeyeSmaak">
-          <option value="">Smaak</option>
+          <option value="">Flavor</option>
           <option value="Miso">Miso</option>
-          <option value="Soyu">Shoyu</option>
+          <option value="Soyu">Soyu</option>
         </select>
       </div>
       <div class="new-set-wrap hidden" id="ribeyeNewWrap">
-        <span class="new-set-msg">Toegevoegd aan winkelwagen!</span>
-        <button type="button" class="new-set-button" id="ribeyeNew">Selecteer een nieuwe optie</button>
+        <span class="new-set-msg">Added. Select another?</span>
+        <button type="button" class="new-set-button" id="ribeyeNew">Add</button>
       </div>
       <div class="qty-box">
-  
+        <label for="ribeyeQty">Quantity</label>
         <button class="qty-minus remove-button" data-target="ribeyeQty" type="button">-</button>
         <select id="ribeyeQty"></select>
         <button class="qty-plus add-button" data-target="ribeyeQty" type="button">+</button>
@@ -3016,9 +2693,9 @@ body.portrait-mode .cart-badge {
       <img alt="Chasiu Ramen" src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}"/>
     </div>
     <div class="menu-content">
-      <h3>Cha siu (Geroosterd varkensvless)</h3>
+      <h3>Chasiu</h3>
       <p>€ 18.00</p>
-      <p id="soldoutChasiuRamen" class="sold-out-msg hidden">Uitverkocht!</p>
+      <p id="soldoutChasiuRamen" class="sold-out-msg hidden">Sold Out!</p>
       <div class="bubble-option">
         <select id="chasiuBase">
           <option value="">Base</option>
@@ -3028,17 +2705,17 @@ body.portrait-mode .cart-badge {
       </div>
       <div class="bubble-option">
         <select id="chasiuSmaak">
-          <option value="">Smaak</option>
+          <option value="">Flavor</option>
           <option value="Miso">Miso</option>
-          <option value="Soyu">Shoyu</option>
+          <option value="Soyu">Soyu</option>
         </select>
       </div>
       <div class="new-set-wrap hidden" id="chasiuNewWrap">
-        <span class="new-set-msg">Toegevoegd aan winkelwagen!</span>
-        <button type="button" class="new-set-button" id="chasiuNew">Selecteer een nieuwe optie</button>
+        <span class="new-set-msg">Added. Select another?</span>
+        <button type="button" class="new-set-button" id="chasiuNew">Add</button>
       </div>
       <div class="qty-box">
-  
+        <label for="chasiuQty">Quantity</label>
         <button class="qty-minus remove-button" data-target="chasiuQty" type="button">-</button>
         <select id="chasiuQty"></select>
         <button class="qty-plus add-button" data-target="chasiuQty" type="button">+</button>
@@ -3050,16 +2727,16 @@ body.portrait-mode .cart-badge {
 <section id="Pokebowl">
   <h2>Pokebowl</h2>
   <div class="menu-section">
-    <div class="menu-row menu-item" data-name="Zalm Bowl" data-price="15" data-packaging="0.2">
+    <div class="menu-row menu-item" data-name="Salmon Bowl" data-price="15" data-packaging="0.2">
       <div class="menu-img">
-        <img src="{{ url_for('static', filename='images/zwp.png') }}" alt="Zalm Bowl">
+        <img src="{{ url_for('static', filename='images/zwp.png') }}" alt="Salmon Bowl">
       </div>
       <div class="menu-content">
-        <h3>Zalm Bowl</h3>
+        <h3>Salmon Bowl</h3>
         <p>€ 15.00</p>
-        <p id="soldoutZalmBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutZalmBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
- 
+          <label for="zalmBowlQty">Quantity</label>
           <button class="qty-minus remove-button" data-target="zalmBowlQty" type="button">-</button>
           <select id="zalmBowlQty" name="zalmBowlQty"></select>
           <button class="qty-plus add-button" data-target="zalmBowlQty" type="button">+</button>
@@ -3074,9 +2751,9 @@ body.portrait-mode .cart-badge {
       <div class="menu-content">
         <h3>Tuna Bowl</h3>
         <p>€ 15.00</p>
-        <p id="soldoutTunaBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutTunaBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
-       
+          <label for="tunaBowlQty">Quantity</label>
           <button class="qty-minus remove-button" data-target="tunaBowlQty" type="button">-</button>
           <select id="tunaBowlQty" name="tunaBowlQty"></select>
           <button class="qty-plus add-button" data-target="tunaBowlQty" type="button">+</button>
@@ -3092,9 +2769,9 @@ body.portrait-mode .cart-badge {
       <div class="menu-content">
         <h3>Ebi Fry Bowl</h3>
         <p>€ 15.50</p>
-        <p id="soldoutEbiFryBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutEbiFryBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
-        
+          <label for="ebiFryBowlQty">Quantity</label>
           <button class="qty-minus remove-button" data-target="ebiFryBowlQty" type="button">-</button>
           <select id="ebiFryBowlQty" name="ebiFryBowlQty"></select>
           <button class="qty-plus add-button" data-target="ebiFryBowlQty" type="button">+</button>
@@ -3110,9 +2787,9 @@ body.portrait-mode .cart-badge {
       <div class="menu-content">
         <h3>Chicken Karaage Bowl</h3>
         <p>€ 15.50</p>
-        <p id="soldoutChickenKaraageBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutChickenKaraageBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
-
+          <label for="chickenKaraageBowlQty">Quantity</label>
           <button class="qty-minus remove-button" data-target="chickenKaraageBowlQty" type="button">-</button>
           <select id="chickenKaraageBowlQty" name="chickenKaraageBowlQty"></select>
           <button class="qty-plus add-button" data-target="chickenKaraageBowlQty" type="button">+</button>
@@ -3128,9 +2805,9 @@ body.portrait-mode .cart-badge {
       <div class="menu-content">
         <h3>Spicy Chicken Bowl</h3>
         <p>€ 15.50</p>
-        <p id="soldoutSpicyChickenBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutSpicyChickenBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
-         
+          <label for="spicyChickenBowlQty">Quantity</label>
           <button class="qty-minus remove-button" data-target="spicyChickenBowlQty" type="button">-</button>
           <select id="spicyChickenBowlQty" name="spicyChickenBowlQty"></select>
           <button class="qty-plus add-button" data-target="spicyChickenBowlQty" type="button">+</button>
@@ -3146,9 +2823,9 @@ body.portrait-mode .cart-badge {
       <div class="menu-content">
         <h3>Teriyaki Chicken Bowl</h3>
         <p>€ 15.50</p>
-        <p id="soldoutTeriyakiChickenBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutTeriyakiChickenBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
-    
+          <label for="teriyakiChickenBowlQty">Quantity</label>
           <button class="qty-minus remove-button" data-target="teriyakiChickenBowlQty" type="button">-</button>
           <select id="teriyakiChickenBowlQty" name="teriyakiChickenBowlQty"></select>
           <button class="qty-plus add-button" data-target="teriyakiChickenBowlQty" type="button">+</button>
@@ -3164,9 +2841,9 @@ body.portrait-mode .cart-badge {
       <div class="menu-content">
         <h3>Teriyaki Beef Bowl</h3>
         <p>€ 15.50</p>
-        <p id="soldoutTeriyakiBeefBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutTeriyakiBeefBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
-        
+          <label for="teriyakiBeefBowlQty">Quantity</label>
           <button class="qty-minus remove-button" data-target="teriyakiBeefBowlQty" type="button">-</button>
           <select id="teriyakiBeefBowlQty" name="teriyakiBeefBowlQty"></select>
           <button class="qty-plus add-button" data-target="teriyakiBeefBowlQty" type="button">+</button>
@@ -3182,9 +2859,9 @@ body.portrait-mode .cart-badge {
       <div class="menu-content">
         <h3>California Bowl</h3>
         <p>€ 14.00</p>
-        <p id="soldoutCaliforniaBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutCaliforniaBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
-    
+          <label for="californiaBowlQty">Quantity</label>
           <button class="qty-minus remove-button" data-target="californiaBowlQty" type="button">-</button>
           <select id="californiaBowlQty" name="californiaBowlQty"></select>
           <button class="qty-plus add-button" data-target="californiaBowlQty" type="button">+</button>
@@ -3200,11 +2877,11 @@ body.portrait-mode .cart-badge {
         <img src="{{ url_for('static', filename='images/Unagi.jpg') }}" alt="Vega Bowl">
       </div>
       <div class="menu-content">
-        <h3>Unagi Bowl (Gerilde paling)</h3>
+        <h3>Unagi Bowl (Grilled eel)</h3>
         <p>€ 16.00</p>
-        <p id="soldoutVegaBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutVegaBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
-   
+          <label for="unagiBowlQty">Quantity</label>
           <button class="qty-minus remove-button" data-target="unagiBowlQty" type="button">-</button>
           <select id="unagiBowlQty" name="unagiBowlQty"></select>
           <button class="qty-plus add-button" data-target="unagiBowlQty" type="button">+</button>
@@ -3218,11 +2895,11 @@ body.portrait-mode .cart-badge {
         <img src="{{ url_for('static', filename='images/vega-bowl.jpg') }}" alt="Vega Bowl">
       </div>
       <div class="menu-content">
-        <h3>Vega Bowl (Vegetarisch)</h3>
+        <h3>Vega Bowl (Vegetarian)</h3>
         <p>€ 13.00</p>
-        <p id="soldoutVegaBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutVegaBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
-
+          <label for="vegaBowlQty">Quantity</label>
           <button class="qty-minus remove-button" data-target="vegaBowlQty" type="button">-</button>
           <select id="vegaBowlQty" name="vegaBowlQty"></select>
           <button class="qty-plus add-button" data-target="vegaBowlQty" type="button">+</button>
@@ -3238,9 +2915,9 @@ body.portrait-mode .cart-badge {
       <div class="menu-content">
         <h3>Meatlover Bowl</h3>
         <p>€ 17.00</p>
-        <p id="soldoutMeatloverBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutMeatloverBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
-       
+          <label for="meatloverBowlQty">Quantity</label>
           <button class="qty-minus remove-button" data-target="meatloverBowlQty" type="button">-</button>
           <select id="meatloverBowlQty" name="meatloverBowlQty"></select>
           <button class="qty-plus add-button" data-target="meatloverBowlQty" type="button">+</button>
@@ -3256,9 +2933,9 @@ body.portrait-mode .cart-badge {
       <div class="menu-content">
         <h3>Rainbowl</h3>
         <p>€ 17.00</p>
-        <p id="soldoutRainbowBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutRainbowBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
-   
+          <label for="rainbowBowlQty">Quantity</label>
           <button class="qty-minus remove-button" data-target="rainbowBowlQty" type="button">-</button>
           <select id="rainbowBowlQty" name="rainbowBowlQty"></select>
           <button class="qty-plus add-button" data-target="rainbowBowlQty" type="button">+</button>
@@ -3274,9 +2951,9 @@ body.portrait-mode .cart-badge {
       <div class="menu-content">
         <h3>Spicy Tuna Bowl</h3>
         <p>€ 15.50</p>
-        <p id="soldoutSpicyTunaBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutSpicyTunaBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
-          <label for="spicyTunaBowlQty">Aantal</label>
+          <label for="spicyTunaBowlQty">Quantity</label>
           <button class="qty-minus remove-button" data-target="spicyTunaBowlQty" type="button">-</button>
           <select id="spicyTunaBowlQty" name="spicyTunaBowlQty"></select>
           <button class="qty-plus add-button" data-target="spicyTunaBowlQty" type="button">+</button>
@@ -3285,16 +2962,16 @@ body.portrait-mode .cart-badge {
       </div>
     </div>
 
-    <div class="menu-row menu-item" data-name="Flamed Zalm Bowl" data-price="16" data-packaging="0.2">
+    <div class="menu-row menu-item" data-name="Flamed Salmon Bowl" data-price="16" data-packaging="0.2">
       <div class="menu-img">
-        <img src="{{ url_for('static', filename='images/flamed-salmon-bowl.jpg') }}" alt="Flamed Zalm Bowl">
+        <img src="{{ url_for('static', filename='images/flamed-salmon-bowl.jpg') }}" alt="Flamed Salmon Bowl">
       </div>
       <div class="menu-content">
-        <h3>Flamed Zalm Bowl</h3>
+        <h3>Flamed Salmon Bowl</h3>
         <p>€ 16.00</p>
-        <p id="soldoutFlamedZalmBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutFlamedZalmBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
-
+          <label for="flamedZalmBowlQty">Quantity</label>
           <button class="qty-minus remove-button" data-target="flamedZalmBowlQty" type="button">-</button>
           <select id="flamedZalmBowlQty" name="flamedZalmBowlQty"></select>
           <button class="qty-plus add-button" data-target="flamedZalmBowlQty" type="button">+</button>
@@ -3310,9 +2987,9 @@ body.portrait-mode .cart-badge {
       <div class="menu-content">
         <h3>Flamed Tuna Bowl</h3>
         <p>€ 16.00</p>
-        <p id="soldoutFlamedTunaBowl" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutFlamedTunaBowl" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
-    
+          <label for="flamedTunaBowlQty">Quantity</label>
           <button class="qty-minus remove-button" data-target="flamedTunaBowlQty" type="button">-</button>
           <select id="flamedTunaBowlQty" name="flamedTunaBowlQty"></select>
           <button class="qty-plus add-button" data-target="flamedTunaBowlQty" type="button">+</button>
@@ -3328,23 +3005,23 @@ body.portrait-mode .cart-badge {
       <div class="menu-content">
         <h3>X-Bowl</h3>
         <p id="xBowlSummary" class="xbowl-summary"></p>
-        <p id="xBowlPrice" class="xbowl-summary">Prijs afhankelijk van keuzes</p>
+        <p id="xBowlPrice" class="xbowl-summary">Price depends on selections</p>
         <div class="bubble-option">
           <select id="xBowlBase">
-            <option value="">Basis</option>
-            <option value="Sushi rijst" data-price="4">Sushi rijst</option>
-            <option value="IJsbergsla" data-price="5">IJsbergsla</option>
-            <option value="Tempura crispy rijst" data-price="6">Tempura crispy rijst</option>
+            <option value="">Base</option>
+            <option value="Sushi rice" data-price="4">Sushi rice</option>
+            <option value="Iceberg lettuce" data-price="5">Iceberg lettuce</option>
+            <option value="Tempura crispy rice" data-price="6">Tempura crispy rice</option>
           </select>
         </div>
         <div id="xBowlMains"></div>
         <div id="xBowlToppings"></div>
         <div class="new-set-wrap hidden" id="xBowlNewWrap">
-          <span class="new-set-msg">Toegevoegd aan winkelwagen!</span>
-          <button type="button" class="new-set-button" id="xBowlNew">Selecteer een nieuwe optie</button>
+          <span class="new-set-msg">Added. Select another?</span>
+          <button type="button" class="new-set-button" id="xBowlNew">Add</button>
         </div>
         <div class="qty-box">
-      
+          <label for="xBowlQty">Quantity</label>
           <button class="qty-minus remove-button" data-target="xBowlQty" type="button">-</button>
           <select id="xBowlQty" class="qty-select" name="xBowlQty"></select>
           <button class="qty-plus add-button" data-target="xBowlQty" type="button">+</button>
@@ -3356,18 +3033,18 @@ body.portrait-mode .cart-badge {
 </div>
 </section>
 <section id="Teppanyaki">
-  <h2>Teppanyaki Gebakken Rijst-Japanse stijl</h2>
+  <h2>Teppanyaki Fried Rice</h2>
   <div class="menu-section">
     <div class="menu-row menu-item" data-name="Teppanyaki Shrimp" data-price="18" data-packaging="0.2">
       <div class="menu-img">
         <img src="{{ url_for('static', filename='images/REBI.png') }}" alt="Teppanyaki Shrimp" />
       </div>
       <div class="menu-content">
-        <h3>Garnaal</h3>
+        <h3>Shrimp</h3>
         <p>€ 18.00</p>
-        <p id="soldoutTeppShrimp" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutTeppShrimp" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
-
+          <label for="teppShrimpQty">Quantity</label>
           <button class="qty-minus remove-button" data-target="teppShrimpQty" type="button">-</button>
           <select id="teppShrimpQty" name="teppShrimpQty"></select>
           <button class="qty-plus add-button" data-target="teppShrimpQty" type="button">+</button>
@@ -3379,11 +3056,11 @@ body.portrait-mode .cart-badge {
         <img src="{{ url_for('static', filename='images/RBEEF.png') }}" alt="Teppanyaki Beef" />
       </div>
       <div class="menu-content">
-        <h3>Rundvlees</h3>
+        <h3>Beef</h3>
         <p>€ 18.00</p>
-        <p id="soldoutTeppBeef" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutTeppBeef" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
-     
+          <label for="teppBeefQty">Quantity</label>
           <button class="qty-minus remove-button" data-target="teppBeefQty" type="button">-</button>
           <select id="teppBeefQty" name="teppBeefQty"></select>
           <button class="qty-plus add-button" data-target="teppBeefQty" type="button">+</button>
@@ -3395,11 +3072,11 @@ body.portrait-mode .cart-badge {
         <img src="{{ url_for('static', filename='images/RCHICKEN.png') }}" alt="Teppanyaki Chicken" />
       </div>
       <div class="menu-content">
-        <h3>Kip</h3>
+        <h3>Chicken</h3>
         <p>€ 18.00</p>
-        <p id="soldoutTeppChicken" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutTeppChicken" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
-      
+          <label for="teppChickenQty">Quantity</label>
           <button class="qty-minus remove-button" data-target="teppChickenQty" type="button">-</button>
           <select id="teppChickenQty" name="teppChickenQty"></select>
           <button class="qty-plus add-button" data-target="teppChickenQty" type="button">+</button>
@@ -3411,11 +3088,11 @@ body.portrait-mode .cart-badge {
         <img src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}" alt="Teppanyaki Char Siu" />
       </div>
       <div class="menu-content">
-        <h3>Char Siu (BBQ-varkensvlees)</h3>
+        <h3>Char Siu</h3>
         <p>€ 18.00</p>
-        <p id="soldoutTeppCharSiu" class="sold-out-msg hidden">Uitverkocht!</p>
+        <p id="soldoutTeppCharSiu" class="sold-out-msg hidden">Sold Out!</p>
         <div class="qty-box">
-     
+          <label for="teppCharSiuQty">Quantity</label>
           <button class="qty-minus remove-button" data-target="teppCharSiuQty" type="button">-</button>
           <select id="teppCharSiuQty" name="teppCharSiuQty"></select>
           <button class="qty-plus add-button" data-target="teppCharSiuQty" type="button">+</button>
@@ -3435,10 +3112,10 @@ body.portrait-mode .cart-badge {
 </div>
 <div class="menu-content">
 <h3>Salmon Roll Omakase</h3>
-<p>9 st verrassing samengesteld<br/>€ 16.00</p>
-<p id="soldoutSalmonRoll" class="sold-out-msg hidden">Uitverkocht!</p>
+<p>9 pcs chef's choice<br/>€ 16.00</p>
+<p id="soldoutSalmonRoll" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="salmonRollCount">Quantity</label>
 <button class="qty-minus remove-button" data-target="salmonRollCount" type="button">-</button>
 <select id="salmonRollCount" name="salmonRollCount"></select>
 <button class="qty-plus add-button" data-target="salmonRollCount" type="button">+</button>
@@ -3451,10 +3128,10 @@ body.portrait-mode .cart-badge {
 </div>
 <div class="menu-content">
 <h3>Dragon Roll Omakase</h3>
-<p>9 st verrassing samengesteld<br/>€ 16.00</p>
-<p id="soldoutDragonRoll" class="sold-out-msg hidden">Uitverkocht!</p>
+<p>9 pcs chef's choice<br/>€ 16.00</p>
+<p id="soldoutDragonRoll" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="dragonRollCount">Quantity</label>
 <button class="qty-minus remove-button" data-target="dragonRollCount" type="button">-</button>
 <select id="dragonRollCount" name="dragonRollCount"></select>
 <button class="qty-plus add-button" data-target="dragonRollCount" type="button">+</button>
@@ -3468,10 +3145,10 @@ body.portrait-mode .cart-badge {
 </div>
 <div class="menu-content">
 <h3>Beef Roll Omakase</h3>
-<p>9 st verrassing samengesteld<br/>€ 16.00</p>
-<p id="soldoutBeefRoll" class="sold-out-msg hidden">Uitverkocht!</p>
+<p>9 pcs chef's choice<br/>€ 16.00</p>
+<p id="soldoutBeefRoll" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="beefRollCount">Quantity</label>
 <button class="qty-minus remove-button" data-target="beefRollCount" type="button">-</button>
 <select id="beefRollCount" name="beefRollCount"></select>
 <button class="qty-plus add-button" data-target="beefRollCount" type="button">+</button>
@@ -3484,10 +3161,10 @@ body.portrait-mode .cart-badge {
 </div>
 <div class="menu-content">
 <h3>Chicken Roll Omakase</h3>
-<p>9 st verrassing samengesteld<br/>€ 16.00</p>
-<p id="soldoutChickenRoll" class="sold-out-msg hidden">Uitverkocht!</p>
+<p>9 pcs chef's choice<br/>€ 16.00</p>
+<p id="soldoutChickenRoll" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="chickenRollCount">Quantity</label>
 <button class="qty-minus remove-button" data-target="chickenRollCount" type="button">-</button>
 <select id="chickenRollCount" name="chickenRollCount"></select>
 <button class="qty-plus add-button" data-target="chickenRollCount" type="button">+</button>
@@ -3500,10 +3177,10 @@ body.portrait-mode .cart-badge {
 </div>
 <div class="menu-content">
 <h3>Nigiri Box Omakase</h3>
-<p>5 stuks nigiri, verrassend samengesteld door de chef<br/>€ 10.00</p>
-<p id="soldoutNigiriBox" class="sold-out-msg hidden">Uitverkocht!</p>
+<p>5 pieces nigiri, chef's choice<br/>€ 10.00</p>
+<p id="soldoutNigiriBox" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="nigiriBoxCount">Quantity</label>
 <button class="qty-minus remove-button" data-target="nigiriBoxCount" type="button">-</button>
 <select id="nigiriBoxCount" name="nigiriBoxCount"></select>
 <button class="qty-plus add-button" data-target="nigiriBoxCount" type="button">+</button>
@@ -3514,7 +3191,7 @@ body.portrait-mode .cart-badge {
 <section id="sashimi">
 <div class="menu-group">
 <h2 style="margin-top: -8px; font-size: 1.5rem; color: #333; text-align: center; font-weight: bold;">
-      Sashimi per 6 stuks
+      Sashimi - 6 pieces
     </h2>
 
 <div class="menu-row menu-item" data-name="Salmon sashimi" data-packaging="0.2" data-price="9">
@@ -3524,9 +3201,9 @@ body.portrait-mode .cart-badge {
 <div class="menu-content">
 <h3>Salmon sashimi</h3>
 <p>€ 9.00</p>
-<p id="soldoutSalmonSashimi" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutSalmonSashimi" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="salmonSashimiQty">Quantity</label>
 <button class="qty-minus remove-button" data-target="salmonSashimiQty" type="button">-</button>
 <select id="salmonSashimiQty" name="salmonSashimiQty"></select>
 <button class="qty-plus add-button" data-target="salmonSashimiQty" type="button">+</button>
@@ -3540,41 +3217,41 @@ body.portrait-mode .cart-badge {
 <div class="menu-content">
 <h3>Flamed salmon sashimi</h3>
 <p>€ 10.00</p>
-<p id="soldoutFlamedSalmonSashimi" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutFlamedSalmonSashimi" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="flamedsalmonSashimiQty">Quantity</label>
 <button class="qty-minus remove-button" data-target="flamedsalmonSashimiQty" type="button">-</button>
 <select id="flamedsalmonSashimiQty" name="flamedsalmonSashimiQty"></select>
 <button class="qty-plus add-button" data-target="flamedsalmonSashimiQty" type="button">+</button>
 </div>
 </div>
 </div>
-<div class="menu-row menu-item" data-name="Tonijn sashimi" data-packaging="0.2" data-price="10">
+<div class="menu-row menu-item" data-name="Tuna sashimi" data-packaging="0.2" data-price="10">
 <div class="menu-img">
-<img alt="Tonijn sashimi" src="{{ url_for('static', filename='images/st.png') }}"/>
+<img alt="Tuna sashimi" src="{{ url_for('static', filename='images/st.png') }}"/>
 </div>
 <div class="menu-content">
-<h3>Tonijn sashimi</h3>
+<h3>Tuna sashimi</h3>
 <p>€ 10.00</p>
-<p id="soldoutTonijnSashimi" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutTonijnSashimi" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="tonijnSashimiQty">Quantity</label>
 <button class="qty-minus remove-button" data-target="tonijnSashimiQty" type="button">-</button>
 <select id="tonijnSashimiQty" name="tonijnSashimiQty"></select>
 <button class="qty-plus add-button" data-target="tonijnSashimiQty" type="button">+</button>
 </div>
 </div>
 </div>
-<div class="menu-row menu-item" data-name="Salmon sashimi" data-packaging="0.2" data-price="10.5">
+<div class="menu-row menu-item" data-name="Flamed tuna sashimi" data-packaging="0.2" data-price="10.5">
 <div class="menu-img">
-<img alt="Salmon sashimi" src="{{ url_for('static', filename='images/ft.png') }}"/>
+<img alt="Flamed tuna sashimi" src="{{ url_for('static', filename='images/ft.png') }}"/>
 </div>
 <div class="menu-content">
-<h3>Flamed tonijn sashimi</h3>
+<h3>Flamed tuna sashimi</h3>
 <p>€ 10.50</p>
-<p id="soldoutFlamedTonijnSashimi" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutFlamedTonijnSashimi" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="flamedtonijnSashimiQty">Quantity</label>
 <button class="qty-minus remove-button" data-target="flamedtonijnSashimiQty" type="button">-</button>
 <select id="flamedtonijnSashimiQty" name="flamedtonijnSashimiQty"></select>
 <button class="qty-plus add-button" data-target="flamedtonijnSashimiQty" type="button">+</button>
@@ -3589,9 +3266,9 @@ body.portrait-mode .cart-badge {
 <div class="menu-content">
 <h3>Beef sashimi</h3>
 <p>€ 10.00</p>
-<p id="soldoutBeefSashimi" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutBeefSashimi" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="beefSashimiQty">Quantity</label>
 <button class="qty-minus remove-button" data-target="beefSashimiQty" type="button">-</button>
 <select id="beefSashimiQty" name="beefSashimiQty"></select>
 <button class="qty-plus add-button" data-target="beefSashimiQty" type="button">+</button>
@@ -3607,36 +3284,36 @@ body.portrait-mode .cart-badge {
       Crispy rice sandwich
     </h2>
 <!-- Zalm -->
-<div class="menu-row menu-item" data-name="Zalm crispy rice sandwich" data-packaging="0.2" data-price="7">
+<div class="menu-row menu-item" data-name="Salmon crispy rice sandwich" data-packaging="0.2" data-price="7">
 <div class="menu-img">
-<img alt="Zalm crispy rice sandwich" src="{{ url_for('static', filename='images/zalm.png') }}"/>
+<img alt="Salmon crispy rice sandwich" src="{{ url_for('static', filename='images/zalm.png') }}"/>
 </div>
 <div class="menu-content">
-<h3>Zalm crispy rice sandwich</h3>
+<h3>Salmon crispy rice sandwich</h3>
 <p>€ 7.00</p>
-<p id="soldoutZalmCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutZalmCrispyRiceSandwich" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="zalm-crispy-rice-sandwich">Quantity</label>
 <button class="qty-minus remove-button" data-target="zalm-crispy-rice-sandwich" type="button">-</button>
-<select id="zalm-crispy-rice-sandwich" name="Zalm crispy rice sandwich"></select>
+<select id="zalm-crispy-rice-sandwich" name="Salmon crispy rice sandwich"></select>
 <button class="qty-plus add-button" data-target="zalm-crispy-rice-sandwich" type="button">+</button>
 </div>
 </div>
 </div>
 
 <!-- Zalm -->
-<div class="menu-row menu-item" data-name="Spicytuna crispy rice sandwich" data-packaging="0.2" data-price="7">
+<div class="menu-row menu-item" data-name="Spicy tuna crispy rice sandwich" data-packaging="0.2" data-price="7">
 <div class="menu-img">
-<img alt="Spicytuna crispy rice sandwich" src="{{ url_for('static', filename='images/zalm.png') }}"/>
+<img alt="Spicy tuna crispy rice sandwich" src="{{ url_for('static', filename='images/zalm.png') }}"/>
 </div>
 <div class="menu-content">
-<h3>Spicytuna crispy rice sandwich</h3>
+<h3>Spicy tuna crispy rice sandwich</h3>
 <p>€ 7.00</p>
-<p id="soldoutSpicytunaCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutSpicytunaCrispyRiceSandwich" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="spicytuna-crispy-rice-sandwich">Quantity</label>
 <button class="qty-minus remove-button" data-target="spicytuna-crispy-rice-sandwich" type="button">-</button>
-<select id="spicytuna-crispy-rice-sandwich" name="Spicytuna crispy rice sandwich"></select>
+<select id="spicytuna-crispy-rice-sandwich" name="Spicy tuna crispy rice sandwich"></select>
 <button class="qty-plus add-button" data-target="spicytuna-crispy-rice-sandwich" type="button">+</button>
 </div>
 </div>
@@ -3651,9 +3328,9 @@ body.portrait-mode .cart-badge {
 <div class="menu-content">
 <h3>Ebi crispy rice sandwich</h3>
 <p>€ 7.00</p>
-<p id="soldoutEbiCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutEbiCrispyRiceSandwich" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="ebiCrispyRiceSandwich">Quantity</label>
 <button class="qty-minus remove-button" data-target="ebiCrispyRiceSandwich" type="button">-</button>
 <select id="ebiCrispyRiceSandwich" name="ebiCrispyRiceSandwich"></select>
 <button class="qty-plus add-button" data-target="ebiCrispyRiceSandwich" type="button">+</button>
@@ -3668,9 +3345,9 @@ body.portrait-mode .cart-badge {
 <div class="menu-content">
 <h3>Beef crispy rice sandwich</h3>
 <p>€ 7.50</p>
-<p id="soldoutBeefCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutBeefCrispyRiceSandwich" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="beefCrispyRiceSandwich">Quantity</label>
 <button class="qty-minus remove-button" data-target="beefCrispyRiceSandwich" type="button">-</button>
 <select id="beefCrispyRiceSandwich" name="beefCrispyRiceSandwich"></select>
 <button class="qty-plus add-button" data-target="beefCrispyRiceSandwich" type="button">+</button>
@@ -3685,9 +3362,9 @@ body.portrait-mode .cart-badge {
 <div class="menu-content">
 <h3>California crispy rice sandwich</h3>
 <p>€ 7.50</p>
-<p id="soldoutCaliforniaCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutCaliforniaCrispyRiceSandwich" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="californiaCrispyRiceSandwich">Quantity</label>
 <button class="qty-minus remove-button" data-target="californiaCrispyRiceSandwich" type="button">-</button>
 <select id="californiaCrispyRiceSandwich" name="californiaCrispyRiceSandwich"></select>
 <button class="qty-plus add-button" data-target="californiaCrispyRiceSandwich" type="button">+</button>
@@ -3702,9 +3379,9 @@ body.portrait-mode .cart-badge {
 <div class="menu-content">
 <h3>Chicken crispy rice sandwich</h3>
 <p>€ 7.00</p>
-<p id="soldoutChickenCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutChickenCrispyRiceSandwich" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="chickenCrispyRiceSandwich">Quantity</label>
 <button class="qty-minus remove-button" data-target="chickenCrispyRiceSandwich" type="button">-</button>
 <select id="chickenCrispyRiceSandwich" name="chickenCrispyRiceSandwich"></select>
 <button class="qty-plus add-button" data-target="chickenCrispyRiceSandwich" type="button">+</button>
@@ -3721,11 +3398,11 @@ body.portrait-mode .cart-badge {
 <div class="menu-row menu-item" data-name="Karaage" data-packaging="0.2" data-price="6.5">
 <img alt="Karaage" class="menu-img" loading="lazy" src="{{ url_for('static', filename='images/karaage.png') }}">
 <div class="menu-content">
-<h3>Karaage (Japanse gefrituurde kip)</h3>
+<h3>Karaage (Japanese fried chicken)</h3>
 <p>€ 6.50</p>
-<p id="soldoutKaraage" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="soldoutKaraage" class="sold-out-msg hidden">Sold Out!</p>
 <div class="qty-box">
-
+<label for="snackCount">Quantity</label>
 <button class="qty-minus remove-button" data-target="snackCount" type="button">-</button>
 <select id="snackCount" name="snackCount"></select>
 <button class="qty-plus add-button" data-target="snackCount" type="button">+</button>
@@ -3734,16 +3411,16 @@ body.portrait-mode .cart-badge {
 </div>
 </img></div>
 <!-- Ebi Fry -->
-<div class="menu-row menu-item" data-name="Ebi Fry – 4 st" data-packaging="0.2" data-price="6.5">
+<div class="menu-row menu-item" data-name="Ebi Fry – 4 pcs" data-packaging="0.2" data-price="6.5">
   <div class="menu-img">
     <img alt="Ebi Fry" loading="lazy" src="{{ url_for('static', filename='images/EB.jpg') }}">
     </img></div>
   <div class="menu-content">
-    <h3>Ebi Fry – 4 st</h3>
+    <h3>Ebi Fry – 4 pcs</h3>
     <p>€ 6.50</p>
-    <p id="soldoutEbiFry" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutEbiFry" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
-     
+      <label for="ebiFryCount">Quantity</label>
       <button class="qty-minus remove-button" data-target="ebiFryCount" type="button">-</button>
       <select id="ebiFryCount" name="ebiFryCount"></select>
       <button class="qty-plus add-button" data-target="ebiFryCount" type="button">+</button>
@@ -3751,53 +3428,53 @@ body.portrait-mode .cart-badge {
     <div id="ebiFryCountSauces" class="pokebowl-sauces"></div>
   </div>
 </div>
- <div class="menu-row menu-item" data-name="Ebi kroket" data-packaging="0.2" data-price="5">
+ <div class="menu-row menu-item" data-name="Ebi Croquette" data-packaging="0.2" data-price="5">
   <div class="menu-img">
-    <img alt="Ebi kroket" loading="lazy" src="{{ url_for('static', filename='images/KRO.png') }}">
+    <img alt="Ebi Croquette" loading="lazy" src="{{ url_for('static', filename='images/KRO.png') }}">
     </img></div>
   <div class="menu-content">
-    <h3>Ebi kroket 4st</h3>
+    <h3>Ebi Croquette – 4 pcs</h3>
     <p>€ 5.00</p>
-    <p id="soldoutEbikroket" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutEbikroket" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
-    
+      <label for="ebikroketCount">Quantity</label>
       <button class="qty-minus remove-button" data-target="ebikroketCount" type="button">-</button>
       <select id="ebikroketCount" name="ebikroketCount"></select>
       <button class="qty-plus add-button" data-target="ebikroketCount" type="button">+</button>
     </div>
     <div id="ebikroketCountSauces" class="pokebowl-sauces"></div>
   </div>
-</div> 
+</div>
  
 <!-- Spicy Crispy Chicken -->
-<div class="menu-row menu-item" data-name="Spicy Crispy Chicken – 5 st" data-packaging="0.2" data-price="6.5">
+<div class="menu-row menu-item" data-name="Spicy Crispy Chicken – 5 pcs" data-packaging="0.2" data-price="6.5">
   <div class="menu-img">
     <img alt="Spicy Crispy Chicken" loading="lazy" src="{{ url_for('static', filename='images/karaage.png') }}">
     </img></div>
   <div class="menu-content">
-    <h3>Spicy Crispy Chicken – 5 st</h3>
+    <h3>Spicy Crispy Chicken – 5 pcs</h3>
     <p>€ 6.50</p>
-    <p id="soldoutSpicyCrispyChicken" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutSpicyCrispyChicken" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
-     
+      <label for="spicyCrispyChickenCount">Quantity</label>
       <button class="qty-minus remove-button" data-target="spicyCrispyChickenCount" type="button">-</button>
       <select id="spicyCrispyChickenCount" name="spicyCrispyChickenCount"></select>
       <button class="qty-plus add-button" data-target="spicyCrispyChickenCount" type="button">+</button>
     </div>
     <div id="spicyCrispyChickenCountSauces" class="pokebowl-sauces"></div>
-    </div>
 </div>
-<!-- Japans Zalm Nugget -->
-<div class="menu-row menu-item" data-name="Japans Zalm Nugget" data-packaging="0.2" data-price="6.5">
+</div>
+<!-- Japans Zalm Nuggets -->
+<div class="menu-row menu-item" data-name="Japans Zalm Nuggets" data-packaging="0.2" data-price="6.5">
   <div class="menu-img">
-    <img alt="Japans Zalm Nugget" loading="lazy" src="{{ url_for('static', filename='images/JZN.png') }}">
+    <img alt="Japans Zalm Nuggets" loading="lazy" src="{{ url_for('static', filename='images/JZN.png') }}">
     </img></div>
   <div class="menu-content">
-    <h3>Japans Zalm Nugget</h3>
+    <h3>Japanese Salmon Nuggets</h3>
     <p>€ 6.50</p>
-    <p id="soldoutJapansZalmNugget" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutJapansZalmNugget" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
-     
+      <label for="japansZalmNuggetCount">Quantity</label>
       <button class="qty-minus remove-button" data-target="japansZalmNuggetCount" type="button">-</button>
       <select id="japansZalmNuggetCount" name="japansZalmNuggetCount"></select>
       <button class="qty-plus add-button" data-target="japansZalmNuggetCount" type="button">+</button>
@@ -3805,16 +3482,16 @@ body.portrait-mode .cart-badge {
     <div id="japansZalmNuggetCountSauces" class="pokebowl-sauces"></div>
   </div>
 </div>
-<div class="menu-row menu-item" data-name="Mini Loempia – 6 st" data-packaging="0.2" data-price="3.5">
+<div class="menu-row menu-item" data-name="Mini Spring Rolls – 6 pcs" data-packaging="0.2" data-price="3.5">
   <div class="menu-img">
-    <img alt="Mini Loempia" loading="lazy" src="{{ url_for('static', filename='images/LOM.png') }}">
+    <img alt="Mini Spring Rolls" loading="lazy" src="{{ url_for('static', filename='images/LOM.png') }}">
     </img></div>
   <div class="menu-content">
-    <h3>Mini Loempia – 6 st</h3>
+    <h3>Mini Spring Rolls – 6 pcs</h3>
     <p>€ 3.50</p>
-    <p id="soldoutMiniLoempia" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutMiniLoempia" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
-     
+      <label for="miniLoempiaCount">Quantity</label>
       <button class="qty-minus remove-button" data-target="miniLoempiaCount" type="button">-</button>
       <select id="miniLoempiaCount" name="miniLoempiaCount"></select>
       <button class="qty-plus add-button" data-target="miniLoempiaCount" type="button">+</button>
@@ -3823,16 +3500,16 @@ body.portrait-mode .cart-badge {
   </div>
 </div>
 <!-- Chicken Loempia -->
-<div class="menu-row menu-item" data-name="Chicken Loempia – 2 st" data-packaging="0.2" data-price="5">
+<div class="menu-row menu-item" data-name="Chicken Spring Rolls – 2 pcs" data-packaging="0.2" data-price="5">
   <div class="menu-img">
-    <img alt="Chicken Loempia" loading="lazy" src="{{ url_for('static', filename='images/KIPL.png') }}">
+    <img alt="Chicken Spring Rolls" loading="lazy" src="{{ url_for('static', filename='images/KIPL.png') }}">
     </img></div>
   <div class="menu-content">
-    <h3>Chicken Loempia – 2 st</h3>
+    <h3>Chicken Spring Rolls – 2 pcs</h3>
     <p>€ 5.00</p>
-    <p id="soldoutChickenLoempia" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutChickenLoempia" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
-   
+      <label for="chickenLoempiaCount">Quantity</label>
       <button class="qty-minus remove-button" data-target="chickenLoempiaCount" type="button">-</button>
       <select id="chickenLoempiaCount" name="chickenLoempiaCount"></select>
       <button class="qty-plus add-button" data-target="chickenLoempiaCount" type="button">+</button>
@@ -3841,16 +3518,16 @@ body.portrait-mode .cart-badge {
   </div>
 </div>
 <!-- Gyoza -->
-<div class="menu-row menu-item" data-name="Gyoza – 5 st" data-packaging="0.2" data-price="5">
+<div class="menu-row menu-item" data-name="Gyoza – 5 pcs" data-packaging="0.2" data-price="5">
   <div class="menu-img">
     <img alt="Gyoza" loading="lazy" src="{{ url_for('static', filename='images/GYO.jpg') }}">
     </img></div>
   <div class="menu-content">
-    <h3>Gyoza – 5 st</h3>
+    <h3>Gyoza – 5 pcs</h3>
     <p>€ 5.00</p>
-    <p id="soldoutGyoza" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutGyoza" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
-      
+      <label for="gyozaCount">Quantity</label>
       <button class="qty-minus remove-button" data-target="gyozaCount" type="button">-</button>
       <select id="gyozaCount" name="gyozaCount"></select>
       <button class="qty-plus add-button" data-target="gyozaCount" type="button">+</button>
@@ -3858,17 +3535,17 @@ body.portrait-mode .cart-badge {
     <div id="gyozaCountSauces" class="pokebowl-sauces"></div>
   </div>
 </div>
-<!-- Inktvis Ringen -->
-<div class="menu-row menu-item" data-name="Inktvis Ringen – 5 st" data-packaging="0.2" data-price="5">
+<!-- Squid Rings -->
+<div class="menu-row menu-item" data-name="Squid Rings – 5 pcs" data-packaging="0.2" data-price="5">
   <div class="menu-img">
-    <img alt="Inktvis Ringen" loading="lazy" src="{{ url_for('static', filename='images/INKT.jpg') }}">
+    <img alt="Squid Rings" loading="lazy" src="{{ url_for('static', filename='images/INKT.jpg') }}">
     </img></div>
   <div class="menu-content">
-    <h3>Inktvis Ringen – 5 st</h3>
+    <h3>Squid Rings – 5 pcs</h3>
     <p>€ 5.00</p>
-    <p id="soldoutInktvisRingen" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutInktvisRingen" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
-     
+      <label for="inktvisRingenCount">Quantity</label>
       <button class="qty-minus remove-button" data-target="inktvisRingenCount" type="button">-</button>
       <select id="inktvisRingenCount" name="inktvisRingenCount"></select>
       <button class="qty-plus add-button" data-target="inktvisRingenCount" type="button">+</button>
@@ -3877,16 +3554,16 @@ body.portrait-mode .cart-badge {
   </div>
 </div>
 <!-- Crispy Rijst -->
-<div class="menu-row menu-item" data-name="Sesambal – 5 st" data-packaging="0.2" data-price="5">
+<div class="menu-row menu-item" data-name="Sesambal – 5 pcs" data-packaging="0.2" data-price="5">
   <div class="menu-img">
     <img alt="Sasambal" loading="lazy" src="{{ url_for('static', filename='images/SEM.jpg') }}">
     </img></div>
   <div class="menu-content">
-    <h3>Sesambal – 5 st</h3>
+    <h3>Sesambal – 5 pcs</h3>
     <p>€ 5.00</p>
-    <p id="soldoutSesambal" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutSesambal" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
-
+      <label for="sesambalCount">Quantity</label>
       <button class="qty-minus remove-button" data-target="sesambalCount" type="button">-</button>
       <select id="sesambalCount" name="sesambalCount"></select>
       <button class="qty-plus add-button" data-target="sesambalCount" type="button">+</button>
@@ -3894,16 +3571,16 @@ body.portrait-mode .cart-badge {
   </div>
 </div>
 <!-- Yakitori -->
-<div class="menu-row menu-item" data-name="Yakitori – 4 st" data-packaging="0.2" data-price="6">
+<div class="menu-row menu-item" data-name="Yakitori – 4 pcs" data-packaging="0.2" data-price="6">
   <div class="menu-img">
     <img alt="Yakitori" loading="lazy" src="{{ url_for('static', filename='images/YAK.jpg') }}">
     </img></div>
   <div class="menu-content">
-    <h3>Yakitori – 4 st</h3>
+    <h3>Yakitori – 4 pcs</h3>
     <p>€ 6.00</p>
-    <p id="soldoutYakitori" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutYakitori" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
-
+      <label for="yakitoriCount">Quantity</label>
       <button class="qty-minus remove-button" data-target="yakitoriCount" type="button">-</button>
       <select id="yakitoriCount" name="yakitoriCount"></select>
       <button class="qty-plus add-button" data-target="yakitoriCount" type="button">+</button>
@@ -3920,43 +3597,43 @@ body.portrait-mode .cart-badge {
   <div class="menu-content">
     <h3>Edamame</h3>
     <p>€ 4.50</p>
-    <p id="soldoutEdamame" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutEdamame" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
-   
+      <label for="edamameCount">Quantity</label>
       <button class="qty-minus remove-button" data-target="edamameCount" type="button">-</button>
       <select id="edamameCount" name="edamameCount"></select>
       <button class="qty-plus add-button" data-target="edamameCount" type="button">+</button>
     </div>
   </div>
 </div>
-<!-- Kimchi Komkommer -->
-<div class="menu-row menu-item" data-name="Kimchi Komkommer" data-packaging="0.2" data-price="4.5">
+<!-- Kimchi Cucumber -->
+<div class="menu-row menu-item" data-name="Kimchi Cucumber" data-packaging="0.2" data-price="4.5">
   <div class="menu-img">
-    <img alt="Kimchi Komkommer" loading="lazy" src="{{ url_for('static', filename='images/KKK.jpg') }}">
+    <img alt="Kimchi Cucumber" loading="lazy" src="{{ url_for('static', filename='images/KKK.jpg') }}">
     </img></div>
   <div class="menu-content">
-    <h3>Kimchi Komkommer</h3>
+    <h3>Kimchi Cucumber</h3>
     <p>€ 4.50</p>
-    <p id="soldoutKimchiKomkommer" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutKimchiKomkommer" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
-  
+      <label for="kimchiKomkommerCount">Quantity</label>
       <button class="qty-minus remove-button" data-target="kimchiKomkommerCount" type="button">-</button>
       <select id="kimchiKomkommerCount" name="kimchiKomkommerCount"></select>
       <button class="qty-plus add-button" data-target="kimchiKomkommerCount" type="button">+</button>
     </div>
   </div>
 </div>
-<!-- Kimchi Kool -->
-<div class="menu-row menu-item" data-name="Kimchi Kool" data-packaging="0.2" data-price="5">
+<!-- Kimchi Cabbage -->
+<div class="menu-row menu-item" data-name="Kimchi Cabbage" data-packaging="0.2" data-price="5">
   <div class="menu-img">
-    <img alt="Kimchi Kool" loading="lazy" src="{{ url_for('static', filename='images/KIM.png') }}">
+    <img alt="Kimchi Cabbage" loading="lazy" src="{{ url_for('static', filename='images/KIM.png') }}">
     </img></div>
   <div class="menu-content">
-    <h3>Kimchi Kool</h3>
+    <h3>Kimchi Cabbage</h3>
     <p>€ 5.00</p>
-    <p id="soldoutKimchiKool" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutKimchiKool" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
-    
+      <label for="kimchiKoolCount">Quantity</label>
       <button class="qty-minus remove-button" data-target="kimchiKoolCount" type="button">-</button>
       <select id="kimchiKoolCount" name="kimchiKoolCount"></select>
       <button class="qty-plus add-button" data-target="kimchiKoolCount" type="button">+</button>
@@ -3968,18 +3645,18 @@ body.portrait-mode .cart-badge {
 
 
   
-<!-- Zeewiersalade -->
-  
-<div class="menu-row menu-item" data-name="Zeewiersalade – 100g" data-packaging="0.2" data-price="5">
+<!-- Seaweed Salad -->
+
+<div class="menu-row menu-item" data-name="Seaweed Salad – 100g" data-packaging="0.2" data-price="5">
   <div class="menu-img">
-    <img alt="Zeewiersalade" loading="lazy" src="{{ url_for('static', filename='images/ZEW.png') }}">
+    <img alt="Seaweed Salad" loading="lazy" src="{{ url_for('static', filename='images/ZEW.png') }}">
     </img></div>
   <div class="menu-content">
-    <h3>Zeewiersalade – 100g</h3>
+    <h3>Seaweed Salad – 100g</h3>
     <p>€ 5.00</p>
-    <p id="soldoutZeewiersalade" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutZeewiersalade" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
-     
+      <label for="zeewiersaladeCount">Quantity</label>
       <button class="qty-minus remove-button" data-target="zeewiersaladeCount" type="button">-</button>
       <select id="zeewiersaladeCount" name="zeewiersaladeCount"></select>
       <button class="qty-plus add-button" data-target="zeewiersaladeCount" type="button">+</button>
@@ -3998,26 +3675,26 @@ body.portrait-mode .cart-badge {
 <div class="menu-content">
   <h3>Mochi – Mango</h3>
   <p>€ 4.00</p>
-  <p id="soldoutMochiMango" class="sold-out-msg hidden">Uitverkocht!</p>
+  <p id="soldoutMochiMango" class="sold-out-msg hidden">Sold Out!</p>
   <div class="qty-box">
-
+<label for="mochiMangoCount">Quantity</label>
 <button class="qty-minus remove-button" data-target="mochiMangoCount" type="button">-</button>
 <select id="mochiMangoCount" name="mochiMangoCount"></select>
 <button class="qty-plus add-button" data-target="mochiMangoCount" type="button">+</button>
 </div>
 </div>
 </div>
-<!-- Aardbei -->
-<div class="menu-row menu-item" data-name="Mochi Aardbei" data-packaging="0.2" data-price="4">
+<!-- Strawberry -->
+<div class="menu-row menu-item" data-name="Mochi Strawberry" data-packaging="0.2" data-price="4">
 <div class="menu-img">
-<img alt="Mochi Aardbei" loading="lazy" src="{{ url_for('static', filename='images/mochi-aardbei.png') }}">
+<img alt="Mochi Strawberry" loading="lazy" src="{{ url_for('static', filename='images/mochi-aardbei.png') }}">
 </img></div>
 <div class="menu-content">
-  <h3>Mochi – Aardbei</h3>
+  <h3>Mochi – Strawberry</h3>
   <p>€ 4.00</p>
-  <p id="soldoutMochiAardbei" class="sold-out-msg hidden">Uitverkocht!</p>
+  <p id="soldoutMochiAardbei" class="sold-out-msg hidden">Sold Out!</p>
   <div class="qty-box">
-
+<label for="mochiAardbeiCount">Quantity</label>
 <button class="qty-minus remove-button" data-target="mochiAardbeiCount" type="button">-</button>
 <select id="mochiAardbeiCount" name="mochiAardbeiCount"></select>
 <button class="qty-plus add-button" data-target="mochiAardbeiCount" type="button">+</button>
@@ -4032,9 +3709,9 @@ body.portrait-mode .cart-badge {
 <div class="menu-content">
   <h3>Mochi – Matcha</h3>
   <p>€ 4.00</p>
-  <p id="soldoutMochiMatcha" class="sold-out-msg hidden">Uitverkocht!</p>
+  <p id="soldoutMochiMatcha" class="sold-out-msg hidden">Sold Out!</p>
   <div class="qty-box">
-
+<label for="mochiMatchaCount">Quantity</label>
 <button class="qty-minus remove-button" data-target="mochiMatchaCount" type="button">-</button>
 <select id="mochiMatchaCount" name="mochiMatchaCount"></select>
 <button class="qty-plus add-button" data-target="mochiMatchaCount" type="button">+</button>
@@ -4049,9 +3726,9 @@ body.portrait-mode .cart-badge {
 <div class="menu-content">
   <h3>Mochi – Pistachio</h3>
   <p>€ 4.00</p>
-  <p id="soldoutMochiPistachio" class="sold-out-msg hidden">Uitverkocht!</p>
+  <p id="soldoutMochiPistachio" class="sold-out-msg hidden">Sold Out!</p>
   <div class="qty-box">
-
+<label for="mochiPistachioCount">Quantity</label>
 <button class="qty-minus remove-button" data-target="mochiPistachioCount" type="button">-</button>
 <select id="mochiPistachioCount" name="mochiPistachioCount"></select>
 <button class="qty-plus add-button" data-target="mochiPistachioCount" type="button">+</button>
@@ -4069,9 +3746,9 @@ body.portrait-mode .cart-badge {
   <div class="menu-content">
     <h3>Cola</h3>
     <p>€ 2.5</p>
-    <p id="soldoutCola" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutCola" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
-      
+      <label for="colaCount">Quantity</label>
       <button class="qty-minus remove-button" data-target="colaCount" type="button">-</button>
       <select id="colaCount" name="colaCount"></select>
       <button class="qty-plus add-button" data-target="colaCount" type="button">+</button>
@@ -4085,41 +3762,41 @@ body.portrait-mode .cart-badge {
   <div class="menu-content">
     <h3>Cola Zero</h3>
     <p>€ 2.50</p>
-    <p id="soldoutColaZero" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutColaZero" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
-    
+      <label for="colaZeroCount">Quantity</label>
       <button class="qty-minus remove-button" data-target="colaZeroCount" type="button">-</button>
       <select id="colaZeroCount" name="colaZeroCount"></select>
       <button class="qty-plus add-button" data-target="colaZeroCount" type="button">+</button>
          </div>
 </div>
 </div>
-<div class="menu-row menu-item" data-name="Spa Blauw" data-packaging="0.15" data-price="2.5">
+<div class="menu-row menu-item" data-name="Spa Blue" data-packaging="0.15" data-price="2.5">
   <div class="menu-img">
-    <img alt="Spa Blauw" loading="lazy" src="{{ url_for('static', filename='images/SPA_BLAUW.png') }}">
+    <img alt="Spa Blue" loading="lazy" src="{{ url_for('static', filename='images/SPA_BLAUW.png') }}">
   </div>
   <div class="menu-content">
-    <h3>Spa Blauw</h3>
+    <h3>Spa Blue</h3>
     <p>€ 2.50</p>
-    <p id="soldoutSpaBlauw" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutSpaBlauw" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
-      <label for="spaBlauwCount"></label>
+      <label for="spaBlauwCount">Quantity</label>
       <button class="qty-minus remove-button" data-target="spaBlauwCount" type="button">-</button>
       <select id="spaBlauwCount" name="spaBlauwCount"></select>
       <button class="qty-plus add-button" data-target="spaBlauwCount" type="button">+</button>
     </div>
   </div>
 </div>
-<div class="menu-row menu-item" data-name="Spa Rood" data-packaging="0.15" data-price="2.5">
+<div class="menu-row menu-item" data-name="Spa Red" data-packaging="0.15" data-price="2.5">
   <div class="menu-img">
-    <img alt="Spa Rood" loading="lazy" src="{{ url_for('static', filename='images/SPA_ROOD.png') }}">
+    <img alt="Spa Red" loading="lazy" src="{{ url_for('static', filename='images/SPA_ROOD.png') }}">
   </div>
   <div class="menu-content">
-    <h3>Spa Rood</h3>
+    <h3>Spa Red</h3>
     <p>€ 2.50</p>
-    <p id="soldoutSpaRood" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutSpaRood" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
-    
+      <label for="spaRoodCount">Quantity</label>
       <button class="qty-minus remove-button" data-target="spaRoodCount" type="button">-</button>
       <select id="spaRoodCount" name="spaRoodCount"></select>
       <button class="qty-plus add-button" data-target="spaRoodCount" type="button">+</button>
@@ -4133,33 +3810,34 @@ body.portrait-mode .cart-badge {
   <div class="menu-content">
     <h3>Red Bull</h3>
     <p>€ 2.50</p>
-    <p id="soldoutRedBull" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutRedBull" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
-     
+      <label for="redBullCount">Quantity</label>
       <button class="qty-minus remove-button" data-target="redBullCount" type="button">-</button>
       <select id="redBullCount" name="redBullCount"></select>
       <button class="qty-plus add-button" data-target="redBullCount" type="button">+</button>
     </div>
   </div>
 </div>
- <div class="menu-row menu-item" data-name="Heineken 330ml" data-packaging="0.15" data-price="3">
+<div class="menu-row menu-item" data-name="Heineken 330ml" data-packaging="0.15" data-price="3">
   <div class="menu-img">
     <img alt="Heineken 330ml" loading="lazy" src="{{ url_for('static', filename='images/HEINEKEN.png') }}">
   </div>
   <div class="menu-content">
     <h3>Heineken 330ml</h3>
     <p>€ 3.00</p>
-    <p id="soldoutHeineken" class="sold-out-msg hidden">Uitverkocht!</p>
+    <p id="soldoutHeineken" class="sold-out-msg hidden">Sold Out!</p>
     <div class="qty-box">
-
+      <label for="heinekenCount">Quantity</label>
       <button class="qty-minus remove-button" data-target="heinekenCount" type="button">-</button>
       <select id="heinekenCount" name="heinekenCount"></select>
       <button class="qty-plus add-button" data-target="heinekenCount" type="button">+</button>
     </div>
   </div>
-</div> 
+</div>
 </div>
 </section>
+
 <section id="bubble">
 <div class="menu-group">
 <h2 style="margin-top: -8px; font-size: 1.5rem; color: #333; text-align: center; font-weight: bold;">
@@ -4172,7 +3850,7 @@ body.portrait-mode .cart-badge {
 <div class="menu-content">
 <h3>Bubble Tea</h3>
 <p>€ 5.00</p>
-<p id="bubbleSoldOut" class="sold-out-msg hidden">Uitverkocht!</p>
+<p id="bubbleSoldOut" class="sold-out-msg hidden">Sold Out!</p>
 <div class="bubble-option">
 <select id="bubbleType">
 <option value="">Base</option>
@@ -4183,7 +3861,7 @@ body.portrait-mode .cart-badge {
 </div>
 <div class="bubble-option">
 <select id="bubbleFlavor">
-<option value="">Smaak</option>
+<option value="">Flavor</option>
 <option value="Mango">Mango</option>
 <option value="Appel">Appel</option>
 <option value="Matcha">Matcha</option>
@@ -4199,11 +3877,11 @@ body.portrait-mode .cart-badge {
   </select>
 </div>
         <div class="new-set-wrap hidden" id="bubbleNewWrap">
-          <span class="new-set-msg">Toegevoegd aan winkelwagen!</span>
-          <button type="button" class="new-set-button" id="bubbleNew">Selecteer een nieuwe optie</button>
+          <span class="new-set-msg">Added. Select another?</span>
+          <button type="button" class="new-set-button" id="bubbleNew">Add</button>
         </div>
 <div class="qty-box">
-
+  <label for="bubbleTeaQty">Quantity</label>
 <button class="qty-minus remove-button" data-target="bubbleTeaQty" type="button">-</button>
 <select id="bubbleTeaQty"></select>
 <button class="qty-plus add-button" data-target="bubbleTeaQty" type="button">+</button>
@@ -4215,7 +3893,7 @@ body.portrait-mode .cart-badge {
   
 <section id="info">
   <h2>Info</h2>
-  <p>We zijn nog niet open en bevinden ons in de testfase. Nieuwe ontwikkelingen worden tijdig gecommuniceerd.</p>
+  <p>We are not open yet and are in the testing phase. New developments will be communicated in due time.</p>
 </section>
 
 <!-- iPhone 主屏幕提示 -->
@@ -4245,39 +3923,15 @@ body.portrait-mode .cart-badge {
 
 
 <script>
-
-
-
-
-function togglePortraitMode() {
-    const mqPortrait = window.matchMedia('(orientation: portrait)').matches;
-    const ratioPortrait = window.innerHeight > window.innerWidth;
-    const isPortrait = mqPortrait || ratioPortrait;
-
-    // ✅ 判断是否为大屏竖屏（如 Surface、iPad），排除手机
-    const isLargeScreen = window.innerWidth > 600;
-
-    // ✅ 给 body 加类名
-    document.body.classList.toggle('portrait-mode', isPortrait && isLargeScreen);
-    document.body.classList.toggle('mobile-portrait', isPortrait && !isLargeScreen);
-}
-
-window.addEventListener('load', togglePortraitMode);
-window.addEventListener('resize', togglePortraitMode);
-window.addEventListener('orientationchange', togglePortraitMode);
-
-
-
-  
 const cart = {};
 const extras = {
   chopstickCount: {
-    label: 'Stokjes',
+    label: 'Chopsticks',
     price: 0,
     icon: "{{ url_for('static', filename='images/chopsticks.png') }}"
   },
   soyCount: {
-    label: 'Sojasaus',
+    label: 'Soy sauce',
     price: 0,
     icon: "{{ url_for('static', filename='images/sjal.png') }}"
   },
@@ -4287,7 +3941,7 @@ const extras = {
     icon: "{{ url_for('static', filename='images/wasabib.png') }}"
   },
   gemberCount: {
-    label: 'Gember',
+    label: 'Ginger',
     price: 0,
     icon: "{{ url_for('static', filename='images/gembeerr.png') }}"
   }
@@ -4299,15 +3953,15 @@ let milkTeaPrice = 0;
 let bubbleOptions = {base: [], smaak: [], topping: []};
 let xbentoOptions = {main: [], side: [], rice: [], groente: []};
 const xbowlBases = [
-  {name:'Sushi rijst', price:4},
-  {name:'IJsbergsla', price:5},
-  {name:'Tempura crispy rijst', price:6}
+  {name:'Sushi rice', price:4},
+  {name:'Iceberg lettuce', price:5},
+  {name:'Tempura crispy rice', price:6}
 ];
 const xbowlMains = [
-  {name:'geen', price:0},
-  {name:'Zalm', price:9},
-  {name:'Tonijn', price:9},
-  {name:'Gamba', price:8},
+  {name:'none', price:0},
+  {name:'Salmon', price:9},
+  {name:'Tuna', price:9},
+  {name:'Shrimp', price:8},
   {name:'Crispy chicken', price:8},
   {name:'Spicy crispy chicken', price:8},
   {name:'Teriyaki beef', price:9},
@@ -4315,11 +3969,11 @@ const xbowlMains = [
   {name:'Ribeye', price:9},
   {name:'Unagi', price:9},
   {name:'Spicy tuna', price:9},
-  {name:'Krabstick', price:8}
+  {name:'Crab stick', price:8}
 ];
-const xbowlToppings=['geen','Komkommer','Avocado','Sojabonen','Mais','Zeewiersalade','Masago','Inari','Tamago'];
+const xbowlToppings=['none','Cucumber','Avocado','Soybeans','Corn','Seaweed salad','Masago','Inari','Tamago'];
 const XBOWL_TOPPING_PRICE=1.5;
-const SAUCE_OPTIONS=['Geen saus','Japans mayo','Spicy mayo','Unagi saus','Spicy teriyaki saus','Korean chili saus','Cury mayo','Japans chili saus','Soy saus','Truffel mayo','Wasabi mayo'];
+const SAUCE_OPTIONS=['No saus','Japanese mayo','Spicy mayo','Unagi sauce','Spicy teriyaki sauce','Korean chili sauce','Curry mayo','Japanese chili sauce','Soy sauce','Truffle mayo','Wasabi mayo'];
 const POKEBOWL_IDS=['zalmBowlQty','tunaBowlQty','ebiFryBowlQty','chickenKaraageBowlQty','spicyChickenBowlQty','teriyakiChickenBowlQty','teriyakiBeefBowlQty','californiaBowlQty','unagiBowlQty','vegaBowlQty','meatloverBowlQty','rainbowBowlQty','spicyTunaBowlQty','flamedZalmBowlQty','flamedTunaBowlQty','snackCount','ebiFryCount','ebikroketCount','spicyCrispyChickenCount','japansZalmNuggetCount','miniLoempiaCount','chickenLoempiaCount','gyozaCount','inktvisRingenCount'];
 let currentXBowlName = '';
 let currentPackaging = 0;
@@ -4333,11 +3987,11 @@ const soldoutMap = {
   "Korean Chicken Bento": "soldout_korean_chicken_bento",
   "Korean Beef Bento": "soldout_korean_beef_bento",
   "Meatlover Bento": "soldout_meatlover_bento",
-  "Zalm Lover Bento": "soldout_zalm_lover_bento",
+  "Salmon Lover Bento": "soldout_zalm_lover_bento",
   "Ebi Lover Bento": "soldout_ebi_lover_bento",
   "Surf & Turf Bento": "soldout_surf_turf_bento",
   "Dimsum Bento": "soldout_dimsum_bento",
-  "Lamskotelet Bento": "soldout_lamskotelet_bento",
+  "Lamb Chop Bento": "soldout_lamskotelet_bento",
   "Unagi Bento": "soldout_unagi_bento",
   "Tuna Bento": "soldout_tuna_bento",
   "Veggie Bento": "soldout_veggie_bento",
@@ -4349,16 +4003,16 @@ const soldoutMap = {
   "Nigiri Box Omakase": "soldout_nigiri_box",
   "Salmon sashimi": "soldout_salmon_sashimi",
   "Flamed salmon sashimi": "soldout_flamed_salmon_sashimi",
-  "Tonijn sashimi": "soldout_tonijn_sashimi",
+  "Tuna sashimi": "soldout_tonijn_sashimi",
   "Flamed tonijn sashimi": "soldout_flamed_tonijn_sashimi",
   "Beef sashimi": "soldout_beef_sashimi",
-  "Zalm crispy rice sandwich": "soldout_zalm_crispy_rice_sandwich",
+  "Salmon crispy rice sandwich": "soldout_zalm_crispy_rice_sandwich",
   "Ebi crispy rice sandwich": "soldout_ebi_crispy_rice_sandwich",
   "Beef crispy rice sandwich": "soldout_beef_crispy_rice_sandwich",
   "California crispy rice sandwich": "soldout_california_crispy_rice_sandwich",
   "Chicken crispy rice sandwich": "soldout_chicken_crispy_rice_sandwich",
   "Xbento": "soldout_xbento",
-  "Zalm Bowl": "soldout_zalm_bowl",
+  "Salmon Bowl": "soldout_zalm_bowl",
   "Tuna Bowl": "soldout_tuna_bowl",
   "Ebi Fry Bowl": "soldout_ebi_fry_bowl",
   "Chicken Karaage Bowl": "soldout_chicken_karaage_bowl",
@@ -4370,7 +4024,7 @@ const soldoutMap = {
   "Meatlover Bowl": "soldout_meatlover_bowl",
   "Rainbow Bowl": "soldout_rainbow_bowl",
   "Spicy Tuna Bowl": "soldout_spicy_tuna_bowl",
-  "Flamed Zalm Bowl": "soldout_flamed_zalm_bowl",
+  "Flamed Salmon Bowl": "soldout_flamed_zalm_bowl",
   "Flamed Tuna Bowl": "soldout_flamed_tuna_bowl",
   "Ebi Furai": "soldout_ebi_ramen",
   "Chicken": "soldout_chicken_ramen",
@@ -4384,25 +4038,25 @@ const soldoutMap = {
   "Karaage": "soldout_karaage",
   "Ebi Fry": "soldout_ebi_fry",
   "Spicy Crispy Chicken": "soldout_spicy_crispy_chicken",
-  "Japans Zalm Nugget": "soldout_japans_zalm_nugget",
+  "Japans Zalm Nuggets": "soldout_japans_zalm_nugget",
   "Chicken Loempia": "soldout_chicken_loempia",
   "Gyoza": "soldout_gyoza",
   "Inktvis Ringen": "soldout_inktvis_ringen",
   "Sesambal – 5 st": "soldout_sesambal",
   "Yakitori": "soldout_yakitori",
-  "Mini Loempia": "soldout_mini_loempia",
+  "Mini Spring Rolls": "soldout_mini_loempia",
   "Edamame": "soldout_edamame",
-  "Kimchi Komkommer": "soldout_kimchi_komkommer",
-  "Kimchi Kool": "soldout_kimchi_kool",
-  "Zeewiersalade": "soldout_zeewiersalade",
+  "Kimchi Cucumber": "soldout_kimchi_komkommer",
+  "Kimchi Cabbage": "soldout_kimchi_kool",
+  "Seaweed Salad": "soldout_zeewiersalade",
   "Mochi Mango": "soldout_mochi_mango",
   "Mochi Aardbei": "soldout_mochi_aardbei",
   "Mochi Matcha": "soldout_mochi_matcha",
   "Mochi Pistachio": "soldout_mochi_pistachio",
   "Cola": "soldout_cola",
   "Cola Zero": "soldout_cola_zero",
-  "Spa Blauw": "soldout_spa_blauw",
-  "Spa Rood": "soldout_spa_rood",
+  "Spa Blue": "soldout_spa_blauw",
+  "Spa Red": "soldout_spa_rood",
   "Red Bull": "soldout_red_bull"
 };
 
@@ -4459,55 +4113,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-// ✅ 当前配送方式初始状态（根据滑块判断）
-let currentOrderType = document.getElementById('afhalen').checked ? 'afhalen' : 'bezorgen';
 
-// ✅ 更新图标函数（包含尺寸设置）
-function updateOrderTypeIcon(value) {
-  const icon = document.getElementById('orderTypeIcon');
-  icon.src = value === 'afhalen'
-    ? "/static/images/pickup.png"
-    : "/static/images/delivery.png";
 
-  // ✅ 设置图标尺寸
-  icon.style.height = '24px';
-  icon.style.width = '24px';
-  icon.style.objectFit = 'contain';
-}
 
-// ✅ 监听配送方式下拉菜单切换
-document.getElementById('cartOrderTypeSelect').addEventListener('change', function () {
-  const selected = this.value;
 
-  if (selected !== currentOrderType) {
-    // ✅ 自动切换滑块按钮（radio）并触发相应事件
-    const radio = document.getElementById(selected);
-    if (radio) {
-      radio.checked = true;
-      radio.dispatchEvent(new Event('change', { bubbles: true }));
-    }
 
-    // ✅ 切换图标
-    updateOrderTypeIcon(selected);
 
-    // ✅ 移动端关闭购物车后再滚动至配送区域
-    const cartSection = document.getElementById('mobileCart');
-    if (cartSection && cartSection.classList.contains('mobile-visible')) {
-      toggleMobileCart();
-    }
 
-    const deliveryOptions = document.getElementById('delivery-options');
-    if (deliveryOptions) {
-      deliveryOptions.scrollIntoView({ behavior: 'smooth' });
-    }
 
-    // ✅ 更新当前状态
-    currentOrderType = selected;
-  }
-});
 
-// ✅ 页面初始化时同步一次图标
-updateOrderTypeIcon(currentOrderType);
+
+
 
 
 
@@ -4570,32 +4186,19 @@ function getXbentoPrice(){
 }
 
 function updateXbentoDisplay(){
-  const main = document.getElementById('xBentoMain').value;
-  const side = document.getElementById('xBentoSide').value;
-  const rice = document.getElementById('xBentoRice').value;
-  const veg = document.getElementById('xBentoVeg').value;
-
-  const item = document.querySelector('.menu-item[data-name="Xbento"]');
-  const p = item?.querySelector('p');
-
-  // 如果一个都没选，就显示提示语
-  if (!main && !side && !rice && !veg) {
-    if (p) p.textContent = "Xbento Zelf Samenstellen";
-    return;
-  }
-
-  const price = getXbentoPrice();
+  const price=getXbentoPrice();
+  const item=document.querySelector('.menu-item[data-name="Xbento"]');
   if(item){
-    item.dataset.price = price;
-    if(p) p.textContent = `€ ${price.toFixed(2)}`;
+    item.dataset.price=price;
+    const p=item.querySelector('p');
+    if(p) p.textContent=`€ ${price.toFixed(2)}`;
   }
 }
 
-
 function applyCrispyPrices(prices){
   const map={
-    'Zalm crispy rice sandwich': parseFloat(prices.price_zalm_crispy_rice_sandwich),
-    'Spicytuna crispy rice sandwich': parseFloat(prices.price_spicytuna_crispy_rice_sandwich),
+    'Salmon crispy rice sandwich': parseFloat(prices.price_zalm_crispy_rice_sandwich),
+    'Spicy tuna crispy rice sandwich': parseFloat(prices.price_spicytuna_crispy_rice_sandwich),
     'Ebi crispy rice sandwich': parseFloat(prices.price_ebi_crispy_rice_sandwich),
     'Beef crispy rice sandwich': parseFloat(prices.price_beef_crispy_rice_sandwich),
     'California crispy rice sandwich': parseFloat(prices.price_california_crispy_rice_sandwich),
@@ -4638,7 +4241,7 @@ function populateBubbleSelectors(){
   const curBase=baseSel.value; const curFlavor=flavorSel.value; const curTopping=toppingSel.value;
   baseSel.innerHTML='<option value="">Base</option>';
   bubbleOptions.base.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.textContent=o.name;if(o.name===curBase) opt.selected=true;baseSel.appendChild(opt);});
-  flavorSel.innerHTML='<option value="">Smaak</option>';
+  flavorSel.innerHTML='<option value="">Flavor</option>';
   bubbleOptions.smaak.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.textContent=o.name;if(o.name===curFlavor) opt.selected=true;flavorSel.appendChild(opt);});
   toppingSel.innerHTML='<option value="">Topping</option>';
   bubbleOptions.topping.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.textContent=o.name;if(o.name===curTopping) opt.selected=true;toppingSel.appendChild(opt);});
@@ -4650,13 +4253,13 @@ function populateXbentoSelectors(){
   const riceSel=document.getElementById('xBentoRice');
   const vegSel=document.getElementById('xBentoVeg');
   const curMain=mainSel.value,curSide=sideSel.value,curRice=riceSel.value,curVeg=vegSel.value;
-  mainSel.innerHTML='<option value="">Hoofdgerecht</option>';
+  mainSel.innerHTML='<option value="">Main dish</option>';
   xbentoOptions.main.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.textContent=o.name;if(o.name===curMain) opt.selected=true;mainSel.appendChild(opt);});
-  sideSel.innerHTML='<option value="">Bijgerecht</option>';
+  sideSel.innerHTML='<option value="">Side dish</option>';
   xbentoOptions.side.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.textContent=o.name;if(o.name===curSide) opt.selected=true;sideSel.appendChild(opt);});
-  riceSel.innerHTML='<option value="">Rijstsoort</option>';
+  riceSel.innerHTML='<option value="">Rice type</option>';
   xbentoOptions.rice.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.textContent=o.name;if(o.name===curRice) opt.selected=true;riceSel.appendChild(opt);});
-  vegSel.innerHTML='<option value="">Groente</option>';
+  vegSel.innerHTML='<option value="">Vegetable</option>';
   xbentoOptions.groente.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.textContent=o.name;if(o.name===curVeg) opt.selected=true;vegSel.appendChild(opt);});
 }
 
@@ -4670,15 +4273,28 @@ function updateBubbleCartPrices(){
   updateCart();
 }
 
-function updateXbentoCartPrices(){
-  Object.entries(cart).forEach(([name,item])=>{
-    const m=name.match(/^Xbento \(([^,]+), ([^,]+), ([^,]+), ([^)]+)\)$/);
-    if(!m) return;
-    const price=getXbentoOptionPrice('main',m[1])+getXbentoOptionPrice('side',m[2])+getXbentoOptionPrice('rice',m[3])+getXbentoOptionPrice('groente',m[4]);
-    item.price=price;
-  });
-  updateCart();
+function updateXbentoDisplay(){
+  const main = document.getElementById('xBentoMain').value;
+  const side = document.getElementById('xBentoSide').value;
+  const rice = document.getElementById('xBentoRice').value;
+  const veg = document.getElementById('xBentoVeg').value;
+
+  const item = document.querySelector('.menu-item[data-name="Xbento"]');
+  const p = item?.querySelector('p');
+
+  // 如果一个都没选，就显示提示语
+  if (!main && !side && !rice && !veg) {
+    if (p) p.textContent = "Build Own Bento";
+    return;
+  }
+
+  const price = getXbentoPrice();
+  if(item){
+    item.dataset.price = price;
+    if(p) p.textContent = `€ ${price.toFixed(2)}`;
+  }
 }
+
 // 同步支付方式
 function syncPaymentMethod(id1, id2) {
   const sel1 = document.getElementById(id1);
@@ -4857,7 +4473,7 @@ function applyDiscount() {
       currentDiscount = res.discount_amount;
     } else {
       currentDiscount = 0;
-      alert('Ongeldige kortingscode');
+      alert('Invalid discount code');
     }
     updatePriceBreakdown(currentSubtotal, currentPackaging);
   })
@@ -4929,13 +4545,13 @@ function updateOmakasePrefs() {
   const existing = (cart['Bento Sushi Omakase'] && cart['Bento Sushi Omakase'].prefs) || [];
   for (let i = 1; i <= qty; i++) {
     const sel = document.createElement('select');
-    ['Geen voorkeur','Alleen vis','Alleen vlees','Alleen veggie'].forEach(opt => {
+    ['No preference','Fish only','Meat only','Veggie only'].forEach(opt => {
       const o = document.createElement('option');
       o.value = opt;
       o.textContent = opt;
       sel.appendChild(o);
     });
-    sel.value = existing[i-1] || 'Geen voorkeur';
+    sel.value = existing[i-1] || 'No preference';
     sel.id = `omakasePref${i}`;
     sel.addEventListener('change', setOmakaseQty);
     container.appendChild(sel);
@@ -4970,13 +4586,13 @@ function updateDragonPrefs() {
   const existing = (cart['Dragon Roll Omakase'] && cart['Dragon Roll Omakase'].prefs) || [];
   for (let i = 1; i <= qty; i++) {
     const sel = document.createElement('select');
-    ['Geen voorkeur','Alleen met vis','Alleen met vlees'].forEach(opt => {
+    ['No preference','With fish only','With meat only'].forEach(opt => {
       const o = document.createElement('option');
       o.value = opt;
       o.textContent = opt;
       sel.appendChild(o);
     });
-    sel.value = existing[i-1] || 'Geen voorkeur';
+    sel.value = existing[i-1] || 'No preference';
     sel.id = `dragonPref${i}`;
     sel.addEventListener('change', setDragonQty);
     container.appendChild(sel);
@@ -4994,40 +4610,35 @@ function setDragonQty() {
   setQty('Dragon Roll Omakase', price, qty, DEFAULT_PACKAGING_FEE, prefs);
 }
 
-function updatePokebowlSauces(id, name) {
-  const qty = parseInt(document.getElementById(id).value || 0);
-  const container = document.getElementById(id + 'Sauces');
-  if (!container) return;
-  container.innerHTML = '';
-  const existing = (cart[name] && cart[name].prefs) || [];
-  for (let i = 1; i <= qty; i++) {
-    const sel = document.createElement('select');
-    SAUCE_OPTIONS.forEach(opt => {
-      const o = document.createElement('option');
-      o.value = opt;
-      o.textContent = opt;
-      sel.appendChild(o);
-    });
-    sel.value = existing[i - 1] || 'Geen saus';
-    sel.dataset.index = i;
-    sel.addEventListener('change', () => setPokebowlQty(id, name));
+function updatePokebowlSauces(id,name){
+  const qty=parseInt(document.getElementById(id).value||0);
+  const container=document.getElementById(id+'Sauces');
+  if(!container) return;
+  container.innerHTML='';
+  const existing=(cart[name]&&cart[name].prefs)||[];
+  for(let i=1;i<=qty;i++){
+    const sel=document.createElement('select');
+    SAUCE_OPTIONS.forEach(opt=>{const o=document.createElement('option');o.value=opt;o.textContent=opt;sel.appendChild(o);});
+    sel.value=existing[i-1]||'No saus';
+    sel.dataset.index=i;
+    sel.addEventListener('change',()=>setPokebowlQty(id,name));
     container.appendChild(sel);
   }
-  setPokebowlQty(id, name);
+  setPokebowlQty(id,name);
 }
 
-function setPokebowlQty(id, name) {
-  const sel = document.getElementById(id);
-  const qty = parseInt(sel.value || 0);
-  const pack = parseFloat(sel.closest('.menu-item').dataset.packaging || DEFAULT_PACKAGING_FEE);
-  const price = parseFloat(sel.closest('.menu-item').dataset.price || 0);
-  const container = document.getElementById(id + 'Sauces');
-  const prefs = [];
-  for (let i = 1; i <= qty; i++) {
-    const s = container.querySelector(`select[data-index="${i}"]`);
-    prefs.push(s ? s.value : 'Geen saus');
+function setPokebowlQty(id,name){
+  const sel=document.getElementById(id);
+  const qty=parseInt(sel.value||0);
+  const pack=parseFloat(sel.closest('.menu-item').dataset.packaging||DEFAULT_PACKAGING_FEE);
+  const price=parseFloat(sel.closest('.menu-item').dataset.price||0);
+  const container=document.getElementById(id+'Sauces');
+  const prefs=[];
+  for(let i=1;i<=qty;i++){
+    const s=container.querySelector(`select[data-index="${i}"]`);
+    prefs.push(s?s.value:'No saus');
   }
-  setQty(name, price, qty, pack, prefs);
+  setQty(name,price,qty,pack,prefs);
 }
 
 function getXBowlSelections(){
@@ -5043,13 +4654,13 @@ function updateXBowlDisplay(){
   let price=0;
   if(baseOpt&&baseOpt.dataset.price) price+=parseFloat(baseOpt.dataset.price);
   mains.forEach(o=>{price+=parseFloat(o.dataset.price||0);});
-  const paidTops = toppings.filter(t => t.toLowerCase() !== 'geen');
+  const paidTops = toppings.filter(t => t.toLowerCase() !== 'none');
   price += paidTops.length * XBOWL_TOPPING_PRICE;
   const item=document.querySelector('.menu-item[data-name="X-Bowl"]');
   if(item){
     item.dataset.price=price;
     const p=document.getElementById('xBowlPrice');
-    if(p) p.textContent=price?`€ ${price.toFixed(2)}`:'Prijs afhankelijk van keuzes';
+    if(p) p.textContent=price?`€ ${price.toFixed(2)}`:'Price depends on selections';
     const info=document.getElementById('xBowlSummary');
     if(info){
       const mainNames=mains.map(o=>o.value).join(', ');
@@ -5109,14 +4720,14 @@ function changeXbowlQty(delta) {
 function createXBowlMainSelect(){
   const div=document.createElement('div');
   const sel=document.createElement('select');
-  sel.innerHTML='<option value="">Hoofdingredient</option>';
+  sel.innerHTML='<option value="">Main ingredient</option>';
   xbowlMains.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.dataset.price=o.price;opt.textContent=o.name;sel.appendChild(opt);});
   const del=document.createElement('button');del.type='button';del.textContent='❌';
   del.addEventListener('click',()=>{div.remove();ensureXBowlMain();updateXBowlDisplay();updateXBowlControls();changeXbowlQty(0);});
   sel.addEventListener('change',()=>{
     const val = sel.value.toLowerCase();
-    if(sel.value && val !== 'geen' && div===document.querySelector('#xBowlMains').lastElementChild){
-      if(confirm('Wil je extra portie?')){
+    if(sel.value && val !== 'none' && div===document.querySelector('#xBowlMains').lastElementChild){
+      if(confirm('Would you like an extra portion?')){
         document.getElementById('xBowlMains').appendChild(createXBowlMainSelect());
       }
     }
@@ -5136,8 +4747,8 @@ function createXBowlToppingSelect(){
   del.addEventListener('click',()=>{div.remove();ensureXBowlTopping();updateXBowlDisplay();updateXBowlControls();changeXbowlQty(0);});
   sel.addEventListener('change',()=>{
     const val = sel.value.toLowerCase();
-    if(sel.value && val !== 'geen' && div===document.querySelector('#xBowlToppings').lastElementChild){
-      if(confirm('Wil je extra topping toevoegen?')){
+    if(sel.value && val !== 'none' && div===document.querySelector('#xBowlToppings').lastElementChild){
+      if(confirm('Would you like to add an extra topping?')){
         document.getElementById('xBowlToppings').appendChild(createXBowlToppingSelect());
       }
     }
@@ -5213,23 +4824,23 @@ function clearXBowlSet(){
   document.getElementById('xBowlBase').addEventListener('change', () => { updateXBowlDisplay(); updateXBowlControls(); changeXbowlQty(0); });
   document.getElementById('xBowlNew').addEventListener('click', clearXBowlSet);
   document.querySelector('.qty-plus[data-target="xBowlQty"]').addEventListener('click', () => {
-    if (!isXbowlValid()) { alert('🥗 Basis en hoofdingrediënt vereist.'); return; }
+    if (!isXbowlValid()) { alert('🥗 Base and main ingredient required.'); return; }
     changeXbowlQty(1);
   });
   document.querySelector('.qty-minus[data-target="xBowlQty"]').addEventListener('click', () => {
-    if (!isXbowlValid()) { alert('🥗 Basis en hoofdingrediënt vereist.'); return; }
+    if (!isXbowlValid()) { alert('🥗 Base and main ingredient required.'); return; }
     changeXbowlQty(-1);
   });
   document.getElementById('xBowlQty').addEventListener('change', () => {
     if (!isXbowlValid()) {
-      alert('🥗 Basis en hoofdingrediënt vereist.');
+      alert('🥗 Base and main ingredient required.');
       document.getElementById('xBowlQty').value = 0;
       return;
     }
     changeXbowlQty(0);
   });
 
-  xbentoSetControls = initNewSetControls({
+ xbentoSetControls = initNewSetControls({
     qtyId: 'xBentoQty',
     wrapId: 'xBentoNewWrap',
     buttonId: 'xBentoNew',
@@ -5242,7 +4853,7 @@ function clearXBowlSet(){
   // 🧋 奶茶按钮加减
   document.querySelector('.qty-plus[data-target="bubbleTeaQty"]').addEventListener('click', () => {
     if (!isBubbleTeaValid()) {
-      alert("🧋 Kies eerst type, smaak en topping voor je bubble tea.");
+      alert("🧋 Please select type, flavor and topping for your bubble tea first.");
       return;
     }
     changeBubbleQty(1);
@@ -5250,7 +4861,7 @@ function clearXBowlSet(){
 
   document.querySelector('.qty-minus[data-target="bubbleTeaQty"]').addEventListener('click', () => {
     if (!isBubbleTeaValid()) {
-      alert("🧋 Kies eerst type, smaak en topping voor je bubble tea.");
+      alert("🧋 Please select type, flavor and topping for your bubble tea first.");
       return;
     }
     changeBubbleQty(-1);
@@ -5259,7 +4870,7 @@ function clearXBowlSet(){
   // 🍱 Xbento 按钮加减（保留一次即可）
   document.querySelector('.qty-plus[data-target="xBentoQty"]').addEventListener('click', () => {
     if (!isXbentoValid()) {
-      alert("🍱 Kies eerst hoofdgerecht, bijgerecht, rijstsoort en groente voor je Xbento.");
+      alert("🍱 Please choose main dish, side dish, rice type and vegetable for your Xbento first.");
       return;
     }
     changeXbentoQty(1);
@@ -5267,7 +4878,7 @@ function clearXBowlSet(){
 
   document.querySelector('.qty-minus[data-target="xBentoQty"]').addEventListener('click', () => {
     if (!isXbentoValid()) {
-      alert("🍱 Kies eerst hoofdgerecht, bijgerecht, rijstsoort en groente voor je Xbento.");
+      alert("🍱 Please choose main dish, side dish, rice type and vegetable for your Xbento first.");
       return;
     }
     changeXbentoQty(-1);
@@ -5278,7 +4889,7 @@ function clearXBowlSet(){
   // 🧋 奶茶 select 直接选择数量时
   document.getElementById('bubbleTeaQty').addEventListener('change', () => {
     if (!isBubbleTeaValid()) {
-      alert("🧋 Kies eerst type, smaak en topping voor je bubble tea.");
+      alert("🧋 Please select type, flavor and topping for your bubble tea first.");
       document.getElementById('bubbleTeaQty').value = 0;
       return;
     }
@@ -5288,7 +4899,7 @@ function clearXBowlSet(){
   // 🍱 Xbento select 直接选择数量时
   document.getElementById('xBentoQty').addEventListener('change', () => {
     if (!isXbentoValid()) {
-      alert("🍱 Kies eerst hoofdgerecht, bijgerecht, rijstsoort en groente voor je Xbento.");
+      alert("🍱 Please choose main dish, side dish, rice type and vegetable for your Xbento first.");
       document.getElementById('xBentoQty').value = 0;
       return;
     }
@@ -5373,7 +4984,6 @@ function initNewSetControls({qtyId, wrapId, buttonId, fieldIds, onClear}) {
   return { update, clear };
 }
 
-
 document.addEventListener('DOMContentLoaded', () => {
   const codes = ['ebi','chicken','beef','ribeye','chasiu'];
   codes.forEach(code => {
@@ -5384,15 +4994,15 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById(code + 'Base').addEventListener('change', () => updateRamenControls(code));
     document.getElementById(code + 'Smaak').addEventListener('change', () => updateRamenControls(code));
     document.querySelector(`.qty-plus[data-target="${code}Qty"]`).addEventListener('click', () => {
-      if (!isRamenValid(code)) { alert('🍜 Kies eerst base en smaak voor je ramen.'); return; }
+      if (!isRamenValid(code)) { alert('🍜 Please select base and flavor for your ramen first.'); return; }
       changeRamenQty(code, 1);
     });
     document.querySelector(`.qty-minus[data-target="${code}Qty"]`).addEventListener('click', () => {
-      if (!isRamenValid(code)) { alert('🍜 Kies eerst base en smaak voor je ramen.'); return; }
+      if (!isRamenValid(code)) { alert('🍜 Please select base and flavor for your ramen first.'); return; }
       changeRamenQty(code, -1);
     });
     qty.addEventListener('change', () => {
-      if (!isRamenValid(code)) { alert('🍜 Kies eerst base en smaak voor je ramen.'); qty.value = 0; return; }
+      if (!isRamenValid(code)) { alert('🍜 Please select base and flavor for your ramen first.'); qty.value = 0; return; }
       changeRamenQty(code, 0);
     });
     document.getElementById(code + 'New').addEventListener('click', () => clearRamenSet(code));
@@ -5429,7 +5039,7 @@ function createSelect(current, onChange) {
 
 function setQty(name, price, qty, packaging = DEFAULT_PACKAGING_FEE, prefs = null) {
   if (isItemSoldOut(name)) {
-    showFeedback('Uitverkocht!', true);
+    showFeedback('Sold Out!', true);
     return;
   }
   price = parseFloat(price);
@@ -5485,7 +5095,7 @@ function updateCart() {
     li.appendChild(sel);
     if (item.prefs) {
       const prefTitle = document.createElement('div');
-      prefTitle.textContent = 'Voorkeur:';
+      prefTitle.textContent = 'Preference:';
       const ul = document.createElement('ul');
       item.prefs.forEach((p, i) => {
         const pli = document.createElement('li');
@@ -5504,7 +5114,11 @@ function updateCart() {
 
   const extrasContainer = document.getElementById('cartExtrasContainer');
   extrasContainer.innerHTML = '';
-  
+  const title = document.createElement('div');
+  title.textContent = '— Supplies —';
+  title.style.marginTop = '10px';
+  title.style.fontWeight = 'bold';
+  extrasContainer.appendChild(title);
 
   const row = document.createElement('div');
   row.className = 'cart-extras';
@@ -5700,7 +5314,7 @@ function showClosedPopup(){
   const popup=document.getElementById('closed-popup');
   const text=document.getElementById('closed-text');
   if(overlay&&popup){
-    if(text) text.textContent = closedMessage || 'Momenteel gesloten';
+    if(text) text.textContent = closedMessage || 'Currently closed';
     overlay.style.display='flex';
     popup.style.display='block';
     setButtonsDisabled(true);
@@ -5745,26 +5359,10 @@ function getFirstMissingField() {
 
 function generateOrderNumber() {
   const now = new Date();
-  const date = now.toISOString().slice(0,10).replace(/-/g, '');
-  let rand = Math.random().toString(36).substring(2, 6).toUpperCase();
-
-  // 判断是否 Z.S.M.
-  const delivery = document.getElementById('typeDelivery').checked;
-  const tijdslot = delivery ? document.getElementById('delivery_time').value
-                            : document.getElementById('pickup_time').value;
-  const raw = String(tijdslot || '').toLowerCase().replace(/\./g, '').trim();
-  const isZsm = !raw || raw === 'zsm' || raw === 'asap';
-
-  // 如果是 ZSM，最后一个字母设为 Z，否则避免以 Z 结尾
-  if (isZsm) {
-    rand = rand.slice(0, 3) + 'Z';
-  } else if (rand.endsWith('Z')) {
-    rand = rand.slice(0, 3) + 'X';
-  }
-
+  const date = now.toISOString().slice(0, 10).replace(/-/g, '');
+  const rand = Math.random().toString(36).substring(2, 6).toUpperCase();
   return `NV${date}-${rand}`;
 }
-
 
 function checkout() {
   if (!storeOpen) {
@@ -5775,7 +5373,7 @@ function checkout() {
 
   const paidItems = Object.values(cart).filter(item => item.price > 0 && item.qty > 0);
   if (paidItems.length === 0) {
-    alert('U moet ten minste één gerecht selecteren om te bestellen.');
+    alert('You must select at least one item to order.');
     return;
   }
 
@@ -5785,10 +5383,10 @@ function checkout() {
 
   const missing = getFirstMissingField();
   if (missing) {
-    showFeedback('Vul eerst uw gegevens in', true);
+    showFeedback('Please fill in your details first', true);
     scrollToField(missing);
     if (sliderText && sliderButton && sliderTrack) {
-      sliderText.innerText = 'Schuif om te bestellen';
+      sliderText.innerText = 'Slide to order';
       sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
       sliderTrack.style.pointerEvents = 'auto';
     }
@@ -5803,7 +5401,7 @@ function checkout() {
   const remark = document.getElementById('remark').value.trim();
 
   if (sliderText && sliderButton && sliderTrack) {
-    sliderText.innerText = 'Bezig met verwerken…';
+    sliderText.innerText = 'Processing...';
     sliderButton.innerHTML = `
       <svg class="spinner" width="24" height="24" viewBox="0 0 44 44" fill="none" stroke="white">
         <circle cx="22" cy="22" r="20" stroke-width="4" stroke-linecap="round" stroke-dasharray="125" stroke-dashoffset="0">
@@ -5818,17 +5416,17 @@ function checkout() {
       let line = `${name} x ${item.qty}`;
       if (item.prefs) {
         const prefsText = item.prefs.map((p, i) => `${i + 1}. ${p}`).join('\n   ');
-        line += `\n   Voorkeur:\n   ${prefsText}`;
+        line += `\n   Preference:\n   ${prefsText}`;
       }
       return line;
     })
     .join('\n');
 
-  orderSummary += `\nStokjes nodig: ${chopstickCount}`;
-  orderSummary += `\nSojasaus: ${soyCount}`;
+  orderSummary += `\nChopsticks needed: ${chopstickCount}`;
+  orderSummary += `\nSoy sauce: ${soyCount}`;
   orderSummary += `\nWasabi: ${wasabiCount}`;
-  orderSummary += `\nGember: ${gemberCount}`;
-  if (remark) orderSummary += `\nOpmerking: ${remark}`;
+  orderSummary += `\nGinger: ${gemberCount}`;
+  if (remark) orderSummary += `\nNote: ${remark}`;
 
   const orderType = document.querySelector('input[name="orderType"]:checked').value;
   let customerDetails = '';
@@ -5843,9 +5441,9 @@ function checkout() {
     paymentMethod = document.getElementById('cartPaymentSelect')?.value || document.getElementById('pickupPayment').value;
     document.getElementById('pickupPayment').value = paymentMethod;
 
-    customerDetails = `\n[Afhalen]\nNaam: ${name}\nTelefoon: ${phone}`;
+    customerDetails = `\n[Pickup]\nName: ${name}\nPhone: ${phone}`;
     if (email) customerDetails += `\nEmail: ${email}`;
-    customerDetails += `\nAfhaaltijd: ${time}\nBetaalwijze: ${paymentMethod}`;
+    customerDetails += `\nPickup time: ${time}\nPayment method: ${paymentMethod}`;
   } else {
     const name = document.getElementById('deliveryName').value.trim();
     const phone = document.getElementById('deliveryPhone').value.trim();
@@ -5861,7 +5459,7 @@ function checkout() {
     const postcodeClean = postcodeRaw.replace(/\s+/g, '');
     const postcode = postcodeClean.slice(0, 4);
     if (allowedPostcodes.length && !allowedPostcodes.includes(postcode)) {
-      alert(`🚫 Wij bezorgen helaas niet in dit postcodegebied (${postcode}).`);
+      alert(`🚫 We do not deliver to this postcode area (${postcode}).`);
       const postcodeField = document.getElementById('deliveryPostcode');
       postcodeField.style.borderColor = 'red';
       postcodeField.focus();
@@ -5870,9 +5468,9 @@ function checkout() {
       document.getElementById('deliveryPostcode').style.borderColor = '';
     }
 
-    customerDetails = `\n[Bezorgen]\nNaam: ${name}\nTelefoon: ${phone}`;
+    customerDetails = `\n[Delivery]\nName: ${name}\nPhone: ${phone}`;
     if (email) customerDetails += `\nEmail: ${email}`;
-    customerDetails += `\nAdres: ${address} ${houseNumber}\nPostcode: ${postcodeRaw}\nGebied: ${area}\nBezorgtijd: ${time}\nBetaalwijze: ${paymentMethod}`;
+    customerDetails += `\nAddress: ${address} ${houseNumber}\nPostcode: ${postcodeRaw}\nArea: ${area}\nDelivery time: ${time}\nPayment method: ${paymentMethod}`;
   }
 
   const tip = parseFloat(document.getElementById('tipSelect').value);
@@ -5885,13 +5483,14 @@ function checkout() {
 
   const orderNumber = generateOrderNumber();
 
-  const discountCode = document.getElementById('discountCode').value.trim();
-  const deliveryLine = deliveryFee > 0 ? `\nBezorgkosten: €${deliveryFee.toFixed(2)}` : '';
-  const packagingLine = packagingFee > 0 ? `\nVerpakkingskosten: €${packagingFee.toFixed(2)}` : '';
-  const tipLine = tip > 0 ? `\nFooi: €${tip.toFixed(2)}` : '';
-  const discountLine = `\nKorting: -€${currentDiscount.toFixed(2)} (Code: ${discountCode || 'geen'})`;
+  let tipLine = '';
+  if (tip > 0) {
+    tipLine = `\nTip: €${tip.toFixed(2)}`;
+  }
 
-  const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}${deliveryLine}${packagingLine}${tipLine}${discountLine}\nTotaal: €${totalPrice}`;
+  const discountCode = document.getElementById('discountCode').value.trim();
+  const discountLine = `\nDiscount: -€${currentDiscount.toFixed(2)} (Code: ${discountCode || 'none'})`;
+  const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}${tipLine}${discountLine}\nTotal: €${totalPrice}`;
 
   const itemsToSend = { ...cart };
   Object.keys(extras).forEach(id => {
@@ -5901,8 +5500,9 @@ function checkout() {
 
   const pickupSel = document.getElementById('pickup_time').value;
   const deliverySel = document.getElementById('delivery_time').value;
-  const pickupValue = pickupSel === 'Z.S.M.' ? getAsapTime() : pickupSel;
-  const deliveryValue = deliverySel === 'Z.S.M.' ? getAsapTime() : deliverySel;
+  const pickupValue = pickupSel === 'ASAP' ? getAsapTime() : pickupSel;
+  const deliveryValue = deliverySel === 'ASAP' ? getAsapTime() : deliverySel;
+
   const tijdslotDisplay = orderType === 'afhalen' ? pickupSel : deliverySel;
 
   const summary = {
@@ -5918,15 +5518,15 @@ function checkout() {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      orderType,
+      orderType: orderType,
       name: orderType === 'afhalen' ? document.getElementById('pickupName').value.trim() : document.getElementById('deliveryName').value.trim(),
       phone: orderType === 'afhalen' ? document.getElementById('pickupPhone').value.trim() : document.getElementById('deliveryPhone').value.trim(),
-      email,
+      email: email,
       customerEmail: email,
       pickup_time: orderType === 'afhalen' ? pickupValue : '',
       delivery_time: orderType === 'bezorgen' ? deliveryValue : '',
       tijdslot_display: tijdslotDisplay,
-      paymentMethod,
+      paymentMethod: paymentMethod,
       postcode: orderType === 'bezorgen' ? document.getElementById('deliveryPostcode').value.trim() : '',
       house_number: orderType === 'bezorgen' ? document.getElementById('deliveryHouseNumber').value.trim() : '',
       street: orderType === 'bezorgen' ? document.getElementById('deliveryAddress').value.trim() : '',
@@ -5941,8 +5541,9 @@ function checkout() {
       btw: btw.toFixed(2),
       totaal: isNaN(total) ? "0.00" : total.toFixed(2),
       discountAmount: currentDiscount.toFixed(2),
-      discountCode,
+      discountCode: discountCode,
       message,
+      email,
       summary
     })
   })
@@ -5951,26 +5552,34 @@ function checkout() {
       if (data.status === 'ok') {
         beep();
         saveCustomerInfo();
+
         if (paymentMethod === 'online' && data.paymentLink) {
+          // ✅ 在线支付直接跳转
           window.location.href = data.paymentLink;
           return;
         }
-        showFeedback('Bestelling succesvol verzonden! Bestelnummer: ' + orderNumber);
+
+        // ✅ 只有非在线支付才显示成功信息
+        showFeedback('Order successfully submitted! Order number: ' + orderNumber);
         for (const k in cart) delete cart[k];
         sessionStorage.removeItem(FORM_KEY);
         updateCart();
-        sliderText.innerText = 'Gelukt!';
-        sliderButton.innerHTML = `
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>`;
+
+        sliderText.innerText = 'Success!';
+         sliderButton.innerHTML = `
+           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+           <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>`;
+
         sliderTrack.style.pointerEvents = 'none';
+
         setTimeout(() => { window.location.href = '/'; }, 1500);
+
       } else {
-        const errorMsg = data.error || 'Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.';
-        showFeedback(errorMsg, true);
+  const errorMsg = data.error || 'An error occurred while sending your order. Please try again.';
+  showFeedback(errorMsg, true);
         if (sliderText && sliderButton && sliderTrack) {
-          sliderText.innerText = 'Schuif om te betalen';
+          sliderText.innerText = 'Slide to pay';
           sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
           sliderTrack.style.pointerEvents = 'auto';
         }
@@ -5978,9 +5587,9 @@ function checkout() {
     })
     .catch(err => {
       console.error(err);
-      showFeedback('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.', true);
+      showFeedback('An error occurred while sending your order. Please try again.', true);
       if (sliderText && sliderButton && sliderTrack) {
-        sliderText.innerText = 'Schuif om te betalen';
+        sliderText.innerText = 'Slide to pay';
         sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
         sliderTrack.style.pointerEvents = 'auto';
       }
@@ -6049,7 +5658,7 @@ function checkout() {
         if (now >= lastTime) {
             const opt = document.createElement('option');
             opt.value = '';
-            opt.textContent = 'Geen beschikbare tijd';
+            opt.textContent = 'No available time';
             select.appendChild(opt);
             return;
         }
@@ -6057,8 +5666,8 @@ function checkout() {
 
     if (showZSM) {
         const asapOpt = document.createElement('option');
-        asapOpt.value = 'Z.S.M.';
-        asapOpt.textContent = 'Z.S.M.';
+        asapOpt.value = 'ASAP';
+        asapOpt.textContent = 'ASAP';
         select.appendChild(asapOpt);
     }
 
@@ -6080,15 +5689,16 @@ function checkout() {
     if (select.options.length === 0) {
         const opt = document.createElement('option');
         opt.value = '';
-        opt.textContent = 'Geen beschikbare tijd';
+        opt.textContent = 'Closed';
         select.appendChild(opt);
     }
 
+    // 保留用户上一次选择的时间（如果还存在）
     if (prev) {
         const option = Array.from(select.options).find(o => o.value === prev);
         if (option) select.value = prev;
     }
-  }
+}
 
 
   function toggleOrderType() {
@@ -6111,11 +5721,11 @@ function checkout() {
     };
 
     if (afhalen.checked && !pickupAvailable) {
-      showFeedback('Vandaag is afhalen niet mogelijk.', true);
+      showFeedback('Pickup is not available today.', true);
       bezorgen.checked = true;
     }
     if (bezorgen.checked && !deliveryAvailable) {
-      showFeedback('Vandaag is bezorging niet mogelijk.', true);
+      showFeedback('Delivery is not available today.', true);
       afhalen.checked = true;
     }
    if (afhalen.checked) {
@@ -6147,7 +5757,7 @@ function checkout() {
       updateCartPaymentOptions();
     } else {
       transferValues(afhalenFields, bezorgenFields);
-      infoBox.textContent = 'Wij bezorgen in de volgende postcodegebieden:\n' + allowedPostcodes.join(', ');
+      infoBox.textContent = 'We deliver to the following postcode areas:\n' + allowedPostcodes.join(', ');
 
       bezorgenFields.classList.remove('hidden');
       afhalenFields.classList.add('hidden');
@@ -6156,17 +5766,7 @@ function checkout() {
     }
     updatePriceBreakdown(currentSubtotal, currentPackaging);
     storeOpen = afhalen.checked ? pickupAvailable : deliveryAvailable;
-    
-    // 同步下拉菜单和图标，保持双向联动
-    const selected = afhalen.checked ? 'afhalen' : 'bezorgen';
-    const selectEl = document.getElementById('cartOrderTypeSelect');
-    if (selectEl) selectEl.value = selected;
-
-    if (selected !== currentOrderType) {
-      updateOrderTypeIcon(selected);
-      currentOrderType = selected;
-    }
- }
+  }
 
   // 初始化执行一次
   toggleOrderType();
@@ -6190,7 +5790,7 @@ function checkout() {
     // 格式检查
     if (!formatRegex.test(raw)) {
       this.style.borderColor = 'red';
-      hint.textContent = 'Postcode moet het formaat 1234AB hebben (zonder spatie).';
+      hint.textContent = 'Postcode must be in the format 1234AB (no space).';
       return;
     }
 
@@ -6198,7 +5798,7 @@ function checkout() {
     const postcode = raw.slice(0, 4); // 取前4位数字
     if (allowedPostcodes.length && !allowedPostcodes.includes(postcode)) {
       this.style.borderColor = 'red';
-      hint.textContent = `🚫 Wij bezorgen niet in dit postcodegebied (${postcode}).`;
+      hint.textContent = `🚫 We do not deliver to this postcode area (${postcode}).`;
     } else {
       this.style.borderColor = '';
       hint.textContent = '';
@@ -6215,9 +5815,11 @@ function checkout() {
     const postcode = postcodeInput.value.trim();
     const number = houseNumInput.value.trim();
     if (!postcode || !number) return;
-    const url = `https://flask-order-api.onrender.com/api/spikkl?postcode=${encodeURIComponent(postcode)}&number=${encodeURIComponent(number)}`;
+    const url = `https://api.postcodeapi.nu/v3/lookup/${encodeURIComponent(postcode)}/${encodeURIComponent(number)}`;
     try {
-      const res = await fetch(url);
+      const res = await fetch(url, {
+        headers: { 'X-Api-Key': 'juW6MEgEeL2BEM0rInEtB5a15BqXjWwO3YqrdH0z' }
+      });
       if (res.ok) {
         const data = await res.json();
         if (data.street && !streetInput.value) streetInput.value = data.street;
@@ -6244,10 +5846,8 @@ function checkout() {
     }
   }
 
-  ['blur', 'change'].forEach(evt => {
-    postcodeInput.addEventListener(evt, () => { autofillAddress(); updateMapLink(); });
-    houseNumInput.addEventListener(evt, () => { autofillAddress(); updateMapLink(); });
-  });
+  postcodeInput.addEventListener('blur', () => { autofillAddress(); updateMapLink(); });
+  houseNumInput.addEventListener('blur', () => { autofillAddress(); updateMapLink(); });
   streetInput.addEventListener('blur', updateMapLink);
   areaInput.addEventListener('blur', updateMapLink);
 </script>
@@ -6282,7 +5882,7 @@ function toggleMobileCart() {
   if (!cartSection.classList.contains('mobile-visible')) {
     const missing = getFirstMissingField();
     if (missing) {
-      showFeedback('Vul eerst uw gegevens in', true);
+      showFeedback('Please fill in your details first', true);
       scrollToField(missing);
       return;
     }
@@ -6328,80 +5928,124 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const navLinks = document.querySelectorAll('.nav-categories a:not(.review-link)');
-    const sections = Array.from(navLinks).map(link => document.querySelector(link.getAttribute('href')));
-    const indicator = document.getElementById('indicator');
-    const navbarContainer = document.getElementById('navbar-container');
+    document.addEventListener('DOMContentLoaded', () => {
+      const navLinks = document.querySelectorAll('.nav-categories a:not(.review-link)');
+      const sections = Array.from(navLinks).map(link => document.querySelector(link.getAttribute('href')));
+      const indicator = document.getElementById('indicator');
+      const navbarContainer = document.getElementById('navbar-container');
 
-    function updateIndicator(activeLink) {
-      const rect = activeLink.getBoundingClientRect();
-      const containerRect = navbarContainer.getBoundingClientRect();
-      const scrollLeft = navbarContainer.scrollLeft;
-      indicator.style.width = `${rect.width}px`;
-      indicator.style.transform = `translateX(${rect.left - containerRect.left + scrollLeft}px)`;
-    }
+      function updateIndicator(activeLink) {
+        const rect = activeLink.getBoundingClientRect();
+        const containerRect = navbarContainer.getBoundingClientRect();
+        const scrollLeft = navbarContainer.scrollLeft;
+        indicator.style.width = `${rect.width}px`;
+        indicator.style.transform = `translateX(${rect.left - containerRect.left + scrollLeft}px)`;
+      }
 
-    function scrollToOffset(container, targetOffset, duration = 150) {
-      const start = container.scrollLeft;
-      const distance = targetOffset - start;
-      const startTime = performance.now();
+      // 手动平滑滚动函数（更快）
+      function scrollToOffset(container, targetOffset, duration = 150) {
+        const start = container.scrollLeft;
+        const distance = targetOffset - start;
+        const startTime = performance.now();
 
-      function animate(time) {
-        const elapsed = time - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        container.scrollLeft = start + distance * progress;
-        if (progress < 1) {
-          requestAnimationFrame(animate);
+        function animate(time) {
+          const elapsed = time - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          container.scrollLeft = start + distance * progress;
+          if (progress < 1) {
+            requestAnimationFrame(animate);
+          }
+        }
+
+        requestAnimationFrame(animate);
+      }
+
+      function scrollActiveLinkIntoView(activeLink) {
+        if (window.innerWidth <= 768) {
+          const container = navbarContainer;
+          const containerRect = container.getBoundingClientRect();
+          const linkRect = activeLink.getBoundingClientRect();
+          const offset = linkRect.left - containerRect.left + container.scrollLeft;
+          scrollToOffset(container, offset, 150); // 更快的平滑滚动
         }
       }
 
-      requestAnimationFrame(animate);
-    }
+      function updateActiveNav() {
+        let currentSection = sections[0];
+        for (let section of sections) {
+          const rect = section.getBoundingClientRect();
+          if (rect.top <= 100) {
+            currentSection = section;
+          }
+        }
 
-    function scrollActiveLinkIntoView(activeLink) {
-      const container = navbarContainer;
-      const containerRect = container.getBoundingClientRect();
-      const linkRect = activeLink.getBoundingClientRect();
-      const offset = linkRect.left - containerRect.left + container.scrollLeft;
-      scrollToOffset(container, offset - 20); // 向左偏移一点看起来更自然
-    }
-
-    function updateActiveNav() {
-      let currentSection = sections[0];
-      for (let section of sections) {
-        const rect = section.getBoundingClientRect();
-        if (rect.top <= 100) {
-          currentSection = section;
+        navLinks.forEach(link => link.classList.remove('active'));
+        const activeLink = Array.from(navLinks).find(link => link.getAttribute('href') === `#${currentSection.id}`);
+        if (activeLink) {
+          activeLink.classList.add('active');
+          updateIndicator(activeLink);
+          scrollActiveLinkIntoView(activeLink);
         }
       }
 
-      navLinks.forEach(link => link.classList.remove('active'));
-      const activeLink = Array.from(navLinks).find(link => link.getAttribute('href') === `#${currentSection.id}`);
-      if (activeLink) {
-        activeLink.classList.add('active');
-        updateIndicator(activeLink);
-        scrollActiveLinkIntoView(activeLink);
-      }
-    }
+      window.addEventListener('scroll', updateActiveNav);
+      window.addEventListener('resize', () => {
+        const activeLink = document.querySelector('.navbar a.active');
+        if (activeLink) updateIndicator(activeLink);
+      });
 
-    // 初始高亮第一个链接
-    const firstActive = navLinks[0];
-    if (firstActive) {
-      updateIndicator(firstActive);
-      scrollActiveLinkIntoView(firstActive);
-    }
-
-    window.addEventListener('scroll', updateActiveNav);
-    window.addEventListener('resize', () => {
-      const activeLink = document.querySelector('.nav-categories a.active');
-      if (activeLink) updateIndicator(activeLink);
+      updateActiveNav();
     });
 
-    updateActiveNav();
+
+   
+  </script>
+<script>
+  const sections = document.querySelectorAll("section[id]");
+  const navLinks = document.querySelectorAll(".nav-link");
+  const indicator = document.querySelector(".indicator");
+
+  function updateActiveLink() {
+    let currentSectionId = "";
+
+    sections.forEach((section) => {
+      const rect = section.getBoundingClientRect();
+      if (rect.top <= 100 && rect.bottom >= 100) {
+        currentSectionId = section.id;
+      }
+    });
+
+    navLinks.forEach((link) => {
+      link.classList.remove("active");
+      const hrefId = link.getAttribute("href")?.replace("#", "");
+      if (hrefId === currentSectionId) {
+        link.classList.add("active");
+
+        const linkRect = link.getBoundingClientRect();
+        const navRect = link.parentElement.getBoundingClientRect();
+        const offsetLeft = linkRect.left - navRect.left;
+        const offsetWidth = link.offsetWidth;
+
+        // 使用 transform 来移动 .indicator
+        indicator.style.transform = `translateX(${offsetLeft}px)`;
+        indicator.style.width = `${offsetWidth}px`;
+      }
+    });
+  }
+
+  window.addEventListener("scroll", updateActiveLink);
+  window.addEventListener("load", updateActiveLink);
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const buttons = document.querySelectorAll("button");
+    const vibrate = () => { if (navigator.vibrate) navigator.vibrate(50); };
+    buttons.forEach(btn => {
+      btn.addEventListener("mousedown", vibrate);
+      btn.addEventListener("touchstart", vibrate, { passive: true });
+    });
   });
 </script>
-
 <script>
 window.addEventListener('DOMContentLoaded', () => {
   const track = document.getElementById('typeSliderTrack');
@@ -6564,7 +6208,7 @@ function resetSlider() {
   const padding = getHorizontalPadding(sliderTrack);
   sliderButton.style.left = `${padding.left}px`;
   sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
-  sliderText.innerText = 'Schuif om te bestellen';
+  sliderText.innerText = 'Slide to order';
   sliderTrack.style.pointerEvents = 'auto';
 }
 
@@ -6577,7 +6221,7 @@ function validateOrderAmount() {
     saveCart();
     resetSlider();
     isSubmitting = false;
-    alert('Sorry, de minimum bezorgbedrag is 20 euro.');
+    alert('Sorry, the minimum delivery amount is 20 euros.');
     window.location.href = '/';
     return false;
   }
@@ -6587,7 +6231,7 @@ function validateOrderAmount() {
     saveCart();
     resetSlider();
     isSubmitting = false;
-    alert('Sorry, u heeft nog niks gekozen.');
+    alert('Sorry, you have not selected anything yet.');
     window.location.href = '/';
     return false;
   }
@@ -6609,7 +6253,7 @@ function triggerCheckout() {
   sliderButton.style.left = `${padding.left + getMaxSlide()}px`;
 
   // ⏳ 显示处理中
-  sliderText.innerText = 'Bezig met verwerken…';
+  sliderText.innerText = 'Processing...';
   sliderButton.innerHTML = `
 <svg class="spinner" width="24" height="24" viewBox="0 0 44 44" fill="none" stroke="white">
   <circle cx="22" cy="22" r="20" stroke-width="4" stroke-linecap="round" stroke-dasharray="125" stroke-dashoffset="0">
@@ -6786,8 +6430,8 @@ function updateStatus(settings) {
   const sashimiConfig = [
     {name: 'Salmon sashimi', key: 'soldout_salmon_sashimi', qty: 'salmonSashimiQty', msg: 'soldoutSalmonSashimi'},
     {name: 'Flamed salmon sashimi', key: 'soldout_flamed_salmon_sashimi', qty: 'flamedsalmonSashimiQty', msg: 'soldoutFlamedSalmonSashimi'},
-    {name: 'Tonijn sashimi', key: 'soldout_tonijn_sashimi', qty: 'tonijnSashimiQty', msg: 'soldoutTonijnSashimi'},
-    {name: 'Flamed tonijn sashimi', key: 'soldout_flamed_tonijn_sashimi', qty: 'flamedtonijnSashimiQty', msg: 'soldoutFlamedTonijnSashimi'},
+    {name: 'Tuna sashimi', key: 'soldout_tonijn_sashimi', qty: 'tonijnSashimiQty', msg: 'soldoutTonijnSashimi'},
+    {name: 'Flamed tuna sashimi', key: 'soldout_flamed_tonijn_sashimi', qty: 'flamedtonijnSashimiQty', msg: 'soldoutFlamedTonijnSashimi'},
     {name: 'Beef sashimi', key: 'soldout_beef_sashimi', qty: 'beefSashimiQty', msg: 'soldoutBeefSashimi'}
   ];
 
@@ -6804,9 +6448,9 @@ function updateStatus(settings) {
   });
 
   const crispyRiceConfig = [
-    {name: 'Zalm crispy rice sandwich', key: 'soldout_zalm_crispy_rice_sandwich', qty: 'zalm-crispy-rice-sandwich', msg: 'soldoutZalmCrispyRiceSandwich'},
+    {name: 'Salmon crispy rice sandwich', key: 'soldout_zalm_crispy_rice_sandwich', qty: 'zalm-crispy-rice-sandwich', msg: 'soldoutZalmCrispyRiceSandwich'},
     {name: 'Ebi crispy rice sandwich', key: 'soldout_ebi_crispy_rice_sandwich', qty: 'ebiCrispyRiceSandwich', msg: 'soldoutEbiCrispyRiceSandwich'},
-    {name: 'Spicytuna crispy rice sandwich', key: 'soldout_spicytuna_crispy_rice_sandwich', qty: 'spicytunaCrispyRiceSandwich', msg: 'soldoutSpicytunaCrispyRiceSandwich'},
+    {name: 'Spicy tuna crispy rice sandwich', key: 'soldout_spicytuna_crispy_rice_sandwich', qty: 'spicytunaCrispyRiceSandwich', msg: 'soldoutSpicytunaCrispyRiceSandwich'},
     {name: 'Beef crispy rice sandwich', key: 'soldout_beef_crispy_rice_sandwich', qty: 'beefCrispyRiceSandwich', msg: 'soldoutBeefCrispyRiceSandwich'},
     {name: 'California crispy rice sandwich', key: 'soldout_california_crispy_rice_sandwich', qty: 'californiaCrispyRiceSandwich', msg: 'soldoutCaliforniaCrispyRiceSandwich'},
     {name: 'Chicken crispy rice sandwich', key: 'soldout_chicken_crispy_rice_sandwich', qty: 'chickenCrispyRiceSandwich', msg: 'soldoutChickenCrispyRiceSandwich'}
@@ -6826,19 +6470,19 @@ function updateStatus(settings) {
 
   const snackConfig = [
     {name: 'Karaage', key: 'soldout_karaage', qty: 'snackCount', msg: 'soldoutKaraage'},
-    {name: 'Ebi Fry – 4 st', key: 'soldout_ebi_fry', qty: 'ebiFryCount', msg: 'soldoutEbiFry'},
-    {name: 'Spicy Crispy Chicken – 5 st', key: 'soldout_spicy_crispy_chicken', qty: 'spicyCrispyChickenCount', msg: 'soldoutSpicyCrispyChicken'},
-    {name: 'Chicken Loempia – 2 st', key: 'soldout_chicken_loempia', qty: 'chickenLoempiaCount', msg: 'soldoutChickenLoempia'},
-    {name: 'Japans Zalm Nugget', key: 'soldout_japans_zalm_nugget', qty: 'japansZalmNuggetCount', msg: 'soldoutJapansZalmNugget'},
-    {name: 'Gyoza – 5 st', key: 'soldout_gyoza', qty: 'gyozaCount', msg: 'soldoutGyoza'},
+    {name: 'Ebi Fry – 4 pcs', key: 'soldout_ebi_fry', qty: 'ebiFryCount', msg: 'soldoutEbiFry'},
+  {name: 'Spicy Crispy Chicken – 5 pcs', key: 'soldout_spicy_crispy_chicken', qty: 'spicyCrispyChickenCount', msg: 'soldoutSpicyCrispyChicken'},
+  {name: 'Chicken Loempia – 2 st', key: 'soldout_chicken_loempia', qty: 'chickenLoempiaCount', msg: 'soldoutChickenLoempia'},
+  {name: 'Japans Zalm Nuggets', key: 'soldout_japans_zalm_nugget', qty: 'japansZalmNuggetCount', msg: 'soldoutJapansZalmNugget'},
+  {name: 'Gyoza – 5 st', key: 'soldout_gyoza', qty: 'gyozaCount', msg: 'soldoutGyoza'},
     {name: 'Inktvis Ringen – 5 st', key: 'soldout_inktvis_ringen', qty: 'inktvisRingenCount', msg: 'soldoutInktvisRingen'},
-    {name: 'Sesambal – 5 st', key: 'soldout_sesambal', qty: 'sesambalCount', msg: 'soldoutSesambal'},
-    {name: 'Yakitori – 4 st', key: 'soldout_yakitori', qty: 'yakitoriCount', msg: 'soldoutYakitori'},
-    {name: 'Mini Loempia – 6 st', key: 'soldout_mini_loempia', qty: 'miniLoempiaCount', msg: 'soldoutMiniLoempia'},
+    {name: 'Sesambal – 5 pcs', key: 'soldout_sesambal', qty: 'sesambalCount', msg: 'soldoutSesambal'},
+    {name: 'Yakitori – 4 pcs', key: 'soldout_yakitori', qty: 'yakitoriCount', msg: 'soldoutYakitori'},
+    {name: 'Mini Spring Rolls – 6 pcs', key: 'soldout_mini_loempia', qty: 'miniLoempiaCount', msg: 'soldoutMiniLoempia'},
     {name: 'Edamame', key: 'soldout_edamame', qty: 'edamameCount', msg: 'soldoutEdamame'},
-    {name: 'Kimchi Komkommer', key: 'soldout_kimchi_komkommer', qty: 'kimchiKomkommerCount', msg: 'soldoutKimchiKomkommer'},
-    {name: 'Kimchi Kool', key: 'soldout_kimchi_kool', qty: 'kimchiKoolCount', msg: 'soldoutKimchiKool'},
-    {name: 'Zeewiersalade – 100g', key: 'soldout_zeewiersalade', qty: 'zeewiersaladeCount', msg: 'soldoutZeewiersalade'}
+    {name: 'Kimchi Cucumber', key: 'soldout_kimchi_komkommer', qty: 'kimchiKomkommerCount', msg: 'soldoutKimchiKomkommer'},
+    {name: 'Kimchi Cabbage', key: 'soldout_kimchi_kool', qty: 'kimchiKoolCount', msg: 'soldoutKimchiKool'},
+    {name: 'Seaweed Salad – 100g', key: 'soldout_zeewiersalade', qty: 'zeewiersaladeCount', msg: 'soldoutZeewiersalade'}
   ];
 
   snackConfig.forEach(cfg => {
@@ -6875,8 +6519,8 @@ function updateStatus(settings) {
   const drinksConfig = [
     {name: 'Cola', key: 'soldout_cola', qty: 'colaCount', msg: 'soldoutCola'},
     {name: 'Cola Zero', key: 'soldout_cola_zero', qty: 'colaZeroCount', msg: 'soldoutColaZero'},
-    {name: 'Spa Blauw', key: 'soldout_spa_blauw', qty: 'spaBlauwCount', msg: 'soldoutSpaBlauw'},
-    {name: 'Spa Rood', key: 'soldout_spa_rood', qty: 'spaRoodCount', msg: 'soldoutSpaRood'},
+    {name: 'Spa Blue', key: 'soldout_spa_blauw', qty: 'spaBlauwCount', msg: 'soldoutSpaBlauw'},
+    {name: 'Spa Red', key: 'soldout_spa_rood', qty: 'spaRoodCount', msg: 'soldoutSpaRood'},
     {name: 'Red Bull', key: 'soldout_red_bull', qty: 'redBullCount', msg: 'soldoutRedBull'}
   ];
 
@@ -6897,11 +6541,11 @@ function updateStatus(settings) {
     {name: 'Korean Chicken Bento', key: 'soldout_korean_chicken_bento', qty: 'koreanChickenBentoCount', msg: 'soldoutKoreanChickenBento'},
     {name: 'Korean Beef Bento', key: 'soldout_korean_beef_bento', qty: 'koreanBeefBentoCount', msg: 'soldoutKoreanBeefBento'},
     {name: 'Meatlover Bento', key: 'soldout_meatlover_bento', qty: 'meatloverBentoCount', msg: 'soldoutMeatloverBento'},
-    {name: 'Zalm Lover Bento', key: 'soldout_zalm_lover_bento', qty: 'zalmLoverBentoCount', msg: 'soldoutZalmLoverBento'},
+    {name: 'Salmon Lover Bento', key: 'soldout_zalm_lover_bento', qty: 'zalmLoverBentoCount', msg: 'soldoutZalmLoverBento'},
     {name: 'Ebi Lover Bento', key: 'soldout_ebi_lover_bento', qty: 'ebiLoverBentoCount', msg: 'soldoutEbiLoverBento'},
     {name: 'Surf & Turf Bento', key: 'soldout_surf_turf_bento', qty: 'surfTurfBentoCount', msg: 'soldoutSurfTurfBento'},
     {name: 'Dimsum Bento', key: 'soldout_dimsum_bento', qty: 'dimsumBentoCount', msg: 'soldoutDimsumBento'},
-    {name: 'Lamskotelet Bento', key: 'soldout_lamskotelet_bento', qty: 'lamsBentoCount', msg: 'soldoutLamskoteletBento'},
+    {name: 'Lamb Chop Bento', key: 'soldout_lamskotelet_bento', qty: 'lamsBentoCount', msg: 'soldoutLamskoteletBento'},
     {name: 'Unagi Bento', key: 'soldout_unagi_bento', qty: 'unagiBentoCount', msg: 'soldoutUnagiBento'},
     {name: 'Tuna Bento', key: 'soldout_tuna_bento', qty: 'tunaBentoCount', msg: 'soldoutTunaBento'},
     {name: 'Veggie Bento', key: 'soldout_veggie_bento', qty: 'veggieBentoCount', msg: 'soldoutVeggieBento'},
@@ -6922,7 +6566,7 @@ function updateStatus(settings) {
   });
 
   const pokebowlConfig = [
-    {name: 'Zalm Bowl', key: 'soldout_zalm_bowl', qty: 'zalmBowlQty', msg: 'soldoutZalmBowl'},
+    {name: 'Salmon Bowl', key: 'soldout_zalm_bowl', qty: 'zalmBowlQty', msg: 'soldoutZalmBowl'},
     {name: 'Tuna Bowl', key: 'soldout_tuna_bowl', qty: 'tunaBowlQty', msg: 'soldoutTunaBowl'},
     {name: 'Ebi Fry Bowl', key: 'soldout_ebi_fry_bowl', qty: 'ebiFryBowlQty', msg: 'soldoutEbiFryBowl'},
     {name: 'Chicken Karaage Bowl', key: 'soldout_chicken_karaage_bowl', qty: 'chickenKaraageBowlQty', msg: 'soldoutChickenKaraageBowl'},
@@ -6934,7 +6578,7 @@ function updateStatus(settings) {
     {name: 'Meatlover Bowl', key: 'soldout_meatlover_bowl', qty: 'meatloverBowlQty', msg: 'soldoutMeatloverBowl'},
     {name: 'Rainbow Bowl', key: 'soldout_rainbow_bowl', qty: 'rainbowBowlQty', msg: 'soldoutRainbowBowl'},
     {name: 'Spicy Tuna Bowl', key: 'soldout_spicy_tuna_bowl', qty: 'spicyTunaBowlQty', msg: 'soldoutSpicyTunaBowl'},
-    {name: 'Flamed Zalm Bowl', key: 'soldout_flamed_zalm_bowl', qty: 'flamedZalmBowlQty', msg: 'soldoutFlamedZalmBowl'},
+    {name: 'Flamed Salmon Bowl', key: 'soldout_flamed_zalm_bowl', qty: 'flamedZalmBowlQty', msg: 'soldoutFlamedZalmBowl'},
     {name: 'Flamed Tuna Bowl', key: 'soldout_flamed_tuna_bowl', qty: 'flamedTunaBowlQty', msg: 'soldoutFlamedTunaBowl'},
   ];
 
@@ -6999,7 +6643,7 @@ function updateStatus(settings) {
   const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const todayName = dayNames[new Date().getDay()];
 
-  const hoursText = `Dagelijks ${settings.open_time} - ${settings.close_time}`;
+  const hoursText = `Daily ${settings.open_time} - ${settings.close_time}`;
   let closedText = '';
   if (allClosed) {
     closedText = ', Closed All Week';
@@ -7041,26 +6685,26 @@ function updateStatus(settings) {
     message = 'This week the store is closed.';
   } else if (!websiteOn) {
     storeOpen = false;
-    message = 'De website is momenteel gesloten';
+    message = 'The website is currently closed';
   } else if (!pickupOrderable && !deliveryOrderable) {
     storeOpen = false;
-    message = 'Vandaag afhalen en bezorgen zijn niet meer mogelijk.';
+    message = 'Pickup and delivery are no longer possible today.';
   } else if (afhalen.checked) {
     if (!pickupOrderable) {
       if (deliveryOrderable) {
-        message = 'Afhalen is niet meer mogelijk, maar bezorgen is nog beschikbaar.';
+        message = 'Pickup is no longer possible, but delivery is still available.';
         bezorgen.checked = true;
         afhalen.checked = false;
         toggleOrderType();
         storeOpen = true;
       } else {
         storeOpen = false;
-        message = 'Vandaag afhalen en bezorgen zijn niet meer mogelijk.';
+        message = 'Pickup and delivery are no longer possible today.';
       }
     } else {
       storeOpen = true;
       if (pickupTooLate) {
-        message = 'Vandaag afhalen is niet meer mogelijk.';
+        message = 'Pickup is no longer possible today.';
       } else {
         message = '';
       }
@@ -7068,19 +6712,19 @@ function updateStatus(settings) {
   } else { // bezorgen.checked
     if (!deliveryOrderable) {
       if (pickupOrderable) {
-        message = 'Bezorgen is niet meer mogelijk, maar afhalen is nog beschikbaar.';
+        message = 'Delivery is no longer possible, but pick up is still available.';
         afhalen.checked = true;
         bezorgen.checked = false;
         toggleOrderType();
         storeOpen = true;
       } else {
         storeOpen = false;
-        message = 'Vandaag afhalen en bezorgen zijn niet meer mogelijk.';
+        message = 'Pickup and delivery are no longer possible today.';
       }
     } else {
       storeOpen = true;
       if (deliveryTooLate) {
-        message = 'Vandaag bezorgen we niet meer.';
+        message = 'We no longer deliver today.';
       } else {
         message = '';
       }
@@ -7097,7 +6741,7 @@ function updateStatus(settings) {
     if (checkoutBtn) checkoutBtn.disabled = false;
     if (sliderTrack) {
       sliderTrack.style.pointerEvents = 'auto';
-      if (sliderText) sliderText.textContent = 'Schuif om te bestellen';
+      if (sliderText) sliderText.textContent = 'Slide to order';
     }
   } else {
     banner.textContent = message;
@@ -7107,7 +6751,7 @@ function updateStatus(settings) {
     if (checkoutBtn) checkoutBtn.disabled = true;
     if (sliderTrack) {
       sliderTrack.style.pointerEvents = 'none';
-      if (sliderText) sliderText.textContent = 'Momenteel gesloten';
+      if (sliderText) sliderText.textContent = 'Currently closed';
     }
   }
   banner.style.display = 'block';
@@ -7181,7 +6825,7 @@ document.addEventListener('click', e => {
 
 <div id="xBowlAddedModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; z-index:1000;">
   <div style="background:white; padding:20px; border-radius:12px; text-align:center;">
-    <p>Toegevoegd aan winkelwagen! Wilt u een nieuwe maken?</p>
+    <p>Added! Make another?</p>
     <div style="display:flex; gap:10px; justify-content:center; margin-top:10px;">
       <button id="xBowlAgain">Ja, graag</button>
       <button id="xBowlClose">Nee, bedankt</button>
