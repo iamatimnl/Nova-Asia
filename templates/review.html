@@ -11,16 +11,12 @@
       --section-alt-bg: #F0E2C3;
       --accent-tertiary: #FEEACE;
       --off-white: #F0ECE6;
-
       --accent-color: #4E342E;
       --accent-secondary: #A47148;
-
       --secondary-color: #4A4A4A;
-
       --accent-highlight: #E1C16E;
       --sakura: #D48B8B;
       --gold: #C8A95C;
-
       --accent-gradient-start: #E09142;
       --accent-gradient-mid: #6A2E14;
       --accent-gradient-end: #4E342E;
@@ -28,42 +24,84 @@
 
     body {
       font-family: 'Noto Sans', 'Open Sans', sans-serif;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin: 0;
       padding: 20px;
-      max-width: 1200px;
-      margin: auto;
       background: var(--primary-color);
       color: var(--secondary-color);
-      padding-top: 60px;
       text-align: center;
+      box-sizing: border-box;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
     }
 
     h1, h2, h3, h4, h5, h6 {
       font-family: 'Poppins', 'Quicksand', sans-serif;
     }
 
-    button,
-    input,
-    select {
-      border-radius: 12px;
-      color: var(--accent-color);
+    form {
+      margin-top: 20px;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      font-size: 1rem;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    input, textarea, button {
+      font-family: inherit;
     }
 
     button {
       background: var(--accent-color);
       color: white;
       border: none;
-      padding: 10px 20px;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 1rem;
+      margin-top: 20px;
       cursor: pointer;
+      transition: background 0.3s ease;
     }
 
     button:hover {
       background: var(--accent-secondary);
     }
 
+    .star-container {
+      margin-top: 10px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
     .star-container span {
       font-size: 2rem;
       cursor: pointer;
       color: lightgray;
+      margin: 0 4px;
+      transition: color 0.2s;
     }
 
     .star-container .selected {
@@ -72,105 +110,129 @@
 
     .review-link {
       display: inline-block;
-      margin-top: 20px;
-      padding: 10px 20px;
+      margin-top: 30px;
+      padding: 12px 24px;
       background: var(--accent-color);
       color: white;
       border-radius: 8px;
       text-decoration: none;
-      cursor: pointer;
+      font-size: 1rem;
     }
 
     .review-link:hover {
       background: var(--accent-secondary);
     }
+
+    #reviewMessage {
+      margin-top: 15px;
+      font-weight: bold;
+      color: green;
+      text-align: center;
+    }
+
+    @media screen and (min-width: 768px) {
+      body {
+        font-size: 1.2rem;
+      }
+
+      .star-container span {
+        font-size: 2.5rem;
+      }
+
+      button, .review-link {
+        font-size: 1.1rem;
+      }
+    }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h1>Laat uw review achter</h1>
 
-<h1>Laat uw review achter</h1>
+    <form id="reviewForm">
+      <label for="reviewName">Naam:</label>
+      <input type="text" name="customer_name" id="reviewName" required>
 
-<form id="reviewForm">
-  <label>Naam:</label><br>
-  <input type="text" name="customer_name" id="reviewName" required><br>
-  <div class="star-container" id="starContainer">
-    <span data-value="1">☆</span>
-    <span data-value="2">☆</span>
-    <span data-value="3">☆</span>
-    <span data-value="4">☆</span>
-    <span data-value="5">☆</span>
+      <label>Beoordeling:</label>
+      <div class="star-container" id="starContainer">
+        <span data-value="1">☆</span>
+        <span data-value="2">☆</span>
+        <span data-value="3">☆</span>
+        <span data-value="4">☆</span>
+        <span data-value="5">☆</span>
+      </div>
+      <input type="hidden" id="rating" name="rating" value="0">
+
+      <label for="reviewContent">Review:</label>
+      <textarea name="content" id="reviewContent" required></textarea>
+
+      <input type="hidden" name="order_number" id="orderNumber" value="{{ order_number }}">
+      <button type="submit">Verstuur</button>
+    </form>
+
+    <div id="reviewMessage"></div>
+
+    <a href="/review-list" class="review-link">Bekijk alle reviews</a>
   </div>
-  <input type="hidden" id="rating" name="rating" value="0">
-  <label>Review:</label><br>
-  <textarea name="content" id="reviewContent" required></textarea><br>
-  <input type="hidden" name="order_number" id="orderNumber" value="{{ order_number }}">
-  <button type="submit">Verstuur</button>
-</form>
 
-<div id="reviewMessage"></div>
+  <script>
+    const stars = document.querySelectorAll('#starContainer span');
+    stars.forEach(s => {
+      s.addEventListener('click', () => {
+        const val = parseInt(s.dataset.value);
+        document.getElementById('rating').value = val;
+        stars.forEach(st => {
+          if (parseInt(st.dataset.value) <= val) {
+            st.classList.add('selected');
+            st.textContent = '★';
+          } else {
+            st.classList.remove('selected');
+            st.textContent = '☆';
+          }
+        });
+      });
+    });
 
-<a href="/review-list" class="review-link">Bekijk alle reviews</a>
-
-<script>
-const stars = document.querySelectorAll('#starContainer span');
-stars.forEach(s => {
-  s.addEventListener('click', () => {
-    const val = parseInt(s.dataset.value);
-    document.getElementById('rating').value = val;
-    stars.forEach(st => {
-      if (parseInt(st.dataset.value) <= val) {
-        st.classList.add('selected');
-        st.textContent = '★';
-      } else {
+    window.addEventListener('load', () => {
+      document.getElementById('rating').value = 0;
+      stars.forEach(st => {
         st.classList.remove('selected');
         st.textContent = '☆';
+      });
+    });
+
+    document.getElementById('reviewForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const data = {
+        customer_name: document.getElementById('reviewName').value,
+        content: document.getElementById('reviewContent').value,
+        order_number: document.getElementById('orderNumber').value,
+        rating: parseInt(document.getElementById('rating').value || '0')
+      };
+
+      const resp = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      const msg = document.getElementById('reviewMessage');
+      if (resp.ok) {
+        msg.textContent = 'Bedankt voor uw review!';
+        document.getElementById('reviewForm').reset();
+        document.getElementById('rating').value = 0;
+        stars.forEach(st => { st.classList.remove('selected'); st.textContent = '☆'; });
+
+        setTimeout(() => {
+          window.location.href = '/review-list';
+        }, 1500);
+      } else {
+        const d = await resp.json();
+        msg.textContent = d.error || 'Fout bij versturen.';
+        msg.style.color = 'red';
       }
     });
-  });
-});
-
-window.addEventListener('load', () => {
-  document.getElementById('rating').value = 0;
-  stars.forEach(st => { 
-    st.classList.remove('selected'); 
-    st.textContent = '☆'; 
-  });
-});
-
-// 📝 提交评论
-document.getElementById('reviewForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-
-  const data = {
-    customer_name: document.getElementById('reviewName').value,
-    content: document.getElementById('reviewContent').value,
-    order_number: document.getElementById('orderNumber').value,
-    rating: parseInt(document.getElementById('rating').value || '0')
-  };
-
-  const resp = await fetch('/api/reviews', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  });
-
-  const msg = document.getElementById('reviewMessage');
-  if (resp.ok) {
-    msg.textContent = 'Bedankt voor uw review!';
-    document.getElementById('reviewForm').reset();
-    document.getElementById('rating').value = 0;
-    stars.forEach(st => { st.classList.remove('selected'); st.textContent = '☆'; });
-
-    // 自动跳转去评论列表
-    setTimeout(() => {
-      window.location.href = '/review-list';
-    }, 1500);
-  } else {
-    const d = await resp.json();
-    msg.textContent = d.error || 'Fout bij versturen.';
-  }
-});
-</script>
-
+  </script>
 </body>
 </html>
