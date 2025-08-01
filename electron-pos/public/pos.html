@@ -515,19 +515,7 @@
   display: inline-block;
 }
 
-.badge-text-only {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: red; /* 纯红色字体 */
-  background: none;
-  padding: 0;
-  line-height: 1;
-  pointer-events: none;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
+
 
 
 
@@ -710,13 +698,36 @@ dialog::backdrop {
   margin: 6px 0;
 }
 #modal-time {
-  width: 60%;
-  padding: 10px 14px;
-  font-size: 16px;
-  border-radius: 12px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+
+  background-color: #f9f9f9;
+  color: #333;
+
   border: 1px solid #ccc;
-  margin-top: 6px;
+  border-radius: 16px;
+
+  padding: 4px 8px;
+  width: 90px;
+  max-width: 100%;
+  box-sizing: border-box;
+
+  box-shadow: inset 0 1px 1px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  transition: all 0.2s ease;
 }
+
+#modal-time:focus {
+  outline: none;
+  border-color: #aaa;
+  box-shadow: 0 0 0 2px rgba(100, 150, 250, 0.15);
+}
+
+
 #modal-confirm {
   width: 100%;
   background-color: #34c759;
@@ -734,19 +745,7 @@ dialog::backdrop {
   background-color: #28a745;
 }
 
-/* ✅ ZSM badge */
-#zsm-badge {
-  display: none;
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: red;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-weight: bold;
-  font-size: 12px;
-}
+
 .form-row {
     display: flex;
     align-items: center;
@@ -885,6 +884,24 @@ dialog::backdrop {
 .toast.visible {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+}
+.zsm-badge {
+  display: inline-block;
+  background-color: #e53935; /* 温和红色 */
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 6px 12px;
+  margin-top: 8px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 </style>
@@ -1139,7 +1156,9 @@ dialog::backdrop {
     <label><strong>Afhaal-/bezorgtijd:</strong></label><br>
     <div id="modal-time-wrapper" style="margin-bottom:15px;">
       <input type="time" id="modal-time" />
-      <div id="Z.S.M.-display" style="font-weight:bold; display:none;">Z.S.M.</div>
+      <div id="Z.S.M.-display" class="zsm-badge" style="display:none;">Z.S.M.</div>
+
+
     </div>
 
     <br>
@@ -1965,12 +1984,29 @@ function clearForm(){
 }
 
 
-function generateOrderNumber(){
+function generateOrderNumber() {
   const now = new Date();
-  const date = now.toISOString().slice(0,10).replace(/-/g,'');
-  const rand = Math.random().toString(36).substring(2,6).toUpperCase();
+  const date = now.toISOString().slice(0,10).replace(/-/g, '');
+  let rand = Math.random().toString(36).substring(2, 6).toUpperCase();
+
+  // 判断是否 Z.S.M.
+  const delivery = document.getElementById('typeDelivery').checked;
+  const tijdslot = delivery ? document.getElementById('delivery_time').value
+                            : document.getElementById('pickup_time').value;
+  const raw = String(tijdslot || '').toLowerCase().replace(/\./g, '').trim();
+  const isZsm = !raw || raw === 'zsm' || raw === 'asap';
+
+  // 如果是 ZSM，最后一个字母设为 Z，否则避免以 Z 结尾
+  if (isZsm) {
+    rand = rand.slice(0, 3) + 'Z';
+  } else if (rand.endsWith('Z')) {
+    rand = rand.slice(0, 3) + 'X';
+  }
+
   return `NV${date}-${rand}`;
 }
+
+
 function submitOrder() {
   const name = document.getElementById('custName').value.trim() || 'Guest';
   const phone = document.getElementById('custPhone').value.trim();
@@ -2319,145 +2355,7 @@ function formatCurrency(value){
     }
     tbody.appendChild(tr);
   }
-function addRow(order, highlight = false) {
-  const container = document.querySelector('.orders-cards');
-  if (!container) return;
 
-  const isDelivery = ['delivery', 'bezorgen'].includes(order.order_type);
-
-  const items = Object.entries(order.items || {})
-    .sort(([, a], [, b]) => {
-      const priceA = a.price || 0;
-      const priceB = b.price || 0;
-      if (priceA === 0 && priceB !== 0) return 1;
-      if (priceA !== 0 && priceB === 0) return -1;
-      const nameA = (a.displayName || a.name || '').toUpperCase();
-      const nameB = (b.displayName || b.name || '').toUpperCase();
-      return nameA.localeCompare(nameB);
-    })
-    .map(([n, i]) => {
-      const isFree = (i.price || 0) === 0;
-      const displayNameRaw = i.displayName || i.name || n;
-      const displayName = isFree ? displayNameRaw.toLowerCase() : displayNameRaw.toUpperCase();
-      const rowTotal = (i.qty * (i.price || 0)).toFixed(2).replace('.', ',');
-      return `<li>${i.qty} x ${displayName} = €${rowTotal}</li>`;
-    }).join('');
-
-  let subtotal = 0;
-  let verpakkingskosten = 0;
-  Object.values(order.items || {}).forEach(i => {
-    subtotal += (i.price || 0) * i.qty;
-    verpakkingskosten += (i.packaging || 0) * i.qty;
-  });
-
-  const verpakkingDisplay = verpakkingskosten.toFixed(2).replace('.', ',');
-  const bezorgkosten = parseFloat(order.bezorgkosten || order.delivery_cost || 0) || 0;
-  const bezorgDisplay = bezorgkosten.toFixed(2).replace('.', ',');
-  let fooi = parseFloat(order.fooi || order.tip || 0); if (isNaN(fooi)) fooi = 0;
-  const fooiDisplay = fooi.toFixed(2).replace('.', ',');
-
-  let totaal = parseFloat(order.totaal || order.total || 0);
-  if (isNaN(totaal)) totaal = 0;
-  const totaalDisplay = totaal.toFixed(2).replace('.', ',');
-
-  const theoretischTotaal = subtotal + verpakkingskosten + bezorgkosten + fooi;
-  let korting = theoretischTotaal - totaal;
-  const showKorting = korting >= 0.01;
-  const kortingDisplay = korting.toFixed(2).replace('.', ',');
-
-  const address = isDelivery
-    ? `${order.street || ''} ${order.house_number || ''}, ${order.postcode || ''} ${order.city || ''}`.trim()
-    : '-';
-
-  let tijdslotRaw = order.tijdslot_display || (isDelivery ? order.delivery_time : order.pickup_time);
-  let tijdslot = (tijdslotRaw || '').trim().toUpperCase();
-
-  if (tijdslot && tijdslot.match(/^\d{2}:\d{2}$/) && order.created_at) {
-    try {
-      const createdAt = new Date(order.created_at);
-      const [h, m] = tijdslot.split(':').map(Number);
-      const tijdDate = new Date(createdAt);
-      tijdDate.setHours(h);
-      tijdDate.setMinutes(m);
-      const diffMin = Math.abs((tijdDate - createdAt) / 60000);
-      if (diffMin >= 29 && diffMin <= 31) {
-        tijdslot = 'ZSM';
-      }
-    } catch (e) {}
-  }
-  if (!tijdslot || tijdslot === 'ZSM') tijdslot = 'ZSM';
-
-  const wrapper = document.createElement('div');
-  wrapper.className = 'order-card-wrapper';
-
-  const card = document.createElement('div');
-  card.className = 'order-card';
-  if (order.id) card.dataset.id = order.id;
-  card.dataset.order = JSON.stringify(order);
-  if (order.is_cancelled) card.classList.add('cancelled');
-  else if (order.is_completed) card.classList.add('completed');
-  if (highlight) {
-    card.classList.add('new-order');
-    setTimeout(() => card.classList.remove('new-order'), 10000);
-  }
-
-  card.innerHTML = `
-    <div><strong>Ordernummer:</strong> ${order.order_number || ''}</div>
-    <div class="tijdslot-hoofd">
-      <div>
-        <strong class="${isDelivery ? 'type-bezorging' : 'type-afhalen'}">
-          ${isDelivery ? 'Bezorging' : 'Afhalen'}
-        </strong>
-        <span class="tijdslot" style="color: #e67e22; font-weight: bold; text-transform: uppercase;">
-          ${tijdslot}
-        </span>
-        &nbsp;&nbsp;<span class="created-at" style="color: #888;">Besteld om: ${order.created_at || '-'}</span>
-      </div>
-    </div>
-    <div><strong>Naam:</strong> ${order.customer_name || ''}</div>
-    <div><strong>Telefoon:</strong> ${order.phone || ''}</div>
-    ${order.email ? `<div><strong>Email:</strong> <a href="mailto:${order.email}">${order.email}</a></div>` : ''}
-    <div><strong>Items:</strong><ul>${items}</ul></div>
-    ${order.opmerking ? `<div><strong>Opmerking:</strong> ${order.opmerking}</div>` : ''}
-    ${verpakkingskosten > 0 ? `<div><strong>Verpakkingskosten:</strong> €${verpakkingDisplay}</div>` : ''}
-    ${bezorgkosten > 0 ? `<div><strong>Bezorgkosten:</strong> €${bezorgDisplay}</div>` : ''}
-    ${showKorting ? `<div><strong>Korting:</strong> -€${kortingDisplay}</div>` : ''}
-    <div><strong>Totaal:</strong> €${totaalDisplay}</div>
-    ${fooi > 0 ? `<div><strong>Fooi:</strong> €${fooiDisplay}</div>` : ''}
-    ${address !== '-' ? `<div><strong>Adres:</strong> ${address}
-      <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}" target="_blank" style="margin-left:6px;">📍Maps</a>
-    </div>` : ''}
-    ${order.payment_method ? `<div><strong>Betaalwijze:</strong> ${order.payment_method}</div>` : ''}
-  `;
-
-  const actions = document.createElement('div');
-  actions.className = 'card-actions';
-  actions.innerHTML = `
-    <button class="btn-klaar" onclick="toggleComplete(this)"
-      data-number="${order.order_number}"
-      data-name="${order.customer_name || ''}"
-      data-phone="${order.phone || ''}"
-      data-email="${order.email || ''}"
-      data-type="${isDelivery ? 'bezorg' : 'afhaal'}">
-      Klaar
-    </button>
-    <button class="btn-bewerk" onclick="editOrder(this)">Bewerk</button>
-    <button class="btn-annuleer" onclick="toggleCancel(this)"
-      data-number="${order.order_number}"
-      data-name="${order.customer_name || ''}"
-      data-phone="${order.phone || ''}"
-      data-email="${order.email || ''}"
-      data-type="${isDelivery ? 'bezorg' : 'afhaal'}"
-      data-id="${order.id}">
-      Annuleer
-    </button>
-    <span class="notify"></span>
-  `;
-
-  wrapper.appendChild(card);
-  wrapper.appendChild(actions);
-  container.appendChild(wrapper);
-}
 
 
 
@@ -2738,7 +2636,129 @@ function editOrder(btn) {
   }).then(() => fetchOrders());
 }
 
+function addRow(order, highlight = false) {
+  const container = document.querySelector('.orders-cards');
+  if (!container) return;
 
+  const isDelivery = ['delivery', 'bezorgen'].includes(order.order_type);
+
+  const items = Object.entries(order.items || {})
+    .sort(([, a], [, b]) => {
+      const priceA = a.price || 0;
+      const priceB = b.price || 0;
+      if (priceA === 0 && priceB !== 0) return 1;
+      if (priceA !== 0 && priceB === 0) return -1;
+      const nameA = (a.displayName || a.name || '').toUpperCase();
+      const nameB = (b.displayName || b.name || '').toUpperCase();
+      return nameA.localeCompare(nameB);
+    })
+    .map(([n, i]) => {
+      const isFree = (i.price || 0) === 0;
+      const displayNameRaw = i.displayName || i.name || n;
+      const displayName = isFree ? displayNameRaw.toLowerCase() : displayNameRaw.toUpperCase();
+      const rowTotal = (i.qty * (i.price || 0)).toFixed(2).replace('.', ',');
+      return `<li>${i.qty} x ${displayName} = €${rowTotal}</li>`;
+    }).join('');
+
+  let subtotal = 0;
+  let verpakkingskosten = 0;
+  Object.values(order.items || {}).forEach(i => {
+    subtotal += (i.price || 0) * i.qty;
+    verpakkingskosten += (i.packaging || 0) * i.qty;
+  });
+
+  const verpakkingDisplay = verpakkingskosten.toFixed(2).replace('.', ',');
+  const bezorgkosten = parseFloat(order.bezorgkosten || order.delivery_cost || 0) || 0;
+  const bezorgDisplay = bezorgkosten.toFixed(2).replace('.', ',');
+  let fooi = parseFloat(order.fooi || order.tip || 0); if (isNaN(fooi)) fooi = 0;
+  const fooiDisplay = fooi.toFixed(2).replace('.', ',');
+
+  let totaal = parseFloat(order.totaal || order.total || 0);
+  if (isNaN(totaal)) totaal = 0;
+  const totaalDisplay = totaal.toFixed(2).replace('.', ',');
+
+  const theoretischTotaal = subtotal + verpakkingskosten + bezorgkosten + fooi;
+  let korting = theoretischTotaal - totaal;
+  const showKorting = korting >= 0.01;
+  const kortingDisplay = korting.toFixed(2).replace('.', ',');
+
+  const address = isDelivery
+    ? `${order.street || ''} ${order.house_number || ''}, ${order.postcode || ''} ${order.city || ''}`.trim()
+    : '-';
+
+  const tijdslotRaw = order.tijdslot_display || (isDelivery ? order.delivery_time : order.pickup_time);
+  const tijdslot = order.is_zsm ? 'ZSM' : (tijdslotRaw || '').trim();
+  const wrapper = document.createElement('div');
+  wrapper.className = 'order-card-wrapper';
+
+  const card = document.createElement('div');
+  card.className = 'order-card';
+  if (order.id) card.dataset.id = order.id;
+  card.dataset.order = JSON.stringify(order);
+  if (order.is_cancelled) card.classList.add('cancelled');
+  else if (order.is_completed) card.classList.add('completed');
+  if (highlight) {
+    card.classList.add('new-order');
+    setTimeout(() => card.classList.remove('new-order'), 10000);
+  }
+
+  card.innerHTML = `
+    <div><strong>Ordernummer:</strong> ${order.order_number || ''}</div>
+    <div class="tijdslot-hoofd">
+      <div>
+        <strong class="${isDelivery ? 'type-bezorging' : 'type-afhalen'}">
+          ${isDelivery ? 'Bezorging' : 'Afhalen'}
+        </strong>
+        <span class="tijdslot" style="color: #e67e22; font-weight: bold; text-transform: uppercase;">
+          ${tijdslot}
+        </span>
+        &nbsp;&nbsp;<span class="created-at" style="color: #888;">Besteld om: ${order.created_at || '-'}</span>
+      </div>
+    </div>
+    <div><strong>Naam:</strong> ${order.customer_name || ''}</div>
+    <div><strong>Telefoon:</strong> ${order.phone || ''}</div>
+    ${order.email ? `<div><strong>Email:</strong> <a href="mailto:${order.email}">${order.email}</a></div>` : ''}
+    <div><strong>Items:</strong><ul>${items}</ul></div>
+    ${order.opmerking ? `<div><strong>Opmerking:</strong> ${order.opmerking}</div>` : ''}
+    ${verpakkingskosten > 0 ? `<div><strong>Verpakkingskosten:</strong> €${verpakkingDisplay}</div>` : ''}
+    ${bezorgkosten > 0 ? `<div><strong>Bezorgkosten:</strong> €${bezorgDisplay}</div>` : ''}
+    ${showKorting ? `<div><strong>Korting:</strong> -€${kortingDisplay}</div>` : ''}
+    <div><strong>Totaal:</strong> €${totaalDisplay}</div>
+    ${fooi > 0 ? `<div><strong>Fooi:</strong> €${fooiDisplay}</div>` : ''}
+    ${address !== '-' ? `<div><strong>Adres:</strong> ${address}
+      <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}" target="_blank" style="margin-left:6px;">📍Maps</a>
+    </div>` : ''}
+    ${order.payment_method ? `<div><strong>Betaalwijze:</strong> ${order.payment_method}</div>` : ''}
+  `;
+
+  const actions = document.createElement('div');
+  actions.className = 'card-actions';
+  actions.innerHTML = `
+    <button class="btn-klaar" onclick="toggleComplete(this)"
+      data-number="${order.order_number}"
+      data-name="${order.customer_name || ''}"
+      data-phone="${order.phone || ''}"
+      data-email="${order.email || ''}"
+      data-type="${isDelivery ? 'bezorg' : 'afhaal'}">
+      Klaar
+    </button>
+    <button class="btn-bewerk" onclick="editOrder(this)">Bewerk</button>
+    <button class="btn-annuleer" onclick="toggleCancel(this)"
+      data-number="${order.order_number}"
+      data-name="${order.customer_name || ''}"
+      data-phone="${order.phone || ''}"
+      data-email="${order.email || ''}"
+      data-type="${isDelivery ? 'bezorg' : 'afhaal'}"
+      data-id="${order.id}">
+      Annuleer
+    </button>
+    <span class="notify"></span>
+  `;
+
+  wrapper.appendChild(card);
+  wrapper.appendChild(actions);
+  container.appendChild(wrapper);
+}
 
 
 
@@ -2748,7 +2768,7 @@ let currentOrder = null;
 
 socket.on('new_order', order => {
   console.log('🆕 Nieuwe bestelling ontvangen!', order);
-
+  console.log("📦 实际推送内容:", order);
   // 检查 order 是否有编号
   if (!order || !order.order_number) {
     console.warn("❌ 接收到的订单无有效 order_number:", order);
@@ -2780,6 +2800,7 @@ socket.on('new_order', order => {
   }
 });
 
+
 function showNextOrderModal() {
   if (orderQueue.length === 0) {
     console.log("📭 队列为空，不弹出弹窗");
@@ -2790,6 +2811,7 @@ function showNextOrderModal() {
   isModalActive = true;
   console.log("📦 显示弹窗订单:", currentOrder.order_number);
 
+  // 填充订单信息
   document.getElementById('modal-order-id').textContent = currentOrder.order_number || '-';
   document.getElementById('modal-customer-name').textContent = currentOrder.customer_name || '-';
   document.getElementById('modal-address').textContent = currentOrder.street
@@ -2800,26 +2822,47 @@ function showNextOrderModal() {
   document.getElementById('modal-remark').textContent = currentOrder.opmerking || '-';
   document.getElementById('modal-total').textContent = formatCurrency(currentOrder.totaal || currentOrder.total || 0);
 
+  // ✅ 时间字段处理（优先显示 tijdslot，如果是 ZSM 则保持为 "Z.S.M."）
   const timeInput = document.getElementById('modal-time');
-  const zsmDisplay = document.getElementById('Z.S.M.-display');
-  const zsmBadge = document.getElementById('zsm-badge');
+  timeInput.style.display = 'inline-block';
 
- const tijdslotRaw = currentOrder.tijdslot || currentOrder.pickup_time || currentOrder.delivery_time || '';
-const tijdslot = tijdslotRaw.toLowerCase().replace(/[^a-z]/g, '');
-const isZSM = tijdslot === '' || ['zsm', 'zsmsm', 'asap'].includes(tijdslot);
+  let tijdslotRaw = currentOrder.tijdslot || '';
+  if (tijdslotRaw.toLowerCase().includes('z')) {
+    tijdslotRaw = 'Z.S.M.';
+  } else if (!tijdslotRaw && currentOrder.pickup_time) {
+    tijdslotRaw = currentOrder.pickup_time;
+  } else if (!tijdslotRaw && currentOrder.delivery_time) {
+    tijdslotRaw = currentOrder.delivery_time;
+  }
+  timeInput.value = tijdslotRaw;
 
+  // ✅ 正确调用盖章逻辑（不提前显示）
+  updateZSMBadge(currentOrder);
 
-// ✅ 控制右上角 Z.S.M. 徽章显示
-if (zsmBadge) zsmBadge.style.display = isZSM ? 'block' : 'none';
-
-// ✅ 不管是不是 Z.S.M.，都显示时间输入框 + 原始时间值（保持一致）
-timeInput.style.display = 'inline-block';
-timeInput.value = tijdslotRaw || '';
-
-
+  // 显示弹窗
   document.getElementById('order-modal').style.display = 'flex';
   console.log("✅ 弹窗已显示！");
 }
+
+function updateZSMBadge(order) {
+  const zsmDisplay = document.getElementById('Z.S.M.-display');
+
+  if (!zsmDisplay) return;
+
+  const endsWithZ = (order.order_number || '').endsWith('Z');
+
+  if (endsWithZ) {
+    zsmDisplay.style.display = 'inline-block';
+    zsmDisplay.textContent = 'Z.S.M.';
+  } else if (order.tijdslot) {
+    zsmDisplay.style.display = 'inline-block';
+    zsmDisplay.textContent = `Tijdslot: ${order.tijdslot}`;
+  } else {
+    zsmDisplay.style.display = 'none';
+  }
+}
+
+
 
 
 
