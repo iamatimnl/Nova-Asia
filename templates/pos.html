@@ -110,10 +110,6 @@
     background: var(--off-white);
     margin-bottom: 20px;
   }
-  
-
-
-
   section:nth-child(even) { background: var(--section-alt-bg); }
   h1,h2,h3,h4,h5,h6,p { text-align: center; }
   .menu-item {
@@ -273,7 +269,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: #403030;
+    background: rgba(255,255,255,0.95);
     backdrop-filter: blur(8px);
     overflow: auto;
     transform: translateX(-100%);
@@ -283,7 +279,7 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.12);
   }
   .orders-slide.visible { transform: translateX(0); }
- 
+  .orders-panel table { width:100%; border-collapse: collapse; }
   @media (max-width: 768px) {
     .orders-panel table { display:block; overflow-x:auto; white-space:nowrap; }
   }
@@ -307,45 +303,24 @@
     border-color:var(--accent-color);
     box-shadow:0 0 0 2px rgba(63,92,75,0.2);
   }
- #closeToday {
-  position: sticky;
-   margin-right: 15px;  
-  top: 10px;
-  margin-left: auto;        /* 推到右侧 */
-  width: 50px;
-  height: 50px;
-  background-color: transparent;
-  border: none;
-  border-radius: 0px;
-  color: white;
-  font-size: 40px;
-  
- 
-  cursor: pointer;
-
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.2s ease;
+  #closeToday {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    width: 66px; /* 方形按钮 */
+    height: 46px;
+    background: #f0f0f0; /* 默认浅灰背景 */
+    border: 1px solid #d0d0d0; /* 细浅灰边框 */
+    border-radius: 4px; /* 微圆角，接近 Windows 风格 */
+    cursor: pointer;
+    font-size: 20px; /* 显眼 X */
+    font-weight: bold;
+    color: #333; /* 默认深灰 X */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
 }
-
-
-#closeToday:hover {
-  background: #ff3b30;
-  color: #fff;
-  border-color: #ff3b30;
-  transform: scale(1.05);
-}
-
-
-#closeToday:hover {
-  background: #ff3b30;
-  color: #fff;
-  border-color: #ff3b30;
-  transform: scale(1.05);
-}
-
 
 #closeToday:hover {
     background: #e81123; /* Windows 红色 */
@@ -515,7 +490,19 @@
   display: inline-block;
 }
 
-
+.badge-text-only {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: red; /* 纯红色字体 */
+  background: none;
+  padding: 0;
+  line-height: 1;
+  pointer-events: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
 
 
 
@@ -549,13 +536,13 @@
     .pos-layout { flex-direction: column; align-items: center; }
     .center-area { width:100%; margin-right:0; }
   }
-
+  .orders-table td, .orders-table th {
+  white-space: nowrap;
+  padding: 8px;
+}
 /* 默认隐藏圆按钮 */
 .today-toggle {
   display: none;
-}
-body.today-open {
-  overflow: hidden;
 }
 
 /* 手机显示圆按钮，隐藏长按钮 */
@@ -586,287 +573,6 @@ body.today-open .today-toggle {
   .today-toggle { display: none; }
 }
 
-dialog#deliveryModal {
-  border: none;
-  border-radius: 20px;
-  padding: 20px 24px;
-  width: 90%;
-  max-width: 400px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  animation: popUp 0.25s ease;
-}
-
-dialog::backdrop {
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(4px);
-}
-
-.modal-select {
-  width: 100%;
-  padding: 10px 14px;
-  font-size: 16px;
-  margin: 20px 0;
-  border-radius: 12px;
-  border: 1px solid #ccc;
-}
-
-.modal-buttons {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.modal-buttons button {
-  flex: 1;
-  padding: 12px 0;
-  font-size: 16px;
-  font-weight: 600;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.modal-buttons button#confirmDelivery {
-  background-color: #34c759;
-  color: white;
-}
-
-.modal-buttons button:last-child {
-  background-color: #e5e5ea;
-  color: #333;
-}
-
-@keyframes popUp {
-  from { transform: scale(0.95); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-
-
-
-.modal-overlay {
-  position: fixed;
-  z-index: 9999;
-  background: rgba(0,0,0,0.5);
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  display: flex; align-items: center; justify-content: center;
-}
-.modal-box {
-  background: #fff;
-  padding: 20px 30px;
-  border-radius: 8px;
-  text-align: center;
-}
-.modal-select {
-  margin: 15px 0;
-  padding: 6px 12px;
-  font-size: 16px;
-}
-.modal-buttons button {
-  margin: 0 10px;
-}
-/* ✅ #order-modal */
-#order-modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 9999;
-  justify-content: center;
-  align-items: center;
-  animation: popUp 0.25s ease;
-}
-#order-modal > div {
-  background: #fff;
-  border-radius: 20px;
-  padding: 24px 28px;
-  max-width: 500px;
-  width: 90%;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-  position: relative;
-  animation: popUp 0.25s ease;
-}
-#order-modal h2 {
-  font-size: 20px;
-  margin-bottom: 15px;
-}
-#order-modal p {
-  font-size: 16px;
-  margin: 6px 0;
-}
-#modal-time {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-
-  text-align: center;
-  font-size: 14px;
-  font-weight: 500;
-
-  background-color: #f9f9f9;
-  color: #333;
-
-  border: 1px solid #ccc;
-  border-radius: 16px;
-
-  padding: 4px 8px;
-  width: 90px;
-  max-width: 100%;
-  box-sizing: border-box;
-
-  box-shadow: inset 0 1px 1px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-  transition: all 0.2s ease;
-}
-
-#modal-time:focus {
-  outline: none;
-  border-color: #aaa;
-  box-shadow: 0 0 0 2px rgba(100, 150, 250, 0.15);
-}
-
-
-#modal-confirm {
-  width: 100%;
-  background-color: #34c759;
-  color: white;
-  font-size: 16px;
-  font-weight: 600;
-  border: none;
-  border-radius: 12px;
-  padding: 12px 0;
-  cursor: pointer;
-  margin-top: 20px;
-  transition: background 0.2s ease;
-}
-#modal-confirm:hover {
-  background-color: #28a745;
-}
-
-
-.form-row {
-    display: flex;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-  .form-row label {
-    flex: 0 0 110px;
-    margin-right: 8px;
-    font-weight: 500;
-  }
-  .form-row input,
-  .form-row select {
-    flex: 1;
-    padding: 6px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
- .order-type-switch {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-  margin-left: 8px; /* 控制整体右移 */
-}
-
-.order-btn input {
-  display: none;
-}
-
-.order-type-switch {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-  margin-left: 8px; /* 右移一点 */
-}
-
-.order-btn input {
-  display: none;
-}
-
-.order-btn span {
-  display: block;
-  padding: 8px 16px;
-  border: 1px solid var(--accent-color);
-  border-radius: 8px;
-  cursor: pointer;
-  background: rgba(255, 255, 255, 0.5);
-  color: #1a2e28;
-  font-weight: 500;
-  transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-.order-btn span:hover {
-  background: rgba(255, 255, 255, 0.7);
-  transform: scale(1.03);
-}
-
-.order-btn input:checked + span {
-  background: linear-gradient(to bottom, #d8f4e7, #a9e5cd);
-  color: #1a2e28;
-  font-weight: 600;
-  border: none; /* ✅ 移除边框 */
-  
-}
-
- 
-.order-type-switch {
-  margin-left: 88px; /* 你可以改成 12px / 16px 看效果 */
-}
-.checkout-panel label {
-  display: block;
-  text-align: left;
-  font-weight: 500;
-  margin-bottom: 4px;
-}
-.summary-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 6px 0;
-}
-
-.summary-row label {
-  flex: 1;
-  text-align: left;
-  font-weight: 500;
-  font-size: 0.95rem;
-}
-
-.discount-group,
-.custom-price-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.discount-group select,
-.discount-group input,
-.custom-price-group input {
-  padding: 6px 8px;
-  border: 1px solid rgba(0,0,0,0.2);
-  border-radius: 8px;
-  font-size: 0.95rem;
-}
-#addCustomPrice {
-  padding: 6px 12px;
-  font-size: 0.9rem;
-  border-radius: 10px;
-  background-color: #b3d4ff;
-  color: #333;
-  border: none;
-   margin-top: -3px; /* 向上移动 */
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-#addCustomPrice:hover {
-  background-color: #a3c8ff;
-}
-
 /* Toast notification */
 .toast {
   position: fixed;
@@ -885,26 +591,9 @@ dialog::backdrop {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
-.zsm-badge {
-  display: inline-block;
-  background-color: #e53935; /* 温和红色 */
-  color: white;
-  font-size: 14px;
-  font-weight: 600;
-  padding: 6px 12px;
-  margin-top: 8px;
-  border-radius: 20px;
-  text-align: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  animation: fadeIn 0.4s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
+  
 </style>
+<script src="/static/js/simple-qrcode.js"></script>
 </head>
 <body>
 <div class="navbar-container" id="navbar-container">
@@ -914,8 +603,8 @@ dialog::backdrop {
       <a href="#bubble">Bubble Tea</a>
       <a href="#bento">Bento Box</a>
       <a href="#Ramen">Ramen</a>
-      <a href="#Teppanyaki">Teppanyaki Gebakken Rijst</a>
       <a href="#Pokebowl">Pokebowl</a>
+      <a href="#Teppanyaki">Teppanyaki Gebakken Rijst</a>
       <a href="#sushi">Omakase Sushi</a>
       <a href="#sashimi">Sashimi</a>
       <a href="#Crispy-rice-sandwich">Crispy Rice</a>
@@ -957,160 +646,102 @@ dialog::backdrop {
       <div class="supply-row">
         <img alt="Sojasaus" class="supply-img photo" src="{{ url_for('static', filename='images/soja saus.webp') }}"/>
         <div class="supply-content">
-          <label for="soyCount">Aantal sojasaus</label>
+          <label for="soyCount">Aantal sojasaus flesjes</label>
           <select id="soyCount" class="supply-select"></select>
         </div>
       </div>
       <div class="supply-row">
         <img alt="Gember" class="supply-img photo" src="{{ url_for('static', filename='images/gembeerr.png') }}"/>
         <div class="supply-content">
-          <label for="gemberCount">Aantal gember</label>
+          <label for="gemberCount">Aantal gember porties</label>
           <select id="gemberCount" class="supply-select"></select>
         </div>
       </div>
       <div class="supply-row">
         <img alt="Wasabi" class="supply-img photo" src="{{ url_for('static', filename='images/wasabib.png') }}"/>
         <div class="supply-content">
-          <label for="wasabiCount">Aantal wasabi</label>
+          <label for="wasabiCount">Aantal wasabi flesjes</label>
           <select id="wasabiCount" class="supply-select"></select>
         </div>
       </div>
-      <div class="summary-row">
-  <label>Subtotaal:</label>
-  <span id="summarySubtotal">€0,00</span>
-</div>
-
-<div class="summary-row">
-  <label>Verpakkingskosten:</label>
-  <span id="summaryPackaging">€0,00</span>
-</div>
-
-<div id="summaryDeliveryRow" class="summary-row hidden">
-  <label>Bezorgkosten:</label>
-  <span id="summaryDelivery">€0,00</span>
-</div>
-
-<div class="summary-row">
-  <label for="discountValue">Korting:</label>
-  <div class="discount-group">
-    <select id="discountType">
-      <option value="amount">€</option>
-      <option value="percent">%</option>
-    </select>
-    <input id="discountValue" type="number" value="0" min="0" step="0.01" />
-    <span id="summaryDiscount">€0,00</span>
-  </div>
-</div>
-
-<div class="summary-row">
-  <label for="customPrice">Eigen Invoer:</label>
-  <div class="custom-price-group">
-    <input id="customPrice" type="number" min="0" step="0.01" />
-    <button id="addCustomPrice" type="button">Toevoegen</button>
-  </div>
-</div>
-
-<div class="summary-row">
-  <label>BTW (9%):</label>
-  <span id="summaryBtw">€0,00</span>
-</div>
-
-<div class="summary-row">
-  <label><strong>Totaal:</strong></label>
-  <strong><span id="total">€0,00</span></strong>
-</div>
-
-<label for="remark" style="display:block;margin-top:10px;">Opmerking:</label>
-<textarea id="remark" rows="2" placeholder="Bijv. geen komkomer, extra mayo"></textarea>
-
+      <div>Subtotaal: <span id="summarySubtotal">€0,00</span></div>
+      <div>Verpakkingskosten: <span id="summaryPackaging">€0,00</span></div>
+      <div id="summaryDeliveryRow" class="hidden">Bezorgkosten: <span id="summaryDelivery">€0,00</span></div>
+      <div>
+        Korting:
+        <select id="discountType">
+          <option value="amount">€</option>
+          <option value="percent">%</option>
+        </select>
+        <input id="discountValue" type="number" value="0" min="0" step="0.01" />
+        <span id="summaryDiscount">€0,00</span>
+      </div>
+      <div>
+        Eigen Invoer:
+        <input id="customPrice" type="number" min="0" step="0.01" />
+        <button id="addCustomPrice" type="button">Toevoegen</button>
+      </div>
+      <div>BTW (9%): <span id="summaryBtw">€0,00</span></div>
+      <div><strong>Totaal: <span id="total">€0,00</span></strong></div>
+      <label for="remark" style="display:block;margin-top:10px;">Opmerking:</label>
+      <textarea id="remark" rows="2" placeholder="Bijv. geen komkomer, extra mayo"></textarea>
     </div>
     <div class="checkout-panel">
-  <section id="customer-info">
-    <div class="delivery-options">
-      <h2 style="margin-bottom: 6px;">Besteltype</h2>
-      <div class="order-type-switch">
-        <label class="order-btn">
-          <input type="radio" id="typePickup" name="orderType" value="pickup" checked />
-          <span>Afhalen</span>
-        </label>
-        <label class="order-btn">
-          <input type="radio" id="typeDelivery" name="orderType" value="delivery" />
-          <span>Bezorging</span>
-        </label>
-      </div>
-
-      <h2 style="margin-top: 16px;">Klantgegevens</h2>
-
-      <div class="form-row">
+      <section id="customer-info">
+        <div class="delivery-options">
+          <h2>Klantgegevens</h2>
         <label for="custName">Naam</label>
         <input id="custName" type="text" placeholder="Naam" />
-      </div>
-
-      <div class="form-row">
-        <label for="custPhone">Telefoon</label>
+        <label for="custPhone">Telefoonnummer</label>
         <input id="custPhone" type="tel" placeholder="Telefoonnummer" />
-      </div>
-
-      <!-- Pickup Fields -->
-      <div id="pickupFields" style="margin-top: 10px;">
-        <div class="form-row">
+        <div class="order-type-switch">
+          <label class="order-btn">
+            <input type="radio" id="typePickup" name="orderType" value="pickup" checked />
+            <span>Afhalen</span>
+          </label>
+          <label class="order-btn">
+            <input type="radio" id="typeDelivery" name="orderType" value="delivery" />
+            <span>Bezorging</span>
+          </label>
+        </div>
+        <div id="pickupFields" style="margin-top:10px;">
           <label for="pickup_time">Pickup Tijd*</label>
           <select id="pickup_time"></select>
-        </div>
-        <div class="form-row">
-          <label for="pickupPayment">Betaalwijze*</label>
+          <label for="pickupPayment">Betaalmethode*</label>
           <select id="pickupPayment">
-            <option value="pin" selected>Pin</option>
+            <option value="pin">Pin</option>
             <option value="cash">Contant</option>
             <option value="oprekening">Oprekening</option>
           </select>
         </div>
-      </div>
-
-      <!-- Delivery Fields -->
-      <div id="deliveryFields" class="hidden" style="margin-top:10px;">
-        <div class="form-row">
+        <div id="deliveryFields" class="hidden" style="margin-top:10px;">
           <label for="postcode">Postcode*</label>
           <input id="postcode" type="text" placeholder="1234AB" />
-        </div>
-        <div class="form-row">
           <label for="houseNumber">Huisnummer*</label>
           <input id="houseNumber" type="text" placeholder="1" />
-        </div>
-        <div class="form-row">
           <label for="street">Straat*</label>
           <input id="street" type="text" placeholder="Straat" />
-        </div>
-        <div class="form-row">
           <label for="city">Plaats*</label>
           <input id="city" type="text" placeholder="Plaats" />
-        </div>
-        <div class="form-row">
-          <label for="delivery_time">Bezorgtijd</label>
+          <label for="delivery_time">Bezorgtijd (optioneel)</label>
           <select id="delivery_time"></select>
-        </div>
-        <div class="form-row">
-          <label for="deliveryPayment">Betaalwijze*</label>
+          <label for="deliveryPayment">Betaalmethode*</label>
           <select id="deliveryPayment">
-            <option value="pin" selected>Pin</option>
+            <option value="pin">Pin</option>
             <option value="cash">Contant</option>
             <option value="oprekening">Oprekening</option>
           </select>
         </div>
-      </div>
-
-      <!-- QR Code Section -->
-      <div id="qrCodeContainer" class="hidden" style="margin-top:10px;">
-        <p><strong>📍 Scan voor navigatie:</strong></p>
-        <img id="qrCodePreview" src="" alt="QR Code" style="display:block; margin:auto;" />
-        <div id="mapsLinkContainer" style="text-align:left; margin-top:4px;"></div>
-      </div>
+        <div id="qrCodeContainer" class="hidden" style="text-align:center;margin-top:10px;">
+          <p><strong>📍 Scan voor navigatie:</strong></p>
+          <img id="qrCodePreview" src="" alt="QR Code" />
+          <div id="mapsLinkContainer" style="margin-top:4px;"></div>
+        </div>
+        </div>
+      </section>
+      <button id="submitOrder">Submit Order</button>
     </div>
-  </section>
-
-  
-
-  <button id="submitOrder">Submit Order</button>
+  </div>
 </div>
 <button id="cartToggle" class="cart-toggle">🛒<span id="cartCount" class="badge">0</span></button>
 <button id="toggleToday" class="today-btn">
@@ -1139,13 +770,7 @@ dialog::backdrop {
 
 <!-- 自定义新订单弹窗 -->
 <div id="order-modal" class="modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; justify-content:center; align-items:center;">
-  <div style="background:#fff; border-radius:10px; padding:20px; max-width:500px; width:90%; box-shadow:0 0 20px rgba(0,0,0,0.3); position:relative;">
-    
-    <!-- ✅ 放在这里 -->
-    <div id="zsm-badge" style="display: none; position: absolute; top: 10px; right: 10px; background: red; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold;">
-      Z.S.M.
-    </div>
-
+  <div style="background:#fff; border-radius:10px; padding:20px; max-width:500px; width:90%; box-shadow:0 0 20px rgba(0,0,0,0.3);">
     <h2>Nieuwe bestelling</h2>
     <p><strong>Bestelnummer:</strong> <span id="modal-order-id"></span></p>
     <p><strong>Klant:</strong> <span id="modal-customer-name"></span></p>
@@ -1154,28 +779,11 @@ dialog::backdrop {
     <p><strong>Opmerking:</strong> <span id="modal-remark"></span></p>
     <p><strong>Totaal:</strong> <span id="modal-total"></span></p>
     <label><strong>Afhaal-/bezorgtijd:</strong></label><br>
-    <div id="modal-time-wrapper" style="margin-bottom:15px;">
-      <input type="time" id="modal-time" />
-      <div id="Z.S.M.-display" class="zsm-badge" style="display:none;">Z.S.M.</div>
-
-
-    </div>
-
+    <input type="time" id="modal-time" style="margin-bottom:15px;" />
     <br>
     <button id="modal-confirm" style="padding:8px 16px;">✅ Bevestigen</button>
   </div>
 </div>
-<dialog id="deliveryModal">
-  <form method="dialog">
-    <h3>Kies een bezorger</h3>
-    <select id="deliverySelect" class="modal-select"></select>
-    <div class="modal-buttons">
-      <button id="confirmDelivery" type="button">Bevestigen</button>
-      <button type="button" onclick="document.getElementById('deliveryModal').close()">Annuleer</button>
-    </div>
-  </form>
-</dialog>
-
 
 
 <script>
@@ -1585,106 +1193,84 @@ function setQty(name,price,qty,packaging=0,prefs=null){
   }
   updateCart();
 }
-function updateCart() {
-  const list = document.getElementById('cart');
-  list.innerHTML = '';
-  let subtotal = 0;
-  let packagingTotal = 0;
-  let count = 0;
-
-  Object.entries(cart).forEach(([name, item]) => {
-    const li = document.createElement('li');
-
-    const displayName = item.displayName || name;
-
-    const rowTotal = item.qty * item.price;
-
-    const label = document.createElement('span');
-    label.textContent = `${displayName} x ${item.qty} - €${rowTotal.toFixed(2)} `;
-
-    li.appendChild(label);
-
-    if (item.custom) {
-      const delBtn = document.createElement('button');
-      delBtn.textContent = '🗑';
-      delBtn.addEventListener('click', () => {
-        delete cart[name];
-        updateCart();
-      });
+function updateCart(){
+  const list=document.getElementById('cart');
+  list.innerHTML='';
+  let subtotal=0;
+  let packagingTotal=0;
+  let count=0;
+  Object.entries(cart).forEach(([name,item])=>{
+    const li=document.createElement('li');
+    const sel=createSelect(item.qty,val=>{
+      const menuItem=document.querySelector(`[data-name="${name}"]`);
+      if(menuItem){
+        const qtyInput=menuItem.querySelector('select');
+        if(qtyInput) qtyInput.value=val;
+      }
+      setQty(name,item.price,val,item.packaging,item.prefs);
+      if(name==='Bento Sushi Omakase'){
+        document.getElementById('sushiBentoCount').value=val;
+        updateOmakasePrefs();
+      } else if(name==='Dragon Roll Omakase'){
+        document.getElementById('dragonRollCount').value=val;
+        updateDragonPrefs();
+      }
+    });
+    const rowTotal=item.qty*item.price;
+    const displayName=item.displayName||name;
+    li.textContent=`${displayName} - €${rowTotal.toFixed(2)} `;
+    if(item.custom){
+      const delBtn=document.createElement('button');
+      delBtn.textContent='🗑';
+      delBtn.addEventListener('click',()=>{ delete cart[name]; updateCart(); });
       li.appendChild(delBtn);
-    } else {
-      const sel = createSelect(item.qty, val => {
-        const menuItem = document.querySelector(`[data-name="${name}"]`);
-        if (menuItem) {
-          const qtyInput = menuItem.querySelector('select');
-          if (qtyInput) qtyInput.value = val;
-        }
-        setQty(name, item.price, val, item.packaging, item.prefs);
-
-        if (name === 'Bento Sushi Omakase') {
-          document.getElementById('sushiBentoCount').value = val;
-          updateOmakasePrefs();
-        } else if (name === 'Dragon Roll Omakase') {
-          document.getElementById('dragonRollCount').value = val;
-          updateDragonPrefs();
-        }
-      });
+    }else{
       li.appendChild(sel);
     }
-
-    if (item.prefs) {
-      const title = document.createElement('div');
-      title.textContent = 'Voorkeur:';
-      const ul = document.createElement('ul');
-      item.prefs.forEach((p, i) => {
-        const liP = document.createElement('li');
-        liP.textContent = `${i + 1}. ${p}`;
+    if(item.prefs){
+      const title=document.createElement('div');
+      title.textContent='Voorkeur:';
+      const ul=document.createElement('ul');
+      item.prefs.forEach((p,i)=>{
+        const liP=document.createElement('li');
+        liP.textContent=`${i+1}. ${p}`;
         ul.appendChild(liP);
       });
       li.appendChild(title);
       li.appendChild(ul);
     }
-
     list.appendChild(li);
-
-    if (item.qty > 0) {
-      subtotal += rowTotal;
-      packagingTotal += (item.packaging || 0) * item.qty;
+    if(item.qty>0){
+      subtotal+=rowTotal;
+      packagingTotal+=(item.packaging||0)*item.qty;
     }
-
-    count += item.qty;
+    count+=item.qty;
   });
 
-  const delivery = document.getElementById('typeDelivery').checked ? 2.5 : 0;
-
-  const discountType = document.getElementById('discountType').value;
-  let discountVal = parseFloat(document.getElementById('discountValue').value) || 0;
-  let discount = 0;
-  if (discountType === 'amount') {
-    discount = Math.min(discountVal, subtotal);
-  } else if (discountType === 'percent') {
-    discount = Math.min(discountVal, 100) / 100 * subtotal;
-  }
-  if (discount < 0 || isNaN(discount)) discount = 0;
+  const delivery=document.getElementById('typeDelivery').checked ? 2.5 : 0;
+  const discountType=document.getElementById('discountType').value;
+  let discountVal=parseFloat(document.getElementById('discountValue').value)||0;
+  let discount=0;
+  if(discountType==='amount'){ discount=Math.min(discountVal,subtotal); }
+  else if(discountType==='percent'){ discount=Math.min(discountVal,100)/100*subtotal; }
+  if(discount<0||isNaN(discount)) discount=0;
 
   const total = subtotal + packagingTotal + delivery - discount;
   const btwBase = delivery ? total - delivery : total;
   const btw = btwBase * 0.09;
 
-  const fmt = n => `€${n.toFixed(2).replace('.', ',')}`;
+  const fmt=n=>`€${n.toFixed(2).replace('.',',')}`;
+  document.getElementById('summarySubtotal').textContent=fmt(subtotal);
+  document.getElementById('summaryPackaging').textContent=fmt(packagingTotal);
+  document.getElementById('summaryDelivery').textContent=fmt(delivery);
+  document.getElementById('summaryDeliveryRow').classList.toggle('hidden',!delivery);
+  document.getElementById('summaryDiscount').textContent=discount ? `- ${fmt(discount)}` : '€0,00';
+  document.getElementById('summaryBtw').textContent=fmt(btw);
+  document.getElementById('total').textContent=fmt(total);
 
-  document.getElementById('summarySubtotal').textContent = fmt(subtotal);
-  document.getElementById('summaryPackaging').textContent = fmt(packagingTotal);
-  document.getElementById('summaryDelivery').textContent = fmt(delivery);
-  document.getElementById('summaryDeliveryRow').classList.toggle('hidden', !delivery);
-  document.getElementById('summaryDiscount').textContent = discount ? `- ${fmt(discount)}` : '€0,00';
-  document.getElementById('summaryBtw').textContent = fmt(btw);
-  document.getElementById('total').textContent = fmt(total);
-
-  const badge = document.getElementById('cartCount');
-  if (badge) badge.textContent = count;
+  const badge=document.getElementById('cartCount');
+  if(badge) badge.textContent=count;
 }
-
 
 function addCustomPrice(){
   const input=document.getElementById('customPrice');
@@ -1881,6 +1467,12 @@ function toggleToday(){
 }
 
 
+
+
+
+
+
+  
 function showTodayOrders(){
   const panel=document.getElementById('todayOrders');
   if(!panel.classList.contains('visible')){
@@ -1908,28 +1500,22 @@ function toggleAddress(){
   }
   updateCart();
 }
-async function fetchAddress() {
-  const pc = document.getElementById('postcode').value.trim();
-  const num = document.getElementById('houseNumber').value.trim();
-  if (!pc || !num) return;
-
-  const url = `https://flask-order-api.onrender.com/api/postcode?postcode=${encodeURIComponent(pc)}&number=${encodeURIComponent(num)}`;
-  try {
-    const res = await fetch(url);
-    if (res.ok) {
-      const d = await res.json();
-      if (d.street) document.getElementById('street').value = d.street;
-      if (d.city) document.getElementById('city').value = d.city;
-      updateQRCode();  // 成功后更新二维码
-    } else {
-      console.warn('API error:', res.status);
-    }
-  } catch (e) {
-    console.warn('Adres ophalen mislukt', e);
+async function fetchAddress(){
+  const pc=document.getElementById('postcode').value.trim();
+  const num=document.getElementById('houseNumber').value.trim();
+  if(pc && num){
+    const url=`https://api.postcodeapi.nu/v3/lookup/${encodeURIComponent(pc)}/${encodeURIComponent(num)}`;
+    try{
+      const res=await fetch(url,{headers:{'X-Api-Key':'juW6MEgEeL2BEM0rInEtB5a15BqXjWwO3YqrdH0z'}});
+      if(res.ok){
+        const d=await res.json();
+        if(d.street) document.getElementById('street').value=d.street;
+        if(d.city) document.getElementById('city').value=d.city;
+      }
+    }catch(e){console.warn('Adres ophalen mislukt');}
+    updateQRCode();
   }
 }
-
-
 function updateQRCode(){
   const street=document.getElementById('street').value.trim();
   const house=document.getElementById('houseNumber').value.trim();
@@ -1941,9 +1527,11 @@ function updateQRCode(){
   if(street && house && pc && city){
     const address=`${street} ${house}, ${pc} ${city}`;
     const googleMapsLink=`https://www.google.com/maps?q=${encodeURIComponent(address)}`;
-    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(googleMapsLink)}`;
-
-    img.src=qrCodeUrl;
+    if(window.SimpleQR){
+      img.src=SimpleQR.generate(googleMapsLink,200);
+    } else {
+      img.src='';
+    }
     linkContainer.innerHTML=`<a href="${googleMapsLink}" target="_blank" style="color: var(--accent-color); text-decoration: underline;">Open in Google Maps</a>`;
     container.classList.remove('hidden');
   }else{
@@ -1986,17 +1574,16 @@ function clearForm(){
 
 function generateOrderNumber() {
   const now = new Date();
-  const date = now.toISOString().slice(0,10).replace(/-/g, '');
+  const date = now.toISOString().slice(0, 10).replace(/-/g, '');
   let rand = Math.random().toString(36).substring(2, 6).toUpperCase();
 
-  // 判断是否 Z.S.M.
-  const delivery = document.getElementById('typeDelivery').checked;
-  const tijdslot = delivery ? document.getElementById('delivery_time').value
-                            : document.getElementById('pickup_time').value;
+  // 判断是否 ZSM
+  const delivery = document.getElementById('typeDelivery')?.checked;
+  const tijdslot = delivery ? document.getElementById('delivery_time')?.value
+                            : document.getElementById('pickup_time')?.value;
   const raw = String(tijdslot || '').toLowerCase().replace(/\./g, '').trim();
   const isZsm = !raw || raw === 'zsm' || raw === 'asap';
 
-  // 如果是 ZSM，最后一个字母设为 Z，否则避免以 Z 结尾
   if (isZsm) {
     rand = rand.slice(0, 3) + 'Z';
   } else if (rand.endsWith('Z')) {
@@ -2005,8 +1592,6 @@ function generateOrderNumber() {
 
   return `NV${date}-${rand}`;
 }
-
-
 function submitOrder() {
   const name = document.getElementById('custName').value.trim() || 'Guest';
   const phone = document.getElementById('custPhone').value.trim();
@@ -2310,6 +1895,7 @@ function formatCurrency(value){
     const tbody = document.querySelector('.orders-panel tbody');
     return tbody ? tbody.children.length : 0;
   }
+
   function updateTodayBadge(){
     fetch('/pos/orders_today?json=1')
       .then(r => r.json())
@@ -2356,516 +1942,112 @@ function formatCurrency(value){
     tbody.appendChild(tr);
   }
 
+  // 添加订单到表格
+  function addRow(order, highlight=false) {
+    const tbody = document.querySelector('.orders-panel tbody');
+    if (!tbody) return;
 
-
-
-
-function orderComplete(btn) {
-  const row = btn.closest('.order-card');
-  const status = row ? row.querySelector('.notify') : null;
-  const orderType = btn.dataset.type;
-
-  const orderData = row ? JSON.parse(row.dataset.order || '{}') : {};
-
-  const payload = {
-    order_number: orderData.order_number || btn.dataset.number,
-    name: orderData.customer_name || btn.dataset.name,
-    phone: orderData.phone || btn.dataset.phone,
-    email: orderData.email || btn.dataset.email,
-    order_type: orderType,
-    tijdslot: orderData.tijdslot || orderData.delivery_time || orderData.pickup_time || '',
-    street: orderData.street || '',
-    house_number: orderData.house_number || '',
-    postcode: orderData.postcode || '',
-    city: orderData.city || '',
-    opmerking: orderData.opmerking || '',
-    totaal: orderData.totaal || orderData.total || '',
-    payment_method: orderData.payment_method || '',
-    created_at: orderData.created_at || ''
-  };
-
-  // 👇 如果是配送订单，弹出配送员选择菜单
-  if (orderType === 'bezorg' && deliveryPersons.length > 0) {
-  openDeliveryModal(btn);
-  return; // 等待确认回调后再 fetch
-}
-
-
-  fetch('https://flask-order-api.onrender.com/api/order_complete', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  }).then(r => {
-    if(status) status.textContent = r.ok ? 'Notificatie verzonden' : 'Notificatie mislukt';
-  }).catch(() => {
-    if(status) status.textContent = 'Notificatie mislukt';
-  });
-}
-
-function toggleComplete(btn) {
-  const wrapper = btn.closest('.order-card-wrapper');
-  const row = wrapper ? wrapper.querySelector('.order-card') : null;
-  if (!row) return;
-
-  const id = btn.dataset.id || row.dataset.id;
-  const done = !row.classList.contains('completed');
-
-  fetch(`/api/orders/${id}/status`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ is_completed: done })
-  }).then(r => r.json()).then(() => {
-    if (done) orderComplete(btn);
-    row.classList.toggle('completed', done);
-    const notify = wrapper.querySelector('.notify');
-    if (notify) notify.textContent = done ? 'Voltooid' : '';
-  });
-}
-
-let deliveryPersons = [];
-
-fetch('/static/delivery_persons.json')
-  .then(res => res.json())
-  .then(data => {
-    deliveryPersons = data;
-  });
-
-let currentDeliveryBtn = null;
-
-function openDeliveryModal(btn) {
-  currentDeliveryBtn = btn;
-  const select = document.getElementById('deliverySelect');
-  select.innerHTML = '';
-
-  deliveryPersons.forEach(p => {
-    const option = document.createElement('option');
-    option.value = p.chat_id;
-    option.textContent = p.name;
-    select.appendChild(option);
-  });
-
-  const modal = document.getElementById('deliveryModal');
-  if (typeof modal.showModal === 'function') {
-    modal.showModal();
-  } else {
-    modal.setAttribute('open', '');
-  }
-}
-
-function closeDeliveryModal() {
-  const modal = document.getElementById('deliveryModal');
-  if (typeof modal.close === 'function') {
-    modal.close();
-  } else {
-    modal.removeAttribute('open');
-    modal.style.display = 'none';
-  }
-  currentDeliveryBtn = null;
-}
-
-function confirmDeliveryPerson() {
-  const select = document.getElementById('deliverySelect');
-  const chatId = select.value;
-  const person = deliveryPersons.find(p => p.chat_id == chatId);
-  if (!person || !currentDeliveryBtn) return;
-
-  const btn = currentDeliveryBtn;
-  const row = btn.closest('.order-card');
-  const status = row ? row.querySelector('.notify') : null;
-
-  const orderData = row ? JSON.parse(row.dataset.order || '{}') : {};
-
-  const payload = {
-    order_number: orderData.order_number || btn.dataset.number,
-    name: orderData.customer_name || btn.dataset.name,
-    phone: orderData.phone || btn.dataset.phone,
-    email: orderData.email || btn.dataset.email,
-    order_type: btn.dataset.type,
-    tijdslot: orderData.tijdslot || orderData.delivery_time || orderData.pickup_time || '',
-    street: orderData.street || '',
-    house_number: orderData.house_number || '',
-    postcode: orderData.postcode || '',
-    city: orderData.city || '',
-    opmerking: orderData.opmerking || '',
-    totaal: orderData.totaal || orderData.total || '',
-    payment_method: orderData.payment_method || '',
-    created_at: orderData.created_at || '',
-    delivery_person: person.name,
-    delivery_chat_id: person.chat_id
-  };
-
-  fetch('https://flask-order-api.onrender.com/api/order_complete', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  }).then(r => {
-    if (status) status.textContent = r.ok ? 'Notificatie verzonden' : 'Notificatie mislukt';
-  }).catch(() => {
-    if (status) status.textContent = 'Notificatie mislukt';
-  });
-
-  closeDeliveryModal();
-}
-
-document.getElementById('confirmDelivery').addEventListener('click', confirmDeliveryPerson);
-
-
-
-
-
-function orderCancelNotify(btn) {
-  const row = btn.closest('.order-card') || btn.closest('tr');
-  const status = row ? row.querySelector('.notify') : null;
-  const payload = {
-    order_number: btn.dataset.number,
-    name: btn.dataset.name,
-    phone: btn.dataset.phone,
-    email: btn.dataset.email,
-    order_type: btn.dataset.type
-  };
-
-  fetch('https://flask-order-api.onrender.com/api/order_cancelled', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  }).then(r => {
-    if (status) status.textContent = r.ok ? '' : '';
-  }).catch(() => {
-    if (status) status.textContent = '';
-  });
-}
-function toggleCancel(btn) {
-  const wrapper = btn.closest('.order-card-wrapper');
-  const row = wrapper ? wrapper.querySelector('.order-card') : null;
-  if (!row) return;
-
-  const id = btn.dataset.id || row.dataset.id;
-  const cancelled = !row.classList.contains('cancelled');
-
-  fetch(`/api/orders/${id}/status`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ is_cancelled: cancelled })
-  }).then(r => r.json()).then(() => {
-    if (cancelled) orderCancelNotify(btn);
-    row.classList.toggle('cancelled', cancelled);
-    const notify = wrapper.querySelector('.notify');
-    if (notify) notify.textContent = cancelled ? 'Geannuleerd' : '';
-  });
-}
-
-function fetchOrders() {
-  fetch('/pos/orders_today?json=1')
-    .then(r => r.json())
-    .then(data => {
-      const container = document.querySelector('.orders-cards');
-      if (!container) return;
-      container.innerHTML = '';
-      data.sort((a, b) => getSortKey(a) - getSortKey(b)).forEach(order => addRow(order));
-    })
-    .catch(err => {
-      console.error("订单拉取失败", err);
-    });
-}
-
-
-function parseItemsString(str, existing) {
-  const result = {};
-  if (!str) return result;
-  str.split(',').forEach(part => {
-    const [name, qty] = part.split('=').map(s => s.trim());
-    const q = parseInt(qty, 10);
-    if (name && q > 0) {
-      const price = existing && existing[name] ? existing[name].price : 0;
-      result[name] = { qty: q, price };
+    const tr = document.createElement('tr');
+    if (order.id) tr.dataset.id = order.id;
+    tr.dataset.order = JSON.stringify(order);
+    if(order.is_cancelled) tr.classList.add('cancelled');
+    else if(order.is_completed) tr.classList.add('completed');
+    const isDelivery = ['delivery', 'bezorgen'].includes(order.order_type);
+    const items = Object.entries(order.items || {}).map(([n, i]) => `<li>${n} x ${i.qty}</li>`).join('');
+    let fooi = parseFloat(order.fooi ?? order.tip);
+    if (isNaN(fooi)) {
+      fooi = 0;
     }
-  });
-  return result;
-}
+    if(!('totaal' in order)){
+      console.warn('⚠️ totaal 字段缺失，请联系后端');
+    }
+    const remark = order.opmerking || order.remark || '';
+    const pickup = order.pickup_time || order.pickupTime;
+    const delivery = order.delivery_time || order.deliveryTime;
+    const tijdslot = order.tijdslot_display || (isDelivery ? delivery : pickup);
 
-function editOrder(btn) {
-  const row = btn.closest('tr') || btn.closest('.order-card');
-  if(!row) return;
-  const id = btn.dataset.id || row.dataset.id;
-  const data = JSON.parse(row.dataset.order || '{}');
-
-  const name = prompt('Naam', data.customer_name || '');
-  if (name === null) return;
-  const phone = prompt('Telefoon', data.phone || '');
-  if (phone === null) return;
-  const email = prompt('Email', data.email || '');
-  if (email === null) return;
-  const street = prompt('Straat', data.street || '');
-  if (street === null) return;
-  const number = prompt('Huisnummer', data.house_number || '');
-  if (number === null) return;
-  const postcode = prompt('Postcode', data.postcode || '');
-  if (postcode === null) return;
-  const city = prompt('Plaats', data.city || '');
-  if (city === null) return;
-  const pickup = prompt('Afhaaltijd', data.pickup_time || '');
-  if (pickup === null) return;
-  const delivery = prompt('Bezorgtijd', data.delivery_time || '');
-  if (delivery === null) return;
-
-  const itemsStr = Object.entries(data.items || {}).map(([n,i])=>`${n}=${i.qty}`).join(', ');
-  const newItemsInput = prompt('Items (naam=qty, gescheiden door komma)', itemsStr);
-  if (newItemsInput === null) return;
-
-  const payment = prompt('Betaalwijze', data.payment_method || '');
-  if (payment === null) return;
-
-  const totaal = prompt('Totaal', data.totaal != null ? data.totaal : '');
-  if (totaal === null) return;
-
-  const fooi = prompt('Fooi', data.fooi != null ? data.fooi : (data.tip || '0'));
-  if (fooi === null) return;
-
-  fetch(`/api/orders/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      customer_name: name, phone, email,
-      street, house_number: number, postcode, city,
-      pickup_time: pickup, delivery_time: delivery,
-      items: parseItemsString(newItemsInput, data.items || {}),
-      payment_method: payment,
-      totaal: parseFloat(totaal) || 0,
-      fooi: parseFloat(fooi) || 0
-    })
-  }).then(() => fetchOrders());
-}
-
-function addRow(order, highlight = false) {
-  const container = document.querySelector('.orders-cards');
-  if (!container) return;
-
-  const isDelivery = ['delivery', 'bezorgen'].includes(order.order_type);
-
-  const items = Object.entries(order.items || {})
-    .sort(([, a], [, b]) => {
-      const priceA = a.price || 0;
-      const priceB = b.price || 0;
-      if (priceA === 0 && priceB !== 0) return 1;
-      if (priceA !== 0 && priceB === 0) return -1;
-      const nameA = (a.displayName || a.name || '').toUpperCase();
-      const nameB = (b.displayName || b.name || '').toUpperCase();
-      return nameA.localeCompare(nameB);
-    })
-    .map(([n, i]) => {
-      const isFree = (i.price || 0) === 0;
-      const displayNameRaw = i.displayName || i.name || n;
-      const displayName = isFree ? displayNameRaw.toLowerCase() : displayNameRaw.toUpperCase();
-      const rowTotal = (i.qty * (i.price || 0)).toFixed(2).replace('.', ',');
-      return `<li>${i.qty} x ${displayName} = €${rowTotal}</li>`;
-    }).join('');
-
-  let subtotal = 0;
-  let verpakkingskosten = 0;
-  Object.values(order.items || {}).forEach(i => {
-    subtotal += (i.price || 0) * i.qty;
-    verpakkingskosten += (i.packaging || 0) * i.qty;
-  });
-
-  const verpakkingDisplay = verpakkingskosten.toFixed(2).replace('.', ',');
-  const bezorgkosten = parseFloat(order.bezorgkosten || order.delivery_cost || 0) || 0;
-  const bezorgDisplay = bezorgkosten.toFixed(2).replace('.', ',');
-  let fooi = parseFloat(order.fooi || order.tip || 0); if (isNaN(fooi)) fooi = 0;
-  const fooiDisplay = fooi.toFixed(2).replace('.', ',');
-
-  let totaal = parseFloat(order.totaal || order.total || 0);
-  if (isNaN(totaal)) totaal = 0;
-  const totaalDisplay = totaal.toFixed(2).replace('.', ',');
-
-  const theoretischTotaal = subtotal + verpakkingskosten + bezorgkosten + fooi;
-  let korting = theoretischTotaal - totaal;
-  const showKorting = korting >= 0.01;
-  const kortingDisplay = korting.toFixed(2).replace('.', ',');
-
-  const address = isDelivery
-    ? `${order.street || ''} ${order.house_number || ''}, ${order.postcode || ''} ${order.city || ''}`.trim()
-    : '-';
-
-  const tijdslotRaw = order.tijdslot_display || (isDelivery ? order.delivery_time : order.pickup_time);
-  const tijdslot = order.is_zsm ? 'ZSM' : (tijdslotRaw || '').trim();
-  const wrapper = document.createElement('div');
-  wrapper.className = 'order-card-wrapper';
-
-  const card = document.createElement('div');
-  card.className = 'order-card';
-  if (order.id) card.dataset.id = order.id;
-  card.dataset.order = JSON.stringify(order);
-  if (order.is_cancelled) card.classList.add('cancelled');
-  else if (order.is_completed) card.classList.add('completed');
-  if (highlight) {
-    card.classList.add('new-order');
-    setTimeout(() => card.classList.remove('new-order'), 10000);
+    let time = order.created_at || '';
+    if (time && time.length > 5) {
+      if (time.includes('T')) {
+        const d = new Date(time);
+        if (!isNaN(d)) time = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      } else if (time.includes(' ')) {
+        time = time.split(' ')[1].slice(0,5);
+      }
+    }
+      tr.innerHTML = `
+        <td>${order.created_date || ''}</td>
+        <td>${time}</td>
+        <td>${tijdslot || '-'}</td>
+        <td>${isDelivery ? 'Bezorgen' : 'Afhalen'}</td>
+        <td>${order.customer_name || ''}</td>
+        <td>${order.phone || ''}</td>
+        <td>${order.email || '-'}</td>
+        <td><ul>${items}</ul></td>
+        <td>${remark || '-'}</td>
+        <td>${order.order_number || '-'}</td>
+        <td>€${parseFloat(order.totaal).toFixed(2)}</td>
+        <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
+        <td>${order.payment_method || ''}</td>
+        <td>€${parseFloat(fooi).toFixed(2)}</td>
+        <td><button onclick="toggleComplete(this)"
+          data-number="${order.order_number}"
+          data-name="${order.customer_name || ''}"
+          data-phone="${order.phone || ''}"
+          data-email="${order.email || ''}"
+          data-type="${isDelivery ? 'bezorg' : 'afhaal'}">${order.is_completed ? 'Undone' : 'Klaar'}</button>
+          <button onclick="editOrder(this)">Bewerk</button>
+          <button onclick="cancelOrder(this)">Annuleer</button>
+          <span class="notify"></span></td>`;
+      
+    tr.dataset.sortKey = getSortKey(order);
+    if(highlight){
+      tr.classList.add('new-order');
+      setTimeout(()=>tr.classList.remove('new-order'),10000);
+    }
+    insertSorted(tbody, tr);
+    updateTodayBadge();
+    return tr;
   }
-
-  card.innerHTML = `
-    <div><strong>Ordernummer:</strong> ${order.order_number || ''}</div>
-    <div class="tijdslot-hoofd">
-      <div>
-        <strong class="${isDelivery ? 'type-bezorging' : 'type-afhalen'}">
-          ${isDelivery ? 'Bezorging' : 'Afhalen'}
-        </strong>
-        <span class="tijdslot" style="color: #e67e22; font-weight: bold; text-transform: uppercase;">
-          ${tijdslot}
-        </span>
-        &nbsp;&nbsp;<span class="created-at" style="color: #888;">Besteld om: ${order.created_at || '-'}</span>
-      </div>
-    </div>
-    <div><strong>Naam:</strong> ${order.customer_name || ''}</div>
-    <div><strong>Telefoon:</strong> ${order.phone || ''}</div>
-    ${order.email ? `<div><strong>Email:</strong> <a href="mailto:${order.email}">${order.email}</a></div>` : ''}
-    <div><strong>Items:</strong><ul>${items}</ul></div>
-    ${order.opmerking ? `<div><strong>Opmerking:</strong> ${order.opmerking}</div>` : ''}
-    ${verpakkingskosten > 0 ? `<div><strong>Verpakkingskosten:</strong> €${verpakkingDisplay}</div>` : ''}
-    ${bezorgkosten > 0 ? `<div><strong>Bezorgkosten:</strong> €${bezorgDisplay}</div>` : ''}
-    ${showKorting ? `<div><strong>Korting:</strong> -€${kortingDisplay}</div>` : ''}
-    <div><strong>Totaal:</strong> €${totaalDisplay}</div>
-    ${fooi > 0 ? `<div><strong>Fooi:</strong> €${fooiDisplay}</div>` : ''}
-    ${address !== '-' ? `<div><strong>Adres:</strong> ${address}
-      <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}" target="_blank" style="margin-left:6px;">📍Maps</a>
-    </div>` : ''}
-    ${order.payment_method ? `<div><strong>Betaalwijze:</strong> ${order.payment_method}</div>` : ''}
-  `;
-
-  const actions = document.createElement('div');
-  actions.className = 'card-actions';
-  actions.innerHTML = `
-    <button class="btn-klaar" onclick="toggleComplete(this)"
-      data-number="${order.order_number}"
-      data-name="${order.customer_name || ''}"
-      data-phone="${order.phone || ''}"
-      data-email="${order.email || ''}"
-      data-type="${isDelivery ? 'bezorg' : 'afhaal'}">
-      Klaar
-    </button>
-    <button class="btn-bewerk" onclick="editOrder(this)">Bewerk</button>
-    <button class="btn-annuleer" onclick="toggleCancel(this)"
-      data-number="${order.order_number}"
-      data-name="${order.customer_name || ''}"
-      data-phone="${order.phone || ''}"
-      data-email="${order.email || ''}"
-      data-type="${isDelivery ? 'bezorg' : 'afhaal'}"
-      data-id="${order.id}">
-      Annuleer
-    </button>
-    <span class="notify"></span>
-  `;
-
-  wrapper.appendChild(card);
-  wrapper.appendChild(actions);
-  container.appendChild(wrapper);
-}
-
-
+   
 
 const orderQueue = [];
 let isModalActive = false;
 let currentOrder = null;
 
 socket.on('new_order', order => {
+
   console.log('🆕 Nieuwe bestelling ontvangen!', order);
-  console.log("📦 实际推送内容:", order);
-  // 检查 order 是否有编号
-  if (!order || !order.order_number) {
-    console.warn("❌ 接收到的订单无有效 order_number:", order);
+  if (window.electronAPI && window.electronAPI.playDing) {
+   window.electronAPI.playDing();
   }
 
-  // 播声音
-  if (window.electronAPI?.playDing) {
-    window.electronAPI.playDing();
-  }
+  const row = addRow(order, true); // 添加订单到表格
 
-  // 尝试添加订单卡片
-  try {
-    const row = addRow(order, true);
-    console.log("✅ 卡片添加成功", row);
-  } catch (err) {
-    console.error("❌ addRow 失败", err);
-  }
-
-  // 加入队列
-  orderQueue.push(order);
-  console.log("📥 已加入 orderQueue，当前队列长度:", orderQueue.length);
-
-  // 显示弹窗
-  if (!isModalActive) {
-    console.log("📢 弹出订单提示框");
-    showNextOrderModal();
-  } else {
-    console.log("⏳ 弹窗已激活，等待当前处理完成...");
-  }
+  orderQueue.push(order); // 加入弹窗队列
+  if (!isModalActive) showNextOrderModal(); // 没有弹窗时立刻开始弹窗                            
 });
 
-
 function showNextOrderModal() {
-  if (orderQueue.length === 0) {
-    console.log("📭 队列为空，不弹出弹窗");
-    return;
-  }
-
+  if (orderQueue.length === 0) return;
   currentOrder = orderQueue.shift();
   isModalActive = true;
-  console.log("📦 显示弹窗订单:", currentOrder.order_number);
 
-  // 填充订单信息
+  // 填充弹窗内容
   document.getElementById('modal-order-id').textContent = currentOrder.order_number || '-';
   document.getElementById('modal-customer-name').textContent = currentOrder.customer_name || '-';
-  document.getElementById('modal-address').textContent = currentOrder.street
-    ? `${currentOrder.street} ${currentOrder.house_number} ${currentOrder.postcode} ${currentOrder.city}`
-    : '-';
+  document.getElementById('modal-address').textContent = currentOrder.street ? `${currentOrder.street} ${currentOrder.house_number} ${currentOrder.postcode} ${currentOrder.city}` : '-';
   document.getElementById('modal-items').innerHTML = Object.entries(currentOrder.items || {})
     .map(([name, i]) => `${name} x ${i.qty}`).join('<br>');
   document.getElementById('modal-remark').textContent = currentOrder.opmerking || '-';
   document.getElementById('modal-total').textContent = formatCurrency(currentOrder.totaal || currentOrder.total || 0);
 
-  // ✅ 时间字段处理（优先显示 tijdslot，如果是 ZSM 则保持为 "Z.S.M."）
   const timeInput = document.getElementById('modal-time');
-  timeInput.style.display = 'inline-block';
+  const tijdslot = currentOrder.pickup_time || currentOrder.delivery_time || '';
+  timeInput.value = tijdslot.length === 5 ? tijdslot : '';
 
-  let tijdslotRaw = currentOrder.tijdslot || '';
-  if (tijdslotRaw.toLowerCase().includes('z')) {
-    tijdslotRaw = 'Z.S.M.';
-  } else if (!tijdslotRaw && currentOrder.pickup_time) {
-    tijdslotRaw = currentOrder.pickup_time;
-  } else if (!tijdslotRaw && currentOrder.delivery_time) {
-    tijdslotRaw = currentOrder.delivery_time;
-  }
-  timeInput.value = tijdslotRaw;
-
-  // ✅ 正确调用盖章逻辑（不提前显示）
-  updateZSMBadge(currentOrder);
-
-  // 显示弹窗
   document.getElementById('order-modal').style.display = 'flex';
-  console.log("✅ 弹窗已显示！");
 }
-
-function updateZSMBadge(order) {
-  const zsmDisplay = document.getElementById('Z.S.M.-display');
-
-  if (!zsmDisplay) return;
-
-  const endsWithZ = (order.order_number || '').endsWith('Z');
-
-  if (endsWithZ) {
-    zsmDisplay.style.display = 'inline-block';
-    zsmDisplay.textContent = 'Z.S.M.';
-  } else if (order.tijdslot) {
-    zsmDisplay.style.display = 'inline-block';
-    zsmDisplay.textContent = `Tijdslot: ${order.tijdslot}`;
-  } else {
-    zsmDisplay.style.display = 'none';
-  }
-}
-
-
-
-
-
 
 document.getElementById('modal-confirm').addEventListener('click', async () => {
   const tijdslotOrigineel = currentOrder.pickup_time || currentOrder.delivery_time || '';
@@ -2931,7 +2113,17 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
   });
 
   // 轮询作为备份
-  
+  function fetchOrders() {
+  fetch('/pos/orders_today?json=1')
+    .then(r => r.json())
+    .then(data => {
+      const tbody = document.querySelector('.orders-panel tbody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      data.sort((a,b)=>getSortKey(a)-getSortKey(b)).forEach(o=>addRow(o));
+      updateTodayBadge();
+    }).catch(() => {});
+ }
 
 
   function startPolling() {
