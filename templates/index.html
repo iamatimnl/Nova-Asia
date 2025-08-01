@@ -6355,53 +6355,54 @@ document.addEventListener('DOMContentLoaded', () => {
   updateCartPaymentOptions();
 });
 </script>
+
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const navLinks = document.querySelectorAll('.nav-categories a:not(.review-link)');
-    const sections = Array.from(navLinks).map(link => document.querySelector(link.getAttribute('href')));
-    const indicator = document.getElementById('indicator');
-    const navbarContainer = document.getElementById('navbar-container');
+document.addEventListener('DOMContentLoaded', () => {
+  const navLinks = document.querySelectorAll('.nav-categories a:not(.review-link)');
+  const sections = Array.from(navLinks).map(link => document.querySelector(link.getAttribute('href')));
+  const indicator = document.getElementById('indicator');
+  const navbarContainer = document.getElementById('navbar-container');
+  let currentMode = null;
 
-    function updateIndicator(activeLink) {
-      const rect = activeLink.getBoundingClientRect();
-      const containerRect = navbarContainer.getBoundingClientRect();
-      const scrollLeft = navbarContainer.scrollLeft;
-      indicator.style.width = `${rect.width}px`;
-      indicator.style.transform = `translateX(${rect.left - containerRect.left + scrollLeft}px)`;
+  // ---------------- 公共函数 ----------------
+  function updateIndicator(activeLink) {
+    const rect = activeLink.getBoundingClientRect();
+    const containerRect = navbarContainer.getBoundingClientRect();
+    const scrollLeft = navbarContainer.scrollLeft;
+    indicator.style.width = `${rect.width}px`;
+    indicator.style.transform = `translateX(${rect.left - containerRect.left + scrollLeft}px)`;
+  }
+
+  function scrollToOffset(container, targetOffset, duration = 150) {
+    const start = container.scrollLeft;
+    const distance = targetOffset - start;
+    const startTime = performance.now();
+
+    function animate(time) {
+      const elapsed = time - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      container.scrollLeft = start + distance * progress;
+      if (progress < 1) requestAnimationFrame(animate);
     }
 
-    function scrollToOffset(container, targetOffset, duration = 150) {
-      const start = container.scrollLeft;
-      const distance = targetOffset - start;
-      const startTime = performance.now();
+    requestAnimationFrame(animate);
+  }
 
-      function animate(time) {
-        const elapsed = time - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        container.scrollLeft = start + distance * progress;
-        if (progress < 1) {
-          requestAnimationFrame(animate);
-        }
-      }
-
-      requestAnimationFrame(animate);
-    }
-
+  // ---------------- 移动端逻辑 ----------------
+  function initMobile() {
     function scrollActiveLinkIntoView(activeLink) {
       const container = navbarContainer;
       const containerRect = container.getBoundingClientRect();
       const linkRect = activeLink.getBoundingClientRect();
       const offset = linkRect.left - containerRect.left + container.scrollLeft;
-      scrollToOffset(container, offset - 20); // 向左偏移一点看起来更自然
+      scrollToOffset(container, offset, 120);
     }
 
     function updateActiveNav() {
       let currentSection = sections[0];
       for (let section of sections) {
         const rect = section.getBoundingClientRect();
-        if (rect.top <= 100) {
-          currentSection = section;
-        }
+        if (rect.top <= 90) currentSection = section;
       }
 
       navLinks.forEach(link => link.classList.remove('active'));
@@ -6413,11 +6414,37 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // 初始高亮第一个链接
-    const firstActive = navLinks[0];
-    if (firstActive) {
-      updateIndicator(firstActive);
-      scrollActiveLinkIntoView(firstActive);
+    window.addEventListener('scroll', updateActiveNav);
+    window.addEventListener('resize', updateActiveNav);
+    updateActiveNav();
+    navbarContainer.scrollLeft = 0;
+    currentMode = 'mobile';
+  }
+
+  // ---------------- 桌面端逻辑 ----------------
+  function initDesktop() {
+    function scrollActiveLinkIntoView(activeLink) {
+      const container = navbarContainer;
+      const containerRect = container.getBoundingClientRect();
+      const linkRect = activeLink.getBoundingClientRect();
+      const offset = linkRect.left - containerRect.left + container.scrollLeft;
+      scrollToOffset(container, offset - 20, 150);
+    }
+
+    function updateActiveNav() {
+      let currentSection = sections[0];
+      for (let section of sections) {
+        const rect = section.getBoundingClientRect();
+        if (rect.top <= 100) currentSection = section;
+      }
+
+      navLinks.forEach(link => link.classList.remove('active'));
+      const activeLink = Array.from(navLinks).find(link => link.getAttribute('href') === `#${currentSection.id}`);
+      if (activeLink) {
+        activeLink.classList.add('active');
+        updateIndicator(activeLink);
+        scrollActiveLinkIntoView(activeLink);
+      }
     }
 
     window.addEventListener('scroll', updateActiveNav);
@@ -6426,9 +6453,46 @@ document.addEventListener('DOMContentLoaded', () => {
       if (activeLink) updateIndicator(activeLink);
     });
 
+    // 默认激活第一个
+    const firstActive = navLinks[0];
+    if (firstActive) {
+      updateIndicator(firstActive);
+      scrollActiveLinkIntoView(firstActive);
+    }
+
     updateActiveNav();
-  });
+    navbarContainer.scrollLeft = 0;
+    currentMode = 'desktop';
+  }
+
+  // ---------------- 根据屏幕宽度切换 ----------------
+  function applyResponsiveMode() {
+    const isMobile = window.innerWidth <= 768;
+    const desiredMode = isMobile ? 'mobile' : 'desktop';
+
+    if (currentMode !== desiredMode) {
+      // 移除所有绑定事件（简单粗暴，确保不会重复）
+      window.onscroll = null;
+      window.onresize = null;
+
+      if (isMobile) {
+        initMobile();
+      } else {
+        initDesktop();
+      }
+    }
+  }
+
+  // 初次运行
+  applyResponsiveMode();
+
+  // 监听窗口变化
+  window.addEventListener('resize', applyResponsiveMode);
+});
 </script>
+
+
+
 
 <script>
 window.addEventListener('DOMContentLoaded', () => {
