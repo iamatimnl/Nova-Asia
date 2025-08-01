@@ -5360,7 +5360,21 @@ function getFirstMissingField() {
 function generateOrderNumber() {
   const now = new Date();
   const date = now.toISOString().slice(0, 10).replace(/-/g, '');
-  const rand = Math.random().toString(36).substring(2, 6).toUpperCase();
+  let rand = Math.random().toString(36).substring(2, 6).toUpperCase();
+
+  const delivery = document.getElementById('bezorgen')?.checked;
+  const tijdslot = delivery
+    ? document.getElementById('delivery_time')?.value
+    : document.getElementById('pickup_time')?.value;
+  const raw = String(tijdslot || '').toLowerCase().replace(/\./g, '').trim();
+  const isZsm = !raw || raw === 'zsm' || raw === 'asap';
+
+  if (isZsm) {
+    rand = rand.slice(0, 3) + 'Z';
+  } else if (rand.endsWith('Z')) {
+    rand = rand.slice(0, 3) + 'X';
+  }
+
   return `NV${date}-${rand}`;
 }
 
