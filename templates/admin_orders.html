@@ -103,7 +103,7 @@
       tbody.innerHTML = '';
 
       // 初始化统计数据
-      let total = 0, pin = 0, online = 0, contant = 0, credit = 0;
+      let total = 0, pin = 0, online = 0, contant = 0, credit = 0, unknown = 0;
       let cancelled = 0, cancelledCount = 0;
 
       // 显示或隐藏订单表格
@@ -125,6 +125,16 @@
         heading.textContent = `Bestellingen van ${label}`;
       }
 
+      // 支付方式映射函数
+      function normalizePaymentMethod(methodRaw) {
+        const method = String(methodRaw || '').toLowerCase();
+        if (['pin', 'card'].some(k => method.includes(k))) return 'pin';
+        if (['online', 'online payment'].some(k => method.includes(k))) return 'online';
+        if (['contant', 'cash'].some(k => method.includes(k))) return 'contant';
+        if (['rekening', 'on account'].some(k => method.includes(k))) return 'rekening';
+        return 'onbekend';
+      }
+
       // 渲染每一行订单
       data.forEach(order => {
         const tr = document.createElement('tr');
@@ -144,20 +154,19 @@
           tot = parseFloat(tot.replace(/[^\d,.-]/g, '').replace(',', '.'));
         }
 
-        // 累加统计：如果取消则记录取消额，否则归类至各支付方式
         if (order.is_cancelled) {
           cancelled += tot || 0;
           cancelledCount++;
         } else {
           total += tot;
-          const method = String(order.payment_method || '').toLowerCase();
-          if (method.includes('pin')) pin += tot;
-          else if (method.includes('online')) online += tot;
-          else if (method.includes('contant')) contant += tot;
-          else if (method.includes('rekening')) credit += tot;
+          const norm = normalizePaymentMethod(order.payment_method);
+          if (norm === 'pin') pin += tot;
+          else if (norm === 'online') online += tot;
+          else if (norm === 'contant') contant += tot;
+          else if (norm === 'rekening') credit += tot;
+          else unknown += tot;
         }
 
-        // 插入表格行
         tr.innerHTML = `
           <td>${order.id || ''}</td>
           <td>${order.created_date || ''}</td>
@@ -194,11 +203,16 @@
       document.getElementById('totalOnline').textContent = formatCurrency(online);
       document.getElementById('totalContant').textContent = formatCurrency(contant);
       document.getElementById('totalCredit').textContent = formatCurrency(credit);
-      document.getElementById('totalCancelled').textContent = `${cancelledCount} / ${formatCurrency(cancelled)}`;
+
+      const cancelledDisplay = `${cancelledCount} / ${formatCurrency(cancelled)}`;
+      document.getElementById('totalCancelled').textContent = cancelledDisplay;
+
+      // 若您在HTML中添加了 unknown 行，也可以更新它：
+      const unknownEl = document.getElementById('totalUnknown');
+      if (unknownEl) unknownEl.textContent = formatCurrency(unknown);
     })
     .catch(() => { alert('Fout bij het ophalen van gegevens.'); });
 }
-
 
     function fetchOrders() {
       const now = new Date();
