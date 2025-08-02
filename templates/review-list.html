@@ -123,14 +123,14 @@
 .circle-button {
   min-width: 56px;
   height: 56px;
-  background: #030303;
-  border-radius: 50%;
+
+
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+
   transition: background 0.3s, transform 0.1s;
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
@@ -174,7 +174,7 @@
   </div>
 
   <div class="circle-button" onclick="goHome()" title="Home">
- <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+ <img alt="Back to top" id="back-to-top-logo" src="{{ url_for('static', filename='images/Logo.png') }}"/>
       <path d="M12 3l9 9h-3v9h-12v-9h-3l9-9z" />
     </svg>
 
