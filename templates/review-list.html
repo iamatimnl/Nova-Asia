@@ -103,11 +103,12 @@
   bottom: 0; /* 改成 0，彻底贴底 */
   left: 0;
   right: 0;
+  border-radius: 14px;
   display: flex;
   justify-content: space-around;
   z-index: 10;
   padding: 6px 0; /* 给一点上下 padding，看起来不会太挤 */
-  background: #030303;
+  background:#f9f4ef;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -167,11 +168,12 @@
 
 <div class="bottom-buttons">
   <div class="circle-button" onclick="scrollToTop()" title="Scroll to Top">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#000">
       <path d="M12 4l-8 8h6v8h4v-8h6z" />
     </svg>
-   
   </div>
+
+
 
   <div class="circle-button" onclick="goHome()" title="Home">
  <img alt="Back to top" id="back-to-top-logo" src="{{ url_for('static', filename='images/Logo.png') }}" style="width: 56px; height: 56px; object-fit: contain;" />
