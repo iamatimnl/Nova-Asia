@@ -1830,25 +1830,25 @@ body.portrait-mode .cart-extra-item select {
 .spinner {
   width: 32px;
   height: 32px;
-  position: relative;
   border-radius: 50%;
-  background: radial-gradient(circle at center,
-    #f9f7f2 0%,          /* 中心小圈背景色（按钮色） */
-    #5c554c 20%,         /* 第一层轨道（浅茶色） */
-    #65523b 40%,         /* 第二层轨道（中茶色） */
-    #483624 60%,         /* 第三层轨道（深茶色） */
-    transparent 61%      /* 镂空边缘 */
+  background: conic-gradient(
+    #cdac6b 0deg,
+    #a87c4a 120deg,
+    #fdf8f0 160deg,
+    transparent 220deg,
+    #4a3824 360deg
   );
-  animation: spin 1.2s linear infinite;
-  mask: radial-gradient(farthest-side, transparent 62%, black 63%);
-  -webkit-mask: radial-gradient(farthest-side, transparent 62%, black 63%);
-  box-shadow: 0 0 6px rgba(80, 60, 40, 0.3);
+  animation: spin 0.8s linear infinite;
+  mask: radial-gradient(farthest-side, transparent 60%, black 61%);
+  -webkit-mask: radial-gradient(farthest-side, transparent 60%, black 61%);
+  box-shadow: 0 0 4px rgba(108, 79, 61, 0.4);
   margin: auto;
 }
 @keyframes spin {
-  0%   { transform: rotate(0deg); }
+  0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
 
 
 
