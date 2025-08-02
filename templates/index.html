@@ -817,7 +817,7 @@ body.portrait-mode .cart-section.mobile-visible .cart-summary #closeCartBtn {
   font-size: 28px;
   font-weight: 600;
   border: none;
-  border-radius: 16px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1798,12 +1798,13 @@ body.portrait-mode .cart-extra-item select {
 
 @keyframes ios-shine {
   0% {
-    background-position: 100% 0;
+    background-position: 100% 0; /* 从左开始 */
   }
   100% {
-    background-position: -100% 0;
+    background-position: -100% 0;  /* 向右扫过去 */
   }
 }
+
 
 .slider-text {
   position: absolute;
@@ -1814,7 +1815,7 @@ body.portrait-mode .cart-extra-item select {
   z-index: 1;
   font-size: 11px;
   font-weight: 600;
-  background: linear-gradient(90deg, #4e4c4c 0%, #fffdfd 50%, #353333 100%);
+  background: linear-gradient(90deg, #363333 0%, #fffdfd 50%, #000000 100%);
 
   background-size: 200% auto;
   background-position: 100% 0;
@@ -1832,22 +1833,28 @@ body.portrait-mode .cart-extra-item select {
   position: relative;
   border-radius: 50%;
   background: conic-gradient(
-    #756032 0deg,
-    #524530 120deg,
-    rgb(44, 34, 22) 160deg,
-    transparent 220deg,
-    #160c02 360deg
+    from 0deg,
+    transparent 0deg 40deg,
+    #6b5131 41deg 43deg,        /* 深茶色 */
+    transparent 44deg 120deg,
+    #ffffff 121deg 123deg,      /* 深咖啡 */
+    transparent 124deg 200deg,
+    #3d2f1f 201deg 203deg,      /* 柔和棕 */
+    transparent 204deg 280deg,
+    #2f1e0c 281deg 283deg,      /* 经典茶棕 */
+    transparent 284deg 360deg
   );
-  animation: spin 0.8s linear infinite;
+  animation: spin 1.2s linear infinite;
   mask: radial-gradient(farthest-side, transparent 60%, black 61%);
   -webkit-mask: radial-gradient(farthest-side, transparent 60%, black 61%);
-  box-shadow: 0 0 4px rgba(108, 79, 61, 0.4);
+  box-shadow: 0 0 6px rgba(100, 75, 45, 0.3);
   margin: auto;
 }
 @keyframes spin {
-  0% { transform: rotate(0deg); }
+  0%   { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
 
 /* === Portrait 模式下：slider 容器整体放大 === */
 body.portrait-mode .slider-container {
