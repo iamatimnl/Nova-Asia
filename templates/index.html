@@ -1823,7 +1823,7 @@ body.portrait-mode .cart-extra-item select {
   -webkit-background-clip: text;
   color: black;
   -webkit-text-fill-color: transparent;
-  animation: ios-shine 3s linear infinite;
+  animation: ios-shine 4s linear infinite;
 }
 
 
@@ -1832,28 +1832,24 @@ body.portrait-mode .cart-extra-item select {
   height: 32px;
   position: relative;
   border-radius: 50%;
-  background: conic-gradient(
-    from 0deg,
-    transparent 0deg 40deg,
-    #6b5131 41deg 43deg,        /* 深茶色 */
-    transparent 44deg 120deg,
-    #ffffff 121deg 123deg,      /* 深咖啡 */
-    transparent 124deg 200deg,
-    #3d2f1f 201deg 203deg,      /* 柔和棕 */
-    transparent 204deg 280deg,
-    #2f1e0c 281deg 283deg,      /* 经典茶棕 */
-    transparent 284deg 360deg
+  background: radial-gradient(circle at center,
+    #f9f7f2 0%,          /* 中心小圈背景色（按钮色） */
+    #5c554c 20%,         /* 第一层轨道（浅茶色） */
+    #65523b 40%,         /* 第二层轨道（中茶色） */
+    #483624 60%,         /* 第三层轨道（深茶色） */
+    transparent 61%      /* 镂空边缘 */
   );
   animation: spin 1.2s linear infinite;
-  mask: radial-gradient(farthest-side, transparent 60%, black 61%);
-  -webkit-mask: radial-gradient(farthest-side, transparent 60%, black 61%);
-  box-shadow: 0 0 6px rgba(100, 75, 45, 0.3);
+  mask: radial-gradient(farthest-side, transparent 62%, black 63%);
+  -webkit-mask: radial-gradient(farthest-side, transparent 62%, black 63%);
+  box-shadow: 0 0 6px rgba(80, 60, 40, 0.3);
   margin: auto;
 }
 @keyframes spin {
   0%   { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
 
 
 /* === Portrait 模式下：slider 容器整体放大 === */
