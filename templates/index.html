@@ -3063,7 +3063,7 @@ body.portrait-mode .cart-badge {
   <!-- Zhai Ramen -->
   <div class="menu-row menu-item" data-code="zhai" data-name="Zhai" data-packaging="0.2" data-price="18">
     <div class="menu-img">
-      <img alt="Zhai Ramen" src="{{ url_for('static', filename='images/斋.png') }}"/>
+      <img alt="Zhai Ramen" src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}"/>
     </div>
     <div class="menu-content">
       <h3>Vegetarisch</h3>
@@ -5347,7 +5347,7 @@ function clearXBowlSet(){
 
 
   // 🧁 初始化下拉数量为 0～20
-  ['bubbleTeaQty','xBentoQty','xBowlQty','ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty'].forEach(id => {
+  ['bubbleTeaQty','xBentoQty','xBowlQty','ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty','zhaiQty'].forEach(id => {
     const sel = document.getElementById(id);
     for (let i = 0; i <= 20; i++) {
       const opt = document.createElement('option');
@@ -5608,8 +5608,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   document.querySelectorAll('.menu-item select').forEach(sel => {
-    if (['bubbleTeaQty','bubbleType','bubbleFlavor','bubbleTopping','xBentoMain','xBentoSide','xBentoRice','xBentoVeg','xBowlBase','xBowlQty','ebiBase','ebiSmaak','ebiQty','chickenBase','chickenSmaak','chickenQty','beefBase','beefSmaak','beefQty','ribeyeBase','ribeyeSmaak','ribeyeQty','chasiuBase','chasiuSmaak','chasiuQty'].includes(sel.id)) return;
-    if (sel.closest('#xBowlMains') || sel.closest('#xBowlToppings')) return;
+    if (['bubbleTeaQty','bubbleType','bubbleFlavor','bubbleTopping','xBentoMain','xBentoSide','xBentoRice','xBentoVeg','xBowlBase','xBowlQty','ebiBase','ebiSmaak','ebiQty','chickenBase','chickenSmaak','chickenQty','beefBase','beefSmaak','beefQty','ribeyeBase','ribeyeSmaak','ribeyeQty','chasiuBase','chasiuSmaak','chasiuQty','zhaiBase','zhaiSmaak','zhaiQty'].includes(sel.id)) return;
     populateSelect(sel);
     const parent = sel.closest('.menu-item');
     const name = parent.dataset.name;
@@ -5630,7 +5629,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.querySelectorAll('.qty-plus').forEach(btn => {
-    if (['bubbleTeaQty','xBentoQty','xBowlQty','ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty'].includes(btn.dataset.target)) return;
+    if (['bubbleTeaQty','xBentoQty','xBowlQty','ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty','zhaiQty'].includes(btn.dataset.target)) return;
     btn.addEventListener('click', () => {
       const sel = document.getElementById(btn.dataset.target);
       let val = parseInt(sel.value);
@@ -5651,7 +5650,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.querySelectorAll('.qty-minus').forEach(btn => {
-    if (['bubbleTeaQty','xBentoQty','xBowlQty','ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty'].includes(btn.dataset.target)) return;
+    if (['bubbleTeaQty','xBentoQty','xBowlQty','ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty','zhaiQty'].includes(btn.dataset.target)) return;
     btn.addEventListener('click', () => {
       const sel = document.getElementById(btn.dataset.target);
       let val = parseInt(sel.value);
