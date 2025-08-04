@@ -1285,7 +1285,7 @@ function addCustomPrice(){
 document.addEventListener('DOMContentLoaded',()=>{
   const skip=['bubbleTeaQty','bubbleType','bubbleFlavor','bubbleTopping','xBentoMain','xBentoSide','xBentoRice','xBentoVeg','xBowlBase','xBowlQty',
     'ebiBase','ebiSmaak','ebiQty','chickenBase','chickenSmaak','chickenQty','beefBase','beefSmaak','beefQty',
-    'ribeyeBase','ribeyeSmaak','ribeyeQty','chasiuBase','chasiuSmaak','chasiuQty'];
+    'ribeyeBase','ribeyeSmaak','ribeyeQty','chasiuBase','chasiuSmaak','chasiuQty','zhaiBase','zhaiSmaak','zhaiQty'];
   document.querySelectorAll('.menu-item select').forEach(sel=>{
     if(!skip.includes(sel.id) && !sel.closest('#xBowlMains') && !sel.closest('#xBowlToppings')){
       populateSelect(sel);
