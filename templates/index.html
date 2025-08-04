@@ -3053,10 +3053,45 @@ body.portrait-mode .cart-badge {
         <button type="button" class="new-set-button" id="chasiuNew">Selecteer een nieuwe optie</button>
       </div>
       <div class="qty-box">
-  
+
         <button class="qty-minus remove-button" data-target="chasiuQty" type="button">-</button>
         <select id="chasiuQty"></select>
         <button class="qty-plus add-button" data-target="chasiuQty" type="button">+</button>
+      </div>
+    </div>
+  </div>
+  <!-- Zhai Ramen -->
+  <div class="menu-row menu-item" data-code="zhai" data-name="Zhai" data-packaging="0.2" data-price="18">
+    <div class="menu-img">
+      <img alt="Zhai Ramen" src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}"/>
+    </div>
+    <div class="menu-content">
+      <h3>斋 (Vegetarisch)</h3>
+      <p>€ 18.00</p>
+      <p id="soldoutZhaiRamen" class="sold-out-msg hidden">Uitverkocht!</p>
+      <div class="bubble-option">
+        <select id="zhaiBase">
+          <option value="">Base</option>
+          <option value="Ramen">Ramen</option>
+          <option value="Udon">Udon</option>
+        </select>
+      </div>
+      <div class="bubble-option">
+        <select id="zhaiSmaak">
+          <option value="">Smaak</option>
+          <option value="Miso">Miso</option>
+          <option value="Soyu">Shoyu</option>
+        </select>
+      </div>
+      <div class="new-set-wrap hidden" id="zhaiNewWrap">
+        <span class="new-set-msg">Toegevoegd aan winkelwagen!</span>
+        <button type="button" class="new-set-button" id="zhaiNew">Selecteer een nieuwe optie</button>
+      </div>
+      <div class="qty-box">
+
+        <button class="qty-minus remove-button" data-target="zhaiQty" type="button">-</button>
+        <select id="zhaiQty"></select>
+        <button class="qty-plus add-button" data-target="zhaiQty" type="button">+</button>
       </div>
     </div>
   </div>
@@ -5390,7 +5425,7 @@ function initNewSetControls({qtyId, wrapId, buttonId, fieldIds, onClear}) {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  const codes = ['ebi','chicken','beef','ribeye','chasiu'];
+  const codes = ['ebi','chicken','beef','ribeye','chasiu','zhai'];
   codes.forEach(code => {
     const qty = document.getElementById(code + 'Qty');
     populateSelect(qty);
@@ -7033,7 +7068,8 @@ function updateStatus(settings) {
     {name: 'Chicken', key: 'soldout_chicken_ramen', qty: 'chickenQty', msg: 'soldoutChickenRamen'},
     {name: 'Beef', key: 'soldout_beef_ramen', qty: 'beefQty', msg: 'soldoutBeefRamen'},
     {name: 'Ribeye', key: 'soldout_ribeye_ramen', qty: 'ribeyeQty', msg: 'soldoutRibeyeRamen'},
-    {name: 'Chasiu', key: 'soldout_chasiu_ramen', qty: 'chasiuQty', msg: 'soldoutChasiuRamen'}
+    {name: 'Chasiu', key: 'soldout_chasiu_ramen', qty: 'chasiuQty', msg: 'soldoutChasiuRamen'},
+    {name: 'Zhai', key: 'soldout_zhai_ramen', qty: 'zhaiQty', msg: 'soldoutZhaiRamen'}
   ];
 
   const teppanyakiConfig = [

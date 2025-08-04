@@ -480,6 +480,40 @@
       </div>
     </div>
   </div>
+  <!-- Zhai Ramen -->
+  <div class="menu-row menu-item" data-code="zhai" data-name="Zhai" data-packaging="0.2" data-price="18">
+    <div class="menu-img">
+      <img alt="Zhai Ramen" src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}"/>
+    </div>
+    <div class="menu-content">
+      <h3>Zhai</h3>
+      <p>€ 18.00</p>
+      <div class="bubble-option">
+        <select id="zhaiBase">
+          <option value="">Base</option>
+          <option value="Ramen">Ramen</option>
+          <option value="Udon">Udon</option>
+        </select>
+      </div>
+      <div class="bubble-option">
+        <select id="zhaiSmaak">
+          <option value="">Smaak</option>
+          <option value="Miso">Miso</option>
+          <option value="Soyu">Soyu</option>
+        </select>
+      </div>
+      <div class="new-set-wrap hidden" id="zhaiNewWrap">
+        <span class="new-set-msg">Toegevoegd. Nieuw selecteren?</span>
+        <button type="button" class="new-set-button" id="zhaiNew">druk op</button>
+      </div>
+      <div class="qty-box">
+        <label for="zhaiQty">Aantal</label>
+        <button class="qty-minus remove-button" data-target="zhaiQty" type="button">-</button>
+        <select id="zhaiQty"></select>
+        <button class="qty-plus add-button" data-target="zhaiQty" type="button">+</button>
+      </div>
+    </div>
+  </div>
 </div>
 </section>
 <section id="Pokebowl">
