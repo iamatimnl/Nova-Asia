@@ -1751,7 +1751,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.querySelector('.qty-minus[data-target="xBowlQty"]').addEventListener('click',()=>{if(!isXbowlValid()){alert('🥗 Basis en hoofdingrediënt vereist.');return;}changeXbowlQty(-1);});
   document.getElementById('xBowlQty').addEventListener('change',()=>{if(!isXbowlValid()){alert('🥗 Basis en hoofdingrediënt vereist.');document.getElementById('xBowlQty').value=0;return;}changeXbowlQty(0);});
 
-  const ramenIds=['ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty'];
+  const ramenIds=['ebiQty','chickenQty','beefQty','ribeyeQty','chasiuQty','zhaiQty'];
   document.querySelectorAll('.qty-plus').forEach(btn=>{
     if(['bubbleTeaQty','xBentoQty','xBowlQty',...ramenIds].includes(btn.dataset.target)) return;
     btn.addEventListener('click',()=>{
@@ -1791,7 +1791,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     });
   });
 
-  const ramenCodes=['ebi','chicken','beef','ribeye','chasiu'];
+  const ramenCodes=['ebi','chicken','beef','ribeye','chasiu','zhai'];
   ramenCodes.forEach(code=>{
     const qty=document.getElementById(code+'Qty');
     populateSelect(qty);
