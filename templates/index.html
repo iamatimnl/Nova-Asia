@@ -7368,26 +7368,26 @@ document.addEventListener('click', e => {
     text-align: center;
     padding: 20px;
     font-size: 14px;
-    background-color: #f5f5f5;
+    background-color: #f2e9dc;
   }
 
   .footer-title {
     font-weight: bold;
     margin-bottom: 8px;
     color: #333;
-    font-size: 16px;
+    font-size: 26px;
   }
 
   .footer-links {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 10px;
+    gap: 20px; /* 控制链接之间的间距 */
     margin-bottom: 10px;
   }
 
   .footer-links a {
-    text-decoration: none;
+    text-decoration: underline;
     color: #333;
     padding: 5px 10px;
   }
@@ -7400,20 +7400,25 @@ document.addEventListener('click', e => {
     .footer-links {
       flex-direction: column;
       align-items: center;
+      gap: 8px;
     }
   }
 </style>
 
-<footer class="footer">
-  <div class="footer-title">Information</div>
+
+  <footer class="footer">
+  <div class="footer-title">Overig</div>
   <div class="footer-links">
-    <a href="/algemene-voorwaarden">Algemene voorwaarden</a>
-    <a href="/privacyverklaring">Privacyverklaring</a>
+    <a href="/legal.html">Algemene voorwaarden & Privacyverklaring</a>
+
+    <a href="#delivery-options">Bestelwijze</a>
+    <a href="#info">Over ons</a>
   </div>
   <div class="footer-info">
     <p>KVK: 97092339 | BTW: NL867906959B01</p>
     <p>&copy; 2025 Nova Asia. Alle rechten voorbehouden.</p>
   </div>
 </footer>
+
 
 </body></html>
