@@ -1119,27 +1119,30 @@ body.portrait-mode textarea {
 
 @media (max-width: 768px) {
   .apply-discount-btn {
-    margin-left: 8px;
-    padding: 8px 16px; /* ↑↑ 增加上下 padding 提升居中感 */
+    margin-left: 6px;
+    padding: 6px 12px;         /* ⬅️ 缩小内边距 */
     background: black;
     color: #f2e9d8;
     border: none;
-    border-radius: 24px;
+    border-radius: 6px;        /* ⬅️ 稍微缩小圆角 */
     cursor: pointer;
     font-weight: bold;
-    font-size: 16px;
-    line-height: 1; /* 避免字体撑高 */
+    font-size: 13px;           /* ⬅️ 字体稍微小点 */
+    line-height: 1;
 
     display: inline-flex;
     align-items: center;
     justify-content: center;
 
     box-shadow:
-      4px 4px 8px rgba(0, 0, 0, 0.6),
+      3px 3px 6px rgba(0, 0, 0, 0.5),
       inset -1px -1px 2px rgba(255, 255, 255, 0.05),
-      inset 1px 1px 3px rgba(0, 0, 0, 0.4);
+      inset 1px 1px 2px rgba(0, 0, 0, 0.35);
+
     transition: transform 0.1s ease, box-shadow 0.3s ease;
   }
+}
+
 
   .apply-discount-btn:active {
     transform: scale(0.90);
