@@ -262,14 +262,22 @@ async function showOrdersOnMap() {
   closeBtn.style.display = 'block';
   mapVisible = true;
 
-  if (window.orderMapLoaded) return;
-  window.orderMapLoaded = true;
+  if (window.orderMap) {
+    setTimeout(() => {
+      window.orderMap.invalidateSize();
+      if (window.orderBounds) {
+        window.orderMap.fitBounds(window.orderBounds);
+      }
+    }, 100);
+    return;
+  }
 
-  const map = L.map('map').setView([52.37, 4.89], 11);
+  window.orderMap = L.map('map');
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
-  }).addTo(map);
+  }).addTo(window.orderMap);
 
+  const latlngs = [];
   const cards = document.querySelectorAll('.order-card');
   for (const card of cards) {
     const addressEl = Array.from(card.querySelectorAll('p')).find(p => p.textContent.includes('Adres:'));
@@ -288,7 +296,8 @@ async function showOrdersOnMap() {
       if (data && data[0]) {
         const lat = parseFloat(data[0].lat);
         const lon = parseFloat(data[0].lon);
-        L.marker([lat, lon]).addTo(map)
+        latlngs.push([lat, lon]);
+        L.marker([lat, lon]).addTo(window.orderMap)
           .bindPopup(`<strong>Order #${orderNumber}</strong><br>${addressText}`);
       }
     } catch (e) {
@@ -296,6 +305,13 @@ async function showOrdersOnMap() {
     }
 
     await new Promise(resolve => setTimeout(resolve, 600));
+  }
+
+  if (latlngs.length > 0) {
+    window.orderBounds = L.latLngBounds(latlngs);
+    window.orderMap.fitBounds(window.orderBounds);
+  } else {
+    window.orderMap.setView([52.37, 4.89], 11);
   }
 }
 
