@@ -95,9 +95,11 @@ def serve_index():
 @app.route("/en")
 def serve_index_en():
     return render_template("indexEN.html")  
- @app.route("/legal")
+
+@app.route("/legal")
 def legal():
     return render_template("legal.html")
+
 
 
 # 英文版首页
