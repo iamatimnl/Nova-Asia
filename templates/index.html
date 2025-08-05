@@ -1116,10 +1116,10 @@ body.portrait-mode textarea {
 }
 
 
-
 @media (max-width: 768px) {
   .apply-discount-btn {
     margin-left: 6px;
+    margin-right: 10px; /* 👈 解决靠右问题 */
     padding: 6px 12px;
     background: black;
     color: #f2e9d8;
@@ -1134,7 +1134,6 @@ body.portrait-mode textarea {
     align-items: center;
     justify-content: center;
 
-    /* ✅ 保留立体感的内部浮雕效果，❌ 不含外部阴影 */
     box-shadow:
       inset 1px 1px 1px rgba(255, 255, 255, 0.05),
       inset -1px -1px 2px rgba(0, 0, 0, 0.3);
@@ -1149,6 +1148,7 @@ body.portrait-mode textarea {
       inset -1px -1px 1px rgba(255, 255, 255, 0.1);
   }
 }
+
 
 
 
