@@ -95,7 +95,10 @@ def serve_index():
 @app.route("/en")
 def serve_index_en():
     return render_template("indexEN.html")  
-    
+ @app.route("/legal")
+def legal():
+    return render_template("legal.html")
+
 
 # 英文版首页
 def to_nl(dt: datetime) -> datetime:
