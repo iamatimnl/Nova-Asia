@@ -797,6 +797,7 @@ const extras = {
 let milkTeaPrice = 0;
 let bubbleOptions = {base: [], smaak: [], topping: []};
 let xbentoOptions = {main: [], side: [], rice: [], groente: []};
+let xbentoSetControls;
 const xbowlBases=[
   {name:'Sushi rijst',price:4},
   {name:'IJsbergsla',price:5},
@@ -858,12 +859,23 @@ function getXbentoPrice(){
 }
 
 function updateXbentoDisplay(){
-  const price=getXbentoPrice();
+  const main=document.getElementById('xBentoMain').value;
+  const side=document.getElementById('xBentoSide').value;
+  const rice=document.getElementById('xBentoRice').value;
+  const veg=document.getElementById('xBentoVeg').value;
+
   const item=document.querySelector('.menu-item[data-name="Xbento"]');
+  const p=item?.querySelector('p');
+
+  if(!main && !side && !rice && !veg){
+    if(p) p.textContent="Xbento Zelf Samenstellen";
+    return;
+  }
+
+  const price=getXbentoPrice();
   if(item){
     item.dataset.price=price;
-    const p=item.querySelector('p');
-    if(p) p.textContent=`€${price.toFixed(2)}`;
+    if(p) p.textContent=`€ ${price.toFixed(2)}`;
   }
 }
 
@@ -1045,6 +1057,7 @@ function changeXbentoQty(delta){
   const price=getXbentoPrice();
   const name=`Xbento (${main}, ${side}, ${rice}, ${veg})`;
   setQty(name,price,val,0.2);
+  if(xbentoSetControls) xbentoSetControls.update();
 }
 
 function changeOmakaseQty(delta){
@@ -1282,6 +1295,31 @@ function addCustomPrice(){
   updateCart();
 }
 
+function initNewSetControls({qtyId, wrapId, buttonId, fieldIds, onClear}){
+  const qtyEl=document.getElementById(qtyId);
+  const wrapEl=document.getElementById(wrapId);
+  const btn=document.getElementById(buttonId);
+
+  function update(){
+    const filled=fieldIds.every(id=>document.getElementById(id).value);
+    const qty=parseInt(qtyEl.value||0);
+    if(filled && qty>0) wrapEl.classList.remove('hidden');
+    else wrapEl.classList.add('hidden');
+  }
+
+  function clear(){
+    fieldIds.forEach(id=>{document.getElementById(id).value='';});
+    qtyEl.value=0;
+    update();
+    if(typeof onClear==='function') onClear();
+  }
+
+  fieldIds.forEach(id=>document.getElementById(id).addEventListener('change',update));
+  qtyEl.addEventListener('change',update);
+  if(btn) btn.addEventListener('click',clear);
+  return{update,clear};
+}
+
 document.addEventListener('DOMContentLoaded',()=>{
   const skip=['bubbleTeaQty','bubbleType','bubbleFlavor','bubbleTopping','xBentoMain','xBentoSide','xBentoRice','xBentoVeg','xBowlBase','xBowlQty',
     'ebiBase','ebiSmaak','ebiQty','chickenBase','chickenSmaak','chickenQty','beefBase','beefSmaak','beefQty',
@@ -1313,6 +1351,15 @@ document.addEventListener('DOMContentLoaded',()=>{
   ['bubbleType','bubbleFlavor','bubbleTopping'].forEach(id=>{
     document.getElementById(id).addEventListener('change',()=>{updateMilkTeaDisplay();});
   });
+
+  xbentoSetControls = initNewSetControls({
+    qtyId:'xBentoQty',
+    wrapId:'xBentoNewWrap',
+    buttonId:'xBentoNew',
+    fieldIds:['xBentoMain','xBentoSide','xBentoRice','xBentoVeg'],
+    onClear:()=>updateXbentoDisplay()
+  });
+  xbentoSetControls.update();
   ['xBentoMain','xBentoSide','xBentoRice','xBentoVeg'].forEach(id=>{
     document.getElementById(id).addEventListener('change',()=>{updateXbentoDisplay();});
   });
