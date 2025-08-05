@@ -904,6 +904,21 @@ dialog::backdrop {
   from { opacity: 0; transform: translateY(5px); }
   to { opacity: 1; transform: translateY(0); }
 }
+.order-card {
+  position: relative;
+  padding-bottom: 140px; /* 为二维码腾出底部空间 */
+}
+
+.qr-wrapper {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+}
+
+.qr-wrapper img {
+  width: 50px;
+  height: 50px;
+}
 
 </style>
 </head>
@@ -2762,9 +2777,17 @@ function addRow(order, highlight = false) {
     ${showKorting ? `<div><strong>Korting:</strong> -€${kortingDisplay}</div>` : ''}
     <div><strong>Totaal:</strong> €${totaalDisplay}</div>
     ${fooi > 0 ? `<div><strong>Fooi:</strong> €${fooiDisplay}</div>` : ''}
-    ${address !== '-' ? `<div><strong>Adres:</strong> ${address}
-      <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}" target="_blank" style="margin-left:6px;">📍Maps</a>
-    </div>` : ''}
+    ${address !== '-' ? `
+  <div class="qr-address">
+    <strong>Adres:</strong> ${address}
+    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}" target="_blank" style="margin-left:6px;">📍Maps</a>
+  </div>
+  <div class="qr-wrapper">
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent('https://www.google.com/maps?q=' + address)}" alt="QR Code">
+  </div>
+` : ''}
+
+
     ${order.payment_method ? `<div><strong>Betaalwijze:</strong> ${order.payment_method}</div>` : ''}
   `;
 
