@@ -920,6 +920,19 @@ dialog::backdrop {
   height: 50px;
 }
 
+/* Map controls and container */
+.map-btn {
+  margin: 5px;
+  padding: 8px 12px;
+}
+
+#map {
+  height: 400px;
+  width: 100%;
+  display: none;
+  margin-top: 10px;
+}
+
 </style>
 </head>
 <body>
@@ -1139,6 +1152,11 @@ dialog::backdrop {
     <span class="badge-text-only today-badge"></span>
   </span>
 </button>
+
+<!-- Map controls -->
+<button id="showMapOrders" class="map-btn">Show Orders on Map</button>
+<button id="optimizeRouteBtn" class="map-btn">Optimize Delivery Route</button>
+<div id="map"></div>
 
 
 
@@ -2663,6 +2681,111 @@ function fetchOrders() {
     });
 }
 
+// --- Mapping utilities ---
+const GOOGLE_MAPS_API_KEY = 'AIzaSyAeHJ0l5swNQlTlbeoHsi9gagS02Toovqc';
+const ordersOnMap = [];
+let map, markers = [], directionsService, directionsRenderer;
+
+async function collectOrder(order) {
+  if (!order) return;
+  const id = order.id || order.order_number;
+  if (!id || ordersOnMap.some(o => o.id === id)) return;
+
+  let lat = parseFloat(order.lat || order.latitude);
+  let lng = parseFloat(order.lng || order.longitude);
+
+  if (isNaN(lat) || isNaN(lng)) {
+    const address = ['delivery', 'bezorgen'].includes(order.order_type)
+      ? `${order.street || ''} ${order.house_number || ''}, ${order.postcode || ''} ${order.city || ''}`.trim()
+      : '';
+    if (address) {
+      try {
+        const resp = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${GOOGLE_MAPS_API_KEY}`);
+        const data = await resp.json();
+        if (data.results && data.results[0]) {
+          lat = data.results[0].geometry.location.lat;
+          lng = data.results[0].geometry.location.lng;
+        }
+      } catch (e) {
+        console.error('Geocoding failed', e);
+      }
+    }
+  }
+
+  if (!isNaN(lat) && !isNaN(lng)) {
+    ordersOnMap.push({ id, lat, lng });
+  }
+}
+
+function initMap() {
+  const mapDiv = document.getElementById('map');
+  if (!mapDiv) return;
+  map = new google.maps.Map(mapDiv, { center: { lat: 52.0, lng: 5.0 }, zoom: 8 });
+  directionsService = new google.maps.DirectionsService();
+  directionsRenderer = new google.maps.DirectionsRenderer({ map });
+}
+
+function showOrdersOnMap() {
+  if (!map) initMap();
+  if (!map) return;
+  const mapDiv = document.getElementById('map');
+  if (mapDiv) mapDiv.style.display = 'block';
+  markers.forEach(m => m.setMap(null));
+  markers = [];
+  const bounds = new google.maps.LatLngBounds();
+  ordersOnMap.forEach(o => {
+    if (!isNaN(o.lat) && !isNaN(o.lng)) {
+      const marker = new google.maps.Marker({ position: { lat: o.lat, lng: o.lng }, map, title: `Order ${o.id}` });
+      markers.push(marker);
+      bounds.extend(marker.getPosition());
+    }
+  });
+  if (!bounds.isEmpty()) {
+    map.fitBounds(bounds);
+  }
+}
+
+function generateRoute() {
+  if (!map) initMap();
+  if (!map) return;
+  if (ordersOnMap.length < 2) {
+    alert('Minstens twee orders nodig voor route.');
+    return;
+  }
+  const points = ordersOnMap.filter(o => !isNaN(o.lat) && !isNaN(o.lng)).map(o => ({ location: { lat: o.lat, lng: o.lng } }));
+  if (points.length < 2) {
+    alert('Onvoldoende coördinaten.');
+    return;
+  }
+  const origin = points[0].location;
+  const destination = points[points.length - 1].location;
+  const waypoints = points.slice(1, -1).map(p => ({ location: p.location, stopover: true }));
+  const request = {
+    origin,
+    destination,
+    waypoints,
+    travelMode: google.maps.TravelMode.DRIVING,
+    optimizeWaypoints: true
+  };
+  directionsService.route(request, (result, status) => {
+    if (status === 'OK') {
+      directionsRenderer.setDirections(result);
+    } else {
+      console.error('Route berekenen mislukt:', status);
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const mapBtn = document.getElementById('showMapOrders');
+  if (mapBtn) mapBtn.addEventListener('click', showOrdersOnMap);
+  const routeBtn = document.getElementById('optimizeRouteBtn');
+  if (routeBtn) routeBtn.addEventListener('click', () => {
+    showOrdersOnMap();
+    generateRoute();
+  });
+});
+
 
 function parseItemsString(str, existing) {
   const result = {};
@@ -2819,6 +2942,7 @@ function addRow(order, highlight = false) {
   wrapper.appendChild(card);
   wrapper.appendChild(actions);
   container.appendChild(wrapper);
+  collectOrder(order);
 }
 
 
@@ -3067,8 +3191,10 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
   if(closeXBowlBtn){ closeXBowlBtn.addEventListener('click', hideXBowlModal); }
 
   window.addEventListener('beforeunload', () => socket.disconnect());
-  window.addEventListener('focus', () => { newOrderCount = 0; hasNewOrder = false; updateTabTitle(); updateTodayBadge(); });
+window.addEventListener('focus', () => { newOrderCount = 0; hasNewOrder = false; updateTabTitle(); updateTodayBadge(); });
 </script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAeHJ0l5swNQlTlbeoHsi9gagS02Toovqc&callback=initMap" async defer></script>
 
 
 
