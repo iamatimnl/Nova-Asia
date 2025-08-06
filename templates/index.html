@@ -6207,7 +6207,7 @@ function checkout() {
       updateCartPaymentOptions();
     } else {
       transferValues(afhalenFields, bezorgenFields);
-      infoBox.textContent = 'Wij bezorgen in de volgende postcodegebieden:\n' + allowedPostcodes.join(', ');
+      infoBox.textContent = 'Bezorging vanaf €20 – bezorgkosten €2,50\nWij bezorgen in de volgende postcodegebieden:\n' + allowedPostcodes.join(', ');
 
       bezorgenFields.classList.remove('hidden');
       afhalenFields.classList.add('hidden');
