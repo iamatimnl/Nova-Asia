@@ -148,34 +148,14 @@
 
 
 
-#map-button-container {
-  position: sticky;
-  top: 0;
+#toggle-map-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
   z-index: 1000;
-  background: transparent;
-  padding: 12px 70px;
-  display: flex;
-  justify-content: flex-end; /* ✅ 右对齐 */
-}
-
-
-#map-button-container button {
   padding: 10px 20px;
   font-size: 16px;
   background-color: #6b4f3b;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-#close-map-btn {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 10000;
-  padding: 10px 14px;
-  font-size: 14px;
-  background: #dc3545;
   color: white;
   border: none;
   border-radius: 5px;
@@ -186,7 +166,8 @@
 
 </style>
 
-
+<div id="map"></div>
+<button id="toggle-map-btn">Show Map</button>
 
 <div class="orders-cards">
   {% for order in orders %}
@@ -233,3 +214,67 @@
   </div>
   {% endfor %}
 </div>
+
+<script>
+const mapEl = document.getElementById('map');
+const toggleBtn = document.getElementById('toggle-map-btn');
+let mapInstance;
+let markers = [];
+let mapVisible = false;
+let apiLoaded = false;
+
+async function loadGoogleMaps() {
+  if (apiLoaded) return;
+  if (!window.api?.getGoogleMapsKey) {
+    console.error('Google Maps key not available');
+    return;
+  }
+  const key = await window.api.getGoogleMapsKey();
+  await new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${key}`;
+    script.onload = () => { apiLoaded = true; resolve(); };
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
+
+function renderMarkers() {
+  markers.forEach(m => m.setMap(null));
+  markers = [];
+  const bounds = new google.maps.LatLngBounds();
+  (window.deliveryOrders || []).forEach(o => {
+    const pos = { lat: o.lat, lng: o.lng };
+    const marker = new google.maps.Marker({
+      position: pos,
+      map: mapInstance,
+      title: `${o.customer_name} (${o.order_number})`
+    });
+    markers.push(marker);
+    bounds.extend(pos);
+  });
+  if (!bounds.isEmpty()) {
+    mapInstance.fitBounds(bounds);
+  }
+}
+
+async function toggleMap() {
+  mapVisible = !mapVisible;
+  mapEl.style.display = mapVisible ? 'block' : 'none';
+  toggleBtn.textContent = mapVisible ? 'Hide Map' : 'Show Map';
+  if (mapVisible) {
+    await loadGoogleMaps();
+    if (!mapInstance) {
+      mapInstance = new google.maps.Map(mapEl, {
+        center: { lat: 0, lng: 0 },
+        zoom: 8
+      });
+    }
+    renderMarkers();
+  }
+}
+
+toggleBtn.addEventListener('click', () => {
+  toggleMap().catch(err => console.error(err));
+});
+</script>
