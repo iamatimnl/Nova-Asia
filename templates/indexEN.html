@@ -5806,7 +5806,7 @@ function checkout() {
       updateCartPaymentOptions();
     } else {
       transferValues(afhalenFields, bezorgenFields);
-      infoBox.textContent = 'We deliver to the following postcode areas:\n' + allowedPostcodes.join(', ');
+      infoBox.textContent = 'Delivery from €20 – delivery fee €2.50\nWe deliver to the following postcode areas:\n' + allowedPostcodes.join(', ');
 
       bezorgenFields.classList.remove('hidden');
       afhalenFields.classList.add('hidden');
