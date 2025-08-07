@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -44,7 +45,7 @@
     backdrop-filter: blur(12px);
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    border-bottom: 1px solid rgba(255,255,255,0.3);
+  
     z-index: 999;
   }
   .navbar {
@@ -307,51 +308,66 @@
     border-color:var(--accent-color);
     box-shadow:0 0 0 2px rgba(63,92,75,0.2);
   }
- #closeToday {
-  position: sticky;
-   margin-right: 15px;  
-  top: 10px;
-  margin-left: auto;        /* 推到右侧 */
-  width: 50px;
-  height: 50px;
-  background-color: transparent;
-  border: none;
-  border-radius: 0px;
-  color: white;
-  font-size: 40px;
-  
- 
-  cursor: pointer;
 
-  z-index: 9999;
+
+.orders-header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background-color: transparant;
+  z-index: 1000;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  margin-right: 65px;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 10px 16px 10px 10px;
+}
+
+/* 关闭按钮 - 白色 X，悬停变红底 */
+#closeToday {
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin-right: 35px;
+  font-size: 20px;
+  cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
-
 #closeToday:hover {
-  background: #ff3b30;
-  color: #fff;
-  border-color: #ff3b30;
-  transform: scale(1.05);
+  background-color: #970514ff; /* 红色 */
+  color: white;
+}
+
+/* 地图按钮 - 蓝色风格 */
+#toggle-map-btn {
+  background-color: #073790ff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-right: 65px;
+  transition: background-color 0.2s ease;
+}
+
+#toggle-map-btn:hover {
+  background-color: #5a3f2f;
+}
+
+.orders-panel {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 10px 20px;
 }
 
 
-#closeToday:hover {
-  background: #ff3b30;
-  color: #fff;
-  border-color: #ff3b30;
-  transform: scale(1.05);
-}
 
 
-#closeToday:hover {
-    background: #e81123; /* Windows 红色 */
-    border-color: #e81123; /* Hover 时边框同步变红 */
-    color: white; /* Hover 时白色 X */
-}
+
 
   
   .supply-row {
@@ -947,12 +963,24 @@ dialog::backdrop {
 <div class="pos-layout">
   <div class="side-tools">
     <div id="todayOrders" class="orders-slide">
-      <button id="closeToday">×</button>
+
+      <!-- 固定导航栏 -->
+      <div class="orders-header">
+        <button id="toggle-map-btn">Show map</button>
+        <button id="closeToday">X</button>
+      
+    
+      </div>
+     
+      <!-- 可滚动订单列表 -->
       <div class="orders-panel">
         {% include 'orders_table.html' %}
       </div>
+
     </div>
   </div>
+</div>
+
   <div class="center-area">
     <div class="product-list">
       {% include 'menu.html' %}
@@ -2689,26 +2717,28 @@ function addRow(order, highlight = false) {
     : '-';
 
   if (isDelivery && window.api?.getGoogleMapsKey) {
-    (async () => {
-      try {
-        const key = await window.api.getGoogleMapsKey();
-        const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${key}`);
-        const data = await res.json();
-        const loc = data.results?.[0]?.geometry?.location;
-        if (loc) {
-          window.deliveryOrders = window.deliveryOrders || [];
-          window.deliveryOrders.push({
-            order_number: order.order_number,
-            customer_name: order.customer_name,
-            lat: loc.lat,
-            lng: loc.lng
-          });
-        }
-      } catch (err) {
-        console.error('Geocoding failed', err);
+  (async () => {
+    try {
+      const key = await window.api.getGoogleMapsKey();
+      const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${key}`);
+      const data = await res.json();
+      const loc = data.results?.[0]?.geometry?.location;
+      if (loc) {
+        window.deliveryOrders = window.deliveryOrders || [];
+        window.deliveryOrders.push({
+          order_number: order.order_number,
+          customer_name: order.customer_name,
+          lat: loc.lat,
+          lng: loc.lng,
+          map_id: map_id  // 加入编号
+        });
       }
-    })();
-  }
+    } catch (err) {
+      console.error('Geocoding failed', err);
+    }
+  })();
+}
+
 
   const items = Object.entries(order.items || {})
     .sort(([, a], [, b]) => {
@@ -2774,9 +2804,14 @@ function addRow(order, highlight = false) {
     card.classList.add('new-order');
     setTimeout(() => card.classList.remove('new-order'), 10000);
   }
+  const map_id = document.querySelectorAll('.order-card-wrapper').length + 1;
+  order.map_id = map_id;
+
+  const mapIdDisplay = `<span class="map-id">#${map_id}</span> `;
 
   card.innerHTML = `
-    <div><strong>Ordernummer:</strong> ${order.order_number || ''}</div>
+    <div><strong>${mapIdDisplay}Ordernummer:</strong> ${order.order_number || ''}</div>
+
     <div class="tijdslot-hoofd">
       <div>
         <strong class="${isDelivery ? 'type-bezorging' : 'type-afhalen'}">
@@ -2857,9 +2892,9 @@ socket.on('new_order', order => {
   }
 
   // 播声音
-  if (window.electronAPI?.playDing) {
-    window.electronAPI.playDing();
-  }
+  if (window.api?.playDing) {
+  window.api.playDing();
+}
 
   // 尝试添加订单卡片
   try {
@@ -2929,23 +2964,32 @@ function showNextOrderModal() {
 document.getElementById('modal-confirm').addEventListener('click', () => {
   console.log("✅ 用户点击了 Bevestigen");
 
-  // 打印当前订单
-  if (window.electronAPI?.printOrder && currentOrder) {
-    window.electronAPI.printOrder(currentOrder);
+  // ✅ 自动打印当前订单（通过 printReceipt，发送 JSON 字符串）
+  if (window.api?.printReceipt && currentOrder) {
+    const orderText = JSON.stringify(currentOrder);
+    window.api.printReceipt(orderText);
+    console.log("🖨️ 当前订单已发送打印请求:", currentOrder.order_number);
   } else {
-    console.warn("⚠️ electronAPI.printOrder 未定义或 currentOrder 为空");
+    console.warn("⚠️ window.api.printReceipt 不可用 或 currentOrder 为空");
   }
 
-  // 关闭弹窗
+  // ✅ 关闭弹窗
   document.getElementById('order-modal').style.display = 'none';
   isModalActive = false;
 
-  // 继续处理队列中下一个订单
+  // ✅ 继续处理下一个订单
   showNextOrderModal();
 });
 
+
+// ✅ 手动打印按钮点击逻辑
 function printThisOrder(button) {
   const raw = button.getAttribute('data-order');
+  if (!raw) {
+    console.warn("⚠️ 缺少 data-order 属性");
+    return;
+  }
+
   let order;
   try {
     order = JSON.parse(raw);
@@ -2954,11 +2998,22 @@ function printThisOrder(button) {
     return;
   }
 
-  if (window.electronAPI?.printOrder && order) {
-    window.electronAPI.printOrder(order);
+  if (window.api?.printReceipt && order) {
+    const orderText = JSON.stringify(order);
+    window.api.printReceipt(orderText);
+    console.log("🖨️ 手动打印订单:", order.order_number);
+  } else {
+    console.warn("⚠️ window.api.printReceipt 不可用 或 order 无效");
+  }
+}
+
+
+  if (window.api?.printReceipt && order) {
+    const orderText = JSON.stringify(order);
+    window.api.printReceipt(orderText);
     console.log("🖨️ 打印了订单:", order.order_number);
   } else {
-    console.warn("⚠️ electronAPI.printOrder 不可用 或 order 无效");
+    console.warn("⚠️ printReceipt 不可用 或 order 无效");
   }
 }
 
@@ -2990,9 +3045,10 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
   const tijdslotOrigineel = currentOrder.pickup_time || currentOrder.delivery_time || '';
   const gekozenTijd = document.getElementById('modal-time').value || tijdslotOrigineel;
 
-  if (window.electronAPI && window.electronAPI.stopDing) {
-  window.electronAPI.stopDing(); // ✅ 不加 await
+  if (window.api?.stopDing) { 
+  window.api.stopDing(); 
 }
+
 
 
   // ⏱️ 时间未更改，跳过发送邮件
