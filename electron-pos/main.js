@@ -138,3 +138,7 @@ ipcMain.handle('print-receipt', async (event, orderText, orderData = {}) => {
     console.error('❌ 打印失败:', err);
   }
 });
+// ✅ 允许前端通过 preload.js 获取 Google Maps API Key
+ipcMain.handle('get-google-maps-key', () => {
+  return 'AIzaSyBSESvrZ03Xq0SdaV6X5dESf-fDHOgEGHU'; // 用你的实际 key 替换
+});
