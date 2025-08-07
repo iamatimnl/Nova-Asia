@@ -2684,6 +2684,31 @@ function addRow(order, highlight = false) {
   if (!container) return;
 
   const isDelivery = ['delivery', 'bezorgen'].includes(order.order_type);
+  const address = isDelivery
+    ? `${order.street || ''} ${order.house_number || ''}, ${order.postcode || ''} ${order.city || ''}`.trim()
+    : '-';
+
+  if (isDelivery && window.api?.getGoogleMapsKey) {
+    (async () => {
+      try {
+        const key = await window.api.getGoogleMapsKey();
+        const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${key}`);
+        const data = await res.json();
+        const loc = data.results?.[0]?.geometry?.location;
+        if (loc) {
+          window.deliveryOrders = window.deliveryOrders || [];
+          window.deliveryOrders.push({
+            order_number: order.order_number,
+            customer_name: order.customer_name,
+            lat: loc.lat,
+            lng: loc.lng
+          });
+        }
+      } catch (err) {
+        console.error('Geocoding failed', err);
+      }
+    })();
+  }
 
   const items = Object.entries(order.items || {})
     .sort(([, a], [, b]) => {
@@ -2733,10 +2758,6 @@ function addRow(order, highlight = false) {
   let korting = theoretischTotaal - totaal;
   const showKorting = korting >= 0.01;
   const kortingDisplay = korting.toFixed(2).replace('.', ',');
-
-  const address = isDelivery
-    ? `${order.street || ''} ${order.house_number || ''}, ${order.postcode || ''} ${order.city || ''}`.trim()
-    : '-';
 
   const tijdslotRaw = order.tijdslot_display || (isDelivery ? order.delivery_time : order.pickup_time);
   const tijdslot = order.is_zsm ? 'ZSM' : (tijdslotRaw || '').trim();
