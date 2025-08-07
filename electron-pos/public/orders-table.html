@@ -145,9 +145,7 @@
 
 </style>
 
-<!-- 地图容器，全屏显示 -->
-<div id="map" style="display: none;">
-</div>
+<!-- 地图容器已移至 pos.html 以确保其始终覆盖整个视口 -->
 
 
 
@@ -257,7 +255,6 @@ async function toggleMap() {
   document.body.style.overflow = mapVisible ? 'hidden' : '';
 
   if (mapVisible) {
-    window.scrollTo({ top: 0, behavior: 'smooth' }); // ⬅️ 添加这行
     await loadGoogleMaps();
     if (!mapInstance) {
       mapInstance = new google.maps.Map(mapEl, {
