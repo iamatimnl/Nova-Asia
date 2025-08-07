@@ -1,10 +1,8 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
-contextBridge.exposeInMainWorld('electronAPI', {
-  // ✅ 打开新窗口（目前你用不到可省略）
-  openWindow: (file) => {
-    ipcRenderer.send('open-window', file);
-  },
+contextBridge.exposeInMainWorld('api', {
+  // ✅ 获取 Google Maps Key（从主进程请求）
+  getGoogleMapsKey: () => ipcRenderer.invoke('get-google-maps-key'),
 
   // ✅ 播放提示音（循环播放）
   playDing: () => ipcRenderer.send('play-ding'),
@@ -16,4 +14,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   printReceipt: (text) => ipcRenderer.invoke('print-receipt', text),
 
   // ✅ 登录成功回调（保留）
-  onLoginSuccess: (callback) => ipcRenderer.on('login-
+  onLoginSuccess: (callback) => ipcRenderer.on('login-success', callback)
+});
