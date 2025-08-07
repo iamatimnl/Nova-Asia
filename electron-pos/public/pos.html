@@ -939,7 +939,9 @@ dialog::backdrop {
 </style>
 </head>
 <body>
-<div class="navbar-container" id="navbar-container">
+  <!-- 全屏地图容器，确保在任何滚动位置都位于视口中央 -->
+  <div id="map" style="display: none;"></div>
+  <div class="navbar-container" id="navbar-container">
   <nav class="navbar" id="navbar">
     <div class="nav-categories">
       <a href="#customer-info">Klant</a>
