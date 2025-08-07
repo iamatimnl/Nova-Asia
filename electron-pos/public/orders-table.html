@@ -1,3 +1,4 @@
+
 <style>
 .orders-cards {
   display: flex;
@@ -18,7 +19,7 @@
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.08);
   overflow: hidden;
-  top: -20px;                  /* ✅ 向上移动 */
+  top: 10px;                  /* ✅ 向上移动 */
   /* margin-top: -15px; ❌ 不需要，容易和 gap 冲突 */
 }
 
@@ -108,66 +109,47 @@
   counter-reset: order-count; /* 初始化计数器 */
 }
 
-.order-card::before {
-  counter-increment: order-count; /* 每个 .order-card 自动加一 */
-  content: "#" counter(order-count);
-  position: absolute;
-  top: 8px;
-  right: 10px;
-  background: #010a5cff;
+
+.map-id {
+  background-color: #1787ffff;
   color: white;
-  font-size: 13px;
-  font-weight: bold;
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 0 3px rgba(0,0,0,0.3);
-}
-.order-card {
-  position: relative; /* ✅ 让 ::before 定位生效 */
+  padding: 2px 6px;
+  margin-right: 6px;
+  border-radius: 6px;
+  font-size: 1.2em;
 }
 
+/* 全屏地图样式 */
 #map {
-  position: fixed;                      /* 固定在视窗中 */
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);     /* 居中 */
-  width: 90vw;
-  height: 80vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   z-index: 9999;
   display: none;
   background: white;
-  border: 2px solid #ccc;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.25);
-}
-
-
-
-
-#toggle-map-btn {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 1000;
-  padding: 10px 20px;
-  font-size: 16px;
-  background-color: #6b4f3b;
-  color: white;
   border: none;
-  border-radius: 5px;
-  cursor: pointer;
+  border-radius: 0;
+  box-shadow: none;
 }
+
+
+
+
+
+
+
 
 
 
 </style>
 
-<div id="map"></div>
-<button id="toggle-map-btn">Show Map</button>
+<!-- 地图容器，全屏显示 -->
+<div id="map" style="display: none;">
+</div>
+
+
 
 <div class="orders-cards">
   {% for order in orders %}
@@ -213,7 +195,11 @@
     </div>
   </div>
   {% endfor %}
+  <!-- 页面右下角的地图开关按钮 -->
+
+
 </div>
+
 
 <script>
 const mapEl = document.getElementById('map');
@@ -225,11 +211,13 @@ let apiLoaded = false;
 
 async function loadGoogleMaps() {
   if (apiLoaded) return;
-  if (!window.api?.getGoogleMapsKey) {
+  if (!window.api?.getGoogleMapsKey) {  // ✅ 使用 window.api
     console.error('Google Maps key not available');
     return;
   }
-  const key = await window.api.getGoogleMapsKey();
+  const key = await window.api.getGoogleMapsKey();  // ✅ 正确获取 key
+  console.log('Loaded Google Maps API key:', key);
+
   await new Promise((resolve, reject) => {
     const script = document.createElement('script');
     script.src = `https://maps.googleapis.com/maps/api/js?key=${key}`;
@@ -239,16 +227,19 @@ async function loadGoogleMaps() {
   });
 }
 
+
 function renderMarkers() {
   markers.forEach(m => m.setMap(null));
   markers = [];
+
   const bounds = new google.maps.LatLngBounds();
   (window.deliveryOrders || []).forEach(o => {
     const pos = { lat: o.lat, lng: o.lng };
     const marker = new google.maps.Marker({
       position: pos,
       map: mapInstance,
-      title: `${o.customer_name} (${o.order_number})`
+      label: String(o.map_id),  // 👈 显示地图编号 1,2,3...
+      title: `${o.map_id}. ${o.customer_name} (${o.order_number})`
     });
     markers.push(marker);
     bounds.extend(pos);
@@ -258,23 +249,32 @@ function renderMarkers() {
   }
 }
 
+
 async function toggleMap() {
   mapVisible = !mapVisible;
   mapEl.style.display = mapVisible ? 'block' : 'none';
   toggleBtn.textContent = mapVisible ? 'Hide Map' : 'Show Map';
+  document.body.style.overflow = mapVisible ? 'hidden' : '';
+
   if (mapVisible) {
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // ⬅️ 添加这行
     await loadGoogleMaps();
     if (!mapInstance) {
       mapInstance = new google.maps.Map(mapEl, {
-        center: { lat: 0, lng: 0 },
-        zoom: 8
+        center: { lat: 52.37, lng: 4.89 },
+        zoom: 11
       });
     }
     renderMarkers();
   }
 }
 
+
+
+
 toggleBtn.addEventListener('click', () => {
   toggleMap().catch(err => console.error(err));
 });
+
+
 </script>
