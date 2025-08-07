@@ -16,11 +16,4 @@ contextBridge.exposeInMainWorld('electronAPI', {
   printReceipt: (text) => ipcRenderer.invoke('print-receipt', text),
 
   // ✅ 登录成功回调（保留）
-  onLoginSuccess: (callback) => ipcRenderer.on('login-success', callback),
-
-  // ✅ 暴露 Google Maps API Key（重要）
-  getGoogleMapsKey: () => {
-    // 你的 Google Maps API Key，请自行替换以下字符串为真实 Key
-    return 'AIzaSyBSESvrZ03Xq0SdaV6X5dESf-fDHOgEGHU';
-  }
-});
+  onLoginSuccess: (callback) => ipcRenderer.on('login-
