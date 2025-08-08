@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Delivery Map</title>
+  <style>
+    html, body, #map {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script>
+    let mapInstance;
+    let markers = [];
+    let apiLoaded = false;
+
+    async function loadGoogleMaps() {
+      if (apiLoaded) return;
+      if (!window.opener || !window.opener.api || !window.opener.api.getGoogleMapsKey) {
+        console.error('Google Maps key not available');
+        return;
+      }
+      const key = await window.opener.api.getGoogleMapsKey();
+      await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${key}`;
+        script.onload = () => { apiLoaded = true; resolve(); };
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    }
+
+    function renderMarkers() {
+      markers.forEach(m => m.setMap(null));
+      markers = [];
+      const bounds = new google.maps.LatLngBounds();
+      const orders = (window.opener && window.opener.deliveryOrders) || [];
+      orders.forEach(o => {
+        const pos = { lat: o.lat, lng: o.lng };
+        const marker = new google.maps.Marker({
+          position: pos,
+          map: mapInstance,
+          label: String(o.map_id),
+          title: `${o.map_id}. ${o.customer_name} (${o.order_number})`
+        });
+        markers.push(marker);
+        bounds.extend(pos);
+      });
+      if (!bounds.isEmpty()) {
+        mapInstance.fitBounds(bounds);
+      }
+    }
+
+    async function init() {
+      await loadGoogleMaps();
+      mapInstance = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: 52.37, lng: 4.89 },
+        zoom: 11
+      });
+      renderMarkers();
+    }
+
+    init().catch(err => console.error(err));
+  </script>
+</body>
+</html>
