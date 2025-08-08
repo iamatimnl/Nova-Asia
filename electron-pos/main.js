@@ -2,8 +2,6 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 const wavPlayer = require('node-wav-player');
-const escpos = require('escpos');
-escpos.USB = require('escpos-usb');
 
 
 // 使用 __dirname 来动态定位路径，避免硬编码绝对路径
@@ -76,65 +74,77 @@ app.on('window-all-closed', () => {
 });
 
 
-
-ipcMain.handle('print-receipt', async (event, orderText, orderData = {}) => {
+ipcMain.handle('print-receipt', async (event, order) => {
   try {
-    const device = new escpos.USB();
-    const printer = new escpos.Printer(device);
-
-    device.open(() => {
-      printer
-        .encode('UTF-8')
-        .align('CT')
-        .style('B')
-        .size(2, 2)
-        .text('Nova Asia')
-        .size(1, 1)
-        .style('NORMAL')
-        .text('------------------------------')
-        .align('LT')
-        .text(`Bestelnummer: ${orderData.order_number || '-'}`)
-        .text(`Naam: ${orderData.customer_name || '-'}`)
-        .text(`Type: ${orderData.order_type === 'pickup' ? 'Afhalen' : 'Bezorgen'}`)
-        .text(`Tijd: ${orderData.pickup_time || orderData.delivery_time || '-'}`)
-        .text(`Adres: ${orderData.street || ''} ${orderData.house_number || ''}`)
-        .text(`${orderData.postcode || ''} ${orderData.city || ''}`)
-        .text('------------------------------')
-        .text('Items:');
-
-      for (const [name, item] of Object.entries(orderData.items || {})) {
-        const qty = item.qty || 0;
-        const price = item.price || 0;
-        const total = (qty * price).toFixed(2);
-        printer.text(`${qty} x ${name}  = €${total}`);
+    if (typeof order === 'string') {
+      try {
+        order = JSON.parse(order);
+      } catch (_) {
+        order = {};
       }
+    }
 
-      printer.text('------------------------------');
+    const printWindow = new BrowserWindow({ show: false });
+    const html = generateReceiptHTML(order || {});
+    printWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(html)}`);
 
-      if (orderData.verpakking != null)
-        printer.text(`Verpakkingskosten: €${parseFloat(orderData.verpakking).toFixed(2)}`);
-      if (orderData.bezorging != null)
-        printer.text(`Bezorgkosten:     €${parseFloat(orderData.bezorging).toFixed(2)}`);
-      if (orderData.korting != null)
-        printer.text(`Korting:         -€${parseFloat(orderData.korting).toFixed(2)}`);
-      if (orderData.btw != null)
-        printer.text(`BTW:              €${parseFloat(orderData.btw).toFixed(2)}`);
-
-      printer
-        .style('B')
-        .text(`TOTAAL:           €${parseFloat(orderData.totaal).toFixed(2)}`)
-        .style('NORMAL');
-
-      printer.text('------------------------------');
-      printer.text(`Opmerking: ${orderData.opmerking || '-'}`);
-      printer.text('');
-      printer.align('CT');
-      printer.text('Bedankt voor uw bestelling!');
-      printer.text('Bestel via www.novaasia.nl');
-      printer.text('en ontvang 3% herhaalkorting!');
-      printer.cut().close();
+    printWindow.webContents.on('did-finish-load', () => {
+      printWindow.webContents.print({ silent: true, printBackground: true }, (success, errorType) => {
+        if (!success) console.error('打印失败:', errorType);
+        printWindow.close();
+      });
     });
   } catch (err) {
     console.error('❌ 打印失败:', err);
   }
+});
 
+function generateReceiptHTML(order) {
+  const itemsHtml = Object.entries(order.items || {})
+    .map(([name, item]) => {
+      const qty = item.qty || 0;
+      const price = item.price || 0;
+      const total = (qty * price).toFixed(2);
+      return `<div>${qty} x ${name} = €${total}</div>`;
+    })
+    .join('');
+
+  const extraLines = [];
+  if (order.verpakking != null)
+    extraLines.push(`<div>Verpakkingskosten: €${parseFloat(order.verpakking).toFixed(2)}</div>`);
+  if (order.bezorging != null)
+    extraLines.push(`<div>Bezorgkosten: €${parseFloat(order.bezorging).toFixed(2)}</div>`);
+  if (order.korting != null)
+    extraLines.push(`<div>Korting: -€${parseFloat(order.korting).toFixed(2)}</div>`);
+  if (order.btw != null)
+    extraLines.push(`<div>BTW: €${parseFloat(order.btw).toFixed(2)}</div>`);
+
+  return `<!DOCTYPE html><html><head><meta charset="utf-8" />
+  <style>
+    body { font-family: monospace; margin: 0; }
+    .receipt { width: 260px; padding: 10px; }
+    .center { text-align: center; }
+  </style></head><body>
+  <div class="receipt">
+    <div class="center"><strong>Nova Asia</strong></div>
+    <div>------------------------------</div>
+    <div>Bestelnummer: ${order.order_number || '-'}</div>
+    <div>Naam: ${order.customer_name || '-'}</div>
+    <div>Type: ${order.order_type === 'pickup' ? 'Afhalen' : 'Bezorgen'}</div>
+    <div>Tijd: ${order.pickup_time || order.delivery_time || '-'}</div>
+    <div>Adres: ${order.street || ''} ${order.house_number || ''}</div>
+    <div>${order.postcode || ''} ${order.city || ''}</div>
+    <div>------------------------------</div>
+    <div>Items:</div>
+    ${itemsHtml}
+    <div>------------------------------</div>
+    ${extraLines.join('')}
+    <div><strong>TOTAAL: €${parseFloat(order.totaal || 0).toFixed(2)}</strong></div>
+    <div>------------------------------</div>
+    <div>Opmerking: ${order.opmerking || '-'}</div>
+    <div class="center">Bedankt voor uw bestelling!</div>
+    <div class="center">Bestel via www.novaasia.nl</div>
+    <div class="center">en ontvang 3% herhaalkorting!</div>
+  </div>
+  </body></html>`;
+}
