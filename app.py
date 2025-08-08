@@ -449,7 +449,11 @@ def order_type_open(order_type: str) -> bool:
         end = settings.get('delivery_end', '00:00')
     now = datetime.now(NL_TZ)
     now_min = now.hour * 60 + now.minute
-    return _in_range(start, end, now_min)
+    start_min = _parse_minutes(start)
+    end_min = _parse_minutes(end)
+    if start_min <= end_min:
+        return now_min < end_min
+    return True
 
 
 # Socket.IO for real-time updates
@@ -800,11 +804,8 @@ def api_orders():
             except Exception:
                 pass
 
-        if now < start_today:
-            if chosen_dt:
-                return jsonify({"status": "fail", "error": "U bestelt buiten openingstijden. Vooruitbestellen is mogelijk."}), 403
-            else:
-                return jsonify({"status": "fail", "error": "Vandaag is gesloten, morgen kan niet vooraf besteld worden."}), 403
+        if chosen_dt and chosen_dt < start_today:
+            return jsonify({"status": "fail", "error": "Gekozen tijd valt buiten openingstijden."}), 403
 
         if now > end_today:
             return jsonify({"status": "fail", "error": gesloten_message}), 403
