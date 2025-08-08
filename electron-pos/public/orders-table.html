@@ -119,20 +119,6 @@
   font-size: 1em;
 }
 
-/* 全屏地图样式 */
-#map {
-  position: fixed;
-  top: 0;
-  left: -15px;
-  width: 100vw;
-  height: 100vh;
-  z-index: 9999;
-  display: none;
-  background: white;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-}
 
 
 
@@ -144,12 +130,6 @@
 
 
 </style>
-
-<!-- 地图容器，全屏显示 -->
-<div id="map" style="display: none;">
-</div>
-
-
 
 <div class="orders-cards">
   {% for order in orders %}
@@ -201,80 +181,11 @@
 </div>
 
 
-<script>
-const mapEl = document.getElementById('map');
-const toggleBtn = document.getElementById('toggle-map-btn');
-let mapInstance;
-let markers = [];
-let mapVisible = false;
-let apiLoaded = false;
-
-async function loadGoogleMaps() {
-  if (apiLoaded) return;
-  if (!window.api?.getGoogleMapsKey) {  // ✅ 使用 window.api
-    console.error('Google Maps key not available');
-    return;
-  }
-  const key = await window.api.getGoogleMapsKey();  // ✅ 正确获取 key
-  console.log('Loaded Google Maps API key:', key);
-
-  await new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${key}`;
-    script.onload = () => { apiLoaded = true; resolve(); };
-    script.onerror = reject;
-    document.head.appendChild(script);
-  });
-}
-
-
-function renderMarkers() {
-  markers.forEach(m => m.setMap(null));
-  markers = [];
-
-  const bounds = new google.maps.LatLngBounds();
-  (window.deliveryOrders || []).forEach(o => {
-    const pos = { lat: o.lat, lng: o.lng };
-    const marker = new google.maps.Marker({
-      position: pos,
-      map: mapInstance,
-      label: String(o.map_id),  // 👈 显示地图编号 1,2,3...
-      title: `${o.map_id}. ${o.customer_name} (${o.order_number})`
+  <script>
+  const toggleBtn = document.getElementById('toggle-map-btn');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      window.open('map.html', '_blank');
     });
-    markers.push(marker);
-    bounds.extend(pos);
-  });
-  if (!bounds.isEmpty()) {
-    mapInstance.fitBounds(bounds);
   }
-}
-
-
-async function toggleMap() {
-  mapVisible = !mapVisible;
-  mapEl.style.display = mapVisible ? 'block' : 'none';
-  toggleBtn.textContent = mapVisible ? '🗺️' : '🗺️';
-  document.body.style.overflow = mapVisible ? 'hidden' : '';
-
-  if (mapVisible) {
-    window.scrollTo({ top: 0, behavior: 'smooth' }); // ⬅️ 添加这行
-    await loadGoogleMaps();
-    if (!mapInstance) {
-      mapInstance = new google.maps.Map(mapEl, {
-        center: { lat: 52.37, lng: 4.89 },
-        zoom: 11
-      });
-    }
-    renderMarkers();
-  }
-}
-
-
-
-
-toggleBtn.addEventListener('click', () => {
-  toggleMap().catch(err => console.error(err));
-});
-
-
-</script>
+  </script>
