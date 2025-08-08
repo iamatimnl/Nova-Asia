@@ -122,16 +122,16 @@
 /* 全屏地图样式 */
 #map {
   position: fixed;
-  top: 0;
-  left: -15px;
-  width: 100vw;
-  height: 100vh;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80vw;
+  height: 80vh;
   z-index: 9999;
-  display: none;
   background: white;
   border: none;
-  border-radius: 0;
-  box-shadow: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
 
 
@@ -146,8 +146,7 @@
 </style>
 
 <!-- 地图容器，全屏显示 -->
-<div id="map" style="display: none;">
-</div>
+<div id="map"></div>
 
 
 
