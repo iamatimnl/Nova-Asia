@@ -10,8 +10,8 @@ contextBridge.exposeInMainWorld('api', {
   // ✅ 停止提示音
   stopDing: () => ipcRenderer.send('stop-ding'),
 
-  // ✅ 打印小票（发送订单文本到主进程）
-  printReceipt: (text) => ipcRenderer.invoke('print-receipt', text),
+  // ✅ 打印小票（发送订单数据到主进程）
+  printReceipt: (order) => ipcRenderer.invoke('print-receipt', order),
 
   // ✅ 登录成功回调（保留）
   onLoginSuccess: (callback) => ipcRenderer.on('login-success', callback)
