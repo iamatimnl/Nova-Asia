@@ -89,12 +89,12 @@
 /* 状态样式 */
 .order-card.completed {
   background-color: #557556 !important;
-  color: white;
+  color: gray;
 }
 
 .order-card.cancelled {
   background-color: #865050 !important;
-  color: white;
+  color: gray;
 }
 
 .type-afhalen {
@@ -111,7 +111,7 @@
 
 
 .map-id {
-  background-color: #007bff;
+  background-color: #692802ff;
   color: white;
   padding: 2px 6px;
   margin-right: 6px;
@@ -151,7 +151,54 @@
 
 
 
-  <div id="orders-table"></div>
+<div class="orders-cards">
+  {% for order in orders %}
+  <div class="order-card-wrapper">
+    <div class="order-card {% if order.is_cancelled %}cancelled{% elif order.is_completed %}completed{% endif %}" data-id="{{ order.id }}" data-order="{{ order|tojson }}">
+      {% set is_delivery = order.order_type in ['delivery', 'bezorgen'] %}
+      <div class="card-header">
+        <strong>{{ order.customer_name or '' }}</strong> -
+        <span class="{{ 'type-bezorging' if is_delivery else 'type-afhalen' }}">
+          {{ 'Bezorging' if is_delivery else 'Afhalen' }}
+        </span>
+        <span class="order-time">{{ order.created_at_local.strftime('%Y-%m-%d %H:%M') }}</span>
+      </div>
+      <div class="card-content-scroll">
+        <p><strong>Tijdslot:</strong> {{ order.tijdslot_display or (order.delivery_time if is_delivery else order.pickup_time) or '-' }}</p>
+        <p><strong>Telefoon:</strong> {{ order.phone or '' }}</p>
+        <p><strong>Email:</strong> {{ order.email or '-' }}</p>
+        <p><strong>Items:</strong></p>
+        <ul>
+          {% for name, item in order.items_dict.items() %}
+          <li>{{ name }} x {{ item['qty'] }}</li>
+          {% endfor %}
+        </ul>
+        <p><strong>Opmerking:</strong> {{ order.opmerking or '-' }}</p>
+        <p><strong>Ordernummer:</strong> {{ order.order_number or '' }}</p>
+        <p><strong>Totaal:</strong> €{{ '%.2f' % (order.totaal or 0) }}</p>
+        <p><strong>Adres:</strong>
+          {% if is_delivery %}
+            {{ order.street }} {{ order.house_number }} {{ order.postcode }} {{ order.city }}
+            {% if order.maps_link %}
+              <a href="{{ order.maps_link }}" target="_blank">📍Maps</a>
+            {% endif %}
+          {% else %}-{% endif %}
+        </p>
+        <p><strong>Betaalwijze:</strong> {{ order.payment_method }}</p>
+        <p><strong>Fooi:</strong> €{{ '%.2f' % (order.fooi or order.tip or 0) }}</p>
+      </div>
+    </div>
+    <div class="card-actions">
+      <button class="btn-klaar" onclick="toggleComplete(this)">Klaar</button>
+      <button class="btn-bewerk" onclick="editOrder(this)">Bewerk</button>
+      <button class="btn-annuleer" onclick="cancelOrder(this)">Annuleer</button>
+    </div>
+  </div>
+  {% endfor %}
+  <!-- 页面右下角的地图开关按钮 -->
+
+
+</div>
 
 
 <script>
@@ -162,252 +209,13 @@ let markers = [];
 let mapVisible = false;
 let apiLoaded = false;
 
-function parseTimeToMinutes(str){
-  if(!str) return Infinity;
-  const [h,m] = str.split(':').map(s => parseInt(s,10));
-  if(isNaN(h) || isNaN(m)) return Infinity;
-  return h*60+m;
-}
-
-function getSortKey(order){
-  const isDelivery = ['delivery','bezorgen'].includes(order.order_type);
-  const t = isDelivery ? (order.delivery_time || order.deliveryTime)
-                       : (order.pickup_time || order.pickupTime);
-  return parseTimeToMinutes(t);
-}
-
-function addRow(order, highlight = false, container){
-  const containerEl = container || document.querySelector('.orders-cards');
-  if (!containerEl) return;
-
-  const isDelivery = ['delivery', 'bezorgen'].includes(order.order_type);
-  const address = isDelivery
-    ? `${order.street || ''} ${order.house_number || ''}, ${order.postcode || ''} ${order.city || ''}`.trim()
-    : '-';
-
-  if (isDelivery && window.api?.getGoogleMapsKey) {
-  (async () => {
-    try {
-      const key = await window.api.getGoogleMapsKey();
-      const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${key}`);
-      const data = await res.json();
-      const loc = data.results?.[0]?.geometry?.location;
-      if (loc) {
-        window.deliveryOrders = window.deliveryOrders || [];
-        window.deliveryOrders.push({
-          order_number: order.order_number,
-          customer_name: order.customer_name,
-          lat: loc.lat,
-          lng: loc.lng,
-          map_id: map_id  // 加入编号
-        });
-      }
-    } catch (err) {
-      console.error('Geocoding failed', err);
-    }
-  })();
-}
-
-
-  const items = Object.entries(order.items || {})
-    .sort(([, a], [, b]) => {
-      const priceA = a.price || 0;
-      const priceB = b.price || 0;
-      if (priceA === 0 && priceB !== 0) return 1;
-      if (priceA !== 0 && priceB === 0) return -1;
-      const nameA = (a.displayName || a.name || '').toUpperCase();
-      const nameB = (b.displayName || b.name || '').toUpperCase();
-      return nameA.localeCompare(nameB);
-    })
-    .map(([n, i]) => {
-  const isFree = (i.price || 0) === 0;
-  const displayNameRaw = i.displayName || i.name || n;
-
-  // 检查是否为自定义项
-  let displayName;
-  if (/^CUSTOM_/i.test(displayNameRaw)) {
-    displayName = 'eigen invoer';
-  } else {
-    displayName = isFree ? displayNameRaw.toLowerCase() : displayNameRaw.toUpperCase();
-  }
-
-  const rowTotal = (i.qty * (i.price || 0)).toFixed(2).replace('.', ',');
-  return `<li>${i.qty} x ${displayName} = €${rowTotal}</li>`;
-}).join('');
-
-
-  let subtotal = 0;
-  let verpakkingskosten = 0;
-  Object.values(order.items || {}).forEach(i => {
-    subtotal += (i.price || 0) * i.qty;
-    verpakkingskosten += (i.packaging || 0) * i.qty;
-  });
-
-  const verpakkingDisplay = verpakkingskosten.toFixed(2).replace('.', ',');
-  const bezorgkosten = parseFloat(order.bezorgkosten || order.delivery_cost || 0) || 0;
-  const bezorgDisplay = bezorgkosten.toFixed(2).replace('.', ',');
-  let fooi = parseFloat(order.fooi || order.tip || 0); if (isNaN(fooi)) fooi = 0;
-  const fooiDisplay = fooi.toFixed(2).replace('.', ',');
-
-  let totaal = parseFloat(order.totaal || order.total || 0);
-  if (isNaN(totaal)) totaal = 0;
-  const totaalDisplay = totaal.toFixed(2).replace('.', ',');
-
-  const theoretischTotaal = subtotal + verpakkingskosten + bezorgkosten + fooi;
-  let korting = theoretischTotaal - totaal;
-  const showKorting = korting >= 0.01;
-  const kortingDisplay = korting.toFixed(2).replace('.', ',');
-
-  const tijdslotRaw = order.tijdslot_display || (isDelivery ? order.delivery_time : order.pickup_time);
-  const tijdslot = order.is_zsm ? 'ZSM' : (tijdslotRaw || '').trim();
-  const wrapper = document.createElement('div');
-  wrapper.className = 'order-card-wrapper';
-
-  const card = document.createElement('div');
-  card.className = 'order-card';
-  if (order.id) card.dataset.id = order.id;
-  card.dataset.order = JSON.stringify(order);
-  if (order.is_cancelled) card.classList.add('cancelled');
-  else if (order.is_completed) card.classList.add('completed');
-  if (highlight) {
-    card.classList.add('new-order');
-    setTimeout(() => card.classList.remove('new-order'), 10000);
-  }
-  const map_id = document.querySelectorAll('.order-card-wrapper').length + 1;
-  order.map_id = map_id;
-
-  const mapIdDisplay = `<span class="map-id">#${map_id}</span> `;
-
-  card.innerHTML = `
-    <div><strong>${mapIdDisplay}Ordernummer:</strong> ${order.order_number || ''}</div>
-
-    <div class="tijdslot-hoofd">
-      <div>
-        <strong class="${isDelivery ? 'type-bezorging' : 'type-afhalen'}">
-          ${isDelivery ? 'Bezorging' : 'Afhalen'}
-        </strong>
-        <span class="tijdslot" style="color: #e67e22; font-weight: bold; text-transform: uppercase;">
-          ${tijdslot}
-        </span>
-        &nbsp;&nbsp;<span class="created-at" style="color: #888;">Besteld om: ${order.created_at || '-'}</span>
-      </div>
-    </div>
-    <div><strong>Naam:</strong> ${order.customer_name || ''}</div>
-    <div><strong>Telefoon:</strong> ${order.phone || ''}</div>
-    ${order.email ? `<div><strong>Email:</strong> <a href="mailto:${order.email}">${order.email}</a></div>` : ''}
-    <div><strong>Items:</strong><ul>${items}</ul></div>
-    ${order.opmerking ? `<div><strong>Opmerking:</strong> ${order.opmerking}</div>` : ''}
-    ${verpakkingskosten > 0 ? `<div><strong>Verpakkingskosten:</strong> €${verpakkingDisplay}</div>` : ''}
-    ${bezorgkosten > 0 ? `<div><strong>Bezorgkosten:</strong> €${bezorgDisplay}</div>` : ''}
-    ${showKorting ? `<div><strong>Korting:</strong> -€${kortingDisplay}</div>` : ''}
-    <div><strong>Totaal:</strong> €${totaalDisplay}</div>
-    ${fooi > 0 ? `<div><strong>Fooi:</strong> €${fooiDisplay}</div>` : ''}
-    ${address !== '-' ? `
-  <div class="qr-address">
-    <strong>Adres:</strong> ${address}
-    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}" target="_blank" style="margin-left:6px;">📍Maps</a>
-  </div>
-  <div class="qr-wrapper">
-    <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent('https://www.google.com/maps?q=' + address)}" alt="QR Code">
-  </div>
-` : ''}
-
-
-    ${order.payment_method ? `<div><strong>Betaalwijze:</strong> ${order.payment_method}</div>` : ''}
-  `;
-
-  const actions = document.createElement('div');
-  actions.className = 'card-actions';
-  actions.innerHTML = `
-    <button class="btn-klaar" onclick="toggleComplete(this)"
-      data-number="${order.order_number}"
-      data-name="${order.customer_name || ''}"
-      data-phone="${order.phone || ''}"
-      data-email="${order.email || ''}"
-      data-type="${isDelivery ? 'bezorg' : 'afhaal'}">
-      Klaar
-    </button>
-    <button class="btn-print" onclick="printThisOrder(this)" data-order='${JSON.stringify(order)}'>🖨️ Print</button>
-
-    <button class="btn-annuleer" onclick="toggleCancel(this)"
-      data-number="${order.order_number}"
-      data-name="${order.customer_name || ''}"
-      data-phone="${order.phone || ''}"
-      data-email="${order.email || ''}"
-      data-type="${isDelivery ? 'bezorg' : 'afhaal'}"
-      data-id="${order.id}">
-      Annuleer
-    </button>
-    <span class="notify"></span>
-  `;
-
-  wrapper.appendChild(card);
-  wrapper.appendChild(actions);
-  containerEl.appendChild(wrapper);
-}
-
-function groupOrders(orders){
-  const zsm = [];
-  const groups = {};
-  orders.forEach(order => {
-    if(order.is_zsm){
-      zsm.push(order);
-      return;
-    }
-    const isDelivery = ['delivery','bezorgen'].includes(order.order_type);
-    const t = order.tijdslot_display || (isDelivery ? order.delivery_time : order.pickup_time);
-    const hour = t ? t.split(':')[0] : '00';
-    if(!groups[hour]) groups[hour] = [];
-    groups[hour].push(order);
-  });
-  return { zsm, groups };
-}
-
-function renderGroupedOrders(orders){
-  const container = document.getElementById('orders-table');
-  container.innerHTML = '';
-  const { zsm, groups } = groupOrders(orders);
-
-  if(zsm.length){
-    const h = document.createElement('h3');
-    h.textContent = 'Z.S.M.';
-    container.appendChild(h);
-    const grp = document.createElement('div');
-    grp.className = 'orders-cards';
-    container.appendChild(grp);
-    zsm.forEach(o => addRow(o, false, grp));
-  }
-
-  Object.keys(groups).sort((a,b)=>parseInt(a)-parseInt(b)).forEach(hour => {
-    const h = document.createElement('h3');
-    h.textContent = `${hour}:00 - ${hour}:59`;
-    container.appendChild(h);
-    const grp = document.createElement('div');
-    grp.className = 'orders-cards';
-    container.appendChild(grp);
-    groups[hour].forEach(o => addRow(o, false, grp));
-  });
-}
-
-function fetchOrders(){
-  fetch('/pos/orders_today?json=1')
-    .then(r => r.json())
-    .then(data => {
-      data.sort((a,b)=>getSortKey(a)-getSortKey(b));
-      renderGroupedOrders(data);
-    })
-    .catch(err => {
-      console.error("订单拉取失败", err);
-    });
-}
-
 async function loadGoogleMaps() {
   if (apiLoaded) return;
-  if (!window.api?.getGoogleMapsKey) {
+  if (!window.api?.getGoogleMapsKey) {  // ✅ 使用 window.api
     console.error('Google Maps key not available');
     return;
   }
-  const key = await window.api.getGoogleMapsKey();
+  const key = await window.api.getGoogleMapsKey();  // ✅ 正确获取 key
   console.log('Loaded Google Maps API key:', key);
 
   await new Promise((resolve, reject) => {
@@ -419,6 +227,7 @@ async function loadGoogleMaps() {
   });
 }
 
+
 function renderMarkers() {
   markers.forEach(m => m.setMap(null));
   markers = [];
@@ -429,7 +238,7 @@ function renderMarkers() {
     const marker = new google.maps.Marker({
       position: pos,
       map: mapInstance,
-      label: String(o.map_id),
+      label: String(o.map_id),  // 👈 显示地图编号 1,2,3...
       title: `${o.map_id}. ${o.customer_name} (${o.order_number})`
     });
     markers.push(marker);
@@ -440,6 +249,7 @@ function renderMarkers() {
   }
 }
 
+
 async function toggleMap() {
   mapVisible = !mapVisible;
   mapEl.style.display = mapVisible ? 'block' : 'none';
@@ -447,7 +257,7 @@ async function toggleMap() {
   document.body.style.overflow = mapVisible ? 'hidden' : '';
 
   if (mapVisible) {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // ⬅️ 添加这行
     await loadGoogleMaps();
     if (!mapInstance) {
       mapInstance = new google.maps.Map(mapEl, {
@@ -459,10 +269,12 @@ async function toggleMap() {
   }
 }
 
+
+
+
 toggleBtn.addEventListener('click', () => {
   toggleMap().catch(err => console.error(err));
 });
 
-fetchOrders();
 
 </script>
