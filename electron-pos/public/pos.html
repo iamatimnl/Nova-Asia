@@ -330,7 +330,7 @@
   border: none;
   border-radius: 4px;
   padding: 6px 10px;
-  margin-right: 35px;
+  margin-right: 25px;
   font-size: 20px;
   cursor: pointer;
   transition: background-color 0.2s ease;
@@ -343,20 +343,27 @@
 
 /* 地图按钮 - 蓝色风格 */
 #toggle-map-btn {
-  background-color: #073790ff;
+  background-color: transparent;  /* 修正拼写 */
   color: white;
   border: none;
-  border-radius: 6px;
-  padding: 8px 12px;
-  font-size: 16px;
+  border-radius: 50%;
+  padding: 8px 0; /* 调整上下边距让图标居中 */
+  width: 30px;
+  height: 30px;
   cursor: pointer;
-  margin-right: 65px;
+  margin-right: 28px;
   transition: background-color 0.2s ease;
+  font-size: 30px; /* 控制 emoji 大小 */
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #toggle-map-btn:hover {
-  background-color: #5a3f2f;
+  transform: scale(1.2);
 }
+
 
 .orders-panel {
   flex: 1;
@@ -939,9 +946,7 @@ dialog::backdrop {
 </style>
 </head>
 <body>
-  <!-- 全屏地图容器，确保在任何滚动位置都位于视口中央 -->
-  <div id="map" style="display: none;"></div>
-  <div class="navbar-container" id="navbar-container">
+<div class="navbar-container" id="navbar-container">
   <nav class="navbar" id="navbar">
     <div class="nav-categories">
       <a href="#customer-info">Klant</a>
@@ -968,7 +973,7 @@ dialog::backdrop {
 
       <!-- 固定导航栏 -->
       <div class="orders-header">
-        <button id="toggle-map-btn">Show map</button>
+        <button id="toggle-map-btn">🗺️</button>
         <button id="closeToday">X</button>
       
     
@@ -1208,7 +1213,7 @@ dialog::backdrop {
     </div>
 
     <br>
-    <button id="modal-confirm" style="padding:8px 16px;">✅ Bevestigen</button>
+    <button id="modal-confirm" style="padding:8px 16px;">Bevestigen 👌</button>
   </div>
 </div>
 <dialog id="deliveryModal">
@@ -2966,7 +2971,6 @@ function showNextOrderModal() {
 document.getElementById('modal-confirm').addEventListener('click', () => {
   console.log("✅ 用户点击了 Bevestigen");
 
-  // ✅ 自动打印当前订单（通过 printReceipt，发送 JSON 字符串）
   if (window.api?.printReceipt && currentOrder) {
     const orderText = JSON.stringify(currentOrder);
     window.api.printReceipt(orderText);
@@ -2975,23 +2979,12 @@ document.getElementById('modal-confirm').addEventListener('click', () => {
     console.warn("⚠️ window.api.printReceipt 不可用 或 currentOrder 为空");
   }
 
-  // ✅ 关闭弹窗
   document.getElementById('order-modal').style.display = 'none';
   isModalActive = false;
-
-  // ✅ 继续处理下一个订单
   showNextOrderModal();
 });
-
-
-// ✅ 手动打印按钮点击逻辑
 function printThisOrder(button) {
   const raw = button.getAttribute('data-order');
-  if (!raw) {
-    console.warn("⚠️ 缺少 data-order 属性");
-    return;
-  }
-
   let order;
   try {
     order = JSON.parse(raw);
@@ -3009,15 +3002,6 @@ function printThisOrder(button) {
   }
 }
 
-
-  if (window.api?.printReceipt && order) {
-    const orderText = JSON.stringify(order);
-    window.api.printReceipt(orderText);
-    console.log("🖨️ 打印了订单:", order.order_number);
-  } else {
-    console.warn("⚠️ printReceipt 不可用 或 order 无效");
-  }
-}
 
 
 function updateZSMBadge(order) {
