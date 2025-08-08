@@ -102,6 +102,13 @@ def serve_index_en():
 def legal():
     return render_template("legal.html")
 
+@app.route('/dbtest')
+def dbtest():
+    try:
+        result = db.session.execute(text("SELECT 1")).scalar()
+        return f"DB OK: {result}"
+    except Exception as e:
+        return f"DB Error: {e}", 500
 
 
 # 英文版首页
