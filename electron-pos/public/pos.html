@@ -323,37 +323,42 @@
   padding: 10px 16px 10px 10px;
 }
 
-/* 关闭按钮 - 白色 X，悬停变红底 */
 #closeToday {
-  background-color: red;
+  background-color: transparent;
   color: white;
   border: none;
-  border-radius: 4px;
-  padding: 6px 10px;
-  margin-right: 25px;
-  font-size: 20px;
+  width: 32px;
+  height: 32px;
+  font-size: 26px;
+  line-height: 1;
+  padding: 0;
+  margin-right: 15px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
 }
 
 #closeToday:hover {
-  background-color: #970514ff; /* 红色 */
+  background-color: #e81123; /* 微软关闭红 */
   color: white;
 }
+
+
 
 /* 地图按钮 - 蓝色风格 */
 #toggle-map-btn {
   background-color: transparent;  /* 修正拼写 */
-  color: white;
   border: none;
-  border-radius: 50%;
   padding: 8px 0; /* 调整上下边距让图标居中 */
-  width: 30px;
-  height: 30px;
+  width: 25px;
+  height: 25px;
   cursor: pointer;
-  margin-right: 28px;
+  margin-right: 14px;
   transition: background-color 0.2s ease;
-  font-size: 30px; /* 控制 emoji 大小 */
+  font-size: 27px; /* 控制 emoji 大小 */
   line-height: 1;
   display: flex;
   align-items: center;
@@ -492,14 +497,14 @@
   .cart-toggle {
     position: fixed;
     bottom: 20px;
-    right: 20px;
+    right: 16px;
     width: 56px;
     height: 56px;
     border-radius: 50%;
     border: none;
     background: #fff;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     cursor: pointer;
     z-index: 1100;
     display: none;
@@ -974,7 +979,7 @@ dialog::backdrop {
       <!-- 固定导航栏 -->
       <div class="orders-header">
         <button id="toggle-map-btn">🗺️</button>
-        <button id="closeToday">X</button>
+        <button id="closeToday">✕</button>
       
     
       </div>
