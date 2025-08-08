@@ -53,6 +53,9 @@ print(repr(os.getenv("DATABASE_URL")))
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+engine = create_engine(app.config["SQLALCHEMY_DATABASE_URI"], pool_pre_ping=True)
+
+
 with app.app_context():
     db.create_all()
     try:
