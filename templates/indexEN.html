@@ -5707,6 +5707,7 @@ function checkout() {
 
     const open = new Date();
     open.setHours(oh, om, 0, 0);
+    const current = new Date();
 
     const close = new Date();
     close.setHours(ch, cm, 0, 0);
@@ -5734,7 +5735,7 @@ function checkout() {
         }
     }
 
-    if (showZSM) {
+    if (showZSM && current >= open) {
         const asapOpt = document.createElement('option');
         asapOpt.value = 'ASAP';
         asapOpt.textContent = 'ASAP';
