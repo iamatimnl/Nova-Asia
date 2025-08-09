@@ -6153,14 +6153,15 @@ function checkout() {
     const lastTwo = allTimes.slice(-2).map(t => t.str);
 
     for (const { time, str } of allTimes) {
-        const status = closedSlots[str];
+        const hourKey = `${pad(time.getHours())}:00`;
+        const status = closedSlots[str] || closedSlots[hourKey];
         if (status && hideClosed) continue;
         if (time < start && !lastTwo.includes(str)) continue;
         const opt = document.createElement('option');
         opt.value = str;
         if (status) {
             opt.disabled = true;
-            opt.textContent = `${str} (${status === 'full' ? 'Vol' : 'Gesloten'})`;
+            opt.textContent = `${str} (${status === 'full' || status === 'closed' ? 'Vol' : 'Gesloten'})`;
         } else {
             opt.textContent = str;
         }
@@ -6182,7 +6183,8 @@ function checkout() {
 
   function clearIfClosed(selectId, closedMap){
     const sel = document.getElementById(selectId);
-    if (sel && sel.value && closedMap[sel.value]){
+    const hourKey = sel && sel.value ? sel.value.split(':')[0] + ':00' : null;
+    if (sel && sel.value && (closedMap[sel.value] || (hourKey && closedMap[hourKey]))){
       sel.value = '';
       alert('Geselecteerde tijd is niet meer beschikbaar. Kies een andere.');
     }
