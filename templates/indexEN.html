@@ -5314,8 +5314,8 @@ let timeInterval = 15;
 let showZSM = true;
 let pickupAddress = '';
 let allowedPostcodes = [];
-let pickupClosedSlots = [];
-let deliveryClosedSlots = [];
+let pickupClosedSlots = {};
+let deliveryClosedSlots = {};
 let currentSettings = {};
 function showFeedback(msg, isError=false) {
   const el = document.getElementById('feedback');
@@ -5692,7 +5692,7 @@ function checkout() {
     };
   }
 
-  function populateTimeOptions(selectId, offsetMinutes, openStr, closeStr, closedSlots=[]) {
+  function populateTimeOptions(selectId, offsetMinutes, openStr, closeStr, closedSlots={}, hideClosed=false) {
     const select = document.getElementById(selectId);
     if (!select) return;
 
@@ -5738,7 +5738,7 @@ function checkout() {
     }
 
     const currentSlot = `${pad(current.getHours())}:00`;
-    const inClosedSlot = closedSlots.includes(currentSlot);
+    const inClosedSlot = !!closedSlots[currentSlot];
     if (showZSM && current >= open && !inClosedSlot) {
         const asapOpt = document.createElement('option');
         asapOpt.value = 'ASAP';
@@ -5753,13 +5753,18 @@ function checkout() {
 
     const lastTwo = allTimes.slice(-2).map(t => t.str);
 
-    const closedSet = new Set(closedSlots);
     for (const { time, str } of allTimes) {
-        if (closedSet.has(str)) continue;
+        const status = closedSlots[str];
+        if (status && hideClosed) continue;
         if (time < start && !lastTwo.includes(str)) continue;
         const opt = document.createElement('option');
         opt.value = str;
-        opt.textContent = str;
+        if (status) {
+            opt.disabled = true;
+            opt.textContent = `${str} (${status === 'full' ? 'Full' : 'Closed'})`;
+        } else {
+            opt.textContent = str;
+        }
         select.appendChild(opt);
     }
 
@@ -5771,11 +5776,19 @@ function checkout() {
     }
 
     // 保留用户上一次选择的时间（如果还存在）
-    if (prev) {
+    if (prev && !closedSlots[prev]) {
         const option = Array.from(select.options).find(o => o.value === prev);
         if (option) select.value = prev;
     }
-}
+  }
+
+  function clearIfClosed(selectId, closedMap){
+    const sel = document.getElementById(selectId);
+    if(sel && sel.value && closedMap[sel.value]){
+      sel.value = '';
+      alert('Selected time is no longer available. Please choose again.');
+    }
+  }
 
 
   function toggleOrderType() {
@@ -5831,6 +5844,7 @@ function checkout() {
       afhalenFields.classList.remove('hidden');
       bezorgenFields.classList.add('hidden');
       populateTimeOptions('pickup_time', 30, pickupOpenTime, pickupCloseTime, pickupClosedSlots);
+      clearIfClosed('pickup_time', pickupClosedSlots);
       updateCartPaymentOptions();
     } else {
       transferValues(afhalenFields, bezorgenFields);
@@ -5839,6 +5853,7 @@ function checkout() {
       bezorgenFields.classList.remove('hidden');
       afhalenFields.classList.add('hidden');
       populateTimeOptions('delivery_time', 45, deliveryOpenTime, deliveryCloseTime, deliveryClosedSlots);
+      clearIfClosed('delivery_time', deliveryClosedSlots);
       updateCartPaymentOptions();
     }
     updatePriceBreakdown(currentSubtotal, currentPackaging);
@@ -6735,11 +6750,13 @@ function updateStatus(settings) {
   deliveryOpenTime = settings.delivery_start || deliveryOpenTime;
   deliveryCloseTime = settings.delivery_end || deliveryCloseTime;
   timeInterval = parseInt(settings.time_interval || timeInterval);
-  pickupClosedSlots = (settings.pickup_closed_slots || '').split(',').filter(Boolean);
-  deliveryClosedSlots = (settings.delivery_closed_slots || '').split(',').filter(Boolean);
+  pickupClosedSlots = settings.pickup_closed_slots || {};
+  deliveryClosedSlots = settings.delivery_closed_slots || {};
 
   populateTimeOptions('pickup_time', 30, pickupOpenTime, pickupCloseTime, pickupClosedSlots);
   populateTimeOptions('delivery_time', 45, deliveryOpenTime, deliveryCloseTime, deliveryClosedSlots);
+  clearIfClosed('pickup_time', pickupClosedSlots);
+  clearIfClosed('delivery_time', deliveryClosedSlots);
 
   const websiteOn = settings.is_open !== 'false' && !allClosed;
   const dayOpen = closedDays.indexOf(todayName) === -1;
@@ -6849,10 +6866,12 @@ function updateTimes(settings){
   deliveryOpenTime = settings.delivery_start || deliveryOpenTime;
   deliveryCloseTime = settings.delivery_end || deliveryCloseTime;
   timeInterval = parseInt(settings.time_interval || timeInterval);
-  pickupClosedSlots = (settings.pickup_closed_slots || '').split(',').filter(Boolean);
-  deliveryClosedSlots = (settings.delivery_closed_slots || '').split(',').filter(Boolean);
+  pickupClosedSlots = settings.pickup_closed_slots || {};
+  deliveryClosedSlots = settings.delivery_closed_slots || {};
   populateTimeOptions('pickup_time', 30, pickupOpenTime, pickupCloseTime, pickupClosedSlots);
   populateTimeOptions('delivery_time', 45, deliveryOpenTime, deliveryCloseTime, deliveryClosedSlots);
+  clearIfClosed('pickup_time', pickupClosedSlots);
+  clearIfClosed('delivery_time', deliveryClosedSlots);
 }
 
 function fetchStatus(){
