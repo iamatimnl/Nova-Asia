@@ -1175,6 +1175,8 @@ def dashboard():
         delivery_start=get_value('delivery_start', '11:00'),
         delivery_end=get_value('delivery_end', '21:00'),
         delivery_postcodes=get_value('delivery_postcodes', ''),
+        pickup_closed_slots=get_value('pickup_closed_slots', ''),
+        delivery_closed_slots=get_value('delivery_closed_slots', ''),
         time_interval=get_value('time_interval', '15'),
         show_zsm_option=get_value('show_zsm_option', 'true'),
         milktea_soldout=get_value('milktea_soldout', 'false'),
@@ -1283,6 +1285,8 @@ def update_setting():
     delivery_start_val = data.get('delivery_start', '11:00')
     delivery_end_val = data.get('delivery_end', '21:00')
     delivery_postcodes_val = data.get('delivery_postcodes', '')
+    pickup_closed_slots_val = data.get('pickup_closed_slots', '')
+    delivery_closed_slots_val = data.get('delivery_closed_slots', '')
     time_interval_val = data.get('time_interval', '15')
     show_zsm_option_val = data.get('show_zsm_option', 'true')
     milktea_soldout_val = data.get('milktea_soldout', 'false')
@@ -1371,6 +1375,8 @@ def update_setting():
         ('delivery_start', delivery_start_val),
         ('delivery_end', delivery_end_val),
         ('delivery_postcodes', delivery_postcodes_val),
+        ('pickup_closed_slots', pickup_closed_slots_val),
+        ('delivery_closed_slots', delivery_closed_slots_val),
         ('time_interval', time_interval_val),
         ('show_zsm_option', show_zsm_option_val),
         ('milktea_soldout', milktea_soldout_val),
@@ -1461,10 +1467,48 @@ def update_setting():
         'pickup_end': settings.get('pickup_end'),
         'delivery_start': settings.get('delivery_start'),
         'delivery_end': settings.get('delivery_end'),
-        'time_interval': settings.get('time_interval')
+        'time_interval': settings.get('time_interval'),
+        'pickup_closed_slots': settings.get('pickup_closed_slots', ''),
+        'delivery_closed_slots': settings.get('delivery_closed_slots', '')
     }
     socketio.emit('time_update', time_settings)
     return jsonify({'success': True})
+
+
+@app.route('/dashboard/slot', methods=['POST'])
+@login_required
+def toggle_slot():
+    data = request.get_json()
+    slot = data.get('slot')
+    slot_type = data.get('type')  # 'pickup' or 'delivery'
+    action = data.get('action', 'close')
+    if slot_type not in ['pickup', 'delivery'] or not slot:
+        return jsonify({'success': False, 'error': 'invalid parameters'}), 400
+    key = f"{slot_type}_closed_slots"
+    s = Setting.query.filter_by(key=key).first()
+    slots = set((s.value or '').split(',')) if s and s.value else set()
+    if action == 'open':
+        slots.discard(slot)
+    else:
+        slots.add(slot)
+    new_val = ','.join(sorted(filter(None, slots)))
+    if not s:
+        db.session.add(Setting(key=key, value=new_val))
+    else:
+        s.value = new_val
+    db.session.commit()
+    settings = {s.key: s.value for s in Setting.query.all()}
+    time_settings = {
+        'pickup_start': settings.get('pickup_start'),
+        'pickup_end': settings.get('pickup_end'),
+        'delivery_start': settings.get('delivery_start'),
+        'delivery_end': settings.get('delivery_end'),
+        'time_interval': settings.get('time_interval'),
+        'pickup_closed_slots': settings.get('pickup_closed_slots', ''),
+        'delivery_closed_slots': settings.get('delivery_closed_slots', '')
+    }
+    socketio.emit('time_update', time_settings)
+    return jsonify({'success': True, key: new_val})
 
 
 

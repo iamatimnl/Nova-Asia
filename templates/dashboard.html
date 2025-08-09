@@ -90,6 +90,30 @@
         </select>
         <br><br>
 
+        <h3>Afhaal tijdslots</h3>
+        <div id="pickupSlots">
+            {% for h in range(12,22) %}
+            {% set t = ("%02d:00" % h) %}
+            <label>
+                <input type="checkbox" class="pickup-slot" value="{{ t }}" {% if t not in (pickup_closed_slots or '').split(',') %}checked{% endif %}>
+                {{ t }}
+            </label>
+            {% endfor %}
+        </div>
+
+        <h3>Bezorg tijdslots</h3>
+        <div id="deliverySlots">
+            {% for h in range(12,22) %}
+            {% set t = ("%02d:00" % h) %}
+            <label>
+                <input type="checkbox" class="delivery-slot" value="{{ t }}" {% if t not in (delivery_closed_slots or '').split(',') %}checked{% endif %}>
+                {{ t }}
+            </label>
+            {% endfor %}
+        </div>
+
+        <br>
+
         <label>奶茶价格 (€):</label>
         <input type="number" step="0.01" id="milktea_price_input" value="{{ milktea_price }}">
         <button type="button" id="update_milktea_btn">更新价格</button>
@@ -694,6 +718,12 @@
                   .map(input => input.value.trim())
                   .filter(Boolean)
                   .join(',');
+            const pickup_closed_slots = Array.from(document.querySelectorAll('.pickup-slot:not(:checked)'))
+                  .map(cb => cb.value)
+                  .join(',');
+            const delivery_closed_slots = Array.from(document.querySelectorAll('.delivery-slot:not(:checked)'))
+                  .map(cb => cb.value)
+                  .join(',');
             const time_interval = document.getElementById('interval_select').value;
             const show_zsm_option = document.getElementById('show_zsm_select').value;
             const milktea_soldout = document.getElementById('milktea_soldout_select').value;
@@ -785,6 +815,8 @@
                     delivery_start: delivery_start,
                     delivery_end: delivery_end,
                     delivery_postcodes: delivery_postcodes,
+                    pickup_closed_slots: pickup_closed_slots,
+                    delivery_closed_slots: delivery_closed_slots,
                     time_interval: time_interval,
                     show_zsm_option: show_zsm_option,
                     milktea_soldout: milktea_soldout,
