@@ -2541,18 +2541,22 @@ body.portrait-mode .cart-badge {
 
 
   <!-- 右侧: 结算区域 -->
-  <div class="cart-summary pretty-gradient">
-
-   <button class="circle-x-btn" onclick="toggleMobileCart()" style="background: none; border: none; padding: 0; cursor: pointer;">
-  <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
-       viewBox="0 0 24 24"
-       fill="black" stroke="#f2e9d8" stroke-width="2"
-       stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="12" r="10" />
-    <line x1="15" y1="9" x2="9" y2="15" />
-    <line x1="9" y1="9" x2="15" y2="15" />
+     <!-- 右侧: 结算区域 -->
+<div class="cart-summary pretty-gradient">
+  <button class="circle-x-btn" type="button" aria-label="Terug" onclick="toggleMobileCart()">
+  <!-- 圆圈 + 向左箭头 -->
+  <svg class="icon" viewBox="0 0 17 17" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false">
+    <path fill="currentColor" d="M9.031,0.021 C4.637,0.021 1.076,3.588 1.076,7.9 C1.076,12.212 4.637,15.779 9.031,15.779 
+      C13.424,15.779 16.985,12.212 16.985,7.9 C16.985,3.588 13.424,0.021 9.031,0.021 Z 
+      M9.031,14.767 C5.188,14.767 2.068,11.645 2.068,7.8 
+      C2.068,3.955 5.188,0.833 9.031,0.833 C12.874,0.833 15.994,3.955 15.994,7.8 
+      C15.994,11.645 12.874,14.767 9.031,14.767 Z 
+      M7.911,10.918 L4.781,7.888 L7.911,4.858 L7.911,6.874 
+      L12.092,6.874 L12.092,8.902 L7.911,8.902 L7.911,10.918 Z" />
   </svg>
 </button>
+
+</div>
 
 
 
