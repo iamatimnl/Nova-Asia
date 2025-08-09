@@ -818,12 +818,9 @@ def api_orders():
         except Exception:
             pickup_closed, delivery_closed = {}, {}
         closed_map = pickup_closed if order_type == 'afhalen' else delivery_closed
-        if gekozen:
-            hour_key = gekozen[:2] + ':00'
-            status = closed_map.get(gekozen) or closed_map.get(hour_key)
-            if status:
-                msg = 'Tijdslot vol' if status == 'full' else 'Tijdslot gesloten'
-                return jsonify({"status": "fail", "error": msg}), 403
+        if gekozen and gekozen in closed_map:
+            msg = 'Tijdslot vol' if closed_map[gekozen] == 'full' else 'Tijdslot gesloten'
+            return jsonify({"status": "fail", "error": msg}), 403
         # ===== 新时间判断逻辑结束 =====
 
         # 1. 构造订单对象（初始字段）
@@ -1987,7 +1984,6 @@ def logout():
 # 启动
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000)
-
 
 
 
