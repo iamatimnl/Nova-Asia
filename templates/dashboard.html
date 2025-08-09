@@ -719,9 +719,9 @@
                   .filter(Boolean)
                   .join(',');
             const pickup_closed_slots = {};
-            document.querySelectorAll('.pickup-slot:not(:checked)').forEach(cb => pickup_closed_slots[cb.value] = 'closed');
+            document.querySelectorAll('.pickup-slot:not(:checked)').forEach(cb => pickup_closed_slots[cb.value] = 'full');
             const delivery_closed_slots = {};
-            document.querySelectorAll('.delivery-slot:not(:checked)').forEach(cb => delivery_closed_slots[cb.value] = 'closed');
+            document.querySelectorAll('.delivery-slot:not(:checked)').forEach(cb => delivery_closed_slots[cb.value] = 'full');
             const time_interval = document.getElementById('interval_select').value;
             const show_zsm_option = document.getElementById('show_zsm_select').value;
             const milktea_soldout = document.getElementById('milktea_soldout_select').value;
