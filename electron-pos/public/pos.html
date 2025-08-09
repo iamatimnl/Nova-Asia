@@ -2276,10 +2276,7 @@ function submitOrder() {
     const select=document.getElementById(selectId);
     if(!select) return;
     select.innerHTML='';
-    const asap=document.createElement('option');
-    asap.value='Z.S.M.';
-    asap.textContent='Z.S.M.';
-    select.appendChild(asap);
+    const current=new Date();
     const now=new Date();
     now.setMinutes(now.getMinutes()+offsetMinutes);
 
@@ -2287,6 +2284,13 @@ function submitOrder() {
     open.setHours(12,0,0,0);
     const close=new Date();
     close.setHours(23,59,0,0);
+
+    if(current>=open){
+      const asap=document.createElement('option');
+      asap.value='Z.S.M.';
+      asap.textContent='Z.S.M.';
+      select.appendChild(asap);
+    }
 
     let start=now>open?now:open;
     start=new Date(start);
