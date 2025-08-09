@@ -812,6 +812,18 @@ def api_orders():
 
         if now > end_today:
             return jsonify({"status": "fail", "error": gesloten_message}), 403
+        try:
+            pickup_closed = json.loads(settings.get('pickup_closed_slots') or '{}')
+            delivery_closed = json.loads(settings.get('delivery_closed_slots') or '{}')
+        except Exception:
+            pickup_closed, delivery_closed = {}, {}
+        closed_map = pickup_closed if order_type == 'afhalen' else delivery_closed
+        if gekozen:
+            hour_key = f"{gekozen.split(':')[0]}:00"
+            status = closed_map.get(gekozen) or closed_map.get(hour_key)
+            if status:
+                msg = 'Tijdslot vol' if status == 'full' else 'Tijdslot gesloten'
+                return jsonify({"status": "fail", "error": msg}), 403
         # ===== 新时间判断逻辑结束 =====
 
         # 1. 构造订单对象（初始字段）
@@ -943,7 +955,27 @@ def get_setting(key):
 @app.route('/api/settings')
 def get_all_settings():
     settings = {s.key: s.value for s in Setting.query.all()}
+    for k in ['pickup_closed_slots', 'delivery_closed_slots']:
+        try:
+            settings[k] = json.loads(settings.get(k) or '{}')
+        except Exception:
+            settings[k] = {}
     return jsonify(settings)
+
+
+@app.route('/api/closed_slots')
+def get_closed_slots():
+    keys = ['pickup_closed_slots', 'delivery_closed_slots']
+    settings = {s.key: s.value for s in Setting.query.filter(Setting.key.in_(keys)).all()}
+    def parse(val):
+        try:
+            return json.loads(val or '{}')
+        except Exception:
+            return {}
+    return jsonify({
+        'pickup': parse(settings.get('pickup_closed_slots')),
+        'delivery': parse(settings.get('delivery_closed_slots'))
+    })
 
 # ----- Menu API -----
 @app.route('/api/menu')
@@ -1175,8 +1207,8 @@ def dashboard():
         delivery_start=get_value('delivery_start', '11:00'),
         delivery_end=get_value('delivery_end', '21:00'),
         delivery_postcodes=get_value('delivery_postcodes', ''),
-        pickup_closed_slots=get_value('pickup_closed_slots', ''),
-        delivery_closed_slots=get_value('delivery_closed_slots', ''),
+        pickup_closed_slots=json.loads(get_value('pickup_closed_slots', '{}') or '{}'),
+        delivery_closed_slots=json.loads(get_value('delivery_closed_slots', '{}') or '{}'),
         time_interval=get_value('time_interval', '15'),
         show_zsm_option=get_value('show_zsm_option', 'true'),
         milktea_soldout=get_value('milktea_soldout', 'false'),
@@ -1285,8 +1317,8 @@ def update_setting():
     delivery_start_val = data.get('delivery_start', '11:00')
     delivery_end_val = data.get('delivery_end', '21:00')
     delivery_postcodes_val = data.get('delivery_postcodes', '')
-    pickup_closed_slots_val = data.get('pickup_closed_slots', '')
-    delivery_closed_slots_val = data.get('delivery_closed_slots', '')
+    pickup_closed_slots_val = json.dumps(data.get('pickup_closed_slots', {}))
+    delivery_closed_slots_val = json.dumps(data.get('delivery_closed_slots', {}))
     time_interval_val = data.get('time_interval', '15')
     show_zsm_option_val = data.get('show_zsm_option', 'true')
     milktea_soldout_val = data.get('milktea_soldout', 'false')
@@ -1461,15 +1493,21 @@ def update_setting():
 
     db.session.commit()
     settings = {s.key: s.value for s in Setting.query.all()}
-    socketio.emit('setting_update', settings)
+    parsed_settings = settings.copy()
+    for k in ['pickup_closed_slots', 'delivery_closed_slots']:
+        try:
+            parsed_settings[k] = json.loads(settings.get(k) or '{}')
+        except Exception:
+            parsed_settings[k] = {}
+    socketio.emit('setting_update', parsed_settings)
     time_settings = {
         'pickup_start': settings.get('pickup_start'),
         'pickup_end': settings.get('pickup_end'),
         'delivery_start': settings.get('delivery_start'),
         'delivery_end': settings.get('delivery_end'),
         'time_interval': settings.get('time_interval'),
-        'pickup_closed_slots': settings.get('pickup_closed_slots', ''),
-        'delivery_closed_slots': settings.get('delivery_closed_slots', '')
+        'pickup_closed_slots': parsed_settings['pickup_closed_slots'],
+        'delivery_closed_slots': parsed_settings['delivery_closed_slots']
     }
     socketio.emit('time_update', time_settings)
     return jsonify({'success': True})
@@ -1481,31 +1519,41 @@ def toggle_slot():
     data = request.get_json()
     slot = data.get('slot')
     slot_type = data.get('type')  # 'pickup' or 'delivery'
+    status = data.get('status', 'closed')
     action = data.get('action', 'close')
     if slot_type not in ['pickup', 'delivery'] or not slot:
         return jsonify({'success': False, 'error': 'invalid parameters'}), 400
     key = f"{slot_type}_closed_slots"
     s = Setting.query.filter_by(key=key).first()
-    slots = set((s.value or '').split(',')) if s and s.value else set()
+    try:
+        slots = json.loads(s.value) if s and s.value else {}
+    except Exception:
+        slots = {}
     if action == 'open':
-        slots.discard(slot)
+        slots.pop(slot, None)
     else:
-        slots.add(slot)
-    new_val = ','.join(sorted(filter(None, slots)))
+        slots[slot] = status
+    new_val = json.dumps(slots)
     if not s:
         db.session.add(Setting(key=key, value=new_val))
     else:
         s.value = new_val
     db.session.commit()
     settings = {s.key: s.value for s in Setting.query.all()}
+    parsed_settings = settings.copy()
+    for k in ['pickup_closed_slots', 'delivery_closed_slots']:
+        try:
+            parsed_settings[k] = json.loads(settings.get(k) or '{}')
+        except Exception:
+            parsed_settings[k] = {}
     time_settings = {
         'pickup_start': settings.get('pickup_start'),
         'pickup_end': settings.get('pickup_end'),
         'delivery_start': settings.get('delivery_start'),
         'delivery_end': settings.get('delivery_end'),
         'time_interval': settings.get('time_interval'),
-        'pickup_closed_slots': settings.get('pickup_closed_slots', ''),
-        'delivery_closed_slots': settings.get('delivery_closed_slots', '')
+        'pickup_closed_slots': parsed_settings['pickup_closed_slots'],
+        'delivery_closed_slots': parsed_settings['delivery_closed_slots']
     }
     socketio.emit('time_update', time_settings)
     return jsonify({'success': True, key: new_val})
