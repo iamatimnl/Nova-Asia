@@ -5317,12 +5317,6 @@ let allowedPostcodes = [];
 let pickupClosedSlots = {};
 let deliveryClosedSlots = {};
 let currentSettings = {};
-
-function isSlotClosed(str, closedSlots){
-  if(!str) return false;
-  const hourKey = str.slice(0,2) + ':00';
-  return !!(closedSlots[str] || closedSlots[hourKey]);
-}
 function showFeedback(msg, isError=false) {
   const el = document.getElementById('feedback');
   el.textContent = msg;
@@ -5705,13 +5699,6 @@ function checkout() {
     const prev = select.value; // 保留当前选中值
     select.innerHTML = '';
 
-    const placeholder = document.createElement('option');
-    placeholder.value = '';
-    placeholder.textContent = 'Choose time';
-    placeholder.disabled = true;
-    placeholder.selected = true;
-    select.appendChild(placeholder);
-
     const now = new Date();
     now.setMinutes(now.getMinutes() + offsetMinutes); // 现在时间 + 制作时间缓冲
 
@@ -5742,13 +5729,16 @@ function checkout() {
     if (allTimes.length) {
         const lastTime = allTimes[allTimes.length - 1].time;
         if (now >= lastTime) {
-            placeholder.textContent = 'No available time';
+            const opt = document.createElement('option');
+            opt.value = '';
+            opt.textContent = 'No available time';
+            select.appendChild(opt);
             return;
         }
     }
 
     const currentSlot = `${pad(current.getHours())}:00`;
-    const inClosedSlot = !!isSlotClosed(currentSlot, closedSlots);
+    const inClosedSlot = !!closedSlots[currentSlot];
     if (showZSM && current >= open && !inClosedSlot) {
         const asapOpt = document.createElement('option');
         asapOpt.value = 'ASAP';
@@ -5764,7 +5754,7 @@ function checkout() {
     const lastTwo = allTimes.slice(-2).map(t => t.str);
 
     for (const { time, str } of allTimes) {
-        const status = closedSlots[str] || closedSlots[`${str.slice(0,2)}:00`];
+        const status = closedSlots[str];
         if (status && hideClosed) continue;
         if (time < start && !lastTwo.includes(str)) continue;
         const opt = document.createElement('option');
@@ -5778,12 +5768,15 @@ function checkout() {
         select.appendChild(opt);
     }
 
-    if (select.options.length === 1) {
-        placeholder.textContent = 'No available time';
+    if (select.options.length === 0) {
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = 'Closed';
+        select.appendChild(opt);
     }
 
     // 保留用户上一次选择的时间（如果还存在）
-    if (prev && !isSlotClosed(prev, closedSlots)) {
+    if (prev && !closedSlots[prev]) {
         const option = Array.from(select.options).find(o => o.value === prev);
         if (option) select.value = prev;
     }
@@ -5791,7 +5784,7 @@ function checkout() {
 
   function clearIfClosed(selectId, closedMap){
     const sel = document.getElementById(selectId);
-    if(sel && sel.value && isSlotClosed(sel.value, closedMap)){
+    if(sel && sel.value && closedMap[sel.value]){
       sel.value = '';
       alert('Selected time is no longer available. Please choose again.');
     }
@@ -5850,7 +5843,7 @@ function checkout() {
 
       afhalenFields.classList.remove('hidden');
       bezorgenFields.classList.add('hidden');
-      populateTimeOptions('pickup_time', 30, pickupOpenTime, pickupCloseTime, pickupClosedSlots, true);
+      populateTimeOptions('pickup_time', 30, pickupOpenTime, pickupCloseTime, pickupClosedSlots);
       clearIfClosed('pickup_time', pickupClosedSlots);
       updateCartPaymentOptions();
     } else {
@@ -5859,7 +5852,7 @@ function checkout() {
 
       bezorgenFields.classList.remove('hidden');
       afhalenFields.classList.add('hidden');
-      populateTimeOptions('delivery_time', 45, deliveryOpenTime, deliveryCloseTime, deliveryClosedSlots, true);
+      populateTimeOptions('delivery_time', 45, deliveryOpenTime, deliveryCloseTime, deliveryClosedSlots);
       clearIfClosed('delivery_time', deliveryClosedSlots);
       updateCartPaymentOptions();
     }
@@ -6760,8 +6753,8 @@ function updateStatus(settings) {
   pickupClosedSlots = settings.pickup_closed_slots || {};
   deliveryClosedSlots = settings.delivery_closed_slots || {};
 
-  populateTimeOptions('pickup_time', 30, pickupOpenTime, pickupCloseTime, pickupClosedSlots, true);
-  populateTimeOptions('delivery_time', 45, deliveryOpenTime, deliveryCloseTime, deliveryClosedSlots, true);
+  populateTimeOptions('pickup_time', 30, pickupOpenTime, pickupCloseTime, pickupClosedSlots);
+  populateTimeOptions('delivery_time', 45, deliveryOpenTime, deliveryCloseTime, deliveryClosedSlots);
   clearIfClosed('pickup_time', pickupClosedSlots);
   clearIfClosed('delivery_time', deliveryClosedSlots);
 
@@ -6875,8 +6868,8 @@ function updateTimes(settings){
   timeInterval = parseInt(settings.time_interval || timeInterval);
   pickupClosedSlots = settings.pickup_closed_slots || {};
   deliveryClosedSlots = settings.delivery_closed_slots || {};
-  populateTimeOptions('pickup_time', 30, pickupOpenTime, pickupCloseTime, pickupClosedSlots, true);
-  populateTimeOptions('delivery_time', 45, deliveryOpenTime, deliveryCloseTime, deliveryClosedSlots, true);
+  populateTimeOptions('pickup_time', 30, pickupOpenTime, pickupCloseTime, pickupClosedSlots);
+  populateTimeOptions('delivery_time', 45, deliveryOpenTime, deliveryCloseTime, deliveryClosedSlots);
   clearIfClosed('pickup_time', pickupClosedSlots);
   clearIfClosed('delivery_time', deliveryClosedSlots);
 }
