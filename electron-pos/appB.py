@@ -807,6 +807,9 @@ def api_orders():
         if chosen_dt and chosen_dt < start_today:
             return jsonify({"status": "fail", "error": "Gekozen tijd valt buiten openingstijden."}), 403
 
+        if chosen_dt and chosen_dt > end_today:
+            return jsonify({"status": "fail", "error": gesloten_message}), 403
+
         if now > end_today:
             return jsonify({"status": "fail", "error": gesloten_message}), 403
         # ===== 新时间判断逻辑结束 =====
