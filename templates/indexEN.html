@@ -5554,6 +5554,27 @@ function checkout() {
 
   const tijdslotDisplay = orderType === 'afhalen' ? pickupSel : deliverySel;
 
+  const selectedTime = orderType === 'afhalen' ? pickupValue : deliveryValue;
+  const lastAvailableTime = (() => {
+    const sel = document.getElementById(orderType === 'afhalen' ? 'pickup_time' : 'delivery_time');
+    if (!sel) return null;
+    for (let i = sel.options.length - 1; i >= 0; i--) {
+      const val = sel.options[i].value;
+      if (val) return val;
+    }
+    return null;
+  })();
+
+  const toMinutes = t => {
+    const [h, m] = t.split(':').map(Number);
+    return h * 60 + m;
+  };
+
+  if (selectedTime && lastAvailableTime && toMinutes(selectedTime) > toMinutes(lastAvailableTime)) {
+    alert('Selected time is not available.');
+    return;
+  }
+
   const summary = {
     subtotal: subtotal.toFixed(2),
     packaging: packagingFee.toFixed(2),
