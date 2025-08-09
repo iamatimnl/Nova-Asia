@@ -101,7 +101,7 @@
  
   height: 70px;
 
-  background: rgba(255, 255, 255, 0.545);
+  background: #3e2f24ea;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(16px);
 
@@ -754,9 +754,9 @@ body.portrait-mode .cart-section.mobile-visible .cart-summary #closeCartBtn {
   font-size: large;
   flex-direction: column;
   overflow: hidden;
-  margin-top: 5px;
+  margin-top: 15px;
 
-  background: #f7f1e4;
+  background: #F8F8F8;
   backdrop-filter: blur(18px);
   padding: 16px;
 
@@ -780,14 +780,14 @@ body.portrait-mode .cart-section.mobile-visible .cart-summary #closeCartBtn {
   position: static;
   font-size: larger;
 
-  background: #f7f1e4;
+  background: #F8F8F8;
   backdrop-filter: blur(18px);
   padding: 20px;
 
 }
 
   /* 移动端相关按钮桌面隐藏 */
-  #cart-toggle, #closeCartBtn, .slider-container {
+  #cart-toggle, #circle-x-btn, .slider-container {
     display: none !important;
   }
 }
@@ -862,7 +862,7 @@ body.portrait-mode .cart-section.mobile-visible .cart-summary #closeCartBtn {
 }
 @media (min-width: 768px) {
   #closeCartBtn {
-    display: none;
+    display: none !important;
   }
 }
 #cart-badge {
@@ -1026,13 +1026,8 @@ body.portrait-mode textarea {
 
 
 .checkout-btn {
-  background: linear-gradient(
-    to bottom,
-    #eedec2,
-    #f1deb3,
-    #e6cc96
-  );
-  color: #3e2f24;
+  background: #3e2f24;
+  color: #d1b780;
   padding: 14px 28px;
   border: none;
   border-radius: 12px;
@@ -1062,6 +1057,7 @@ body.portrait-mode textarea {
     #c8a86c
   );
   transform: scale(1.03);
+  color: #3e2f24;
   filter: brightness(1.03);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.5),
@@ -1076,13 +1072,8 @@ body.portrait-mode textarea {
   .apply-discount-btn {
     margin-left: 8px;
     padding: 6px 12px;
-    background: linear-gradient(
-      to bottom,
-       #eedec2,
-    #f1deb3,
-    #e6cc96
-    );
-    color: #3e2f24;
+    background: #3e2f24;
+    color: #d1b780;
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -1102,6 +1093,7 @@ body.portrait-mode textarea {
       #d1b780,
       #c8a86c
     );
+    color: #3e2f24;
     filter: brightness(1.05);
     transform: scale(0.96);
     box-shadow:
@@ -1286,6 +1278,7 @@ input:focus, select:focus, textarea:focus {
 
 .price-details {
   text-align: left;
+  color: #000;
   margin-top: 10px;
   font-size: 1.25rem;
 }
@@ -1917,7 +1910,7 @@ body.portrait-mode .spinner {
   padding: 0 8px;
   box-sizing: border-box;
   border-radius: 26px;
-  background:#3e2f24;
+  background:#3e2f24ea;
   box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.2), 
               0 2px 8px rgba(0, 0, 0, 0.15); /* 内外阴影提升立体感 */
   backdrop-filter: blur(12px); 
@@ -2318,7 +2311,11 @@ body.portrait-mode .cart-badge {
 }
 
 
-
+@media (min-width: 768px) {
+  .circle-x-btn {
+    display: none !important;
+  }
+}
 
 
   
@@ -2547,7 +2544,7 @@ body.portrait-mode .cart-badge {
   <div class="cart-summary pretty-gradient">
 
    <button class="circle-x-btn" onclick="toggleMobileCart()" style="background: none; border: none; padding: 0; cursor: pointer;">
-  <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30"
+  <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
        viewBox="0 0 24 24"
        fill="black" stroke="#f2e9d8" stroke-width="2"
        stroke-linecap="round" stroke-linejoin="round">
