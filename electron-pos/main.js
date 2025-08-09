@@ -328,6 +328,9 @@ async function doEscposPrint(order) {
     // 直接发 RAW 半切（TM-T20III 通用）；如要全切改为 0x00
     rawBoth(p, d, Buffer.from([0x1D, 0x56, 0x01])); // GS V 1 (partial cut)
 
+    // 兼容部分只识别 ESC i 的机型，再补发一次全切指令
+    rawBoth(p, d, Buffer.from([0x1B, 0x69])); // ESC i (full cut)
+
     // 可选：再尝试高阶 cut()（有 profile 时也能生效；即使没用也不影响）
     try { typeof p.cut === 'function' && p.cut(); } catch {}
 
