@@ -240,12 +240,6 @@ async function doEscposPrint(order) {
   const WIDTH = CONFIG.WIDTH;
   const RIGHT = CONFIG.RIGHT_RESERVE;
 
-  // === 关键参数（解决“尾部不够露出 & 只切一次”）===
-  const FOOTER_PADDING_LINES = 2;    // 切前先补空行
-  const BOTTOM_EXPOSE_DOTS   = 72;   // 切前按点距推进（≈9mm, 203dpi）
-  const CUT_WAIT_MS          = 800;  // 切刀等待
-  const CUT_MODE             = (CONFIG.CUT_MODE || 'partial'); // 'partial' | 'full'
-
   // ========== helpers ==========
   const wait = (ms) => new Promise(r => setTimeout(r, ms));
   const money = n => Number(n || 0).toFixed(2);
@@ -314,39 +308,30 @@ async function doEscposPrint(order) {
     rawBoth(p, d, Buffer.from([0x1B, 0x4A, Math.max(1, Math.min(255, n))])); // ESC J n
 
   // —— 只切一次 ——（根据 CUT_MODE 选择一条指令）
-  // —— 只切一次：先可视滚动，再切 —— 
-const safeCut = async (p, d) => {
-  // 可调参数（按需要改大/改小）
-  const VISIBLE_LF_BEFORE_CUT = 6;   // 先用换行推进（肉眼可见滚动）
-  const EXTRA_EXPOSE_DOTS     = 48;  // 再按点距微推（≈6mm，203dpi）
-  const CUT_WAIT_MS           = 800; // 切刀等待
-  const USE_FULL_CUT          = (CONFIG.CUT_MODE === 'full'); // 默认 partial
+  // 使用底层进纸指令，避免下一次打印前出现多余的切纸
+  const safeCut = async (p, d) => {
+    const VISIBLE_LF_BEFORE_CUT = 6;   // 先用换行推进（肉眼可见滚动）
+    const EXTRA_EXPOSE_DOTS     = 48;  // 再按点距微推（≈6mm，203dpi）
+    const CUT_WAIT_MS           = 800; // 切刀等待
+    const USE_FULL_CUT          = (CONFIG.CUT_MODE === 'full'); // 默认 partial
 
-  try { p.align('lt').style('NORMAL').size(0, 0); } catch {}
+    try { p.align('lt').style('NORMAL').size(0, 0); } catch {}
 
-  // 1) 先用 LF 明显滚动，让员工“看见在走纸”
-  try { p.text('\n'.repeat(VISIBLE_LF_BEFORE_CUT)); } catch {}
-  // 给驱动/适配器一点处理时间
-  await new Promise(r => setTimeout(r, 180));
+    // 1) 可视换行推进
+    feedLines(p, d, VISIBLE_LF_BEFORE_CUT);
+    await new Promise(r => setTimeout(r, 180));
 
-  // 2) 再用 ESC J 点距微调，确保纸边越过刀位
-  try {
-    const bufEscJ = Buffer.from([0x1B, 0x4A, Math.max(1, Math.min(255, EXTRA_EXPOSE_DOTS))]); // ESC J n
-    try { p.raw(bufEscJ); } catch {}
-    try { if (d && typeof d.write === 'function') d.write(bufEscJ); } catch {}
-  } catch {}
+    // 2) 点距微调，确保纸边越过刀位
+    feedDots(p, d, EXTRA_EXPOSE_DOTS);
+    await new Promise(r => setTimeout(r, 180));
 
-  // 再停一下，避免切刀先于进纸执行
-  await new Promise(r => setTimeout(r, 180));
+    // 3) 只发一条切刀命令（避免双刀）
+    const cutCmd = USE_FULL_CUT ? Buffer.from([0x1D, 0x56, 0x00]) // GS V 0 full
+                                : Buffer.from([0x1D, 0x56, 0x01]); // GS V 1 partial
+    rawBoth(p, d, cutCmd);
 
-  // 3) 只发一条切刀命令（避免双刀）
-  const cutCmd = USE_FULL_CUT ? Buffer.from([0x1D, 0x56, 0x00]) // GS V 0 full
-                              : Buffer.from([0x1D, 0x56, 0x01]); // GS V 1 partial
-  try { p.raw(cutCmd); } catch {}
-  try { if (d && typeof d.write === 'function') d.write(cutCmd); } catch {}
-
-  // 等待机械动作完成
-  await new Promise(r => setTimeout(r, CUT_WAIT_MS));
+    // 等待机械动作完成
+    await new Promise(r => setTimeout(r, CUT_WAIT_MS));
   };
 
 
