@@ -105,7 +105,7 @@ const CONFIG = {
     name: 'Nova Asia',
     cityTag: 'Hoofddorp',
     addressLine: 'Amkerkplein 4 2134DR Hoofddorp',
-    tel: '0622599566',
+    tel: '0622599566   www.novaasia.nl',
     email: 'novaasianl@gmail.com'
   }
 };
@@ -240,13 +240,18 @@ async function doEscposPrint(order) {
   const WIDTH = CONFIG.WIDTH;
   const RIGHT = CONFIG.RIGHT_RESERVE;
 
+  // === 关键参数（解决“尾部不够露出 & 只切一次”）===
+  const FOOTER_PADDING_LINES = 2;    // 切前先补空行
+  const BOTTOM_EXPOSE_DOTS   = 72;   // 切前按点距推进（≈9mm, 203dpi）
+  const CUT_WAIT_MS          = 800;  // 切刀等待
+  const CUT_MODE             = (CONFIG.CUT_MODE || 'partial'); // 'partial' | 'full'
+
   // ========== helpers ==========
+  const wait = (ms) => new Promise(r => setTimeout(r, ms));
   const money = n => Number(n || 0).toFixed(2);
   const moneyStr = (n, sign = '') => `${sign}EUR ${money(n)}`;
-
   const line = (ch='-') => printer.text(ch.repeat(WIDTH));
 
-  // 简单宽度折行（按字符数）
   const wrap = (text, width) => {
     const t = String(text || '');
     const out = [];
@@ -268,31 +273,25 @@ async function doEscposPrint(order) {
 
   const printIfValue = (label, value, sign='') => {
     if (value == null) return;
-    if (Number(value) === 0) return; // 0 不打印（BTW 另行打印）
+    if (Number(value) === 0) return;
     col2(label, moneyStr(value, sign));
   };
 
   // —— 数量在前的明细打印 ——
-  // 输出格式：`{qty}x {name} .... EUR xx.xx`
   const printItem = (name, qty, total, opts = []) => {
     const q = Number.isFinite(Number(qty)) ? Number(qty) : 1;
     const qtyStr = `${q}x `;
     const right  = moneyStr(total);
-
-    // 右侧金额预留：仍然用 RIGHT（CONFIG.RIGHT_RESERVE）
     const nameWidth = Math.max(1, WIDTH - RIGHT - qtyStr.length);
     const lines = wrap(String(name || '-'), nameWidth);
 
-    // 第一行：数量在最前 + 右侧金额
     const pad = Math.max(1, WIDTH - qtyStr.length - lines[0].length - right.length);
     printer.text(qtyStr + lines[0] + ' '.repeat(pad) + right);
 
-    // 后续换行：对齐到名称列（跳过数量前缀）
     for (let i = 1; i < lines.length; i++) {
       printer.text(' '.repeat(qtyStr.length) + lines[i]);
     }
 
-    // 选项/备注：缩进到名称列下方
     if (Array.isArray(opts) && opts.length) {
       for (const s of opts) {
         const wrapped = wrap(String(s), Math.max(1, WIDTH - qtyStr.length - 3)); // "  - "
@@ -304,44 +303,59 @@ async function doEscposPrint(order) {
     }
   };
 
-  // ---- 低层：更稳的送纸与切刀（确保只切一次）----
-  const wait = (ms) => new Promise(r => setTimeout(r, ms));
-
-  const rawBoth = (p, d, buf) => { // 同时发给 printer 与 device，兼容部分适配器
+  // 低层 I/O
+  const rawBoth = (p, d, buf) => {
     try { p.raw(buf); } catch {}
     try { if (d && typeof d.write === 'function') d.write(buf); } catch {}
   };
+  const feedLines = (p, d, n = 1) =>
+    rawBoth(p, d, Buffer.from([0x1B, 0x64, Math.max(1, Math.min(255, n))])); // ESC d n
+  const feedDots  = (p, d, n = 24) =>
+    rawBoth(p, d, Buffer.from([0x1B, 0x4A, Math.max(1, Math.min(255, n))])); // ESC J n
 
-  // ESC d n 走纸（比高阶 feed 更直接）
-  const feedLines = (p, d, n = 1) => {
-    rawBoth(p, d, Buffer.from([0x1B, 0x64, Math.max(1, Math.min(255, n))]));
+  // —— 只切一次 ——（根据 CUT_MODE 选择一条指令）
+  // —— 只切一次：先可视滚动，再切 —— 
+const safeCut = async (p, d) => {
+  // 可调参数（按需要改大/改小）
+  const VISIBLE_LF_BEFORE_CUT = 6;   // 先用换行推进（肉眼可见滚动）
+  const EXTRA_EXPOSE_DOTS     = 48;  // 再按点距微推（≈6mm，203dpi）
+  const CUT_WAIT_MS           = 800; // 切刀等待
+  const USE_FULL_CUT          = (CONFIG.CUT_MODE === 'full'); // 默认 partial
+
+  try { p.align('lt').style('NORMAL').size(0, 0); } catch {}
+
+  // 1) 先用 LF 明显滚动，让员工“看见在走纸”
+  try { p.text('\n'.repeat(VISIBLE_LF_BEFORE_CUT)); } catch {}
+  // 给驱动/适配器一点处理时间
+  await new Promise(r => setTimeout(r, 180));
+
+  // 2) 再用 ESC J 点距微调，确保纸边越过刀位
+  try {
+    const bufEscJ = Buffer.from([0x1B, 0x4A, Math.max(1, Math.min(255, EXTRA_EXPOSE_DOTS))]); // ESC J n
+    try { p.raw(bufEscJ); } catch {}
+    try { if (d && typeof d.write === 'function') d.write(bufEscJ); } catch {}
+  } catch {}
+
+  // 再停一下，避免切刀先于进纸执行
+  await new Promise(r => setTimeout(r, 180));
+
+  // 3) 只发一条切刀命令（避免双刀）
+  const cutCmd = USE_FULL_CUT ? Buffer.from([0x1D, 0x56, 0x00]) // GS V 0 full
+                              : Buffer.from([0x1D, 0x56, 0x01]); // GS V 1 partial
+  try { p.raw(cutCmd); } catch {}
+  try { if (d && typeof d.write === 'function') d.write(cutCmd); } catch {}
+
+  // 等待机械动作完成
+  await new Promise(r => setTimeout(r, CUT_WAIT_MS));
   };
 
-  // 只切一次：RAW 半切优先，cut() 作为可选补刀
-  const safeCut = async (p, d) => {
-    try { p.align('lt').style('NORMAL').size(0, 0); } catch {}
-
-    // 到刀位：条码/二维码后 +1 行，再多走 5 行更稳
-    feedLines(p, d, 1);
-    feedLines(p, d, 5);
-
-    // 直接发 RAW 半切（TM-T20III 通用）；如要全切改为 0x00
-    rawBoth(p, d, Buffer.from([0x1D, 0x56, 0x01])); // GS V 1 (partial cut)
-
-    // 兼容部分只识别 ESC i 的机型，再补发一次全切指令
-    rawBoth(p, d, Buffer.from([0x1B, 0x69])); // ESC i (full cut)
-
-    // 可选：再尝试高阶 cut()（有 profile 时也能生效；即使没用也不影响）
-    try { typeof p.cut === 'function' && p.cut(); } catch {}
-
-    await wait(450); // 给机械动作时间
-  };
 
   // ========== device ==========
   device = (CONFIG.TRANSPORT === 'NET')
     ? new escpos.Network(CONFIG.NET.host, CONFIG.NET.port)
     : (CONFIG.USB?.vid && CONFIG.USB?.pid ? new escpos.USB(CONFIG.USB.vid, CONFIG.USB.pid) : new escpos.USB());
 
+  const ENCODING = (CONFIG.TRANSPORT === 'NET') ? 'GB18030' : 'CP858';
   printer = new escpos.Printer(device, { encoding: ENCODING });
 
   await new Promise((resolve, reject) => {
@@ -427,19 +441,12 @@ async function doEscposPrint(order) {
           printer.text(`Tel: ${CONFIG.SHOP.tel}`);
           printer.text(`Email: ${CONFIG.SHOP.email}`);
           printer.text('Alle prijzen zijn inclusief BTW');
-          printer.newline();
 
-          // Cash drawer
-          if (CONFIG.OPEN_CASH_DRAWER_WHEN_CASH && String(order.payment_method || '').toLowerCase() === 'cash') {
-            try { printer.cashdraw(2); } catch {}
-          }
-
-          // —— 稳健自动切刀（只切一次） ——
+          // 交给 safeCut 统一处理推进与切刀（只切一次）
           await safeCut(printer, device);
 
-          // 给适配器一点时间
+          // 收尾
           await wait(600);
-
           try { printer.close(); } catch {}
           resolve();
         } catch (e) {
