@@ -1067,7 +1067,17 @@ dialog::backdrop {
 </div>
 
 <div class="summary-row">
-  <label>BTW (9%):</label>
+  <label>BTW 9%:</label>
+  <span id="summaryBtw9">€0,00</span>
+</div>
+
+<div class="summary-row" id="summaryBtw21Row" style="display:none;">
+  <label>BTW 21%:</label>
+  <span id="summaryBtw21">€0,00</span>
+</div>
+
+<div class="summary-row">
+  <label>BTW Totaal:</label>
   <span id="summaryBtw">€0,00</span>
 </div>
 
@@ -1759,8 +1769,13 @@ function updateCart() {
   if (discount < 0 || isNaN(discount)) discount = 0;
 
   const total = subtotal + packagingTotal + delivery - discount;
-  const btwBase = delivery ? total - delivery : total;
-  const btw = btwBase * 0.09;
+  const heinekenTotal = Object.entries(cart).reduce((sum,[k,v])=>{
+    const name = v.displayName || k;
+    return sum + (/heineken/i.test(name) ? v.price * v.qty : 0);
+  },0);
+  const btw9 = (subtotal + packagingTotal + delivery - discount - heinekenTotal) * 0.09;
+  const btw21 = heinekenTotal * 0.21;
+  const btw = btw9 + btw21;
 
   const fmt = n => `€${n.toFixed(2).replace('.', ',')}`;
 
@@ -1769,6 +1784,9 @@ function updateCart() {
   document.getElementById('summaryDelivery').textContent = fmt(delivery);
   document.getElementById('summaryDeliveryRow').classList.toggle('hidden', !delivery);
   document.getElementById('summaryDiscount').textContent = discount ? `- ${fmt(discount)}` : '€0,00';
+  document.getElementById('summaryBtw9').textContent = fmt(btw9);
+  document.getElementById('summaryBtw21').textContent = fmt(btw21);
+  document.getElementById('summaryBtw21Row').style.display = btw21>0?'' : 'none';
   document.getElementById('summaryBtw').textContent = fmt(btw);
   document.getElementById('total').textContent = fmt(total);
 
@@ -2188,8 +2206,13 @@ function submitOrder() {
     discount = Math.min(100, discountVal) / 100 * subtotal;
   }
   const totalBeforeBtw = subtotal + packagingTotal + deliveryCost - discount;
-  const btwBase = delivery ? totalBeforeBtw - deliveryCost : totalBeforeBtw;
-  const btw = btwBase * 0.09;
+  const heinekenTotal = Object.entries(cart).reduce((sum,[k,v])=>{
+    const name = v.displayName || k;
+    return sum + (/heineken/i.test(name) ? v.price * v.qty : 0);
+  },0);
+  const btw9 = (subtotal + packagingTotal + deliveryCost - discount - heinekenTotal) * 0.09;
+  const btw21 = heinekenTotal * 0.21;
+  const btw = btw9 + btw21;
   const total = totalBeforeBtw;
 
   const summary = {
@@ -2200,8 +2223,13 @@ function submitOrder() {
     discountValue: parseFloat(discountVal.toFixed(2)),
     discountAmount: parseFloat(discount.toFixed(2)),
     btw: parseFloat(btw.toFixed(2)),
+    btw_9: parseFloat(btw9.toFixed(2)),
+    btw_21: parseFloat(btw21.toFixed(2)),
+    btw_total: parseFloat(btw.toFixed(2)),
+    btw_split: { '9': btw9.toFixed(2), '21': btw21.toFixed(2) },
     total: parseFloat(total.toFixed(2))
   };
+
 
   const orderType = delivery ? 'bezorgen' : 'afhalen';
   const pickupSel = document.getElementById('pickup_time').value;
@@ -2276,7 +2304,10 @@ function submitOrder() {
     const select=document.getElementById(selectId);
     if(!select) return;
     select.innerHTML='';
-    const current=new Date();
+    const asap=document.createElement('option');
+    asap.value='Z.S.M.';
+    asap.textContent='Z.S.M.';
+    select.appendChild(asap);
     const now=new Date();
     now.setMinutes(now.getMinutes()+offsetMinutes);
 
@@ -2284,13 +2315,6 @@ function submitOrder() {
     open.setHours(12,0,0,0);
     const close=new Date();
     close.setHours(23,59,0,0);
-
-    if(current>=open){
-      const asap=document.createElement('option');
-      asap.value='Z.S.M.';
-      asap.textContent='Z.S.M.';
-      select.appendChild(asap);
-    }
 
     let start=now>open?now:open;
     start=new Date(start);
