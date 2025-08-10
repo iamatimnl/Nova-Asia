@@ -107,7 +107,7 @@ const CONFIG = {
     align: 'ct'                  // 'ct' 居中，或 'lt'/'rt'
   },                    // 打印二维码（需传 order.qr_url）
   OPEN_CASH_DRAWER_WHEN_CASH: false,// 现金支付时弹钱箱
-  SHOW_BTW_SPLIT: false,            // 显示 9%/21% BTW 分拆（需要传 btw_split）
+  SHOW_BTW_SPLIT: true,            // 显示 9%/21% BTW 分拆（需要传 btw_split）
   SHOP: {
     name: 'Nova Asia',
     cityTag: 'Hoofddorp',
@@ -151,52 +151,105 @@ function detectZSMByOrderNumber(no) {
   return /Z$/i.test(String(no || '').trim());
 }
 
+
+
+function validateOrder(o) {
+  if (!o.order_number) return 'order_number missing';
+  if (!Array.isArray(o.items) || o.items.length === 0) return 'items empty';
+  return null;
+}
+
+// ========= BTW 提取：完全使用现有订单字段（不做换算）=========
+function deriveBtwSplitFromPayload(order) {
+  const num = (v) => (v == null || v === '' || isNaN(Number(v)) ? null : Number(v));
+  const b9  = num(order.btw_9  ?? order.btw9  ?? order.vat_9  ?? order.vat9);
+  const b21 = num(order.btw_21 ?? order.btw21 ?? order.vat_21 ?? order.vat21);
+  if (b9 != null || b21 != null) {
+    return { '9': Number(b9 || 0), '21': Number(b21 || 0) };
+  }
+  return undefined;
+}
+
 function normalizeForPrint(order) {
+  // —— 小工具（函数内自包含，避免依赖外部）——
   const toStr = v => (v == null ? '' : String(v));
-  const toNum = (v, d = 0) => (v == null || isNaN(Number(v)) ? d : Number(v));
+  const toNumOrNull = v => (v == null || v === '' || isNaN(Number(v)) ? null : Number(v));
+  const pickMax = (...vals) => {
+    const nums = vals.map(toNumOrNull).filter(v => v != null);
+    return nums.length ? Math.max(...nums) : 0;
+  };
+  // 从 payload 里直接提取 btw_9/btw_21（不换算）
+  const deriveBtwSplitFromPayload = (src) => {
+    const num = (v) => (v == null || v === '' || isNaN(Number(v)) ? null : Number(v));
+    const b9  = num(src.btw_9  ?? src.btw9  ?? src.vat_9  ?? src.vat9);
+    const b21 = num(src.btw_21 ?? src.btw21 ?? src.vat_21 ?? src.vat21);
+    if (b9 != null || b21 != null) return { '9': Number(b9 || 0), '21': Number(b21 || 0) };
+    return undefined;
+  };
 
+  // ===== 订单类型 / ZSM / 时间槽 =====
   const typeRaw = toStr(order.order_type || order.type || '').toLowerCase();
-  const isDelivery = typeRaw.includes('bezorg') || typeRaw.includes('delivery') || order.delivery === true;
+  const isDelivery = /bezorg|delivery/.test(typeRaw) || order.delivery === true;
 
-  // ZSM：优先后端字段，其次用单号末尾 Z 推断
-  const is_zsm = (order.is_zsm === true) || detectZSMByOrderNumber(order.order_number);
-
-  // 时间显示：ZSM 优先，否则显示具体时间
-  const slotRaw = order.tijdslot || order.tijdslot_display || order.pickup_time || order.delivery_time || '';
+  const is_zsm = (order.is_zsm === true) || /Z$/i.test(String(order.order_number || '').trim());
+  const slotRaw = order.tijdslot ?? order.tijdslot_display ?? order.pickup_time ?? order.delivery_time ?? '';
   const tijdslot_display = is_zsm ? 'Z.S.M.' : toStr(slotRaw).trim();
-  const discount   = toNum(order.korting ?? order.discount, 0);
 
-  // items：兼容对象/数组
+  // ===== Items =====
   let items;
   if (Array.isArray(order.items)) {
     items = order.items.map(i => ({
       name: i.displayName || i.name,
-      qty:  toNum(i.qty, 1),
-      price:toNum(i.price, 0),
+      qty: Number(i.qty || 1),
+      price: Number(i.price || 0),
       options: i.options,
       note: i.note || i.remark
     }));
   } else {
     items = Object.entries(order.items || {}).map(([name, i]) => ({
       name: (i.displayName || i.name || name),
-      qty:  toNum(i.qty, 1),
-      price:toNum(i.price, 0),
+      qty: Number(i.qty || 1),
+      price: Number(i.price || 0),
       options: i.options,
       note: i.note || i.remark
     }));
   }
 
-  // 金额字段
-  const subtotal   = (order.subtotal ?? order.sub_total) != null ? toNum(order.subtotal ?? order.sub_total, 0) : null;
-  const packaging  = toNum(order.verpakkingskosten ?? order.packaging ?? order.package_fee, 0);
-  const delivery   = toNum(order.bezorgkosten ?? order.delivery_cost ?? order.delivery_fee, 0);
-  const tip        = toNum(order.fooi ?? order.tip, 0);
-  const totalGiven = (order.totaal ?? order.total);
-  const total      = (totalGiven != null) ? toNum(totalGiven, 0) :
-                     (subtotal != null ? (subtotal + packaging + delivery + tip - discount) : null);
-  const vat        = (order.vat != null || order.btw != null) ? toNum(order.vat ?? order.btw, 0) : null;
+  // ===== 金额（直接采用现有字段；缺省再兜底）=====
+  let subtotal = toNumOrNull(order.subtotal ?? order.sub_total);
+  if (subtotal == null) {
+    try {
+      subtotal = (items || []).reduce((s, it) => s + Number(it.qty || 1) * Number(it.price || 0), 0);
+    } catch { subtotal = 0; }
+  }
 
-  return {
+  const packagingRaw = pickMax(order.verpakkingskosten, order.packaging, order.package_fee, order.packaging_fee);
+  const toeslagRaw   = pickMax(order.toeslag, order.surcharge, order.service_fee);
+  const delivery     = pickMax(order.bezorgkosten, order.delivery_cost, order.delivery_fee);
+  const tip          = pickMax(order.fooi, order.tip);
+
+  // 折扣字段：本次使用 vs 下次可用（重要区分）
+  const discount_used_amount   = toNumOrNull(order.discountAmount);   // 本次使用
+  const discount_used_code     = toStr(order.discountCode);
+  const discount_earned_amount = toNumOrNull(order.discount_amount);  // 下次可用
+  const discount_earned_code   = toStr(order.discount_code);
+
+  // 历史/兜底折扣（若上面未给时才使用）
+  const discountFallback = pickMax(order.korting, order.discount);
+
+  // Verpakking + Toeslag 合并
+  const packaging = Number(packagingRaw) + Number(toeslagRaw);
+
+  // 直接采用 payload 的 BTW/Total（如有）
+  const vatFromPayload   = toNumOrNull(order.btw_total ?? order.vat_total ?? order.btw ?? order.vat);
+  const totalFromPayload = toNumOrNull(order.totaal ?? order.total);
+
+  // 兜底 total（仅在 payload 没给时使用）
+  const fallbackTotal = Number(subtotal) + Number(packaging) + Number(delivery) + Number(tip)
+    - Number(discount_used_amount != null ? discount_used_amount : discountFallback);
+
+  // ===== 返回标准化结构（只做字段映射，不做增值税换算）=====
+  const o = {
     // 标识 & 客户
     order_number: toStr(order.order_number || order.id),
     customer_name: toStr(order.customer_name || order.name),
@@ -210,7 +263,7 @@ function normalizeForPrint(order) {
     is_zsm,
     tijdslot: tijdslot_display,
 
-    // 地址（Afhaal不打印地址，但这里仍然保留字段）
+    // 地址
     street: toStr(order.street),
     house_number: toStr(order.house_number || order.housenumber),
     postcode: toStr(order.postcode || order.postal_code),
@@ -220,27 +273,32 @@ function normalizeForPrint(order) {
     type: typeRaw,
     delivery: !!isDelivery,
 
-    // 明细/金额
+    // 明细/金额（本次使用折扣进入 discount）
     items,
     subtotal,
-    packaging,
-    discount,
+    packaging,                                 // Verpakking + Toeslag
+    discount: (discount_used_amount != null ? discount_used_amount : discountFallback),
     delivery_fee: delivery,
     tip,
-    vat,
-    total,
+    vat: (vatFromPayload != null ? vatFromPayload : pickMax(order.vat, order.btw)),
+    total: (totalFromPayload != null ? totalFromPayload : fallbackTotal),
 
-    // 可选项
-    btw_split: order.btw_split || undefined,
-    qr_url: order.qr_url || undefined
+    // —— 语义化折扣字段 —— 
+    discount_used_amount,
+    discount_used_code,
+    discount_earned_amount,
+    discount_earned_code,
+
+    // BTW 分桶：优先用 payload 的 btw_9/btw_21（不计算）
+    btw_split: order.btw_split || deriveBtwSplitFromPayload(order),
+
+    // 地图二维码（优先 google_maps_link）
+    qr_url: order.google_maps_link || order.maps_link || order.qr_url || undefined
   };
+
+  return o;
 }
 
-function validateOrder(o) {
-  if (!o.order_number) return 'order_number missing';
-  if (!Array.isArray(o.items) || o.items.length === 0) return 'items empty';
-  return null;
-}
 
 async function doEscposPrint(order) {
   let device, printer;
@@ -257,6 +315,64 @@ async function doEscposPrint(order) {
     wait_after_feed_ms: 200,
     wait_after_cut_ms:  800
   };
+  // 3级兜底 QR：原生 ESC/POS → printer.qrcode() → qrimage() → 文本
+async function printQRRobust(printer, raw, content, cfg = {}) {
+  const data = String(content || '').trim();
+  if (!data) return;
+
+  if (CONFIG.QR?.caption) {
+    printer.align('ct').text(String(CONFIG.QR.caption));
+  }
+
+  const align = (cfg.align || 'ct');
+  const size  = Number(cfg.size ?? 6);
+  const eccCh = (CONFIG.QR?.ecc || 'M');
+  const eccMap = { L:0x30, M:0x31, Q:0x32, H:0x33 };
+
+  // ① 原生 ESC/POS
+  try {
+    // Model 2
+    raw(Buffer.from([0x1D,0x28,0x6B,0x04,0x00,0x31,0x41,0x32,0x00]));
+    // Size 1-16
+    raw(Buffer.from([0x1D,0x28,0x6B,0x03,0x00,0x31,0x43, Math.max(1, Math.min(16, size))]));
+    // ECC
+    raw(Buffer.from([0x1D,0x28,0x6B,0x03,0x00,0x31,0x45, (eccMap[eccCh] ?? 0x31) ]));
+    // Store data
+    const payload = Buffer.from(data, 'utf8');
+    const len = payload.length + 3;
+    const pL = len & 0xFF, pH = (len >> 8) & 0xFF;
+    raw(Buffer.from([0x1D,0x28,0x6B,pL,pH,0x31,0x50,0x30]));
+    raw(payload);
+    // Print
+    raw(Buffer.from([0x1D,0x28,0x6B,0x03,0x00,0x31,0x51,0x30]));
+    printer.align(align);
+    try { printer.feed && printer.feed(1); } catch {}
+    return;
+  } catch {}
+
+  // ② API: qrcode()
+  try {
+    if (typeof printer.qrcode === 'function') {
+      printer.align(align).qrcode(data, { size, ecc: eccCh });
+      try { printer.feed && printer.feed(1); } catch {}
+      return;
+    }
+  } catch {}
+
+  // ③ 回退: qrimage()
+  try {
+    await new Promise((resolve, reject) => {
+      if (typeof printer.qrimage !== 'function') return reject(new Error('qrimage() not available'));
+      printer.align(align).qrimage(data, { type: 'png', size: Math.max(1, Math.min(10, size)), margin: Number(CONFIG.QR?.margin ?? 2) }, err => err ? reject(err) : resolve());
+    });
+    try { printer.feed && printer.feed(1); } catch {}
+    return;
+  } catch {}
+
+  // ④ 兜底: 文本
+  printer.align('ct').text('[MAPS LINK]').text(data).align('lt');
+  try { printer.feed && printer.feed(1); } catch {}
+}
 
   // ========== helpers ==========
   const sleep = (ms) => new Promise(r => setTimeout(r, ms));
@@ -340,7 +456,7 @@ async function doEscposPrint(order) {
     raw(Buffer.from([0x1D, 0x56, m_simple]));
     await sleep(CUT_CFG.wait_after_cut_ms);
   };
-
+   
   // ========== device ==========
   device = (CONFIG.TRANSPORT === 'NET')
     ? new escpos.Network(CONFIG.NET.host, CONFIG.NET.port)
@@ -383,56 +499,15 @@ async function doEscposPrint(order) {
             if (addrLine2) col2('',       addrLine2);
           }
 
-          // ===== QR（紧跟地址，留足空间；原生优先，失败回退位图）=====
-          if (CONFIG.USE_QR && order.qr_url) {
-            await (async function printQR(text) {
-              const content = String(text || '').trim();
-              if (!content) return;
+          // ✅ Google Maps 二维码（若有链接则打印）
+if (CONFIG.USE_QR && order.qr_url) {
+  await printQRRobust(printer, raw, order.qr_url, { align: CONFIG.QR?.align || 'ct', size: CONFIG.QR?.size ?? 6 });
+}
 
-              if (CONFIG.QR?.caption) {
-                printer.align('ct').text(String(CONFIG.QR.caption)).align('lt');
-              }
-
-              // 1) 原生指令
-              try {
-                if (typeof printer.qrcode === 'function') {
-                  printer.align(CONFIG.QR?.align || 'ct').qrcode(content, {
-                    size: Number(CONFIG.QR?.size ?? 6),
-                    ecc:  'M'
-                  });
-                  try { printer.feed && printer.feed(1); } catch {}
-                  return;
-                }
-              } catch (e) {
-                console.warn('native qrcode failed → fallback:', e);
-              }
-
-              // 2) 位图回退
-              try {
-                await new Promise((resolve, reject) => {
-                  if (typeof printer.qrimage !== 'function') {
-                    return reject(new Error('qrimage() not available'));
-                  }
-                  const opts = {
-                    type: 'png',
-                    size: Number(CONFIG.QR?.size ?? 6),
-                    margin: Number(CONFIG.QR?.margin ?? 2)
-                  };
-                  printer.align(CONFIG.QR?.align || 'ct')
-                         .qrimage(content, opts, err => err ? reject(err) : resolve());
-                });
-                try { printer.feed && printer.feed(1); } catch {}
-              } catch (e) {
-                console.warn('qrimage failed:', e);
-                printer.align('ct').text('[QR 失败]').text(content).align('lt');
-              }
-            })(order.qr_url);
-          }
-
-          line('-'); // 进入商品区
+line('-'); // 进入商品区
 
           // ===== Items =====
-          printer.text('Artikelen:');
+          printer.text('Bestellingen:');
           for (const it of order.items) {
             const name = String(it.name || '-');
             const qty  = Number(it.qty || 1);
@@ -446,28 +521,65 @@ async function doEscposPrint(order) {
 
           line('-');
 
-          // ===== Totals =====
-          printIfValue('Subtotaal',  order.subtotal);
-          printIfValue('Korting',    order.discount, '-');
-          printIfValue('Verpakking', order.packaging);
-          printIfValue('Bezorging',  order.delivery_fee);
-          printIfValue('Fooi',       order.tip);
+          const to2 = v => Number(v ?? 0).toFixed(2);
 
-          if (CONFIG.SHOW_BTW_SPLIT && order.btw_split) {
-            const btw9  = Number(order.btw_split['9']  || 0);
-            const btw21 = Number(order.btw_split['21'] || 0);
-            if (btw9  >= 0) col2('BTW 9%',  moneyStr(btw9));
-            if (btw21 >= 0) col2('BTW 21%', moneyStr(btw21));
-          } else if (order.vat != null) {
-            col2('BTW', moneyStr(order.vat));
-          }
+// 固定显示 7 行
+col2('Subtotaal',   `EUR ${to2(order.subtotal)}`);
+// —— 折扣（本次使用，带 code）——
+{
+  const usedAmt  = Number(
+    order.discount_used_amount       // 若已在 normalize 写入
+    ?? order.discountAmount          // 本次使用（payload）
+    ?? 0
+  );
+  const usedCode = String(
+    order.discount_used_code         // 若已在 normalize 写入
+    ?? order.discountCode            // 本次使用的 code（payload）
+    ?? ''
+  ).trim();
 
-          if (order.total != null) {
-            line('-');
-            printer.align('lt').style('B').size(1, 1);
-            col2('', moneyStr(order.total));
-            printer.size(0, 0).style('NORMAL');
-          }
+  if (usedAmt > 0) {
+    const right = `-EUR ${to2(usedAmt)}`;
+    if (usedCode) col2(`Korting (gebruikt) [Code: ${usedCode}]`, right);
+    else          col2('Korting (gebruikt)', right);
+  }
+}
+
+// —— 可选：本次获得的折扣金额（仅提示，不计入本单）——
+// 要极致省纸，可删除整个块
+{
+  const earnedAmt = Number(
+    order.discount_earned_amount     // 若已在 normalize 写入
+    ?? order.discount_amount         // 下次可用金额（payload）
+    ?? 0
+  );
+  if (earnedAmt > 0) col2('Korting tegoed (volgende keer)', `EUR ${to2(earnedAmt)}`);
+}
+
+col2('Verpakking Toeslag', `EUR ${to2(order.packaging)}`);
+col2('Bezorgkosten',       `EUR ${to2(order.delivery_fee)}`);
+col2('Fooi',               `EUR ${to2(order.tip)}`);
+
+// —— BTW（智能隐藏 0 金额行）——
+
+
+if (CONFIG.SHOW_BTW_SPLIT && order.btw_split) {
+  const btw9  = Number(order.btw_split?.['9']  || 0);
+  const btw21 = Number(order.btw_split?.['21'] || 0);
+  if (btw9  > 0) col2('BTW 9%',  `EUR ${to2(btw9)}`);
+  if (btw21 > 0) col2('BTW 21%', `EUR ${to2(btw21)}`);
+} else {
+  col2('BTW', `EUR ${to2(order.vat)}`);
+}
+
+
+// Totaal（如有/或用兜底公式已算出）
+if (order.total != null) {
+  line('-');
+  printer.align('lt').style('B').size(1, 1);
+  col2('', `EUR ${to2(order.total)}`);
+  printer.size(0, 0).style('NORMAL');
+}
 
           if (order.opmerking) { line('-'); printer.text(`Opmerking: ${order.opmerking}`); }
 
@@ -475,6 +587,18 @@ async function doEscposPrint(order) {
           line('=');
           printer.align('ct');
           printer.text('Bedankt voor uw bestelling!');
+          // —— 提示“下次可用”的新折扣码（放在感谢语后最显眼处）——
+          {
+         const newCode = String(
+          order.discount_earned_code       // 若已在 normalize 写入
+         ?? order.discount_code           // 下次可用的 code（payload）
+         ?? ''
+         ).trim();
+         if (newCode) {
+          printer.text(`Aub, hier is uw code voor volgende bestelling: ${newCode}`);
+          }
+          }
+
           printer.text(`${CONFIG.SHOP.name} · ${CONFIG.SHOP.cityTag}`);
           printer.text(`Adres: ${CONFIG.SHOP.addressLine}`);
           printer.text(`Tel: ${CONFIG.SHOP.tel}`);
