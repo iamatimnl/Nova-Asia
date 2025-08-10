@@ -368,9 +368,8 @@ def orders_to_dicts(orders):
         delivery_calc = round(delivery_calc, 2)
         delivery = o.bezorgkosten if o.bezorgkosten not in [None, 0] else max(delivery_calc, 0)
         o.bezorgkosten = delivery
-        total_before_btw = subtotal + (o.verpakkingskosten or 0) + delivery - (o.discount_amount or 0)
-        btw_base = total_before_btw - delivery if delivery else total_before_btw
-        o.btw = round(btw_base * 0.09, 2)
+        total_before_btw = subtotal + (o.verpakkingskosten or 0) + delivery
+        o.btw = round(total_before_btw * 0.09, 2)
         result.append({
             "id": o.id,
             "order_type": o.order_type,
@@ -1849,9 +1848,8 @@ def pos_orders_today():
         delivery_calc = round(delivery_calc, 2)
         delivery = o.bezorgkosten if o.bezorgkosten not in [None, 0] else max(delivery_calc, 0)
         o.bezorgkosten = delivery
-        total_before_btw = subtotal + (o.verpakkingskosten or 0) + delivery - (o.discount_amount or 0)
-        btw_base = total_before_btw - delivery if delivery else total_before_btw
-        o.btw = round(btw_base * 0.09, 2)
+        total_before_btw = subtotal + (o.verpakkingskosten or 0) + delivery
+        o.btw = round(total_before_btw * 0.09, 2)
 
         o.created_at_local = to_nl(o.created_at)
         summary = "\n".join(f"{name} x {item['qty']}" for name, item in o.items_dict.items())
