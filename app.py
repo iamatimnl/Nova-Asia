@@ -351,6 +351,7 @@ def build_maps_link(street: str, house_number: str, postcode: str, city: str) ->
 def orders_to_dicts(orders):
     result = []
     for o in orders:
+        # items -> dict
         try:
             o.items_dict = json.loads(o.items or '{}')
         except Exception:
@@ -359,28 +360,42 @@ def orders_to_dicts(orders):
                 o.items_dict = ast.literal_eval(o.items)
             except Exception:
                 o.items_dict = {}
+
         totaal = o.totaal or 0
+
+        # 小计
         subtotal = sum(
             float(i.get("price", 0)) * int(i.get("qty", 0))
-            for i in o.items_dict.values()
+            for i in (o.items_dict or {}).values()
         )
-        delivery_calc = totaal + o.discount_amount - subtotal - o.verpakkingskosten - (o.fooi or 0)
+
+        # 计算配送费兜底
+        discount = o.discount_amount or 0
+        verpakkings = o.verpakkingskosten or 0
+        fooi = o.fooi or 0
+
+        delivery_calc = totaal + discount - subtotal - verpakkings - fooi
         delivery_calc = round(delivery_calc, 2)
         delivery = o.bezorgkosten if o.bezorgkosten not in [None, 0] else max(delivery_calc, 0)
         o.bezorgkosten = delivery
+
+        # 21% VAT 仅对 heineken
         heineken_total = sum(
             float(item.get("price", 0)) * int(item.get("qty", 0))
-            for name, item in o.items_dict.items()
-            if "heineken" in name.lower()
+            for name, item in (o.items_dict or {}).items()
+            if "heineken" in str(name).lower()
         )
+
         if o.btw_21 is None:
             o.btw_21 = round(heineken_total * 0.21, 2)
+
         if o.btw_9 is None:
-            base_total = subtotal - heineken_total + (o.verpakkingskosten or 0) + delivery
+            base_total = subtotal - heineken_total + verpakkings + delivery
             o.btw_9 = round(base_total * 0.09, 2)
+
         btw_total = (o.btw_9 or 0) + (o.btw_21 or 0)
         o.btw = btw_total
-        result.append({
+
         result.append({
             "id": o.id,
             "order_type": o.order_type,
@@ -404,18 +419,19 @@ def orders_to_dicts(orders):
             "items": o.items_dict,
             "total": totaal,
             "totaal": totaal,
-            "verpakkingskosten": o.verpakkingskosten,
+            "verpakkingskosten": verpakkings,
             "bezorgkosten": delivery,
             "btw": btw_total,
             "btw_9": o.btw_9 or 0,
             "btw_21": o.btw_21 or 0,
             "btw_total": btw_total,
-            "fooi": o.fooi or 0,
+            "fooi": fooi,
             "order_number": o.order_number,
-            "korting": o.discount_amount,
+            "korting": discount,
             "is_completed": o.is_completed,
             "is_cancelled": o.is_cancelled
         })
+
     return result
 
 
