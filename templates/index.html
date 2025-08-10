@@ -5932,6 +5932,12 @@ function checkout() {
       const postcodeField = document.getElementById('deliveryPostcode');
       postcodeField.style.borderColor = 'red';
       postcodeField.focus();
+      // 恢复滑块可操作
+      if (sliderText && sliderButton && sliderTrack) {
+        sliderText.innerText = 'Schuif om te bestellen';
+        sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
+        sliderTrack.style.pointerEvents = 'auto';
+      }
       return;
     } else {
       document.getElementById('deliveryPostcode').style.borderColor = '';
@@ -5942,16 +5948,29 @@ function checkout() {
     customerDetails += `\nAdres: ${address} ${houseNumber}\nPostcode: ${postcodeRaw}\nGebied: ${area}\nBezorgtijd: ${time}\nBetaalwijze: ${paymentMethod}`;
   }
 
-  const tip = parseFloat(document.getElementById('tipSelect').value);
-  const subtotal = currentSubtotal;
-  const packagingFee = Object.values(cart).reduce((s, it) => s + (it.packaging || 0) * it.qty, 0);
+  const tip = parseFloat(document.getElementById('tipSelect').value) || 0;
+  const subtotal = Number(currentSubtotal) || 0;
+  const packagingFee = Object.values(cart).reduce((s, it) => s + (Number(it.packaging) || 0) * (Number(it.qty) || 0), 0);
   const deliveryFee = orderType === 'bezorgen' ? 2.50 : 0;
-  const heinekenTotal = currentHeineken;
-  const baseTotal = subtotal + packagingFee + deliveryFee - currentDiscount;
-  const total = baseTotal + tip;
-  const btw9 = (baseTotal - heinekenTotal) * 0.09;
-  const btw21 = heinekenTotal * 0.21;
+  const heinekenTotal = Number(currentHeineken) || 0;
+  const discount = Number(currentDiscount) || 0;
+
+  // 按“折扣进税基、fooi不计税”口径
+  const baseExclTip = subtotal + packagingFee + deliveryFee;
+  const bucket21 = heinekenTotal;
+  const bucket9 = Math.max(baseExclTip - bucket21, 0);
+
+  let d21 = 0, d9 = 0;
+  if (baseExclTip > 0) {
+    d21 = discount * (bucket21 / baseExclTip);
+    d9 = discount * (bucket9 / baseExclTip);
+  }
+
+  const btw21 = Math.max(bucket21 - d21, 0) * 0.21;
+  const btw9 = Math.max(bucket9 - d9, 0) * 0.09;
   const btw = btw9 + btw21;
+
+  const total = baseExclTip - discount + tip; // 含税总额
   const totalPrice = !isNaN(total) ? total.toFixed(2) : "0.00";
 
   const orderNumber = generateOrderNumber();
@@ -5960,13 +5979,13 @@ function checkout() {
   const deliveryLine = deliveryFee > 0 ? `\nBezorgkosten: €${deliveryFee.toFixed(2)}` : '';
   const packagingLine = packagingFee > 0 ? `\nVerpakkingskosten: €${packagingFee.toFixed(2)}` : '';
   const tipLine = tip > 0 ? `\nFooi: €${tip.toFixed(2)}` : '';
-  const discountLine = `\nKorting: -€${currentDiscount.toFixed(2)} (Code: ${discountCode || 'geen'})`;
+  const discountLine = `\nKorting: -€${discount.toFixed(2)} (Code: ${discountCode || 'geen'})`;
 
   const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}${deliveryLine}${packagingLine}${tipLine}${discountLine}\nTotaal: €${totalPrice}`;
 
   const itemsToSend = { ...cart };
   Object.keys(extras).forEach(id => {
-    const qty = parseInt(document.getElementById(id).value || 0);
+    const qty = parseInt(document.getElementById(id).value || 0, 10);
     if (qty > 0) itemsToSend[extras[id].label] = { price: 0, qty };
   });
 
@@ -5994,16 +6013,24 @@ function checkout() {
 
   if (selectedTime && lastAvailableTime && toMinutes(selectedTime) > toMinutes(lastAvailableTime)) {
     alert('Gekozen tijd valt buiten openingstijden.');
+    if (sliderText && sliderButton && sliderTrack) {
+      sliderText.innerText = 'Schuif om te bestellen';
+      sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
+      sliderTrack.style.pointerEvents = 'auto';
+    }
     return;
   }
 
+  // ✅ 关键：summary 补齐 btw_9 / btw_21，提供两位小数
   const summary = {
     subtotal: subtotal.toFixed(2),
     packaging: packagingFee.toFixed(2),
     delivery: deliveryFee.toFixed(2),
-    discount_amount: currentDiscount.toFixed(2),
+    discount_amount: discount.toFixed(2),
     btw: btw.toFixed(2),
     btw_split: { '9': btw9.toFixed(2), '21': btw21.toFixed(2) },
+    btw_9: btw9.toFixed(2),
+    btw_21: btw21.toFixed(2),
     total: totalPrice
   };
 
@@ -6011,6 +6038,8 @@ function checkout() {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
+      // ✅ 关键：声明来源 index，让后端走 index 分支并采用前端 BTW
+      source: 'index',
       orderType,
       name: orderType === 'afhalen' ? document.getElementById('pickupName').value.trim() : document.getElementById('deliveryName').value.trim(),
       phone: orderType === 'afhalen' ? document.getElementById('pickupPhone').value.trim() : document.getElementById('deliveryPhone').value.trim(),
@@ -6033,8 +6062,9 @@ function checkout() {
       delivery_fee: deliveryFee.toFixed(2),
       btw: btw.toFixed(2),
       btw_split: { '9': btw9.toFixed(2), '21': btw21.toFixed(2) },
-      totaal: isNaN(total) ? "0.00" : total.toFixed(2),
-      discountAmount: currentDiscount.toFixed(2),
+      // totaal = total（含税）——和后端一致口径
+      totaal: totalPrice,
+      discountAmount: discount.toFixed(2),
       discountCode,
       message,
       summary
@@ -6053,12 +6083,14 @@ function checkout() {
         for (const k in cart) delete cart[k];
         sessionStorage.removeItem(FORM_KEY);
         updateCart();
-        sliderText.innerText = 'Gelukt!';
-        sliderButton.innerHTML = `
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>`;
-        sliderTrack.style.pointerEvents = 'none';
+        if (sliderText && sliderButton && sliderTrack) {
+          sliderText.innerText = 'Gelukt!';
+          sliderButton.innerHTML = `
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>`;
+          sliderTrack.style.pointerEvents = 'none';
+        }
         setTimeout(() => { window.location.href = '/'; }, 1500);
       } else {
         const errorMsg = data.error || 'Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.';
