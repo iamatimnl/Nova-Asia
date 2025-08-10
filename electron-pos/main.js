@@ -90,6 +90,7 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
 
+
 // ========= Config =========
 const CONFIG = {
   TRANSPORT: 'USB',                 // 'USB' | 'NET'
@@ -98,7 +99,13 @@ const CONFIG = {
   WIDTH: 48,                        // 80mm = 48 列（Font A）
   RIGHT_RESERVE: 14,                // 右侧“数量+金额”预留宽度
   USE_BARCODE: true,                // 打印订单号条码（CODE128）
-  USE_QR: false,                    // 打印二维码（需传 order.qr_url）
+  USE_QR: true,                  // ✅ 打开二维码
+  QR: {                          // ✅ 可选参数
+    size: 6,                     // 模块大小(1-10)，6~8 通常最佳
+    margin: 2,                   // 边距(像素/模块，依实现不同)
+    caption: 'Scan om uw bestelling te volgen', // 二维码上方说明文字（可留空）
+    align: 'ct'                  // 'ct' 居中，或 'lt'/'rt'
+  },                    // 打印二维码（需传 order.qr_url）
   OPEN_CASH_DRAWER_WHEN_CASH: false,// 现金支付时弹钱箱
   SHOW_BTW_SPLIT: false,            // 显示 9%/21% BTW 分拆（需要传 btw_split）
   SHOP: {
@@ -240,8 +247,19 @@ async function doEscposPrint(order) {
   const WIDTH = CONFIG.WIDTH;
   const RIGHT = CONFIG.RIGHT_RESERVE;
 
+  // ===== 切刀配置（可在此微调）=====
+  const CUT_CFG = {
+    strategy: CONFIG.CUT_STRATEGY || 'atomic', // 'atomic' | 'split'
+    mode:     CONFIG.CUT_MODE     || 'partial',// 'partial' | 'full'
+    atomic_feed_n: CONFIG.FEED_BEFORE_CUT ?? 6,
+    split_feed_lines: 6,
+    split_feed_dots:  48,
+    wait_after_feed_ms: 200,
+    wait_after_cut_ms:  800
+  };
+
   // ========== helpers ==========
-  const wait = (ms) => new Promise(r => setTimeout(r, ms));
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
   const money = n => Number(n || 0).toFixed(2);
   const moneyStr = (n, sign = '') => `${sign}EUR ${money(n)}`;
   const line = (ch='-') => printer.text(ch.repeat(WIDTH));
@@ -271,7 +289,7 @@ async function doEscposPrint(order) {
     col2(label, moneyStr(value, sign));
   };
 
-  // —— 数量在前的明细打印 ——
+  // —— 数量在前 ——  {qty}x {name} .... EUR xx.xx
   const printItem = (name, qty, total, opts = []) => {
     const q = Number.isFinite(Number(qty)) ? Number(qty) : 1;
     const qtyStr = `${q}x `;
@@ -297,43 +315,31 @@ async function doEscposPrint(order) {
     }
   };
 
-  // 低层 I/O
-  const rawBoth = (p, d, buf) => {
-    try { p.raw(buf); } catch {}
-    try { if (d && typeof d.write === 'function') d.write(buf); } catch {}
+  // 低层原始命令
+  const raw = (buf) => { try { printer.raw(buf); } catch {} };
+  const esc_d_lines = (n=1) => raw(Buffer.from([0x1B, 0x64, Math.max(1, Math.min(255, n))])); // ESC d n
+  const esc_J_dots  = (n=24) => raw(Buffer.from([0x1B, 0x4A, Math.max(1, Math.min(255, n))])); // ESC J n
+
+  // —— 切刀（只切一次）——
+  const cutOnce = async () => {
+    try { printer.align('lt').style('NORMAL').size(0, 0); } catch {}
+
+    if (CUT_CFG.strategy === 'atomic') {
+      const n = Math.max(0, Math.min(255, CUT_CFG.atomic_feed_n));
+      const m = (CUT_CFG.mode === 'full') ? 0x41 : 0x42;
+      raw(Buffer.from([0x1D, 0x56, m, n]));
+      await sleep(CUT_CFG.wait_after_cut_ms);
+      return;
+    }
+
+    if (CUT_CFG.split_feed_lines > 0) esc_d_lines(CUT_CFG.split_feed_lines);
+    if (CUT_CFG.split_feed_dots  > 0) esc_J_dots(CUT_CFG.split_feed_dots);
+    await sleep(CUT_CFG.wait_after_feed_ms);
+
+    const m_simple = (CUT_CFG.mode === 'full') ? 0x00 : 0x01; // GS V 0/1
+    raw(Buffer.from([0x1D, 0x56, m_simple]));
+    await sleep(CUT_CFG.wait_after_cut_ms);
   };
-  const feedLines = (p, d, n = 1) =>
-    rawBoth(p, d, Buffer.from([0x1B, 0x64, Math.max(1, Math.min(255, n))])); // ESC d n
-  const feedDots  = (p, d, n = 24) =>
-    rawBoth(p, d, Buffer.from([0x1B, 0x4A, Math.max(1, Math.min(255, n))])); // ESC J n
-
-  // —— 只切一次 ——（根据 CUT_MODE 选择一条指令）
-  // 使用底层进纸指令，避免下一次打印前出现多余的切纸
-  const safeCut = async (p, d) => {
-    const VISIBLE_LF_BEFORE_CUT = 6;   // 先用换行推进（肉眼可见滚动）
-    const EXTRA_EXPOSE_DOTS     = 48;  // 再按点距微推（≈6mm，203dpi）
-    const CUT_WAIT_MS           = 800; // 切刀等待
-    const USE_FULL_CUT          = (CONFIG.CUT_MODE === 'full'); // 默认 partial
-
-    try { p.align('lt').style('NORMAL').size(0, 0); } catch {}
-
-    // 1) 可视换行推进
-    feedLines(p, d, VISIBLE_LF_BEFORE_CUT);
-    await new Promise(r => setTimeout(r, 180));
-
-    // 2) 点距微调，确保纸边越过刀位
-    feedDots(p, d, EXTRA_EXPOSE_DOTS);
-    await new Promise(r => setTimeout(r, 180));
-
-    // 3) 只发一条切刀命令（避免双刀）
-    const cutCmd = USE_FULL_CUT ? Buffer.from([0x1D, 0x56, 0x00]) // GS V 0 full
-                                : Buffer.from([0x1D, 0x56, 0x01]); // GS V 1 partial
-    rawBoth(p, d, cutCmd);
-
-    // 等待机械动作完成
-    await new Promise(r => setTimeout(r, CUT_WAIT_MS));
-  };
-
 
   // ========== device ==========
   device = (CONFIG.TRANSPORT === 'NET')
@@ -349,35 +355,83 @@ async function doEscposPrint(order) {
 
       (async () => {
         try {
-          // Header
+          // ===== Header =====
           printer
             .hardware('init')
             .align('ct').style('B').size(1, 1)
             .text(CONFIG.SHOP.name)
             .size(0, 0).style('NORMAL');
 
-          // Order type
           printer.align('ct').text(order.delivery ? 'Bezorging' : 'Afhalen');
-
           line('=');
-          printer.align('lt');
 
+          // ===== Meta（订单信息）=====
+          printer.align('lt');
           if (order.order_number)   col2('Bestelnummer', String(order.order_number));
           if (order.created_at)     col2('Besteld',      String(order.created_at));
           if (order.tijdslot)       col2('Tijdslot',     String(order.tijdslot));
           if (order.payment_method) col2('Betaling',     String(order.payment_method).toUpperCase());
 
-          // Customer / Address
+          // ===== 联系方式 + 地址（电话在前，地址挂在电话后）=====
           if (order.customer_name) col2('Klant', order.customer_name);
+          if (order.phone)         col2('Telefoon', order.phone);
+
           const addrLine1 = [order.street, order.house_number].filter(Boolean).join(' ');
           const addrLine2 = [order.postcode, order.city].filter(Boolean).join(' ');
-          const addr = [addrLine1, addrLine2].filter(Boolean).join(', ');
-          if (order.delivery && addr) col2('Adres', addr);
-          if (order.phone) col2('Telefoon', order.phone);
+          if (order.delivery) {
+            if (addrLine1) col2('Adres', addrLine1);
+            if (addrLine2) col2('',       addrLine2);
+          }
 
-          line();
+          // ===== QR（紧跟地址，留足空间；原生优先，失败回退位图）=====
+          if (CONFIG.USE_QR && order.qr_url) {
+            await (async function printQR(text) {
+              const content = String(text || '').trim();
+              if (!content) return;
 
-          // Items
+              if (CONFIG.QR?.caption) {
+                printer.align('ct').text(String(CONFIG.QR.caption)).align('lt');
+              }
+
+              // 1) 原生指令
+              try {
+                if (typeof printer.qrcode === 'function') {
+                  printer.align(CONFIG.QR?.align || 'ct').qrcode(content, {
+                    size: Number(CONFIG.QR?.size ?? 6),
+                    ecc:  'M'
+                  });
+                  try { printer.feed && printer.feed(1); } catch {}
+                  return;
+                }
+              } catch (e) {
+                console.warn('native qrcode failed → fallback:', e);
+              }
+
+              // 2) 位图回退
+              try {
+                await new Promise((resolve, reject) => {
+                  if (typeof printer.qrimage !== 'function') {
+                    return reject(new Error('qrimage() not available'));
+                  }
+                  const opts = {
+                    type: 'png',
+                    size: Number(CONFIG.QR?.size ?? 6),
+                    margin: Number(CONFIG.QR?.margin ?? 2)
+                  };
+                  printer.align(CONFIG.QR?.align || 'ct')
+                         .qrimage(content, opts, err => err ? reject(err) : resolve());
+                });
+                try { printer.feed && printer.feed(1); } catch {}
+              } catch (e) {
+                console.warn('qrimage failed:', e);
+                printer.align('ct').text('[QR 失败]').text(content).align('lt');
+              }
+            })(order.qr_url);
+          }
+
+          line('-'); // 进入商品区
+
+          // ===== Items =====
           printer.text('Artikelen:');
           for (const it of order.items) {
             const name = String(it.name || '-');
@@ -390,9 +444,9 @@ async function doEscposPrint(order) {
             printItem(name, qty, totalLine, opts);
           }
 
-          line();
+          line('-');
 
-          // Totals
+          // ===== Totals =====
           printIfValue('Subtotaal',  order.subtotal);
           printIfValue('Korting',    order.discount, '-');
           printIfValue('Verpakking', order.packaging);
@@ -409,15 +463,15 @@ async function doEscposPrint(order) {
           }
 
           if (order.total != null) {
-            line();
+            line('-');
             printer.align('lt').style('B').size(1, 1);
             col2('', moneyStr(order.total));
             printer.size(0, 0).style('NORMAL');
           }
 
-          if (order.opmerking) { line(); printer.text(`Opmerking: ${order.opmerking}`); }
+          if (order.opmerking) { line('-'); printer.text(`Opmerking: ${order.opmerking}`); }
 
-          // Footer
+          // ===== Footer =====
           line('=');
           printer.align('ct');
           printer.text('Bedankt voor uw bestelling!');
@@ -427,11 +481,11 @@ async function doEscposPrint(order) {
           printer.text(`Email: ${CONFIG.SHOP.email}`);
           printer.text('Alle prijzen zijn inclusief BTW');
 
-          // 交给 safeCut 统一处理推进与切刀（只切一次）
-          await safeCut(printer, device);
+          // —— 先滚后切（只切一次）——
+          await cutOnce();
 
           // 收尾
-          await wait(600);
+          await sleep(600);
           try { printer.close(); } catch {}
           resolve();
         } catch (e) {
