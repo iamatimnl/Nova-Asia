@@ -78,6 +78,15 @@ with app.app_context():
         if "is_cancelled" not in cols:
             with db.engine.begin() as conn:
                 conn.execute(text("ALTER TABLE orders ADD COLUMN is_cancelled BOOLEAN DEFAULT FALSE"))
+        if "btw_9" not in cols:
+            with db.engine.begin() as conn:
+                conn.execute(text("ALTER TABLE orders ADD COLUMN btw_9 FLOAT DEFAULT 0"))
+        if "btw_21" not in cols:
+            with db.engine.begin() as conn:
+                conn.execute(text("ALTER TABLE orders ADD COLUMN btw_21 FLOAT DEFAULT 0"))
+        if "btw" not in cols:
+            with db.engine.begin() as conn:
+                conn.execute(text("ALTER TABLE orders ADD COLUMN btw FLOAT DEFAULT 0"))
         cols = {c["name"] for c in inspector.get_columns("reviews")}
         if "rating" not in cols:
             with db.engine.begin() as conn:
@@ -368,8 +377,18 @@ def orders_to_dicts(orders):
         delivery_calc = round(delivery_calc, 2)
         delivery = o.bezorgkosten if o.bezorgkosten not in [None, 0] else max(delivery_calc, 0)
         o.bezorgkosten = delivery
-        total_before_btw = subtotal + (o.verpakkingskosten or 0) + delivery
-        o.btw = round(total_before_btw * 0.09, 2)
+        if o.btw is None:
+            heineken_total = sum(
+                float(item.get("price", 0)) * int(item.get("qty", 0))
+                for name, item in o.items_dict.items()
+                if "heineken" in name.lower()
+            )
+            if o.btw_21 is None:
+                o.btw_21 = round(heineken_total * 0.21, 2)
+            if o.btw_9 is None:
+                base_total = subtotal - heineken_total + (o.verpakkingskosten or 0) + delivery
+                o.btw_9 = round(base_total * 0.09, 2)
+            o.btw = (o.btw_9 or 0) + (o.btw_21 or 0)
         result.append({
             "id": o.id,
             "order_type": o.order_type,
@@ -396,6 +415,9 @@ def orders_to_dicts(orders):
             "verpakkingskosten": o.verpakkingskosten,
             "bezorgkosten": delivery,
             "btw": o.btw,
+            "btw_9": o.btw_9 or 0,
+            "btw_21": o.btw_21 or 0,
+            "btw_total": o.btw,
             "fooi": o.fooi or 0,
             "order_number": o.order_number,
             "korting": o.discount_amount,
@@ -496,6 +518,9 @@ class Order(db.Model):
     bezorgkosten = db.Column(db.Float, default=0.0)
     discount_code = db.Column(db.String(50))  # ✅ 新增
     discount_amount = db.Column(db.Float, default=0.0)  # ✅ 新增
+    btw_9 = db.Column(db.Float, default=0.0)
+    btw_21 = db.Column(db.Float, default=0.0)
+    btw = db.Column(db.Float, default=0.0)
     is_completed = db.Column(db.Boolean, default=False)
     is_cancelled = db.Column(db.Boolean, default=False)
 
@@ -526,6 +551,10 @@ class Order(db.Model):
             "discount_code": self.discount_code,
             "discount_amount": self.discount_amount,
             "bezorging": self.bezorgkosten,
+            "btw": self.btw or (self.btw_9 or 0.0) + (self.btw_21 or 0.0),
+            "btw_9": self.btw_9 or 0.0,
+            "btw_21": self.btw_21 or 0.0,
+            "btw_total": self.btw or (self.btw_9 or 0.0) + (self.btw_21 or 0.0),
             "is_completed": self.is_completed,
             "is_cancelled": self.is_cancelled
         }
@@ -853,6 +882,23 @@ def api_orders():
         order.bezorgkosten = float(summary_data.get("delivery") or 0)
         if summary_data.get("discountAmount") is not None:
             order.discount_amount = float(summary_data.get("discountAmount") or 0)
+        btw_split = summary_data.get("btw_split") or data.get("btw_split") or {}
+        try:
+            order.btw_9 = float(btw_split.get("9") or btw_split.get("btw_9") or 0)
+            order.btw_21 = float(btw_split.get("21") or btw_split.get("btw_21") or 0)
+        except Exception:
+            order.btw_9 = order.btw_9 or 0.0
+            order.btw_21 = order.btw_21 or 0.0
+        if not (order.btw_9 or order.btw_21):
+            heineken_total = sum(
+                float(item.get("price", 0)) * int(item.get("qty", 0))
+                for name, item in items.items()
+                if "heineken" in name.lower()
+            )
+            order.btw_21 = round(heineken_total * 0.21, 2)
+            base_total = subtotal - heineken_total + order.verpakkingskosten + order.bezorgkosten
+            order.btw_9 = round(base_total * 0.09, 2)
+        order.btw = (order.btw_9 or 0) + (order.btw_21 or 0)
 
         # 3. 保存订单到数据库
         db.session.add(order)
@@ -1754,8 +1800,18 @@ def pos_orders_today():
         delivery_calc = round(delivery_calc, 2)
         delivery = o.bezorgkosten if o.bezorgkosten not in [None, 0] else max(delivery_calc, 0)
         o.bezorgkosten = delivery
-        total_before_btw = subtotal + (o.verpakkingskosten or 0) + delivery
-        o.btw = round(total_before_btw * 0.09, 2)
+        if o.btw is None:
+            heineken_total = sum(
+                float(item.get("price", 0)) * int(item.get("qty", 0))
+                for name, item in o.items_dict.items()
+                if "heineken" in name.lower()
+            )
+            if o.btw_21 is None:
+                o.btw_21 = round(heineken_total * 0.21, 2)
+            if o.btw_9 is None:
+                base_total = subtotal - heineken_total + (o.verpakkingskosten or 0) + delivery
+                o.btw_9 = round(base_total * 0.09, 2)
+            o.btw = (o.btw_9 or 0) + (o.btw_21 or 0)
 
         o.created_at_local = to_nl(o.created_at)
         summary = "\n".join(f"{name} x {item['qty']}" for name, item in o.items_dict.items())
@@ -1810,6 +1866,9 @@ def pos_orders_today():
             "verpakkingskosten": o.verpakkingskosten,
             "bezorgkosten": o.bezorgkosten,
             "btw": o.btw,
+            "btw_9": o.btw_9 or 0,
+            "btw_21": o.btw_21 or 0,
+            "btw_total": o.btw,
             "fooi": o.fooi or 0,
             "order_number": o.order_number,  # ✅ 加上这行
             "korting": o.discount_amount,
