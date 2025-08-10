@@ -368,8 +368,19 @@ def orders_to_dicts(orders):
         delivery_calc = round(delivery_calc, 2)
         delivery = o.bezorgkosten if o.bezorgkosten not in [None, 0] else max(delivery_calc, 0)
         o.bezorgkosten = delivery
-        total_before_btw = subtotal + (o.verpakkingskosten or 0) + delivery
-        o.btw = round(total_before_btw * 0.09, 2)
+        heineken_total = sum(
+            float(item.get("price", 0)) * int(item.get("qty", 0))
+            for name, item in o.items_dict.items()
+            if "heineken" in name.lower()
+        )
+        if o.btw_21 is None:
+            o.btw_21 = round(heineken_total * 0.21, 2)
+        if o.btw_9 is None:
+            base_total = subtotal - heineken_total + (o.verpakkingskosten or 0) + delivery
+            o.btw_9 = round(base_total * 0.09, 2)
+        btw_total = (o.btw_9 or 0) + (o.btw_21 or 0)
+        o.btw = btw_total
+        result.append({
         result.append({
             "id": o.id,
             "order_type": o.order_type,
@@ -395,7 +406,10 @@ def orders_to_dicts(orders):
             "totaal": totaal,
             "verpakkingskosten": o.verpakkingskosten,
             "bezorgkosten": delivery,
-            "btw": o.btw,
+            "btw": btw_total,
+            "btw_9": o.btw_9 or 0,
+            "btw_21": o.btw_21 or 0,
+            "btw_total": btw_total,
             "fooi": o.fooi or 0,
             "order_number": o.order_number,
             "korting": o.discount_amount,
@@ -496,6 +510,8 @@ class Order(db.Model):
     bezorgkosten = db.Column(db.Float, default=0.0)
     discount_code = db.Column(db.String(50))  # ✅ 新增
     discount_amount = db.Column(db.Float, default=0.0)  # ✅ 新增
+    btw_9 = db.Column(db.Float, default=0.0)
+    btw_21 = db.Column(db.Float, default=0.0)
     is_completed = db.Column(db.Boolean, default=False)
     is_cancelled = db.Column(db.Boolean, default=False)
 
@@ -526,6 +542,9 @@ class Order(db.Model):
             "discount_code": self.discount_code,
             "discount_amount": self.discount_amount,
             "bezorging": self.bezorgkosten,
+            "btw_9": self.btw_9 or 0.0,
+            "btw_21": self.btw_21 or 0.0,
+            "btw_total": (self.btw_9 or 0.0) + (self.btw_21 or 0.0),
             "is_completed": self.is_completed,
             "is_cancelled": self.is_cancelled
         }
@@ -868,8 +887,24 @@ def api_orders():
         elif summary_data.get("discountAmount") is not None:
             order.discount_amount = float(summary_data.get("discountAmount") or 0)
 
+        btw_split = summary_data.get("btw_split") or data.get("btw_split") or {}
+        try:
+            order.btw_9 = float(btw_split.get("9") or btw_split.get("btw_9") or 0)
+            order.btw_21 = float(btw_split.get("21") or btw_split.get("btw_21") or 0)
+        except Exception:
+            order.btw_9 = order.btw_9 or 0.0
+            order.btw_21 = order.btw_21 or 0.0
+        if not (order.btw_9 or order.btw_21):
+            heineken_total = sum(
+                float(item.get("price", 0)) * int(item.get("qty", 0))
+                for name, item in items.items()
+                if "heineken" in name.lower()
+            )
+            order.btw_21 = round(heineken_total * 0.21, 2)
+            base_total = subtotal - heineken_total + order.verpakkingskosten + order.bezorgkosten
+            order.btw_9 = round(base_total * 0.09, 2)
         # 3. 保存订单到数据库
-        db.session.add(order)
+         db.session.add(order)
         db.session.commit()
 
         # 4. 如有折扣码，记录到 discount_codes 表
@@ -1824,93 +1859,9 @@ def pos_orders_today():
     start_local = datetime.combine(today, datetime.min.time(), tzinfo=NL_TZ)
     start = start_local.astimezone(UTC).replace(tzinfo=None)
 
-    orders = Order.query.filter(Order.created_at >= start).order_by(Order.created_at.desc()).all()
-    order_dicts = []
-
-    for o in orders:
-        try:
-            o.items_dict = json.loads(o.items or "{}")
-        except Exception:
-            try:
-                import ast
-                o.items_dict = ast.literal_eval(o.items)
-            except Exception as e:
-                print(f"❌ JSON解析失败: {e}")
+            except Exception:   
                 o.items_dict = {}
-
-        # ✅ 正确使用数据库中的 totaal
-        totaal = o.totaal or 0
-        subtotal = sum(
-            float(i.get("price", 0)) * int(i.get("qty", 0))
-            for i in o.items_dict.values()
-        )
-        delivery_calc = totaal + o.discount_amount - subtotal - o.verpakkingskosten - (o.fooi or 0)
-        delivery_calc = round(delivery_calc, 2)
-        delivery = o.bezorgkosten if o.bezorgkosten not in [None, 0] else max(delivery_calc, 0)
-        o.bezorgkosten = delivery
-        total_before_btw = subtotal + (o.verpakkingskosten or 0) + delivery
-        o.btw = round(total_before_btw * 0.09, 2)
-
-        o.created_at_local = to_nl(o.created_at)
-        summary = "\n".join(f"{name} x {item['qty']}" for name, item in o.items_dict.items())
-
-        is_pickup = o.order_type in ["afhalen", "pickup"]
-        if is_pickup:
-            details = f"[Afhalen]\nNaam: {o.customer_name}\nTelefoon: {o.phone}"
-            if o.email:
-                details += f"\nEmail: {o.email}"
-            details += f"\nAfhaaltijd: {o.pickup_time}\nBetaalwijze: {o.payment_method}"
-        else:
-            details = f"[Bezorgen]\nNaam: {o.customer_name}\nTelefoon: {o.phone}"
-            if o.email:
-                details += f"\nEmail: {o.email}"
-            details += (
-                f"\nAdres: {o.street} {o.house_number}"\
-                f"\nPostcode: {o.postcode}\nBezorgtijd: {o.delivery_time}"\
-                f"\nBetaalwijze: {o.payment_method}"
-            )
-
-        o.formatted = (
-            f"📦 Nieuwe bestelling bij *Nova Asia*:\n\n"
-            f"Bestelnummer: {o.order_number}\n"  # ✅ 插入编号
-            f"{summary}\n{details}\nTotaal: €{totaal:.2f}"
-
-        )
-
-
-        order_dicts.append({
-            "id": o.id,
-            "order_type": o.order_type,
-            "customer_name": o.customer_name,
-            "phone": o.phone,
-            "email": o.email,
-            "payment_method": o.payment_method,
-            "pickup_time": o.pickup_time,
-            "delivery_time": o.delivery_time,
-            "tijdslot_display": o.tijdslot_display,
-            "pickupTime": o.pickup_time,
-            "deliveryTime": o.delivery_time,
-            "postcode": o.postcode,
-            "house_number": o.house_number,
-            "street": o.street,
-            "city": o.city,
-            "maps_link": build_maps_link(o.street, o.house_number, o.postcode, o.city),
-            "opmerking": o.opmerking,
-            "created_date": to_nl(o.created_at).strftime("%Y-%m-%d"),
-            "created_at": to_nl(o.created_at).strftime("%H:%M"),
-            "items": o.items_dict,
-            "total": totaal,   # ✅ 关键是这里：使用数据库中的 totaal
-            "totaal": totaal,
-            "verpakkingskosten": o.verpakkingskosten,
-            "bezorgkosten": o.bezorgkosten,
-            "btw": o.btw,
-            "fooi": o.fooi or 0,
-            "order_number": o.order_number,  # ✅ 加上这行
-            "korting": o.discount_amount,
-            "is_completed": o.is_completed,
-            "is_cancelled": o.is_cancelled
-        })
-
+    order_dicts = orders_to_dicts(orders)
     if request.args.get("json"):
         return jsonify(order_dicts)
 
