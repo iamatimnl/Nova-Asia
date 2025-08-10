@@ -920,7 +920,7 @@ def api_orders():
             base_total = subtotal - heineken_total + order.verpakkingskosten + order.bezorgkosten
             order.btw_9 = round(base_total * 0.09, 2)
         # 3. 保存订单到数据库
-         db.session.add(order)
+        db.session.add(order)
         db.session.commit()
 
         # 4. 如有折扣码，记录到 discount_codes 表
