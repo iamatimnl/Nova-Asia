@@ -367,6 +367,10 @@ def orders_to_dicts(orders):
         delivery_calc = totaal + o.discount_amount - subtotal - o.verpakkingskosten - (o.fooi or 0)
         delivery_calc = round(delivery_calc, 2)
         delivery = o.bezorgkosten if o.bezorgkosten not in [None, 0] else max(delivery_calc, 0)
+        o.bezorgkosten = delivery
+        total_before_btw = subtotal + (o.verpakkingskosten or 0) + delivery - (o.discount_amount or 0)
+        btw_base = total_before_btw - delivery if delivery else total_before_btw
+        o.btw = round(btw_base * 0.09, 2)
         result.append({
             "id": o.id,
             "order_type": o.order_type,
@@ -392,6 +396,7 @@ def orders_to_dicts(orders):
             "totaal": totaal,
             "verpakkingskosten": o.verpakkingskosten,
             "bezorgkosten": delivery,
+            "btw": o.btw,
             "fooi": o.fooi or 0,
             "order_number": o.order_number,
             "korting": o.discount_amount,
@@ -1742,6 +1747,17 @@ def pos_orders_today():
 
         # ✅ 正确使用数据库中的 totaal
         totaal = o.totaal or 0
+        subtotal = sum(
+            float(i.get("price", 0)) * int(i.get("qty", 0))
+            for i in o.items_dict.values()
+        )
+        delivery_calc = totaal + o.discount_amount - subtotal - o.verpakkingskosten - (o.fooi or 0)
+        delivery_calc = round(delivery_calc, 2)
+        delivery = o.bezorgkosten if o.bezorgkosten not in [None, 0] else max(delivery_calc, 0)
+        o.bezorgkosten = delivery
+        total_before_btw = subtotal + (o.verpakkingskosten or 0) + delivery - (o.discount_amount or 0)
+        btw_base = total_before_btw - delivery if delivery else total_before_btw
+        o.btw = round(btw_base * 0.09, 2)
 
         o.created_at_local = to_nl(o.created_at)
         summary = "\n".join(f"{name} x {item['qty']}" for name, item in o.items_dict.items())
@@ -1795,6 +1811,7 @@ def pos_orders_today():
             "totaal": totaal,
             "verpakkingskosten": o.verpakkingskosten,
             "bezorgkosten": o.bezorgkosten,
+            "btw": o.btw,
             "fooi": o.fooi or 0,
             "order_number": o.order_number,  # ✅ 加上这行
             "korting": o.discount_amount,
