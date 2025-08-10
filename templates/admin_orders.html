@@ -105,6 +105,7 @@
       // 初始化统计数据
       let total = 0, pin = 0, online = 0, contant = 0, credit = 0, unknown = 0;
       let cancelled = 0, cancelledCount = 0;
+      let tipTotal = 0;
 
       // 显示或隐藏订单表格
       if (data.length) {
@@ -146,7 +147,7 @@
         const isDelivery = ['delivery', 'bezorgen'].includes((order.order_type || '').toLowerCase());
         const items = Object.entries(order.items || {}).map(([n, i]) => `<li>${n} x ${i.qty}</li>`).join('');
 
-        let fooi = parseFloat(order.fooi);
+        let fooi = parseFloat(order.fooi ?? order.tip ?? 0);
         if (isNaN(fooi)) fooi = 0;
 
         let tot = order.totaal ?? order.total ?? 0;
@@ -159,6 +160,7 @@
           cancelledCount++;
         } else {
           total += tot;
+          tipTotal += fooi;
           const norm = normalizePaymentMethod(order.payment_method);
           if (norm === 'pin') pin += tot;
           else if (norm === 'online') online += tot;
@@ -198,7 +200,8 @@
       // 显示 omzet overzicht
       document.getElementById('totals').style.display = data.length ? '' : 'none';
       document.getElementById('totalOmzet').textContent = formatCurrency(total);
-      document.getElementById('btwAmount').textContent = formatCurrency(total * 0.09);
+      const btwBase = total - tipTotal;
+      document.getElementById('btwAmount').textContent = formatCurrency(btwBase * 0.09);
       document.getElementById('totalPin').textContent = formatCurrency(pin);
       document.getElementById('totalOnline').textContent = formatCurrency(online);
       document.getElementById('totalContant').textContent = formatCurrency(contant);
