@@ -229,10 +229,19 @@ function normalizeForPrint(order) {
   const tip          = pickMax(order.fooi, order.tip);
 
   // 折扣字段：本次使用 vs 下次可用（重要区分）
-  const discount_used_amount   = toNumOrNull(order.discountAmount);   // 本次使用
-  const discount_used_code     = toStr(order.discountCode);
-  const discount_earned_amount = toNumOrNull(order.discount_amount);  // 下次可用
-  const discount_earned_code   = toStr(order.discount_code);
+  // 折扣字段：兼容新老字段命名
+  const discount_used_amount = toNumOrNull(
+    order.discount_used_amount ?? order.discountAmount
+  ); // 本次使用金额
+  const discount_used_code = toStr(
+    order.discount_used_code ?? order.discountCode
+  ); // 本次使用的代码
+  const discount_earned_amount = toNumOrNull(
+    order.discount_earned_amount ?? order.discount_amount
+  ); // 下次可用金额
+  const discount_earned_code = toStr(
+    order.discount_earned_code ?? order.discount_code
+  ); // 下次可用代码
 
   // 历史/兜底折扣（若上面未给时才使用）
   const discountFallback = pickMax(order.korting, order.discount);
@@ -553,7 +562,17 @@ col2('Subtotaal',   `EUR ${to2(order.subtotal)}`);
     ?? order.discount_amount         // 下次可用金额（payload）
     ?? 0
   );
-  if (earnedAmt > 0) col2('Korting tegoed (volgende keer)', `EUR ${to2(earnedAmt)}`);
+  const earnedCode = String(
+    order.discount_earned_code       // 若已在 normalize 写入
+    ?? order.discount_code           // 下次可用 code（payload）
+    ?? ''
+  ).trim();
+  if (earnedAmt > 0) {
+    const label = earnedCode
+      ? `Korting tegoed (volgende keer) [Code: ${earnedCode}]`
+      : 'Korting tegoed (volgende keer)';
+    col2(label, `EUR ${to2(earnedAmt)}`);
+  }
 }
 
 col2('Verpakking Toeslag', `EUR ${to2(order.packaging)}`);
@@ -595,7 +614,7 @@ if (order.total != null) {
          ?? ''
          ).trim();
          if (newCode) {
-          printer.text(`Aub, hier is uw code voor volgende bestelling: ${newCode}`);
+          printer.text(`AUB hier is uw code voor volgende bestelling: ${newCode}`);
           }
           }
 
