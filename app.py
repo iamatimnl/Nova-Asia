@@ -1864,10 +1864,6 @@ def admin_orders():
     return render_template("admin_orders.html", order_data=order_data)
 
 
-@app.route('/admin/review-list')
-@login_required
-def admin_review_list():
-    return render_template('admin/review-list.html')
 @app.route('/pos/orders_today')
 @login_required
 def pos_orders_today():
@@ -1875,9 +1871,9 @@ def pos_orders_today():
     start_local = datetime.combine(today, datetime.min.time(), tzinfo=NL_TZ)
     start = start_local.astimezone(UTC).replace(tzinfo=None)
 
-            except Exception:   
-                o.items_dict = {}
+    orders = Order.query.filter(Order.created_at >= start).all()
     order_dicts = orders_to_dicts(orders)
+
     if request.args.get("json"):
         return jsonify(order_dicts)
 
