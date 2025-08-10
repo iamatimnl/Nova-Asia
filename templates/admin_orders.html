@@ -72,7 +72,9 @@
     <h2>Omzet Overzicht</h2>
     <table>
       <tr><td>Totale omzet</td><td id="totalOmzet">€0,00</td></tr>
-      <tr><td>BTW (9%)</td><td id="btwAmount">€0,00</td></tr>
+      <tr><td>BTW 9%</td><td id="btw9Amount">€0,00</td></tr>
+      <tr id="btw21Row"><td>BTW 21%</td><td id="btw21Amount">€0,00</td></tr>
+      <tr><td>BTW Totaal</td><td id="btwTotalAmount">€0,00</td></tr>
       <tr><td>Pin betaling</td><td id="totalPin">€0,00</td></tr>
       <tr><td>Geannuleerd (aantal / bedrag)</td><td id="totalCancelled">0 / €0,00</td></tr>
 
@@ -106,7 +108,7 @@
       let total = 0, pin = 0, online = 0, contant = 0, credit = 0, unknown = 0;
       let cancelled = 0, cancelledCount = 0;
       let tipTotal = 0;
-
+      let btw9Total = 0, btw21Total = 0;
       // 显示或隐藏订单表格
       if (data.length) {
         table.style.display = '';
@@ -161,6 +163,8 @@
         } else {
           total += tot;
           tipTotal += fooi;
+          btw9Total += Number(order.btw_9 || 0);
+          btw21Total += Number(order.btw_21 || 0);
           const norm = normalizePaymentMethod(order.payment_method);
           if (norm === 'pin') pin += tot;
           else if (norm === 'online') online += tot;
@@ -200,8 +204,10 @@
       // 显示 omzet overzicht
       document.getElementById('totals').style.display = data.length ? '' : 'none';
       document.getElementById('totalOmzet').textContent = formatCurrency(total);
-      const btwBase = total - tipTotal;
-      document.getElementById('btwAmount').textContent = formatCurrency(btwBase * 0.09);
+      document.getElementById('btw9Amount').textContent = formatCurrency(btw9Total);
+      document.getElementById('btw21Amount').textContent = formatCurrency(btw21Total);
+      document.getElementById('btw21Row').style.display = btw21Total > 0 ? '' : 'none';
+      document.getElementById('btwTotalAmount').textContent = formatCurrency(btw9Total + btw21Total);
       document.getElementById('totalPin').textContent = formatCurrency(pin);
       document.getElementById('totalOnline').textContent = formatCurrency(online);
       document.getElementById('totalContant').textContent = formatCurrency(contant);
