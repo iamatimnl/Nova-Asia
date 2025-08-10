@@ -157,6 +157,10 @@
         <p><strong>Opmerking:</strong> {{ order.opmerking or '-' }}</p>
         <p><strong>Ordernummer:</strong> {{ order.order_number or '' }}</p>
         <p><strong>Totaal:</strong> €{{ '%.2f' % (order.totaal or 0) }}</p>
+        {% if is_delivery %}
+        <p><strong>Bezorgkosten:</strong> €{{ '%.2f' % (order.bezorgkosten or 0) }}</p>
+        {% endif %}
+        <p><strong>BTW:</strong> €{{ '%.2f' % (order.btw or 0) }}</p>
         <p><strong>Adres:</strong>
           {% if is_delivery %}
             {{ order.street }} {{ order.house_number }} {{ order.postcode }} {{ order.city }}
