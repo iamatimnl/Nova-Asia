@@ -2221,7 +2221,7 @@ function submitOrder() {
     delivery: parseFloat(deliveryCost.toFixed(2)),
     discountType,
     discountValue: parseFloat(discountVal.toFixed(2)),
-    discountAmount: parseFloat(discount.toFixed(2)),
+    discount_amount: parseFloat(discount.toFixed(2)),
     btw: parseFloat(btw.toFixed(2)),
     btw_9: parseFloat(btw9.toFixed(2)),
     btw_21: parseFloat(btw21.toFixed(2)),
@@ -2268,8 +2268,8 @@ function submitOrder() {
 
   // ✅ 手动折扣：无真实折扣码但有折扣金额时，写入固定折扣码
   if (discount > 0) {
-    payload.discountCode = 'KASSA';
-    payload.discountAmount = parseFloat(discount.toFixed(2));
+    payload.discount_code = 'KASSA';
+    payload.discount_amount = parseFloat(discount.toFixed(2));
   }
 
   // ✅ 提交到后端
@@ -2842,9 +2842,9 @@ function addRow(order, highlight = false) {
   const sourceRaw = (order.source || '').toLowerCase();
   const sourceDisplay = sourceRaw === 'index' ? 'Website' : 'POS';
   // Prefer newer discount fields if available
-  const discountCode = order.discount_used_code || order.discountCode || order.next_discount_code || '';
+  const discount_code = order.discount_used_code || order.discount_code || order.next_discount_code || '';
   const discountLabel = sourceRaw === 'index'
-    ? `Online Korting${discountCode ? ` (${discountCode})` : ''}`
+    ? `Online Korting${discount_code ? ` (${discount_code})` : ''}`
     : 'Kassa Korting';
 
   const tijdslotRaw = order.tijdslot_display || (isDelivery ? order.delivery_time : order.pickup_time);

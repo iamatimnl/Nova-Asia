@@ -229,12 +229,12 @@ function normalizeForPrint(order) {
   const tip          = pickMax(order.fooi, order.tip);
 
   // 折扣字段：本次使用 vs 下次可用（重要区分）
-  // 折扣字段：兼容新老字段命名
+  // 折扣字段：采用下划线命名
   const discount_used_amount = toNumOrNull(
-    order.discount_used_amount ?? order.discountAmount ?? order.discount_amount
+    order.discount_used_amount ?? order.discount_amount
   ); // 本次使用金额
   const discount_used_code = toStr(
-    order.discount_used_code ?? order.discountCode ?? order.discount_code
+    order.discount_used_code ?? order.discount_code
   ); // 本次使用的代码
   const discount_earned_amount = toNumOrNull(
     order.discount_earned_amount ?? order.next_discount_amount
@@ -546,13 +546,11 @@ col2('Subtotaal',   `EUR ${to2(order.subtotal)}`);
 {
   const usedAmt = Number(
     order.discount_used_amount       // 已在 normalize 写入
-    ?? order.discountAmount          // payload: 本次使用金额
     ?? order.discount_amount
     ?? 0
   );
   const usedCode = String(
     order.discount_used_code         // 已在 normalize 写入
-    ?? order.discountCode            // payload: 本次使用 code
     ?? order.discount_code
     ?? ''
   ).trim();
