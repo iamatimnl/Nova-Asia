@@ -2842,7 +2842,7 @@ function addRow(order, highlight = false) {
   const sourceRaw = (order.source || '').toLowerCase();
   const sourceDisplay = sourceRaw === 'index' ? 'Website' : 'POS';
   // Prefer newer discount fields if available
-  const discountCode = order.discount_used_code || order.discountCode || order.discount_code || '';
+  const discountCode = order.discount_used_code || order.discountCode || order.next_discount_code || '';
   const discountLabel = sourceRaw === 'index'
     ? `Online Korting${discountCode ? ` (${discountCode})` : ''}`
     : 'Kassa Korting';
