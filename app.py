@@ -831,52 +831,55 @@ def api_orders():
         order_type = data.get("orderType") or data.get("order_type")
         settings = {s.key: s.value for s in Setting.query.all()}
         now = datetime.now(NL_TZ)
+        source = (data.get("source") or "").lower()
+        is_zsm = str(data.get("is_zsm")).lower() == "true"
 
-        if order_type == 'afhalen':
-            start_str = settings.get('pickup_start', '00:00')
-            end_str = settings.get('pickup_end', '23:59')
-            gekozen = data.get("pickup_time") or data.get("pickupTime") or ""
-            gesloten_message = "Afhalen is gesloten voor vandaag."
-        else:
-            start_str = settings.get('delivery_start', '00:00')
-            end_str = settings.get('delivery_end', '23:59')
-            gekozen = data.get("delivery_time") or data.get("deliveryTime") or ""
-            gesloten_message = "Bezorging is gesloten voor vandaag."
+        if not (source == "pos" and is_zsm):
+            if order_type == 'afhalen':
+                start_str = settings.get('pickup_start', '00:00')
+                end_str = settings.get('pickup_end', '23:59')
+                gekozen = data.get("pickup_time") or data.get("pickupTime") or ""
+                gesloten_message = "Afhalen is gesloten voor vandaag."
+            else:
+                start_str = settings.get('delivery_start', '00:00')
+                end_str = settings.get('delivery_end', '23:59')
+                gekozen = data.get("delivery_time") or data.get("deliveryTime") or ""
+                gesloten_message = "Bezorging is gesloten voor vandaag."
 
-        start_hour, start_minute = map(int, start_str.split(':'))
-        end_hour, end_minute = map(int, end_str.split(':'))
+            start_hour, start_minute = map(int, start_str.split(':'))
+            end_hour, end_minute = map(int, end_str.split(':'))
 
-        start_today = now.replace(hour=start_hour, minute=start_minute, second=0, microsecond=0)
-        end_today = now.replace(hour=end_hour, minute=end_minute, second=0, microsecond=0)
+            start_today = now.replace(hour=start_hour, minute=start_minute, second=0, microsecond=0)
+            end_today = now.replace(hour=end_hour, minute=end_minute, second=0, microsecond=0)
 
-        chosen_dt = None
-        if gekozen:
+            chosen_dt = None
+            if gekozen:
+                try:
+                    ch, cm = map(int, gekozen.split(':'))
+                    chosen_dt = now.replace(hour=ch, minute=cm, second=0, microsecond=0)
+                except Exception:
+                    pass
+
+            if chosen_dt and chosen_dt < start_today:
+                return jsonify({"status": "fail", "error": "Gekozen tijd valt buiten openingstijden."}), 403
+
+            if chosen_dt and chosen_dt > end_today:
+                return jsonify({"status": "fail", "error": gesloten_message}), 403
+
+            if now > end_today:
+                return jsonify({"status": "fail", "error": gesloten_message}), 403
             try:
-                ch, cm = map(int, gekozen.split(':'))
-                chosen_dt = now.replace(hour=ch, minute=cm, second=0, microsecond=0)
+                pickup_closed = json.loads(settings.get('pickup_closed_slots') or '{}')
+                delivery_closed = json.loads(settings.get('delivery_closed_slots') or '{}')
             except Exception:
-                pass
-
-        if chosen_dt and chosen_dt < start_today:
-            return jsonify({"status": "fail", "error": "Gekozen tijd valt buiten openingstijden."}), 403
-
-        if chosen_dt and chosen_dt > end_today:
-            return jsonify({"status": "fail", "error": gesloten_message}), 403
-
-        if now > end_today:
-            return jsonify({"status": "fail", "error": gesloten_message}), 403
-        try:
-            pickup_closed = json.loads(settings.get('pickup_closed_slots') or '{}')
-            delivery_closed = json.loads(settings.get('delivery_closed_slots') or '{}')
-        except Exception:
-            pickup_closed, delivery_closed = {}, {}
-        closed_map = pickup_closed if order_type == 'afhalen' else delivery_closed
-        if gekozen:
-            hour_key = f"{gekozen.split(':')[0]}:00" if ':' in gekozen else None
-            status = closed_map.get(gekozen) or (hour_key and closed_map.get(hour_key))
-            if status:
-                msg = 'Tijdslot vol' if status in ['full', 'closed'] else 'Tijdslot gesloten'
-                return jsonify({"status": "fail", "error": msg}), 403
+                pickup_closed, delivery_closed = {}, {}
+            closed_map = pickup_closed if order_type == 'afhalen' else delivery_closed
+            if gekozen:
+                hour_key = f"{gekozen.split(':')[0]}:00" if ':' in gekozen else None
+                status = closed_map.get(gekozen) or (hour_key and closed_map.get(hour_key))
+                if status:
+                    msg = 'Tijdslot vol' if status in ['full', 'closed'] else 'Tijdslot gesloten'
+                    return jsonify({"status": "fail", "error": msg}), 403
         # ===== 新时间判断逻辑结束 =====
 
         # 1. 构造订单对象（初始字段）

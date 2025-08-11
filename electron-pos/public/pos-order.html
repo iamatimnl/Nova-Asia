@@ -2201,9 +2201,11 @@ function submitOrder() {
   const orderType = delivery ? 'bezorgen' : 'afhalen';
   const pickupSel = document.getElementById('pickup_time').value;
   const deliverySel = document.getElementById('delivery_time').value;
-  const pickupVal = pickupSel === 'Z.S.M.' ? getAsapTime() : pickupSel;
-  const deliveryVal = deliverySel === 'Z.S.M.' ? getAsapTime() : deliverySel;
   const tijdslotDisplay = delivery ? deliverySel : pickupSel;
+  const raw = String(tijdslotDisplay || '').toLowerCase().replace(/\./g, '').trim();
+  const isZsm = !raw || raw === 'zsm' || raw === 'asap';
+  const pickupVal = !delivery && isZsm ? getAsapTime() : pickupSel;
+  const deliveryVal = delivery && isZsm ? getAsapTime() : deliverySel;
   const payload = {
     orderType,
     name,
@@ -2213,6 +2215,7 @@ function submitOrder() {
     pickup_time: !delivery ? pickupVal : '',
     delivery_time: delivery ? deliveryVal : '',
     tijdslot_display: tijdslotDisplay,
+    is_zsm: isZsm,
     paymentMethod: delivery
       ? document.getElementById('deliveryPayment').value
       : document.getElementById('pickupPayment').value,
