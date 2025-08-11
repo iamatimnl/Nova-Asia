@@ -1,0 +1,267 @@
+
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dagelijkse Bestellingen</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      padding: 20px;
+      max-width: 1200px;
+      margin: auto;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; vertical-align: top; }
+    th { background-color: #f2f2f2; }
+    ul { margin: 0; padding-left: 20px; }
+    #totals { margin-top: 20px; }
+    #totals table { width: auto; margin-top: 10px; }
+    .download-buttons { margin-bottom: 20px; }
+    .download-buttons button {
+      margin-right: 10px;
+      padding: 8px 16px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .completed { background-color: #c8e6c9; }
+    .cancelled { background-color: #e0e0e0; }
+  </style>
+</head>
+<body>
+
+  <h1 id="dayHeading">Vandaag</h1>
+
+  <div style="margin-bottom:15px;">
+    <label>Datum: <input type="date" id="datePicker"> <button id="dateBtn">Zoek</button></label>
+    <label style="margin-left:20px;">Van: <input type="date" id="startDate"> Tot: <input type="date" id="endDate"> <button id="rangeBtn">Zoek</button></label>
+  </div>
+
+  <div class="download-buttons">
+    <button id="excelBtn">📥 Download Excel</button>
+    <button id="pdfBtn">📄 Download PDF</button>
+  </div>
+
+  <div id="ordersContainer">
+    <p id="noOrders" style="display:none;">Geen bestellingen gevonden.</p>
+    <table id="ordersTable" style="display:none;">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Datum</th>
+          <th>Orderd</th>
+          <th>Tijdslot</th>
+          <th>Type</th>
+          <th>Klant</th>
+          <th>Telefoon</th>
+          <th>Email</th>
+          <th>Items</th>
+          <th>Opmerking</th>
+          <th>Fooi (€)</th>
+          <th>Totaal (€)</th>
+          <th>Adres</th>
+          <th>Betaling</th>
+          <th>Actie</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div id="totals" style="display:none;">
+    <h2>Omzet Overzicht</h2>
+    <table>
+      <tr><td>Totale omzet</td><td id="totalOmzet">€0,00</td></tr>
+      <tr><td>BTW 9%</td><td id="btw9Amount">€0,00</td></tr>
+      <tr id="btw21Row"><td>BTW 21%</td><td id="btw21Amount">€0,00</td></tr>
+      <tr><td>BTW Totaal</td><td id="btwTotalAmount">€0,00</td></tr>
+      <tr><td>Pin betaling</td><td id="totalPin">€0,00</td></tr>
+      <tr><td>Geannuleerd (aantal / bedrag)</td><td id="totalCancelled">0 / €0,00</td></tr>
+
+      <tr><td>Online betaling</td><td id="totalOnline">€0,00</td></tr>
+      <tr><td>Contant</td><td id="totalContant">€0,00</td></tr>
+      <tr><td>Op rekening</td><td id="totalCredit">€0,00</td></tr>
+    </table>
+  </div>
+
+  <script>
+    let currentQuery = { type: 'today', params: '' };
+
+    function formatCurrency(value) {
+      if (typeof value === 'string') {
+        value = value.replace(/[^\d,.-]/g, '').replace(',', '.').trim();
+      }
+      const num = parseFloat(value);
+      return isNaN(num) ? '€0,00' : '€' + num.toFixed(2).replace('.', ',');
+    }
+
+    function loadOrders(url, mode = 'today', label = '') {
+  fetch(url)
+    .then(r => r.json())
+    .then(data => {
+      const tbody = document.querySelector('#ordersTable tbody');
+      const table = document.getElementById('ordersTable');
+      const msg = document.getElementById('noOrders');
+      tbody.innerHTML = '';
+
+      // 初始化统计数据
+      let total = 0, pin = 0, online = 0, contant = 0, credit = 0, unknown = 0;
+      let cancelled = 0, cancelledCount = 0;
+      let tipTotal = 0;
+      let btw9Total = 0, btw21Total = 0;
+      // 显示或隐藏订单表格
+      if (data.length) {
+        table.style.display = '';
+        msg.style.display = 'none';
+      } else {
+        table.style.display = 'none';
+        msg.style.display = 'block';
+      }
+
+      // 设置标题
+      const heading = document.getElementById('dayHeading');
+      if (mode === 'today') {
+        heading.textContent = `Vandaag – ${label}`;
+      } else if (mode === 'date') {
+        heading.textContent = `Bestellingen van ${label}`;
+      } else if (mode === 'range') {
+        heading.textContent = `Bestellingen van ${label}`;
+      }
+
+      // 支付方式映射函数
+      function normalizePaymentMethod(methodRaw) {
+        const method = String(methodRaw || '').toLowerCase();
+        if (['pin', 'card'].some(k => method.includes(k))) return 'pin';
+        if (['online', 'online payment'].some(k => method.includes(k))) return 'online';
+        if (['contant', 'cash'].some(k => method.includes(k))) return 'contant';
+        if (['rekening', 'on account'].some(k => method.includes(k))) return 'rekening';
+        return 'onbekend';
+      }
+
+      // 渲染每一行订单
+      data.forEach(order => {
+        const tr = document.createElement('tr');
+        tr.dataset.id = order.id;
+        tr.dataset.order = JSON.stringify(order);
+        if (order.is_cancelled) tr.classList.add('cancelled');
+        else if (order.is_completed) tr.classList.add('completed');
+
+        const isDelivery = ['delivery', 'bezorgen'].includes((order.order_type || '').toLowerCase());
+        const items = Object.entries(order.items || {}).map(([n, i]) => `<li>${n} x ${i.qty}</li>`).join('');
+
+        let fooi = parseFloat(order.fooi ?? order.tip ?? 0);
+        if (isNaN(fooi)) fooi = 0;
+
+        let tot = order.totaal ?? order.total ?? 0;
+        if (typeof tot === 'string') {
+          tot = parseFloat(tot.replace(/[^\d,.-]/g, '').replace(',', '.'));
+        }
+
+        if (order.is_cancelled) {
+          cancelled += tot || 0;
+          cancelledCount++;
+        } else {
+          total += tot;
+          tipTotal += fooi;
+          btw9Total += Number(order.btw_9 || 0);
+          btw21Total += Number(order.btw_21 || 0);
+          const norm = normalizePaymentMethod(order.payment_method);
+          if (norm === 'pin') pin += tot;
+          else if (norm === 'online') online += tot;
+          else if (norm === 'contant') contant += tot;
+          else if (norm === 'rekening') credit += tot;
+          else unknown += tot;
+        }
+
+        tr.innerHTML = `
+          <td>${order.id || ''}</td>
+          <td>${order.created_date || ''}</td>
+          <td>${order.created_at || ''}</td>
+          <td>${isDelivery ? (order.delivery_time || order.deliveryTime || '-') : (order.pickup_time || order.pickupTime || '-')}</td>
+          <td>${isDelivery ? 'Bezorgen' : 'Afhalen'}</td>
+          <td>${order.customer_name || ''}</td>
+          <td>${order.phone || ''}</td>
+          <td>${order.email || '-'}</td>
+          <td><ul>${items}</ul></td>
+          <td>${order.opmerking || order.remark || '-'}</td>
+          <td>${formatCurrency(fooi)}</td>
+          <td>${formatCurrency(tot)}</td>
+          <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
+          <td>${order.payment_method || ''}</td>
+          <td><button onclick="toggleComplete(this)"
+            data-number="${order.order_number}"
+            data-name="${order.customer_name || ''}"
+            data-phone="${order.phone || ''}"
+            data-email="${order.email || ''}"
+            data-type="${isDelivery ? 'bezorg' : 'afhaal'}">${order.is_completed ? 'Undone' : 'Klaar'}</button>
+            <button onclick="editOrder(this)">Bewerk</button>
+            <button onclick="cancelOrder(this)">Annuleer</button>
+            <span class="notify"></span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // 显示 omzet overzicht
+      document.getElementById('totals').style.display = data.length ? '' : 'none';
+      document.getElementById('totalOmzet').textContent = formatCurrency(total);
+      document.getElementById('btw9Amount').textContent = formatCurrency(btw9Total);
+      document.getElementById('btw21Amount').textContent = formatCurrency(btw21Total);
+      document.getElementById('btw21Row').style.display = btw21Total > 0 ? '' : 'none';
+      document.getElementById('btwTotalAmount').textContent = formatCurrency(btw9Total + btw21Total);
+      document.getElementById('totalPin').textContent = formatCurrency(pin);
+      document.getElementById('totalOnline').textContent = formatCurrency(online);
+      document.getElementById('totalContant').textContent = formatCurrency(contant);
+      document.getElementById('totalCredit').textContent = formatCurrency(credit);
+
+      const cancelledDisplay = `${cancelledCount} / ${formatCurrency(cancelled)}`;
+      document.getElementById('totalCancelled').textContent = cancelledDisplay;
+
+      // 若您在HTML中添加了 unknown 行，也可以更新它：
+      const unknownEl = document.getElementById('totalUnknown');
+      if (unknownEl) unknownEl.textContent = formatCurrency(unknown);
+    })
+    .catch(() => { alert('Fout bij het ophalen van gegevens.'); });
+}
+
+    function fetchOrders() {
+      const now = new Date();
+      const dd = String(now.getDate()).padStart(2, '0');
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const yy = now.getFullYear();
+      currentQuery = { type: 'today', params: '' };
+      loadOrders('/pos/orders_today?json=1', 'today', `${dd}-${mm}-${yy}`);
+    }
+
+    function fetchByDate() {
+      const d = document.getElementById('datePicker').value;
+      if (!d) return alert('Selecteer een datum.');
+      currentQuery = { type: 'date', params: `date=${d}` };
+      loadOrders(`/pos/orders_by_date?date=${d}&json=1`, 'date', d.split('-').reverse().join('-'));
+    }
+
+    function fetchByRange() {
+      const s = document.getElementById('startDate').value;
+      const e = document.getElementById('endDate').value;
+      if (!s || !e) return alert('Selecteer zowel start- als einddatum.');
+      currentQuery = { type: 'range', params: `start=${s}&end=${e}` };
+      loadOrders(`/pos/orders_range?start=${s}&end=${e}&json=1`, 'range', `${s.split('-').reverse().join('-')} tot ${e.split('-').reverse().join('-')}`);
+    }
+
+    function downloadExcel() {
+      window.open(`/admin/orders/download/excel?${currentQuery.params}`, "_blank");
+    }
+
+    function downloadPDF() {
+      window.open(`/admin/orders/download/pdf?${currentQuery.params}`, "_blank");
+    }
+
+    document.addEventListener('DOMContentLoaded', fetchOrders);
+    document.getElementById('dateBtn').addEventListener('click', fetchByDate);
+    document.getElementById('rangeBtn').addEventListener('click', fetchByRange);
+    document.getElementById('excelBtn').addEventListener('click', downloadExcel);
+    document.getElementById('pdfBtn').addEventListener('click', downloadPDF);
+  </script>
+
+</body>
+</html>
