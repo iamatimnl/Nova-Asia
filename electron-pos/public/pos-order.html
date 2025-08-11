@@ -2230,6 +2230,12 @@ function submitOrder() {
     summary  // ✅ 加入结账明细
   };
 
+  // ✅ 手动折扣：无真实折扣码但有折扣金额时，写入固定折扣码
+  if (discount > 0) {
+    payload.discountCode = 'KASSA';
+    payload.discountAmount = parseFloat(discount.toFixed(2));
+  }
+
   // ✅ 提交到后端
   fetch('https://flask-order-api.onrender.com/submit_order', {
     method: 'POST',

@@ -897,7 +897,7 @@ def api_orders():
             items=json.dumps(data.get("items", {})),
             order_number=order_number,
             fooi=float(data.get("tip") or data.get("fooi") or 0),
-            discount_code=data.get("discount_code") or data.get("discountCode"),
+            discount_code=None,
             discount_amount=data.get("discount_amount")
         )
 
@@ -934,12 +934,20 @@ def api_orders():
             base_total = subtotal - heineken_total + order.verpakkingskosten + order.bezorgkosten
             order.btw_9 = round(base_total * 0.09, 2)
         order.btw = (order.btw_9 or 0) + (order.btw_21 or 0)
-        # 3. 保存订单到数据库
+        # 3. 处理折扣码
+        raw_discount_code = data.get("discount_code") or data.get("discountCode")
+        if raw_discount_code and raw_discount_code.upper() == "KASSA":
+            order.discount_code = "kassa korting"
+            discount_code = None
+        else:
+            order.discount_code = raw_discount_code
+            discount_code = raw_discount_code
+
+        # 4. 保存订单到数据库
         db.session.add(order)
         db.session.commit()
 
-        # 4. 如有折扣码，记录到 discount_codes 表
-        discount_code = data.get("discount_code") or data.get("discountCode")
+        # 5. 如有折扣码，记录到 discount_codes 表
         customer_email = (
             data.get("customer_email")
             or data.get("customerEmail")
@@ -990,6 +998,16 @@ def validate_discount():
         data = request.get_json()
         code = data.get("code")
         order_total = float(data.get("order_total") or 0)
+        manual_amount = float(data.get("discount_amount") or 0)
+
+        if code and code.upper() == "KASSA":
+            new_total = max(0, order_total - manual_amount)
+            return jsonify({
+                "valid": True,
+                "discount_amount": manual_amount,
+                "new_total": new_total,
+                "note": "kassa korting"
+            }), 200
 
         disc = DiscountCode.query.filter_by(code=code, is_used=False).first()
         if not disc:
