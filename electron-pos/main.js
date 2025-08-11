@@ -229,18 +229,18 @@ function normalizeForPrint(order) {
   const tip          = pickMax(order.fooi, order.tip);
 
   // 折扣字段：本次使用 vs 下次可用（重要区分）
-  // 折扣字段：采用下划线命名
+  // 折扣字段：兼容新老字段命名
   const discount_used_amount = toNumOrNull(
-    order.discount_used_amount ?? order.discount_amount
+    order.discount_used_amount ?? order.discountAmount
   ); // 本次使用金额
   const discount_used_code = toStr(
-    order.discount_used_code ?? order.discount_code
+    order.discount_used_code ?? order.discountCode
   ); // 本次使用的代码
   const discount_earned_amount = toNumOrNull(
-    order.discount_earned_amount ?? order.next_discount_amount
+    order.discount_earned_amount ?? order.discount_amount
   ); // 下次可用金额
   const discount_earned_code = toStr(
-    order.discount_earned_code ?? order.next_discount_code
+    order.discount_earned_code ?? order.discount_code
   ); // 下次可用代码
 
   // 历史/兜底折扣（若上面未给时才使用）
@@ -546,12 +546,12 @@ col2('Subtotaal',   `EUR ${to2(order.subtotal)}`);
 {
   const usedAmt = Number(
     order.discount_used_amount       // 已在 normalize 写入
-    ?? order.discount_amount
+    ?? order.discountAmount          // payload: 本次使用金额
     ?? 0
   );
   const usedCode = String(
     order.discount_used_code         // 已在 normalize 写入
-    ?? order.discount_code
+    ?? order.discountCode            // payload: 本次使用 code
     ?? ''
   ).trim();
 
@@ -598,10 +598,10 @@ if (order.total != null) {
 // ===== 下一次优惠券提醒 =====
 {
   const earnedAmt = Number(
-    order.discount_earned_amount ?? order.next_discount_amount ?? 0
+    order.discount_earned_amount ?? order.discount_amount ?? 0
   );
   const earnedCode = String(
-    order.discount_earned_code ?? order.next_discount_code ?? ''
+    order.discount_earned_code ?? order.discount_code ?? ''
   ).trim();
   if (earnedAmt > 0 || earnedCode) {
     line('-');
