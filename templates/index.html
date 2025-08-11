@@ -4917,7 +4917,7 @@ function applyDiscount() {
   .then(r => r.json())
   .then(res => {
     if (res.valid) {
-      currentDiscount = res.next_discount_amount;
+      currentDiscount = res.discount_amount;
     } else {
       currentDiscount = 0;
       alert('Ongeldige kortingscode');
@@ -6026,7 +6026,7 @@ function checkout() {
     subtotal: subtotal.toFixed(2),
     packaging: packagingFee.toFixed(2),
     delivery: deliveryFee.toFixed(2),
-    next_discount_amount: discount.toFixed(2),
+    discount_amount: discount.toFixed(2),
     btw: btw.toFixed(2),
     btw_split: { '9': btw9.toFixed(2), '21': btw21.toFixed(2) },
     btw_9: btw9.toFixed(2),
