@@ -187,7 +187,7 @@ def order_to_dict(order):
         float(i.get("price", 0)) * int(i.get("qty", 0))
         for i in items.values()
     )
-    delivery_calc = order.totaal + order.discount_amount - subtotal - order.verpakkingskosten - (order.fooi or 0)
+    delivery_calc = order.totaal + order.next_discount_amount - subtotal - order.verpakkingskosten - (order.fooi or 0)
     delivery_calc = round(delivery_calc, 2)
     delivery = order.bezorgkosten if order.bezorgkosten not in [None, 0] else max(delivery_calc, 0)
 
@@ -211,8 +211,8 @@ def order_to_dict(order):
         "verpakkingskosten": order.verpakkingskosten,
         "bezorgkosten": delivery,
         "fooi": order.fooi,
-        "discount_code": order.discount_code,
-        "discount_amount": order.discount_amount,
+        "next_discount_code": order.next_discount_code,
+        "next_discount_amount": order.next_discount_amount,
         "opmerking": order.opmerking,
         "items": items,
         "created_at": order.created_at.isoformat() if order.created_at else None,
@@ -373,7 +373,7 @@ def orders_to_dicts(orders):
             float(i.get("price", 0)) * int(i.get("qty", 0))
             for i in o.items_dict.values()
         )
-        delivery_calc = totaal + o.discount_amount - subtotal - o.verpakkingskosten - (o.fooi or 0)
+        delivery_calc = totaal + o.next_discount_amount - subtotal - o.verpakkingskosten - (o.fooi or 0)
         delivery_calc = round(delivery_calc, 2)
         delivery = o.bezorgkosten if o.bezorgkosten not in [None, 0] else max(delivery_calc, 0)
         o.bezorgkosten = delivery
@@ -420,7 +420,7 @@ def orders_to_dicts(orders):
             "btw_total": o.btw,
             "fooi": o.fooi or 0,
             "order_number": o.order_number,
-            "korting": o.discount_amount,
+            "korting": o.next_discount_amount,
             "is_completed": o.is_completed,
             "is_cancelled": o.is_cancelled
         })
@@ -516,8 +516,8 @@ class Order(db.Model):
     verpakkingskosten = db.Column(db.Float, default=0.0)
     fooi = db.Column(db.Float, default=0.0)
     bezorgkosten = db.Column(db.Float, default=0.0)
-    discount_code = db.Column(db.String(50))  # ✅ 新增
-    discount_amount = db.Column(db.Float, default=0.0)  # ✅ 新增
+    next_discount_code = db.Column(db.String(50))  # ✅ 新增
+    next_discount_amount = db.Column(db.Float, default=0.0)  # ✅ 新增
     btw_9 = db.Column(db.Float, default=0.0)
     btw_21 = db.Column(db.Float, default=0.0)
     btw = db.Column(db.Float, default=0.0)
@@ -548,8 +548,8 @@ class Order(db.Model):
             "verpakkingskosten": self.verpakkingskosten,
             "bezorgkosten": self.bezorgkosten,
             "fooi": self.fooi,
-            "discount_code": self.discount_code,
-            "discount_amount": self.discount_amount,
+            "next_discount_code": self.next_discount_code,
+            "next_discount_amount": self.next_discount_amount,
             "bezorging": self.bezorgkosten,
             "btw": self.btw or (self.btw_9 or 0.0) + (self.btw_21 or 0.0),
             "btw_9": self.btw_9 or 0.0,
@@ -582,7 +582,7 @@ class DiscountCode(db.Model):
     is_used = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     customer_email = db.Column(db.String(120))
-    discount_amount = db.Column(db.Float, default=0.0)  # ✅ 必须加这个
+    next_discount_amount = db.Column(db.Float, default=0.0)  # ✅ 必须加这个
 
 
 class MenuSection(db.Model):
@@ -865,8 +865,8 @@ def api_orders():
             items=json.dumps(data.get("items", {})),
             order_number=order_number,
             fooi=float(data.get("tip") or data.get("fooi") or 0),
-            discount_code=None,
-            discount_amount=data.get("discount_amount")
+            next_discount_code=None,
+            next_discount_amount=data.get("next_discount_amount") or data.get("nextDiscountAmount")
         )
 
         # 2. 计算 subtotal / totaal
@@ -880,8 +880,8 @@ def api_orders():
         summary_data = data.get("summary") or {}
         order.verpakkingskosten = float(summary_data.get("packaging") or 0)
         order.bezorgkosten = float(summary_data.get("delivery") or 0)
-        if summary_data.get("discountAmount") is not None:
-            order.discount_amount = float(summary_data.get("discountAmount") or 0)
+        if summary_data.get("nextDiscountAmount") is not None:
+            order.next_discount_amount = float(summary_data.get("nextDiscountAmount") or 0)
         btw_split = summary_data.get("btw_split") or data.get("btw_split") or {}
         try:
             order.btw_9 = float(btw_split.get("9") or btw_split.get("btw_9") or 0)
@@ -901,13 +901,13 @@ def api_orders():
         order.btw = (order.btw_9 or 0) + (order.btw_21 or 0)
 
         # 3. 处理折扣码
-        raw_discount_code = data.get("discount_code") or data.get("discountCode")
-        if raw_discount_code and raw_discount_code.upper() == "KASSA":
-            order.discount_code = "kassa korting"
-            discount_code = None
+        raw_next_discount_code = data.get("next_discount_code") or data.get("nextDiscountCode")
+        if raw_next_discount_code and raw_next_discount_code.upper() == "KASSA":
+            order.next_discount_code = "kassa korting"
+            next_discount_code = None
         else:
-            order.discount_code = raw_discount_code
-            discount_code = raw_discount_code
+            order.next_discount_code = raw_next_discount_code
+            next_discount_code = raw_next_discount_code
 
         # 4. 保存订单到数据库
         db.session.add(order)
@@ -919,19 +919,19 @@ def api_orders():
             or data.get("customerEmail")
             or order.email
         )
-        discount_amount = data.get("discount_amount") or 0
+        next_discount_amount = data.get("next_discount_amount") or data.get("nextDiscountAmount") or 0
 
-        if discount_code and customer_email:
+        if next_discount_code and customer_email:
             disc = DiscountCode(
-                code=discount_code,
+                code=next_discount_code,
                 customer_email=customer_email,
                 discount_percentage=3.0,
-                discount_amount=discount_amount,
+                next_discount_amount=next_discount_amount,
                 is_used=False,
             )
             db.session.add(disc)
             db.session.commit()
-            print(f"✅ 折扣码保存成功: {discount_code} for {customer_email} met korting {discount_amount}")
+            print(f"✅ 折扣码保存成功: {next_discount_code} for {customer_email} met korting {next_discount_amount}")
 
         print("✅ 接收到订单:", data)
 
@@ -964,13 +964,13 @@ def validate_discount():
         data = request.get_json()
         code = data.get("code")
         order_total = float(data.get("order_total") or 0)
-        manual_amount = float(data.get("discount_amount") or 0)
+        manual_amount = float(data.get("next_discount_amount") or data.get("nextDiscountAmount") or 0)
 
         if code and code.upper() == "KASSA":
             new_total = max(0, order_total - manual_amount)
             return jsonify({
                 "valid": True,
-                "discount_amount": manual_amount,
+                "next_discount_amount": manual_amount,
                 "new_total": new_total,
                 "note": "kassa korting"
             }), 200
@@ -983,16 +983,16 @@ def validate_discount():
             return jsonify({"valid": False, "error": "Minimum order total not met"}), 400
 
         # ✅ 改成使用数据库折扣金额
-        discount_amount = disc.discount_amount
+        next_discount_amount = disc.next_discount_amount
 
-        new_total = max(0, order_total - discount_amount)
+        new_total = max(0, order_total - next_discount_amount)
 
         disc.is_used = True
         db.session.commit()
 
         return jsonify({
             "valid": True,
-            "discount_amount": discount_amount,
+            "next_discount_amount": next_discount_amount,
             "new_total": new_total
         }), 200
 
@@ -1814,7 +1814,7 @@ def pos_orders_today():
             float(i.get("price", 0)) * int(i.get("qty", 0))
             for i in o.items_dict.values()
         )
-        delivery_calc = totaal + o.discount_amount - subtotal - o.verpakkingskosten - (o.fooi or 0)
+        delivery_calc = totaal + o.next_discount_amount - subtotal - o.verpakkingskosten - (o.fooi or 0)
         delivery_calc = round(delivery_calc, 2)
         delivery = o.bezorgkosten if o.bezorgkosten not in [None, 0] else max(delivery_calc, 0)
         o.bezorgkosten = delivery
@@ -1889,7 +1889,7 @@ def pos_orders_today():
             "btw_total": o.btw,
             "fooi": o.fooi or 0,
             "order_number": o.order_number,  # ✅ 加上这行
-            "korting": o.discount_amount,
+            "korting": o.next_discount_amount,
             "is_completed": o.is_completed,
             "is_cancelled": o.is_cancelled
         })
