@@ -2216,8 +2216,8 @@ body.portrait-mode #cart-toggle {
       <div class="spacer"></div>
       <div class="spacer"></div>
       <div class="price-row">
-        <label for="nextDiscountCode">Next discount code:</label>
-        <input id="nextDiscountCode" />
+        <label for="discountCode">Discount code:</label>
+        <input id="discountCode" />
         <!-- 桌面端按钮（原样保留） -->
         <button id="validateDiscountBtn" class="apply-discount-btn" type="button">Apply</button>
 
@@ -4395,7 +4395,7 @@ const localOk = (() => {
 function saveOrderForm() {
   if (!storageOk) return;
   const data = { orderType: document.querySelector('input[name="orderType"]:checked')?.id };
-  document.querySelectorAll('#afhalenFields input, #afhalenFields select, #bezorgenFields input, #bezorgenFields select, #checkbox-group select, #remark, #nextDiscountCode, #tipSelect').forEach(el => {
+  document.querySelectorAll('#afhalenFields input, #afhalenFields select, #bezorgenFields input, #bezorgenFields select, #checkbox-group select, #remark, #discountCode, #tipSelect').forEach(el => {
     if (el.id) data[el.id] = el.value;
   });
   sessionStorage.setItem(FORM_KEY, JSON.stringify(data));
@@ -4422,7 +4422,7 @@ function loadOrderForm() {
 
 function attachFormListeners() {
   if (!storageOk) return;
-  document.querySelectorAll('#afhalenFields input, #afhalenFields select, #bezorgenFields input, #bezorgenFields select, #checkbox-group select, #remark, #nextDiscountCode, #tipSelect, input[name="orderType"]').forEach(el => {
+  document.querySelectorAll('#afhalenFields input, #afhalenFields select, #bezorgenFields input, #bezorgenFields select, #checkbox-group select, #remark, #discountCode, #tipSelect, input[name="orderType"]').forEach(el => {
     ['input', 'change'].forEach(evt => el.addEventListener(evt, saveOrderForm));
   });
 }
@@ -4485,7 +4485,7 @@ function updatePriceBreakdown(subtotal, packaging) {
 let isValidating = false; // 防止重复点击的锁
 
 function applyDiscount() {
-  const code = document.getElementById('nextDiscountCode').value.trim();
+  const code = document.getElementById('discountCode').value.trim();
   if (!code) {
     currentDiscount = 0;
     updatePriceBreakdown(currentSubtotal, currentPackaging);
@@ -4505,7 +4505,7 @@ function applyDiscount() {
   .then(r => r.json())
   .then(res => {
     if (res.valid) {
-      currentDiscount = res.next_discount_amount;
+      currentDiscount = res.discount_amount;
     } else {
       currentDiscount = 0;
       alert('Invalid discount code');
@@ -5539,8 +5539,8 @@ function checkout() {
     tipLine = `\nTip: €${tip.toFixed(2)}`;
   }
 
-  const nextDiscountCode = document.getElementById('nextDiscountCode').value.trim();
-  const discountLine = `\nDiscount: -€${currentDiscount.toFixed(2)} (Code: ${nextDiscountCode || 'none'})`;
+  const discountCode = document.getElementById('discountCode').value.trim();
+  const discountLine = `\nDiscount: -€${currentDiscount.toFixed(2)} (Code: ${discountCode || 'none'})`;
   const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}${tipLine}${discountLine}\nTotal: €${totalPrice}`;
 
   const itemsToSend = { ...cart };
@@ -5581,7 +5581,7 @@ function checkout() {
     subtotal: subtotal.toFixed(2),
     packaging: packagingFee.toFixed(2),
     delivery: deliveryFee.toFixed(2),
-    next_discount_amount: currentDiscount.toFixed(2),
+    discount_amount: currentDiscount.toFixed(2),
     btw: btw.toFixed(2),
     total: totalPrice
   };
@@ -5612,8 +5612,8 @@ function checkout() {
       delivery_fee: deliveryFee.toFixed(2),
       btw: btw.toFixed(2),
       totaal: isNaN(total) ? "0.00" : total.toFixed(2),
-      nextDiscountAmount: currentDiscount.toFixed(2),
-      nextDiscountCode: nextDiscountCode,
+      discountAmount: currentDiscount.toFixed(2),
+      discountCode: discountCode,
       message,
       email,
       summary
