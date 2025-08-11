@@ -2571,8 +2571,8 @@ body.portrait-mode .cart-badge {
       <div class="spacer"></div>
       <div class="spacer"></div>
       <div class="price-row">
-        <label for="discountCode">Kortingscode:</label>
-        <input id="discountCode" />
+        <label for="nextDiscountCode">Next discount code:</label>
+        <input id="nextDiscountCode" />
         <!-- 桌面端按钮（原样保留） -->
         <button id="validateDiscountBtn" class="apply-discount-btn" type="button">Apply</button>
 
@@ -4804,7 +4804,7 @@ const localOk = (() => {
 function saveOrderForm() {
   if (!storageOk) return;
   const data = { orderType: document.querySelector('input[name="orderType"]:checked')?.id };
-  document.querySelectorAll('#afhalenFields input, #afhalenFields select, #bezorgenFields input, #bezorgenFields select, #checkbox-group select, #remark, #discountCode, #tipSelect').forEach(el => {
+  document.querySelectorAll('#afhalenFields input, #afhalenFields select, #bezorgenFields input, #bezorgenFields select, #checkbox-group select, #remark, #nextDiscountCode, #tipSelect').forEach(el => {
     if (el.id) data[el.id] = el.value;
   });
   sessionStorage.setItem(FORM_KEY, JSON.stringify(data));
@@ -4831,7 +4831,7 @@ function loadOrderForm() {
 
 function attachFormListeners() {
   if (!storageOk) return;
-  document.querySelectorAll('#afhalenFields input, #afhalenFields select, #bezorgenFields input, #bezorgenFields select, #checkbox-group select, #remark, #discountCode, #tipSelect, input[name="orderType"]').forEach(el => {
+  document.querySelectorAll('#afhalenFields input, #afhalenFields select, #bezorgenFields input, #bezorgenFields select, #checkbox-group select, #remark, #nextDiscountCode, #tipSelect, input[name="orderType"]').forEach(el => {
     ['input', 'change'].forEach(evt => el.addEventListener(evt, saveOrderForm));
   });
 }
@@ -4897,7 +4897,7 @@ function updatePriceBreakdown(subtotal, packaging, heineken = currentHeineken) {
 let isValidating = false; // 防止重复点击的锁
 
 function applyDiscount() {
-  const code = document.getElementById('discountCode').value.trim();
+  const code = document.getElementById('nextDiscountCode').value.trim();
   if (!code) {
     currentDiscount = 0;
     updatePriceBreakdown(currentSubtotal, currentPackaging);
@@ -4917,7 +4917,7 @@ function applyDiscount() {
   .then(r => r.json())
   .then(res => {
     if (res.valid) {
-      currentDiscount = res.discount_amount;
+      currentDiscount = res.next_discount_amount;
     } else {
       currentDiscount = 0;
       alert('Ongeldige kortingscode');
@@ -5975,11 +5975,11 @@ function checkout() {
 
   const orderNumber = generateOrderNumber();
 
-  const discountCode = document.getElementById('discountCode').value.trim();
+  const nextDiscountCode = document.getElementById('nextDiscountCode').value.trim();
   const deliveryLine = deliveryFee > 0 ? `\nBezorgkosten: €${deliveryFee.toFixed(2)}` : '';
   const packagingLine = packagingFee > 0 ? `\nVerpakkingskosten: €${packagingFee.toFixed(2)}` : '';
   const tipLine = tip > 0 ? `\nFooi: €${tip.toFixed(2)}` : '';
-  const discountLine = `\nKorting: -€${discount.toFixed(2)} (Code: ${discountCode || 'geen'})`;
+  const discountLine = `\nKorting: -€${discount.toFixed(2)} (Code: ${nextDiscountCode || 'geen'})`;
 
   const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}${deliveryLine}${packagingLine}${tipLine}${discountLine}\nTotaal: €${totalPrice}`;
 
@@ -6026,7 +6026,7 @@ function checkout() {
     subtotal: subtotal.toFixed(2),
     packaging: packagingFee.toFixed(2),
     delivery: deliveryFee.toFixed(2),
-    discount_amount: discount.toFixed(2),
+    next_discount_amount: discount.toFixed(2),
     btw: btw.toFixed(2),
     btw_split: { '9': btw9.toFixed(2), '21': btw21.toFixed(2) },
     btw_9: btw9.toFixed(2),
@@ -6064,8 +6064,8 @@ function checkout() {
       btw_split: { '9': btw9.toFixed(2), '21': btw21.toFixed(2) },
       // totaal = total（含税）——和后端一致口径
       totaal: totalPrice,
-      discountAmount: discount.toFixed(2),
-      discountCode,
+      nextDiscountAmount: discount.toFixed(2),
+      nextDiscountCode,
       message,
       summary
     })

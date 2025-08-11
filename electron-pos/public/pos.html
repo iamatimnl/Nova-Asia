@@ -2221,7 +2221,7 @@ function submitOrder() {
     delivery: parseFloat(deliveryCost.toFixed(2)),
     discountType,
     discountValue: parseFloat(discountVal.toFixed(2)),
-    discountAmount: parseFloat(discount.toFixed(2)),
+    next_discount_amount: parseFloat(discount.toFixed(2)),
     btw: parseFloat(btw.toFixed(2)),
     btw_9: parseFloat(btw9.toFixed(2)),
     btw_21: parseFloat(btw21.toFixed(2)),
@@ -2268,8 +2268,8 @@ function submitOrder() {
 
   // ✅ 手动折扣：无真实折扣码但有折扣金额时，写入固定折扣码
   if (discount > 0) {
-    payload.discountCode = 'KASSA';
-    payload.discountAmount = parseFloat(discount.toFixed(2));
+    payload.nextDiscountCode = 'KASSA';
+    payload.nextDiscountAmount = parseFloat(discount.toFixed(2));
   }
 
   // ✅ 提交到后端
