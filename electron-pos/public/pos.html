@@ -2838,6 +2838,15 @@ function addRow(order, highlight = false) {
   const showKorting = korting >= 0.01;
   const kortingDisplay = korting.toFixed(2).replace('.', ',');
 
+  // Determine order source (POS or Website)
+  const sourceRaw = (order.source || '').toLowerCase();
+  const sourceDisplay = sourceRaw === 'index' ? 'Website' : 'POS';
+  // Prefer newer discount fields if available
+  const discountCode = order.discount_used_code || order.discountCode || order.discount_code || '';
+  const discountLabel = sourceRaw === 'index'
+    ? `Online Korting${discountCode ? ` (${discountCode})` : ''}`
+    : 'Kassa Korting';
+
   const tijdslotRaw = order.tijdslot_display || (isDelivery ? order.delivery_time : order.pickup_time);
   const tijdslot = order.is_zsm ? 'ZSM' : (tijdslotRaw || '').trim();
   const wrapper = document.createElement('div');
@@ -2860,6 +2869,7 @@ function addRow(order, highlight = false) {
 
   card.innerHTML = `
     <div><strong>${mapIdDisplay}Ordernummer:</strong> ${order.order_number || ''}</div>
+    <div><strong>Bron:</strong> ${sourceDisplay}</div>
 
     <div class="tijdslot-hoofd">
       <div>
@@ -2879,7 +2889,7 @@ function addRow(order, highlight = false) {
     ${order.opmerking ? `<div><strong>Opmerking:</strong> ${order.opmerking}</div>` : ''}
     ${verpakkingskosten > 0 ? `<div><strong>Verpakkingskosten:</strong> €${verpakkingDisplay}</div>` : ''}
     ${bezorgkosten > 0 ? `<div><strong>Bezorgkosten:</strong> €${bezorgDisplay}</div>` : ''}
-    ${showKorting ? `<div><strong>Kassa Korting:</strong> -€${kortingDisplay}</div>` : ''}
+    ${showKorting ? `<div><strong>${discountLabel}:</strong> -€${kortingDisplay}</div>` : ''}
     <div><strong>Totaal:</strong> €${totaalDisplay}</div>
     ${fooi > 0 ? `<div><strong>Fooi:</strong> €${fooiDisplay}</div>` : ''}
     ${address !== '-' ? `
