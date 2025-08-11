@@ -209,6 +209,8 @@ def order_to_dict(order):
         "tijdslot": order.tijdslot_display,
         "payment_method": order.payment_method,
         "totaal": order.totaal,
+        "discountAmount":  o.discount_amount,
+        "discountCode":    o.discount_code,
         "verpakkingskosten": order.verpakkingskosten,
         "bezorgkosten": delivery,
         "fooi": order.fooi,
