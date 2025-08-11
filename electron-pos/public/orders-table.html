@@ -111,14 +111,32 @@
 }
 
 
-.map-id {
-  background-color: #692802ff;
-  color: white;
-  padding: 2px 6px;
-  margin-right: 6px;
-  border-radius: 6px;
-  font-size: 1em;
-}
+  .map-id {
+    background-color: #692802ff;
+    color: white;
+    padding: 2px 6px;
+    margin-right: 6px;
+    border-radius: 6px;
+    font-size: 1em;
+  }
+
+  #admin-orders-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border: none;
+    border-radius: 50%;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    font-size: 26px;
+  }
+
+  #admin-orders-btn:hover {
+    background-color: #0056b3;
+  }
 
 
 
@@ -180,19 +198,28 @@
       <button class="btn-annuleer" onclick="cancelOrder(this)">Annuleer</button>
     </div>
   </div>
-  {% endfor %}
-  <!-- 页面右下角的地图开关按钮 -->
+    {% endfor %}
+    <!-- 页面右下角的地图开关按钮 -->
 
 
-</div>
+  </div>
 
+  <!-- 管理订单列表按钮 -->
+  <button id="admin-orders-btn" title="Admin Orders">📋</button>
 
-<script>
-  const toggleBtn = document.getElementById('toggle-map-btn');
-  if (toggleBtn) {
-    toggleBtn.addEventListener('click', () => {
-      window.open('/map', '_blank');
-    });
-  }
-</script>
+  <script>
+    const toggleBtn = document.getElementById('toggle-map-btn');
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', () => {
+        window.open('/map', '_blank');
+      });
+    }
+
+    const adminBtn = document.getElementById('admin-orders-btn');
+    if (adminBtn) {
+      adminBtn.addEventListener('click', () => {
+        window.open('/admin/orders', '_blank');
+      });
+    }
+  </script>
 
