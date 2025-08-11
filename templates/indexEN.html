@@ -4505,7 +4505,7 @@ function applyDiscount() {
   .then(r => r.json())
   .then(res => {
     if (res.valid) {
-      currentDiscount = res.discount_amount;
+      currentDiscount = res.next_discount_amount;
     } else {
       currentDiscount = 0;
       alert('Invalid discount code');
@@ -5581,7 +5581,7 @@ function checkout() {
     subtotal: subtotal.toFixed(2),
     packaging: packagingFee.toFixed(2),
     delivery: deliveryFee.toFixed(2),
-    discount_amount: currentDiscount.toFixed(2),
+    next_discount_amount: currentDiscount.toFixed(2),
     btw: btw.toFixed(2),
     total: totalPrice
   };
