@@ -530,48 +530,40 @@ line('-'); // 进入商品区
 
           line('-');
 
+          // ===== 备注 =====
+          printer.text('Opmerking:');
+          if (order.opmerking) {
+            const rLines = wrap(String(order.opmerking), WIDTH);
+            for (const l of rLines) printer.text(l);
+          }
+          line('-');
+
           const to2 = v => Number(v ?? 0).toFixed(2);
 
 // 固定显示 7 行
 col2('Subtotaal',   `EUR ${to2(order.subtotal)}`);
-// —— 折扣（本次使用，带 code）——
+// —— 折扣（本次使用）——
 {
-  const usedAmt  = Number(
-    order.discount_used_amount       // 若已在 normalize 写入
-    ?? order.discountAmount          // 本次使用（payload）
+  const usedAmt = Number(
+    order.discount_used_amount       // 已在 normalize 写入
+    ?? order.discountAmount          // payload: 本次使用金额
     ?? 0
   );
   const usedCode = String(
-    order.discount_used_code         // 若已在 normalize 写入
-    ?? order.discountCode            // 本次使用的 code（payload）
+    order.discount_used_code         // 已在 normalize 写入
+    ?? order.discountCode            // payload: 本次使用 code
     ?? ''
   ).trim();
 
   if (usedAmt > 0) {
     const right = `-EUR ${to2(usedAmt)}`;
-    if (usedCode) col2(`Korting (gebruikt) [Code: ${usedCode}]`, right);
-    else          col2('Korting (gebruikt)', right);
-  }
-}
-
-// —— 可选：本次获得的折扣金额（仅提示，不计入本单）——
-// 要极致省纸，可删除整个块
-{
-  const earnedAmt = Number(
-    order.discount_earned_amount     // 若已在 normalize 写入
-    ?? order.discount_amount         // 下次可用金额（payload）
-    ?? 0
-  );
-  const earnedCode = String(
-    order.discount_earned_code       // 若已在 normalize 写入
-    ?? order.discount_code           // 下次可用 code（payload）
-    ?? ''
-  ).trim();
-  if (earnedAmt > 0) {
-    const label = earnedCode
-      ? `Korting tegoed (volgende keer) [Code: ${earnedCode}]`
-      : 'Korting tegoed (volgende keer)';
-    col2(label, `EUR ${to2(earnedAmt)}`);
+    if (usedCode.toUpperCase() === 'KASSA') {
+      col2('Kassa korting', right);
+    } else if (usedCode) {
+      col2(`Korting (Code: ${usedCode} gebruikt)`, right);
+    } else {
+      col2('Korting', right);
+    }
   }
 }
 
@@ -579,14 +571,17 @@ col2('Verpakking Toeslag', `EUR ${to2(order.packaging)}`);
 col2('Bezorgkosten',       `EUR ${to2(order.delivery_fee)}`);
 col2('Fooi',               `EUR ${to2(order.tip)}`);
 
-// —— BTW（智能隐藏 0 金额行）——
-
-
+// —— BTW：仅展示一个，优先 21% → 9% → totaal ——
 if (CONFIG.SHOW_BTW_SPLIT && order.btw_split) {
-  const btw9  = Number(order.btw_split?.['9']  || 0);
   const btw21 = Number(order.btw_split?.['21'] || 0);
-  if (btw9  > 0) col2('BTW 9%',  `EUR ${to2(btw9)}`);
-  if (btw21 > 0) col2('BTW 21%', `EUR ${to2(btw21)}`);
+  const btw9  = Number(order.btw_split?.['9']  || 0);
+  if (btw21 > 0) {
+    col2('BTW (21%)', `EUR ${to2(btw21)}`);
+  } else if (btw9 > 0) {
+    col2('BTW (9%)', `EUR ${to2(btw9)}`);
+  } else {
+    col2('BTW', `EUR ${to2(order.vat)}`);
+  }
 } else {
   col2('BTW', `EUR ${to2(order.vat)}`);
 }
@@ -600,37 +595,40 @@ if (order.total != null) {
   printer.size(0, 0).style('NORMAL');
 }
 
-          if (order.opmerking) { line('-'); printer.text(`Opmerking: ${order.opmerking}`); }
+// ===== 下一次优惠券提醒 =====
+{
+  const earnedAmt = Number(
+    order.discount_earned_amount ?? order.discount_amount ?? 0
+  );
+  const earnedCode = String(
+    order.discount_earned_code ?? order.discount_code ?? ''
+  ).trim();
+  if (earnedAmt > 0 || earnedCode) {
+    line('-');
+    const label = earnedCode ? `Volgende korting (Code: ${earnedCode})` : 'Volgende korting';
+    col2(label, `EUR ${to2(earnedAmt)}`);
+    line('-');
+  }
+}
 
-          // ===== Footer =====
-          line('=');
-          printer.align('ct');
-          printer.text('Bedankt voor uw bestelling!');
-          // —— 提示“下次可用”的新折扣码（放在感谢语后最显眼处）——
-          {
-         const newCode = String(
-          order.discount_earned_code       // 若已在 normalize 写入
-         ?? order.discount_code           // 下次可用的 code（payload）
-         ?? ''
-         ).trim();
-         if (newCode) {
-          printer.text(`AUB hier is uw code voor volgende bestelling: ${newCode}`);
-          }
-          }
+// ===== Footer =====
+printer.align('ct');
+printer.text('💡 Bestel online via www.novaasia.nl');
+printer.text('   en ontvang 3% korting voor uw');
+printer.text('   volgende bestelling!');
+line('-');
+printer.text('谢谢惠顾 / Bedankt!');
+if (order.order_number) {
+  printer.text(`Factuur? toon bestelnummer ${order.order_number}`);
+}
 
-          printer.text(`${CONFIG.SHOP.name} · ${CONFIG.SHOP.cityTag}`);
-          printer.text(`Adres: ${CONFIG.SHOP.addressLine}`);
-          printer.text(`Tel: ${CONFIG.SHOP.tel}`);
-          printer.text(`Email: ${CONFIG.SHOP.email}`);
-          printer.text('Alle prijzen zijn inclusief BTW');
+// —— 先滚后切（只切一次）——
+await cutOnce();
 
-          // —— 先滚后切（只切一次）——
-          await cutOnce();
-
-          // 收尾
-          await sleep(600);
-          try { printer.close(); } catch {}
-          resolve();
+// 收尾
+await sleep(600);
+try { printer.close(); } catch {}
+resolve();
         } catch (e) {
           try { printer.close(); } catch {}
           reject(e);
