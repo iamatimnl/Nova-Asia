@@ -237,10 +237,10 @@ function normalizeForPrint(order) {
     order.discount_used_code ?? order.discountCode
   ); // 本次使用的代码
   const discount_earned_amount = toNumOrNull(
-    order.discount_earned_amount ?? order.discount_amount
+    order.discount_earned_amount ?? order.next_discount_amount
   ); // 下次可用金额
   const discount_earned_code = toStr(
-    order.discount_earned_code ?? order.discount_code
+    order.discount_earned_code ?? order.next_discount_code
   ); // 下次可用代码
 
   // 历史/兜底折扣（若上面未给时才使用）
@@ -598,10 +598,10 @@ if (order.total != null) {
 // ===== 下一次优惠券提醒 =====
 {
   const earnedAmt = Number(
-    order.discount_earned_amount ?? order.discount_amount ?? 0
+    order.discount_earned_amount ?? order.next_discount_amount ?? 0
   );
   const earnedCode = String(
-    order.discount_earned_code ?? order.discount_code ?? ''
+    order.discount_earned_code ?? order.next_discount_code ?? ''
   ).trim();
   if (earnedAmt > 0 || earnedCode) {
     line('-');
