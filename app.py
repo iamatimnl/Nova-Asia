@@ -221,9 +221,11 @@ def order_to_dict(order):
         "created_at": order.created_at.isoformat() if order.created_at else None,
         "is_completed": order.is_completed,
         "bezorging": delivery,
-        "is_cancelled": order.is_cancelled
+        "is_cancelled": order.is_cancelled,
+        "btw_9": order.btw_9 or 0.0,
+        "btw_21": order.btw_21 or 0.0,
+        "btw_total": order.btw_total or ((order.btw_9 or 0.0) + (order.btw_21 or 0.0)),
     }
-
 
 def generate_pdf_today(include_cancelled: bool = False):
     today = datetime.now(NL_TZ).date()
