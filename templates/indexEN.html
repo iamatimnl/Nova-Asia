@@ -5572,8 +5572,26 @@ function checkout() {
     return h * 60 + m;
   };
 
+  const now = new Date();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+  if (selectedTime && toMinutes(selectedTime) < currentMinutes) {
+    alert('Selected time has passed, please choose again.');
+    if (sliderText && sliderButton && sliderTrack) {
+      sliderText.innerText = 'Slide to order';
+      sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
+      sliderTrack.style.pointerEvents = 'auto';
+    }
+    return;
+  }
+
   if (selectedTime && lastAvailableTime && toMinutes(selectedTime) > toMinutes(lastAvailableTime)) {
     alert('Selected time is not available.');
+    if (sliderText && sliderButton && sliderTrack) {
+      sliderText.innerText = 'Slide to order';
+      sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
+      sliderTrack.style.pointerEvents = 'auto';
+    }
     return;
   }
 
