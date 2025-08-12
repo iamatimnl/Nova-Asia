@@ -79,9 +79,9 @@ with app.app_context():
         if "btw_21" not in cols:
             with db.engine.begin() as conn:
                 conn.execute(text("ALTER TABLE orders ADD COLUMN btw_21 FLOAT DEFAULT 0"))
-        if "btw" not in cols:
+        if "btw_total" not in cols:
             with db.engine.begin() as conn:
-                conn.execute(text("ALTER TABLE orders ADD COLUMN btw FLOAT DEFAULT 0"))
+                conn.execute(text("ALTER TABLE orders ADD COLUMN btw_total FLOAT DEFAULT 0"))
         cols = {c["name"] for c in inspector.get_columns("reviews")}
         if "rating" not in cols:
             with db.engine.begin() as conn:
@@ -392,7 +392,7 @@ def orders_to_dicts(orders):
         o.bezorgkosten = delivery
 
         # Recalculate BTW if not stored
-        if o.btw is None:
+        if o.btw_total is None:
             heineken_total = sum(
                 float(item.get("price", 0)) * int(item.get("qty", 0))
                 for name, item in (o.items_dict or {}).items()
@@ -406,9 +406,9 @@ def orders_to_dicts(orders):
                 base_total = subtotal - heineken_total + verpakkings + delivery
                 o.btw_9 = round(base_total * 0.09, 2)
 
-            o.btw = (o.btw_9 or 0) + (o.btw_21 or 0)
+            o.btw_total = (o.btw_9 or 0) + (o.btw_21 or 0)
 
-        btw_total = o.btw or 0
+        btw_total = o.btw_total or 0
 
         result.append({
             "id": o.id,
@@ -435,7 +435,6 @@ def orders_to_dicts(orders):
             "totaal": totaal,
             "verpakkingskosten": verpakkings,
             "bezorgkosten": delivery,
-            "btw": btw_total,
             "btw_9": o.btw_9 or 0,
             "btw_21": o.btw_21 or 0,
             "btw_total": btw_total,
@@ -544,7 +543,7 @@ class Order(db.Model):
     discountCode = db.Column('discountCode', db.Text)
     btw_9 = db.Column(db.Float, default=0.0)
     btw_21 = db.Column(db.Float, default=0.0)
-    btw = db.Column(db.Float, default=0.0)
+    btw_total = db.Column(db.Float, default=0.0)
     is_completed = db.Column(db.Boolean, default=False)
     is_cancelled = db.Column(db.Boolean, default=False)
 
@@ -577,10 +576,9 @@ class Order(db.Model):
             "discountCode": self.discountCode,
             "discountAmount": self.discountAmount,
             "bezorging": self.bezorgkosten,
-            "btw": self.btw or (self.btw_9 or 0.0) + (self.btw_21 or 0.0),
             "btw_9": self.btw_9 or 0.0,
             "btw_21": self.btw_21 or 0.0,
-            "btw_total": self.btw or (self.btw_9 or 0.0) + (self.btw_21 or 0.0),
+            "btw_total": self.btw_total or (self.btw_9 or 0.0) + (self.btw_21 or 0.0),
             "is_completed": self.is_completed,
             "is_cancelled": self.is_cancelled
         }
@@ -928,13 +926,19 @@ def api_orders():
         order.verpakkingskosten = float(summary_data.get("packaging") or 0)
         order.bezorgkosten = float(summary_data.get("delivery") or 0)
 
-        btw_split = summary_data.get("btw_split") or data.get("btw_split") or {}
+        order.btw_9 = data.get("btw_9") or summary_data.get("btw_9")
+        order.btw_21 = data.get("btw_21") or summary_data.get("btw_21")
+        order.btw_total = data.get("btw_total") or summary_data.get("btw_total")
+
         try:
-            order.btw_9 = float(btw_split.get("9") or btw_split.get("btw_9") or 0)
-            order.btw_21 = float(btw_split.get("21") or btw_split.get("btw_21") or 0)
+            order.btw_9 = float(order.btw_9) if order.btw_9 is not None else 0.0
+            order.btw_21 = float(order.btw_21) if order.btw_21 is not None else 0.0
+            if order.btw_total is not None:
+                order.btw_total = float(order.btw_total)
         except Exception:
             order.btw_9 = order.btw_9 or 0.0
             order.btw_21 = order.btw_21 or 0.0
+
         if not (order.btw_9 or order.btw_21):
             heineken_total = sum(
                 float(item.get("price", 0)) * int(item.get("qty", 0))
@@ -944,7 +948,8 @@ def api_orders():
             order.btw_21 = round(heineken_total * 0.21, 2)
             base_total = subtotal - heineken_total + order.verpakkingskosten + order.bezorgkosten
             order.btw_9 = round(base_total * 0.09, 2)
-        order.btw = (order.btw_9 or 0) + (order.btw_21 or 0)
+
+        order.btw_total = order.btw_total or (order.btw_9 or 0) + (order.btw_21 or 0)
 
         # 3. 处理折扣码（本次使用）
         if order.discountCode and str(order.discountCode).upper() == "KASSA":
