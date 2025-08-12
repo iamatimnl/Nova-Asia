@@ -1,18 +1,36 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
+let dingAudio;
+
 contextBridge.exposeInMainWorld('api', {
-  // ✅ 获取 Google Maps Key（从主进程请求）
   getGoogleMapsKey: () => ipcRenderer.invoke('get-google-maps-key'),
-
-  // ✅ 播放提示音（循环播放）
   playDing: () => ipcRenderer.send('play-ding'),
-
-  // ✅ 停止提示音
   stopDing: () => ipcRenderer.send('stop-ding'),
-
-  // ✅ 打印小票（发送订单数据到主进程）
-  printReceipt: (order) => ipcRenderer.invoke('print-receipt', order),
-
-  // ✅ 登录成功回调（保留）
+  printReceipt: (text) => ipcRenderer.invoke('print-receipt', text),
   onLoginSuccess: (callback) => ipcRenderer.on('login-success', callback)
+});
+
+// 🔊 播放 ding
+ipcRenderer.on('play-ding-in-renderer', () => {
+  if (!dingAudio) {
+    dingAudio = new Audio('assets/ding.wav');
+    dingAudio.loop = true;
+  }
+  dingAudio.play().catch(err => console.error('🔊 播放失败:', err));
+});
+
+// ⏹ 停止 ding
+ipcRenderer.on('stop-ding-in-renderer', () => {
+  if (dingAudio) {
+    dingAudio.pause();
+    dingAudio.currentTime = 0;
+  }
+});
+
+// 本地 SQLite API（与 main.js 中 ipcMain.handle('local.*') 对齐）
+contextBridge.exposeInMainWorld('localDB', {
+  saveOrder: (order) => ipcRenderer.invoke('local.saveOrder', order),
+  getOrderById: (id) => ipcRenderer.invoke('local.getOrderById', id),
+  getOrderByNumber: (no) => ipcRenderer.invoke('local.getOrderByNumber', no),
+  listRecent: (limit = 50) => ipcRenderer.invoke('local.listRecent', limit),
 });
