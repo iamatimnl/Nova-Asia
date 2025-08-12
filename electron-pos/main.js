@@ -91,50 +91,115 @@ app.on('window-all-closed', () => {
 });
 
 
-// ========= Config =========
-const CONFIG = {
-  TRANSPORT: 'USB',                 // 'USB' | 'NET'
-  USB: { vid: 0x04B8, pid: 0x0E28 },// Epson TM-T20III
-  NET: { host: '192.168.1.80', port: 9100 }, // 若切到网络打印，请改 IP
-  WIDTH: 48,                        // 80mm = 48 列（Font A）
-  RIGHT_RESERVE: 14,                // 右侧“数量+金额”预留宽度
-  USE_BARCODE: true,                // 打印订单号条码（CODE128）
-  USE_QR: true,                  // ✅ 打开二维码
-  QR: {                          // ✅ 可选参数
-    size: 6,                     // 模块大小(1-10)，6~8 通常最佳
-    margin: 2,                   // 边距(像素/模块，依实现不同)
-    caption: 'Scan om uw bestelling te volgen', // 二维码上方说明文字（可留空）
-    align: 'ct'                  // 'ct' 居中，或 'lt'/'rt'
-  },                    // 打印二维码（需传 order.qr_url）
-  OPEN_CASH_DRAWER_WHEN_CASH: false,// 现金支付时弹钱箱
-  SHOW_BTW_SPLIT: true,            // 显示 9%/21% BTW 分拆（需要传 btw_split）
-  SHOP: {
-    name: 'Nova Asia',
-    cityTag: 'Hoofddorp',
-    addressLine: 'Amkerkplein 4 2134DR Hoofddorp',
-    tel: '0622599566   www.novaasia.nl',
-    email: 'novaasianl@gmail.com'
-  }
-};
-// USB 用 CP858（欧元清晰），网络常配 GB18030（支持中文）
-const ENCODING = (CONFIG.TRANSPORT === 'NET') ? 'GB18030' : 'CP858';
+const sqlite3 = require('sqlite3').verbose();
+const { ipcMain } = require('electron');
 
-// ========= Entry: print =========
-ipcMain.handle('print-receipt', async (_evt, payload) => {
-  try {
-    const order = parseIncomingPayload(payload);
-    if (!order) throw new Error('Empty payload');
-    const norm = normalizeForPrint(order);      // 统一字段 & ZSM
-    const err  = validateOrder(norm);           // 基础校验
-    if (err) throw new Error(err);
-    await doEscposPrint(norm);                  // 实际打印
-    return { ok: true };
-  } catch (e) {
-    console.error('❌ print-receipt failed:', e);
-    return { ok: false, error: String(e?.message || e) };
-  }
+// 数据库路径（确保 D:\NovaAsia\data 目录存在）
+const dbPath = path.join('D:', 'NovaAsia', 'data', 'orders.db');
+
+// 连接数据库
+const db = new sqlite3.Database(dbPath, (err) => {
+    if (err) {
+        console.error("❌ 无法连接 SQLite 数据库:", err);
+    } else {
+        console.log("✅ 已连接到本地 SQLite 数据库");
+    }
 });
 
+// 创建表（如果不存在）
+db.run(`CREATE TABLE IF NOT EXISTS orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_id TEXT,
+    order_number TEXT,
+    data TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+)`);
+
+// 保存订单（写入数据库）
+function saveOrderToLocalDB(order) {
+    return new Promise((resolve, reject) => {
+        db.run(
+            INSERT INTO orders (order_id, order_number, data) VALUES (?, ?, ?),
+            [order.id, order.order_number, JSON.stringify(order)],
+            function(err) {
+                if (err) {
+                    console.error("❌ 保存订单到 SQLite 失败:", err);
+                    reject(err);
+                } else {
+                    console.log(✅ 已保存订单到本地 SQLite: ${order.order_number});
+                    resolve(true);
+                }
+            }
+        );
+    });
+}
+
+// 按订单号查询
+function getOrderByNumber(no) {
+    return new Promise((resolve, reject) => {
+        db.get(
+            SELECT * FROM orders WHERE order_number = ?,
+            [String(no)],
+            (err, row) => {
+                if (err) reject(err);
+                else resolve(row);
+            }
+        );
+    });
+}
+
+// 按 ID 查询
+function getOrderById(id) {
+    return new Promise((resolve, reject) => {
+        db.get(
+            SELECT * FROM orders WHERE id = ?,
+            [id],
+            (err, row) => {
+                if (err) reject(err);
+                else resolve(row);
+            }
+        );
+    });
+}
+
+// 获取最近订单
+function listRecent(limit = 50) {
+    return new Promise((resolve, reject) => {
+        db.all(
+            SELECT * FROM orders ORDER BY created_at DESC LIMIT ?,
+            [limit],
+            (err, rows) => {
+                if (err) reject(err);
+                else resolve(rows);
+            }
+        );
+    });
+}
+
+// ===================== IPC绑定 =====================
+ipcMain.handle('local.saveOrder', async (_evt, orderObj) => {
+    await saveOrderToLocalDB(orderObj);
+    return { ok: true };
+});
+
+ipcMain.handle('local.getOrderByNumber', async (_evt, no) => {
+    return await getOrderByNumber(no);
+});
+
+ipcMain.handle('local.getOrderById', async (_evt, id) => {
+    return await getOrderById(id);
+});
+
+ipcMain.handle('local.listRecent', async (_evt, limit = 50) => {
+    return await listRecent(limit);
+});
+
+module.exports = {
+    saveOrderToLocalDB,
+    getOrderByNumber,
+    getOrderById,
+    listRecent
+};
 // ========= Helpers: parse / normalize / validate =========
 function parseIncomingPayload(input) {
   if (typeof input === 'string') {
