@@ -106,29 +106,45 @@ app.on('window-all-closed', () => {
 });
 
 
-const sqlite3 = require('sqlite3').verbose();
+const Database = require('better-sqlite3');
 
-// 数据库路径（确保 D:\\NovaAsia\\data 目录存在）
-const dbPath = path.join('D:', 'NovaAsia', 'data', 'orders.db');
+
+// === DB 路径（保持你原来的路径；也可以换成 app.getPath('userData') 更稳）===
+const dbPath = path.join('D:', 'NovaAsia1', 'data', 'orders.db');
 fs.mkdirSync(path.dirname(dbPath), { recursive: true });
 
-// 连接数据库
-const db = new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-        console.error("❌ 无法连接 SQLite 数据库:", err);
-    } else {
-        console.log("✅ 已连接到本地 SQLite 数据库");
-    }
-});
+// === 连接 & 基础设置 ===
+const db = new Database(dbPath);
+db.pragma('journal_mode = WAL');
+db.pragma('foreign_keys = ON');
 
-// 创建表（如果不存在）
-db.run(`CREATE TABLE IF NOT EXISTS orders (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    order_id TEXT,
-    order_number TEXT,
-    data TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-)`);
+// === 表结构（order_number 唯一，便于 UPSERT）===
+db.exec(`
+  CREATE TABLE IF NOT EXISTS orders (
+    id             INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_id       TEXT,
+    order_number   TEXT UNIQUE,
+    data           TEXT NOT NULL,
+    created_at     DATETIME DEFAULT (datetime('now','localtime'))
+  );
+  CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at DESC);
+  CREATE INDEX IF NOT EXISTS idx_orders_order_id   ON orders(order_id);
+`);
+
+// === 预编译语句 ===
+const upsertOrderStmt = db.prepare(`
+  INSERT INTO orders (order_id, order_number, data)
+  VALUES (@order_id, @order_number, @data)
+  ON CONFLICT(order_number) DO UPDATE SET
+    order_id   = excluded.order_id,
+    data       = excluded.data,
+    created_at = datetime('now','localtime')
+`);
+
+const getByNumberStmt = db.prepare(`SELECT * FROM orders WHERE order_number = ?`);
+const getByIdStmt     = db.prepare(`SELECT * FROM orders WHERE id = ?`);
+const listRecentStmt  = db.prepare(`SELECT * FROM orders ORDER BY created_at DESC LIMIT ?`);
+
 
 // 保存订单（写入数据库）
 function saveOrderToLocalDB(order) {
@@ -731,3 +747,4 @@ resolve();
     });
   });
 }
+
