@@ -6011,6 +6011,19 @@ function checkout() {
     return h * 60 + m;
   };
 
+  const now = new Date();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+  if (selectedTime && toMinutes(selectedTime) < currentMinutes) {
+    alert('所选时间已过，请重新选择。');
+    if (sliderText && sliderButton && sliderTrack) {
+      sliderText.innerText = 'Schuif om te bestellen';
+      sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
+      sliderTrack.style.pointerEvents = 'auto';
+    }
+    return;
+  }
+
   if (selectedTime && lastAvailableTime && toMinutes(selectedTime) > toMinutes(lastAvailableTime)) {
     alert('Gekozen tijd valt buiten openingstijden.');
     if (sliderText && sliderButton && sliderTrack) {
