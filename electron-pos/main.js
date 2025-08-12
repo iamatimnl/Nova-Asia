@@ -109,8 +109,8 @@ app.on('window-all-closed', () => {
 const Database = require('better-sqlite3');
 
 
-// === DB 路径（保持你原来的路径；也可以换成 app.getPath('userData') 更稳）===
-const dbPath = path.join('D:', 'NovaAsia1', 'data', 'orders.db');
+// === DB 路径（使用仓库内 data/orders.db）===
+const dbPath = path.join(__dirname, '..', 'data', 'orders.db');
 fs.mkdirSync(path.dirname(dbPath), { recursive: true });
 
 // === 连接 & 基础设置 ===
@@ -125,6 +125,7 @@ db.exec(`
     order_id       TEXT,
     order_number   TEXT UNIQUE,
     data           TEXT NOT NULL,
+    source_json    TEXT NOT NULL,
     created_at     DATETIME DEFAULT (datetime('now','localtime'))
   );
   CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at DESC);
@@ -133,83 +134,73 @@ db.exec(`
 
 // === 预编译语句 ===
 const upsertOrderStmt = db.prepare(`
-  INSERT INTO orders (order_id, order_number, data)
-  VALUES (@order_id, @order_number, @data)
+  INSERT INTO orders (order_id, order_number, data, source_json)
+  VALUES (@order_id, @order_number, @data, @source_json)
   ON CONFLICT(order_number) DO UPDATE SET
-    order_id   = excluded.order_id,
-    data       = excluded.data,
-    created_at = datetime('now','localtime')
+    order_id    = excluded.order_id,
+    data        = excluded.data,
+    source_json = excluded.source_json,
+    created_at  = datetime('now','localtime')
 `);
 
 const getByNumberStmt = db.prepare(`SELECT * FROM orders WHERE order_number = ?`);
 const getByIdStmt     = db.prepare(`SELECT * FROM orders WHERE id = ?`);
 const listRecentStmt  = db.prepare(`SELECT * FROM orders ORDER BY created_at DESC LIMIT ?`);
+const listTodayStmt   = db.prepare(`SELECT * FROM orders WHERE date(created_at) = date('now','localtime') ORDER BY created_at DESC`);
 
+
+// 金额字段统一保留两位小数
+function normalizeAmounts(o) {
+    const fields = [
+        'totaal','subtotal','total','packaging','delivery','discount',
+        'bezorgkosten','verpakkingskosten','fooi','discountAmount','discount_amount',
+        'btw','btw_9','btw_21','btw_total'
+    ];
+    fields.forEach(k => {
+        if (o[k] != null && o[k] !== '') {
+            o[k] = Number(parseFloat(o[k]).toFixed(2));
+        }
+    });
+    return o;
+}
 
 // 保存订单（写入数据库）
-function saveOrderToLocalDB(order) {
-    return new Promise((resolve, reject) => {
-        db.run(
-            `INSERT INTO orders (order_id, order_number, data) VALUES (?, ?, ?)`,
-            [order.id, order.order_number, JSON.stringify(order)],
-            function(err) {
-                if (err) {
-                    console.error("❌ 保存订单到 SQLite 失败:", err);
-                    reject(err);
-                } else {
-                    console.log(`✅ 已保存订单到本地 SQLite: ${order.order_number}`);
-                    resolve(true);
-                }
-            }
-        );
-    });
+function saveOrderToLocalDB(order, source) {
+    const payload = {
+        order_id: order.id || null,
+        order_number: String(order.order_number || ''),
+        data: JSON.stringify(normalizeAmounts({ ...order })),
+        source_json: typeof source === 'string' ? source : JSON.stringify(source || order)
+    };
+    try {
+        upsertOrderStmt.run(payload);
+        console.log(`✅ 已保存订单到本地 SQLite: ${payload.order_number}`);
+        return true;
+    } catch (err) {
+        console.error('❌ 保存订单到 SQLite 失败:', err);
+        throw err;
+    }
 }
 
-// 按订单号查询
 function getOrderByNumber(no) {
-    return new Promise((resolve, reject) => {
-        db.get(
-            `SELECT * FROM orders WHERE order_number = ?`,
-            [String(no)],
-            (err, row) => {
-                if (err) reject(err);
-                else resolve(row);
-            }
-        );
-    });
+    return getByNumberStmt.get(String(no));
 }
 
-// 按 ID 查询
 function getOrderById(id) {
-    return new Promise((resolve, reject) => {
-        db.get(
-            `SELECT * FROM orders WHERE id = ?`,
-            [id],
-            (err, row) => {
-                if (err) reject(err);
-                else resolve(row);
-            }
-        );
-    });
+    return getByIdStmt.get(id);
 }
 
-// 获取最近订单
 function listRecent(limit = 50) {
-    return new Promise((resolve, reject) => {
-        db.all(
-            `SELECT * FROM orders ORDER BY created_at DESC LIMIT ?`,
-            [limit],
-            (err, rows) => {
-                if (err) reject(err);
-                else resolve(rows);
-            }
-        );
-    });
+    return listRecentStmt.all(limit);
+}
+
+function getOrdersToday() {
+    return listTodayStmt.all();
 }
 
 // ===================== IPC绑定 =====================
-ipcMain.handle('local.saveOrder', async (_evt, orderObj) => {
-    await saveOrderToLocalDB(orderObj);
+ipcMain.handle('local.saveOrder', async (_evt, orderObj, source) => {
+    saveOrderToLocalDB(orderObj, source);
     return { ok: true };
 });
 
@@ -223,6 +214,10 @@ ipcMain.handle('local.getOrderById', async (_evt, id) => {
 
 ipcMain.handle('local.listRecent', async (_evt, limit = 50) => {
     return await listRecent(limit);
+});
+
+ipcMain.handle('local.getOrdersToday', async () => {
+    return getOrdersToday();
 });
 
 // 打印小票
@@ -243,7 +238,8 @@ module.exports = {
     saveOrderToLocalDB,
     getOrderByNumber,
     getOrderById,
-    listRecent
+    listRecent,
+    getOrdersToday
 };
 // ========= Helpers: parse / normalize / validate =========
 function parseIncomingPayload(input) {

@@ -1,0 +1,5 @@
+electron-pos/node_modules/
+__pycache__/
+*.pyc
+data/orders.db
+data/
