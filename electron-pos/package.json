@@ -25,6 +25,7 @@
     }
   },
   "dependencies": {
-    "node-wav-player": "^1.0.0"
+    "node-wav-player": "^1.0.0",
+    "better-sqlite3": "^8.0.1"
   }
 }

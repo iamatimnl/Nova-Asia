@@ -2279,14 +2279,17 @@ function submitOrder() {
     body: JSON.stringify(payload)
   })
     .then(r => r.json())
-    .then(res => {
+    .then(async res => {
       if (res.success || res.status === 'ok') {
-        
+        try {
+          await window.localDB?.saveOrder?.(payload, JSON.stringify(payload));
+        } catch (e) {
+          console.warn('⚠️ 本地保存失败:', e);
+        }
         showToast('Bestelling succesvol verzonden! Bestelnummer: ' + orderNumber);
         clearForm();
         fetchOrders();
       } else {
-       
         showToast('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.');
       }
     })
@@ -2971,7 +2974,7 @@ socket.on('new_order', async (order) => {
   try {
     const existed = await window.localDB?.getOrderByNumber?.(order.order_number);
     if (!existed) {
-      await window.localDB?.saveOrder?.(order);
+      await window.localDB?.saveOrder?.(order, JSON.stringify(order));
       console.log("💾 已保存到本地 SQLite:", order.order_number);
     } else {
       console.log("↩️ 本地已存在，跳过保存:", order.order_number);

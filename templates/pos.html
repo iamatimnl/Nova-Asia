@@ -1742,8 +1742,13 @@ function submitOrder() {
     body: JSON.stringify(payload)
   })
     .then(r => r.json())
-    .then(res => {
+    .then(async res => {
       if (res.success || res.status === 'ok') {
+        try {
+          await window.localDB?.saveOrder?.(payload, JSON.stringify(payload));
+        } catch (e) {
+          console.warn('⚠️ 本地保存失败:', e);
+        }
         showToast('Bestelling succesvol verzonden! Bestelnummer: ' + orderNumber);
         clearForm();
         fetchOrders();
@@ -2066,7 +2071,7 @@ const orderQueue = [];
 let isModalActive = false;
 let currentOrder = null;
 
-socket.on('new_order', order => {
+socket.on('new_order', async order => {
 
   console.log('🆕 Nieuwe bestelling ontvangen!', order);
   if (window.electronAPI && window.electronAPI.playDing) {
@@ -2076,7 +2081,14 @@ socket.on('new_order', order => {
   const row = addRow(order, true); // 添加订单到表格
 
   orderQueue.push(order); // 加入弹窗队列
-  if (!isModalActive) showNextOrderModal(); // 没有弹窗时立刻开始弹窗                            
+  if (!isModalActive) showNextOrderModal(); // 没有弹窗时立刻开始弹窗
+
+  try {
+    const existed = await window.localDB?.getOrderByNumber?.(order.order_number);
+    if (!existed) await window.localDB?.saveOrder?.(order, JSON.stringify(order));
+  } catch (e) {
+    console.warn('⚠️ 本地保存失败:', e);
+  }
 });
 
 function showNextOrderModal() {
