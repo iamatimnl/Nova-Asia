@@ -681,9 +681,7 @@ body.today-open .today-toggle {
         <input id="customPrice" type="number" min="0" step="0.01" />
         <button id="addCustomPrice" type="button">Toevoegen</button>
       </div>
-      <div>BTW 9%: <span id="summaryBtw9">€0,00</span></div>
-      <div id="summaryBtw21Row">BTW 21%: <span id="summaryBtw21">€0,00</span></div>
-      <div>BTW Totaal: <span id="summaryBtw">€0,00</span></div>
+      <div>BTW (9%): <span id="summaryBtw">€0,00</span></div>
       <div><strong>Totaal: <span id="total">€0,00</span></strong></div>
       <label for="remark" style="display:block;margin-top:10px;">Opmerking:</label>
       <textarea id="remark" rows="2" placeholder="Bijv. geen komkomer, extra mayo"></textarea>
@@ -1271,14 +1269,8 @@ function updateCart(){
   if(discount<0||isNaN(discount)) discount=0;
 
   const total = subtotal + packagingTotal + delivery - discount;
-  const heinekenTotal = Object.entries(cart).reduce((sum,[k,v])=>{
-    const name = v.displayName || k;
-    return sum + (/heineken/i.test(name) ? v.price * v.qty : 0);
-  },0);
-  const btw9 = (subtotal + packagingTotal + delivery - discount - heinekenTotal) * 0.09;
-  const btw21 = heinekenTotal * 0.21;
-  const btw = btw9 + btw21;
-
+  const btwBase = delivery ? total - delivery : total;
+  const btw = btwBase * 0.09;
 
   const fmt=n=>`€${n.toFixed(2).replace('.',',')}`;
   document.getElementById('summarySubtotal').textContent=fmt(subtotal);
@@ -1286,9 +1278,6 @@ function updateCart(){
   document.getElementById('summaryDelivery').textContent=fmt(delivery);
   document.getElementById('summaryDeliveryRow').classList.toggle('hidden',!delivery);
   document.getElementById('summaryDiscount').textContent=discount ? `- ${fmt(discount)}` : '€0,00';
-  document.getElementById('summaryBtw9').textContent=fmt(btw9);
-  document.getElementById('summaryBtw21').textContent=fmt(btw21);
-  document.getElementById('summaryBtw21Row').style.display = btw21>0?'' : 'none';
   document.getElementById('summaryBtw').textContent=fmt(btw);
   document.getElementById('total').textContent=fmt(total);
 
@@ -1700,13 +1689,8 @@ function submitOrder() {
     discount = Math.min(100, discountVal) / 100 * subtotal;
   }
   const totalBeforeBtw = subtotal + packagingTotal + deliveryCost - discount;
-  const heinekenTotal = Object.entries(cart).reduce((sum,[k,v])=>{
-    const name = v.displayName || k;
-    return sum + (/heineken/i.test(name) ? v.price * v.qty : 0);
-  },0);
-  const btw9 = (totalBeforeBtw - heinekenTotal) * 0.09;
-  const btw21 = heinekenTotal * 0.21;
-  const btw = btw9 + btw21;
+  const btwBase = delivery ? totalBeforeBtw - deliveryCost : totalBeforeBtw;
+  const btw = btwBase * 0.09;
   const total = totalBeforeBtw;
 
   const summary = {
@@ -1717,10 +1701,6 @@ function submitOrder() {
     discountValue: parseFloat(discountVal.toFixed(2)),
     discountAmount: parseFloat(discount.toFixed(2)),
     btw: parseFloat(btw.toFixed(2)),
-    btw_9: parseFloat(btw9.toFixed(2)),
-    btw_21: parseFloat(btw21.toFixed(2)),
-    btw_total: parseFloat(btw.toFixed(2)),
-    btw_split: { '9': btw9.toFixed(2), '21': btw21.toFixed(2) },
     total: parseFloat(total.toFixed(2))
   };
 
@@ -1750,10 +1730,6 @@ function submitOrder() {
     items: itemsToSend,
     message: orderText,
     opmerking: remark,
-    btw: btw.toFixed(2),
-    btw_9: btw9.toFixed(2),
-    btw_21: btw21.toFixed(2),
-    btw_total: btw.toFixed(2),
     totaal: total.toFixed(2),
 
     summary  // ✅ 加入结账明细
