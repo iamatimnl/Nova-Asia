@@ -11,6 +11,21 @@ escpos.USB = require('escpos-usb');
 // 可选：若你的 escpos 版本支持 profile，打开下面两行更稳
 // const profile = escpos.profile ? escpos.profile('epson') : null;
 
+// 默认打印配置，确保调用打印时有基础参数
+const CONFIG = {
+  WIDTH: 42,
+  RIGHT_RESERVE: 8,
+  CUT_STRATEGY: 'atomic',
+  CUT_MODE: 'partial',
+  FEED_BEFORE_CUT: 6,
+  TRANSPORT: 'USB',
+  USB: {},
+  SHOW_BTW_SPLIT: false,
+  USE_QR: false,
+  SHOP: { name: 'Nova Asia' },
+  QR: {}
+};
+
 const dingPath = path.join(__dirname, 'assets', 'ding.wav');
 const flaskAppPath = path.join(__dirname, '..', 'app.py');
 const flaskAppDir = path.dirname(flaskAppPath);
@@ -92,10 +107,10 @@ app.on('window-all-closed', () => {
 
 
 const sqlite3 = require('sqlite3').verbose();
-const { ipcMain } = require('electron');
 
-// 数据库路径（确保 D:\NovaAsia\data 目录存在）
+// 数据库路径（确保 D:\\NovaAsia\\data 目录存在）
 const dbPath = path.join('D:', 'NovaAsia', 'data', 'orders.db');
+fs.mkdirSync(path.dirname(dbPath), { recursive: true });
 
 // 连接数据库
 const db = new sqlite3.Database(dbPath, (err) => {
@@ -119,14 +134,14 @@ db.run(`CREATE TABLE IF NOT EXISTS orders (
 function saveOrderToLocalDB(order) {
     return new Promise((resolve, reject) => {
         db.run(
-            INSERT INTO orders (order_id, order_number, data) VALUES (?, ?, ?),
+            `INSERT INTO orders (order_id, order_number, data) VALUES (?, ?, ?)`,
             [order.id, order.order_number, JSON.stringify(order)],
             function(err) {
                 if (err) {
                     console.error("❌ 保存订单到 SQLite 失败:", err);
                     reject(err);
                 } else {
-                    console.log(✅ 已保存订单到本地 SQLite: ${order.order_number});
+                    console.log(`✅ 已保存订单到本地 SQLite: ${order.order_number}`);
                     resolve(true);
                 }
             }
@@ -138,7 +153,7 @@ function saveOrderToLocalDB(order) {
 function getOrderByNumber(no) {
     return new Promise((resolve, reject) => {
         db.get(
-            SELECT * FROM orders WHERE order_number = ?,
+            `SELECT * FROM orders WHERE order_number = ?`,
             [String(no)],
             (err, row) => {
                 if (err) reject(err);
@@ -152,7 +167,7 @@ function getOrderByNumber(no) {
 function getOrderById(id) {
     return new Promise((resolve, reject) => {
         db.get(
-            SELECT * FROM orders WHERE id = ?,
+            `SELECT * FROM orders WHERE id = ?`,
             [id],
             (err, row) => {
                 if (err) reject(err);
@@ -166,7 +181,7 @@ function getOrderById(id) {
 function listRecent(limit = 50) {
     return new Promise((resolve, reject) => {
         db.all(
-            SELECT * FROM orders ORDER BY created_at DESC LIMIT ?,
+            `SELECT * FROM orders ORDER BY created_at DESC LIMIT ?`,
             [limit],
             (err, rows) => {
                 if (err) reject(err);
@@ -192,6 +207,20 @@ ipcMain.handle('local.getOrderById', async (_evt, id) => {
 
 ipcMain.handle('local.listRecent', async (_evt, limit = 50) => {
     return await listRecent(limit);
+});
+
+// 打印小票
+ipcMain.handle('print-receipt', async (_evt, payload) => {
+    try {
+        const raw = parseIncomingPayload(payload);
+        if (!raw) throw new Error('Invalid order payload');
+        const order = normalizeForPrint(raw);
+        await doEscposPrint(order);
+        return { ok: true };
+    } catch (err) {
+        console.error('❌ 打印失败:', err);
+        return { ok: false, error: err.message };
+    }
 });
 
 module.exports = {
