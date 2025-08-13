@@ -212,7 +212,10 @@ def order_to_dict(order):
         "discountCode": order.discountCode,
         "verpakkingskosten": order.verpakkingskosten,
         "bezorgkosten": delivery,
+        "packaging_fee": order.verpakkingskosten or 0,
+        "delivery_fee": delivery,
         "fooi": order.fooi,
+        "tip": order.fooi or 0,
         "discount_code": order.discount_code,
         "discount_amount": order.discount_amount,
         "opmerking": order.opmerking,
@@ -381,6 +384,11 @@ def orders_to_dicts(orders):
         delivery_calc = round(delivery_calc, 2)
         delivery = o.bezorgkosten if o.bezorgkosten not in [None, 0] else max(delivery_calc, 0)
         o.bezorgkosten = delivery
+        discount_val = (
+            getattr(o, "discount_amount", None)
+            or getattr(o, "discountAmount", 0)
+            or 0
+        )
         if o.btw_total is None:
             heineken_total = sum(
                 float(item.get("price", 0)) * int(item.get("qty", 0))
@@ -418,12 +426,19 @@ def orders_to_dicts(orders):
             "totaal": totaal,
             "verpakkingskosten": o.verpakkingskosten,
             "bezorgkosten": delivery,
+            "packaging_fee": o.verpakkingskosten or 0,
+            "delivery_fee": delivery,
             "btw_9": o.btw_9 or 0,
             "btw_21": o.btw_21 or 0,
             "btw_total": o.btw_total or 0,
             "fooi": o.fooi or 0,
+            "tip": o.fooi or 0,
             "order_number": o.order_number,
-            "korting": o.discountAmount,
+            "korting": discount_val,
+            "discountAmount": discount_val,
+            "discountCode": getattr(o, "discount_code", None) or getattr(o, "discountCode", None) or "",
+            "discount_code": getattr(o, "discount_code", None),
+            "discount_amount": getattr(o, "discount_amount", None),
             "is_completed": o.is_completed,
             "is_cancelled": o.is_cancelled
         })
@@ -1880,13 +1895,18 @@ def pos_orders_today():
             "total": totaal,
             "verpakkingskosten": o.verpakkingskosten or 0,
             "bezorgkosten": o.bezorgkosten or 0,
+            "packaging_fee": o.verpakkingskosten or 0,
+            "delivery_fee": o.bezorgkosten or 0,
             "btw_9": o.btw_9 or 0,
             "btw_21": o.btw_21 or 0,
             "btw_total": o.btw_total or 0,
             "fooi": o.fooi or 0,
+            "tip": o.fooi or 0,
 
             "discountAmount": discount_val,                     # 标准键，给模板显示 korting
             "discountCode": getattr(o, "discount_code", None) or getattr(o, "discountCode", None) or "",
+            "discount_code": getattr(o, "discount_code", None),
+            "discount_amount": getattr(o, "discount_amount", None),
             "korting": discount_val,                            # 兼容旧模板
 
             "is_completed": o.is_completed,
