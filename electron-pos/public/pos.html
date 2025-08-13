@@ -2832,20 +2832,32 @@ function addRow(order, highlight = false) {
   const usedAmt  = window.toNum(order.discountAmount);
   if (usedCode || usedAmt !== 0) {
     const isKassa = usedCode.toUpperCase() === 'KASSA';
-    const lbl = isKassa ? 'Kassa korting' : `Korting${usedCode && !isKassa ? ` (Code: ${usedCode})` : ''}`;
-    const amtTxt = usedAmt !== 0 ? `: -€${fmt2(usedAmt)}` : '';
-    usedKortingHtml = `<div><strong>${lbl}</strong>${amtTxt}</div>`;
+    if (isKassa) {
+      usedKortingHtml = `<div><strong>Kassa korting</strong></div>`;
+    } else {
+      const amtTxt = usedAmt !== 0 ? `-€${fmt2(usedAmt)}` : '';
+      const codeTxt = usedCode ? ` (Code: ${usedCode})` : '';
+      usedKortingHtml = `<div><strong>Korting ${amtTxt}${codeTxt}</strong></div>`;
+    }
   }
 
-  // 2) 下次奖励码：只取 discount_code / discount_amount（金额可有可无）
+  // 2) 下次奖励码：只取 discount_code / discount_amount（金额可为百分比或固定金额）
   let volgendeHtml = '';
   const nextCode = order.discount_code || '';
-  const nextAmt  = window.toNum(order.discount_amount);
-  if (nextCode || nextAmt !== 0) {
-    const amtTxt = nextAmt !== 0 ? ` — €${fmt2(nextAmt)}` : '';
+  const nextAmtRaw = order.discount_amount;
+  const nextAmtNum = window.toNum(nextAmtRaw);
+  let nextAmtTxt = '';
+  if (typeof nextAmtRaw === 'string' && nextAmtRaw.trim().endsWith('%')) {
+    nextAmtTxt = nextAmtRaw.trim();
+  } else if (!isNaN(nextAmtNum) && nextAmtNum !== 0) {
+    nextAmtTxt = (nextAmtNum > 0 && nextAmtNum < 1)
+      ? `${fmt2(nextAmtNum * 100)}%`
+      : `€${fmt2(nextAmtNum)}`;
+  }
+  if (nextAmtTxt) {
     volgendeHtml = `<div class="next-coupon" style="margin-top:6px;">
-                      <div><strong>Hier uw kortings code volgende bestelling:</strong></div>
-                      <div style="font-size:1.1em;">${nextCode}${amtTxt}</div>
+                      <div><strong>Hier is uw korting ${nextAmtTxt} voor volgende bedrag</strong></div>
+                      ${nextCode ? `<div style="font-size:1.1em;">Code: ${nextCode}</div>` : ''}
                     </div>`;
   }
 
