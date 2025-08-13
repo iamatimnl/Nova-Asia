@@ -1,16 +1,28 @@
+// preload.js
+console.log('[preload] loaded');
 const { contextBridge, ipcRenderer } = require('electron');
 
-let dingAudio;
+let dingAudio = null;
 
+// —— 暴露给渲染端：业务 API（声音、打印、登录回调、密钥）
 contextBridge.exposeInMainWorld('api', {
   getGoogleMapsKey: () => ipcRenderer.invoke('get-google-maps-key'),
+
+  // 声音：渲染端 -> 主进程（让主进程控制或转发到渲染）
   playDing: () => ipcRenderer.send('play-ding'),
-  stopDing: () => ipcRenderer.send('stop-ding'),
+  stopDing:  () => ipcRenderer.send('stop-ding'),
+
+  // 打印：渲染端 -> 主进程（invoke ⇢ handle）
   printReceipt: (text) => ipcRenderer.invoke('print-receipt', text),
-  onLoginSuccess: (callback) => ipcRenderer.on('login-success', callback)
+
+  // 如果“主进程发事件给渲染端”再用这个监听（win.webContents.send('login-success')）
+  onLoginSuccess: (callback) => {
+    ipcRenderer.on('login-success', (_evt, payload) => callback?.(payload));
+    return () => ipcRenderer.removeAllListeners('login-success');
+  }
 });
 
-// 🔊 播放 ding
+// —— 可选：在渲染进程本地播放 ding（如果主进程用 webContents 触发）
 ipcRenderer.on('play-ding-in-renderer', () => {
   if (!dingAudio) {
     dingAudio = new Audio('assets/ding.wav');
@@ -18,25 +30,13 @@ ipcRenderer.on('play-ding-in-renderer', () => {
   }
   dingAudio.play().catch(err => console.error('🔊 播放失败:', err));
 });
-
-// ⏹ 停止 ding
 ipcRenderer.on('stop-ding-in-renderer', () => {
-  if (dingAudio) {
-    dingAudio.pause();
-    dingAudio.currentTime = 0;
-  }
+  if (dingAudio) { dingAudio.pause(); dingAudio.currentTime = 0; }
 });
 
-// 本地 SQLite API（与 main.js 中 ipcMain.handle('local.*') 对齐）
-contextBridge.exposeInMainWorld('localDB', {
-  saveOrder: (order, source) => ipcRenderer.invoke('local.saveOrder', order, source),
-  getOrderById: (id) => ipcRenderer.invoke('local.getOrderById', id),
-  getOrderByNumber: (no) => ipcRenderer.invoke('local.getOrderByNumber', no),
-  listRecent: (limit = 50) => ipcRenderer.invoke('local.listRecent', limit),
-  getOrdersToday: () => ipcRenderer.invoke('local.getOrdersToday'),
-});
-
-// 兼容旧接口 window.pos.getOrdersToday()
+// —— 暴露数据库桥
 contextBridge.exposeInMainWorld('pos', {
-  getOrdersToday: () => ipcRenderer.invoke('local.getOrdersToday')
+  saveOrder:      (payload) => ipcRenderer.invoke('db:save-order', payload),
+  getOrdersToday: () => ipcRenderer.invoke('db:get-orders-today'),
+  ping:           () => ipcRenderer.invoke('db:ping')
 });
