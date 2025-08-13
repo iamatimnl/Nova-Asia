@@ -3036,20 +3036,34 @@ function toUIOrder(o) {
     src.package_fee ??
     0
   );
-  const delivery_fee  = toNum(
+  const delivery_fee  = isDelivery ? toNum(
     src.delivery_fee ??
     src.summary?.delivery_fee ??
     src.bezorgkosten ??
     0
-  );
+  ) : 0;
   const fooi          = toNum(src.tip ?? 0);
   const btw_9         = toNum(src.btw_9 ?? 0);
   const btw_21        = toNum(src.btw_21 ?? 0);
   const btw_total     = toNum(src.btw_total ?? src.btw ?? 0);
-  const discountAmount = toNum(src.discountAmount ?? 0);
-  const discountCode   = src.discountCode ?? '';
-  const nextDiscountAmount = toNum(src.discount_amount ?? 0);
-  const nextDiscountCode   = src.discount_code ?? '';
+  const discountAmount = toNum(
+    src.discount_used_amount ??
+    src.discountAmount ??
+    0
+  );
+  const discountCode   =
+    src.discount_used_code ??
+    src.discountCode ??
+    '';
+  const nextDiscountAmount = toNum(
+    src.discount_earned_amount ??
+    src.discount_amount ??
+    0
+  );
+  const nextDiscountCode   =
+    src.discount_earned_code ??
+    src.discount_code ??
+    '';
 
   // 3) 明细：UI 现在用对象 { name: {qty, price,...} }；如果传来是数组就转对象
   let itemsObj = {};
