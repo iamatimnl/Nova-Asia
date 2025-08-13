@@ -2279,17 +2279,14 @@ function submitOrder() {
     body: JSON.stringify(payload)
   })
     .then(r => r.json())
-    .then(async res => {
+    .then(res => {
       if (res.success || res.status === 'ok') {
-        try {
-          await window.localDB?.saveOrder?.(payload, JSON.stringify(payload));
-        } catch (e) {
-          console.warn('⚠️ 本地保存失败:', e);
-        }
+        
         showToast('Bestelling succesvol verzonden! Bestelnummer: ' + orderNumber);
         clearForm();
         fetchOrders();
       } else {
+       
         showToast('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.');
       }
     })
@@ -2759,39 +2756,51 @@ function parseItemsString(str, existing) {
 }
 
 
+// —— 安全工具（若已存在则不重复定义）
+window.toNum = window.toNum || (v => (v === null || v === undefined || v === '' ? 0 : Number(v)));
+window.fmt2  = window.fmt2  || (n => window.toNum(n).toFixed(2));
+
 function addRow(order, highlight = false) {
   const container = document.querySelector('.orders-cards');
-  if (!container) return;
+  if (!container) return null;
 
+  // —— 基本信息
   const isDelivery = ['delivery', 'bezorgen'].includes(order.order_type);
   const address = isDelivery
     ? `${order.street || ''} ${order.house_number || ''}, ${order.postcode || ''} ${order.city || ''}`.trim()
     : '-';
 
-  if (isDelivery && window.api?.getGoogleMapsKey) {
-  (async () => {
-    try {
-      const key = await window.api.getGoogleMapsKey();
-      const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${key}`);
-      const data = await res.json();
-      const loc = data.results?.[0]?.geometry?.location;
-      if (loc) {
-        window.deliveryOrders = window.deliveryOrders || [];
-        window.deliveryOrders.push({
-          order_number: order.order_number,
-          customer_name: order.customer_name,
-          lat: loc.lat,
-          lng: loc.lng,
-          map_id: map_id  // 加入编号
-        });
+  // —— 卡片编号（用于地图/显示）
+  const map_id = document.querySelectorAll('.order-card-wrapper').length + 1;
+  order.map_id = map_id;
+
+  // —— 仅送餐且地址存在时做地理编码（不影响渲染）
+  if (isDelivery && address.replace(/[,\s]/g, '').length && window.api?.getGoogleMapsKey) {
+    (async () => {
+      try {
+        const key = await window.api.getGoogleMapsKey();
+        const res = await fetch(
+          `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${key}`
+        );
+        const data = await res.json();
+        const loc = data.results?.[0]?.geometry?.location;
+        if (loc) {
+          window.deliveryOrders = window.deliveryOrders || [];
+          window.deliveryOrders.push({
+            order_number: order.order_number,
+            customer_name: order.customer_name,
+            lat: loc.lat,
+            lng: loc.lng,
+            map_id
+          });
+        }
+      } catch (err) {
+        console.error('Geocoding failed', err);
       }
-    } catch (err) {
-      console.error('Geocoding failed', err);
-    }
-  })();
-}
+    })();
+  }
 
-
+  // —— 菜品渲染（不改你原排序与“自定义项”显示逻辑）
   const items = Object.entries(order.items || {})
     .sort(([, a], [, b]) => {
       const priceA = a.price || 0;
@@ -2803,46 +2812,47 @@ function addRow(order, highlight = false) {
       return nameA.localeCompare(nameB);
     })
     .map(([n, i]) => {
-  const isFree = (i.price || 0) === 0;
-  const displayNameRaw = i.displayName || i.name || n;
+      const isFree = (i.price || 0) === 0;
+      const displayNameRaw = i.displayName || i.name || n;
+      const displayName = /^CUSTOM_/i.test(displayNameRaw)
+        ? 'eigen invoer'
+        : (isFree ? displayNameRaw.toLowerCase() : displayNameRaw.toUpperCase());
+      const rowTotal = (window.toNum(i.qty) * window.toNum(i.price)).toFixed(2).replace('.', ',');
+      return `<li>${i.qty} x ${displayName} = €${rowTotal}</li>`;
+    }).join('');
 
-  // 检查是否为自定义项
-  let displayName;
-  if (/^CUSTOM_/i.test(displayNameRaw)) {
-    displayName = 'eigen invoer';
-  } else {
-    displayName = isFree ? displayNameRaw.toLowerCase() : displayNameRaw.toUpperCase();
+  // —— 金额区（严格“只读订单包”，不重新计算）
+  const totaal        = window.toNum(order.totaal ?? order.total ?? order.summary?.total ?? 0);
+  const packaging_fee = window.toNum(order.verpakkingskosten ?? order.packaging_fee ?? 0);
+  const delivery_fee  = window.toNum(order.bezorgkosten      ?? order.delivery_fee    ?? order.delivery_cost ?? 0);
+  const tip           = window.toNum(order.fooi ?? order.tip ?? 0);
+  const btw_total     = window.toNum(order.btw  ?? order.btw_total ?? order.btw_9 ?? 0);
+
+  // —— 折扣（严格分流，**不容错**）
+  // 1) 本次使用折扣：只取 discountCode / discountAmount
+  let usedKortingHtml = '';
+  if (order.discountCode && Number(order.discountAmount) > 0) {
+    const isKassa = order.discountCode.toUpperCase() === 'KASSA';
+    const lbl = isKassa ? 'Kassa korting' : 'Korting';
+    const tail = !isKassa ? ` <span style="color:#888;">(Code: ${order.discountCode})</span>` : '';
+    usedKortingHtml = `<div><strong>${lbl}:</strong> -€${fmt2(order.discountAmount)}${tail}</div>`;
   }
 
-  const rowTotal = (i.qty * (i.price || 0)).toFixed(2).replace('.', ',');
-  return `<li>${i.qty} x ${displayName} = €${rowTotal}</li>`;
-}).join('');
+  // 2) 下次奖励码：只取 discount_code / discount_amount（金额可有可无）
+  let volgendeHtml = '';
+  if (order.discount_code) {
+    const amt = Number(order.discount_amount) > 0 ? ` — €${fmt2(order.discount_amount)}` : '';
+    volgendeHtml = `<div class="next-coupon" style="margin-top:6px;">
+                      <div><strong>Hier uw kortings code volgende bestelling:</strong></div>
+                      <div style="font-size:1.1em;">${order.discount_code}${amt}</div>
+                    </div>`;
+  }
 
-
-  let subtotal = 0;
-  let verpakkingskosten = 0;
-  Object.values(order.items || {}).forEach(i => {
-    subtotal += (i.price || 0) * i.qty;
-    verpakkingskosten += (i.packaging || 0) * i.qty;
-  });
-
-  const verpakkingDisplay = verpakkingskosten.toFixed(2).replace('.', ',');
-  const bezorgkosten = parseFloat(order.bezorgkosten || order.delivery_cost || 0) || 0;
-  const bezorgDisplay = bezorgkosten.toFixed(2).replace('.', ',');
-  let fooi = parseFloat(order.fooi || order.tip || 0); if (isNaN(fooi)) fooi = 0;
-  const fooiDisplay = fooi.toFixed(2).replace('.', ',');
-
-  let totaal = parseFloat(order.totaal || order.total || 0);
-  if (isNaN(totaal)) totaal = 0;
-  const totaalDisplay = totaal.toFixed(2).replace('.', ',');
-
-  const theoretischTotaal = subtotal + verpakkingskosten + bezorgkosten + fooi;
-  let korting = theoretischTotaal - totaal;
-  const showKorting = korting >= 0.01;
-  const kortingDisplay = korting.toFixed(2).replace('.', ',');
-
+  // —— 时间显示（优先 tijdslot_display；ZSM 则显示 ZSM）
   const tijdslotRaw = order.tijdslot_display || (isDelivery ? order.delivery_time : order.pickup_time);
   const tijdslot = order.is_zsm ? 'ZSM' : (tijdslotRaw || '').trim();
+
+  // —— 组装 DOM
   const wrapper = document.createElement('div');
   wrapper.className = 'order-card-wrapper';
 
@@ -2856,11 +2866,8 @@ function addRow(order, highlight = false) {
     card.classList.add('new-order');
     setTimeout(() => card.classList.remove('new-order'), 10000);
   }
-  const map_id = document.querySelectorAll('.order-card-wrapper').length + 1;
-  order.map_id = map_id;
 
   const mapIdDisplay = `<span class="map-id">#${map_id}</span> `;
-
   card.innerHTML = `
     <div><strong>${mapIdDisplay}Ordernummer:</strong> ${order.order_number || ''}</div>
 
@@ -2869,34 +2876,42 @@ function addRow(order, highlight = false) {
         <strong class="${isDelivery ? 'type-bezorging' : 'type-afhalen'}">
           ${isDelivery ? 'Bezorging' : 'Afhalen'}
         </strong>
-        <span class="tijdslot" style="color: #e67e22; font-weight: bold; text-transform: uppercase;">
-          ${tijdslot}
+        <span class="tijdslot" style="color:#e67e22;font-weight:bold;text-transform:uppercase;">
+          ${tijdslot || '-'}
         </span>
-        &nbsp;&nbsp;<span class="created-at" style="color: #888;">Besteld om: ${order.created_at || '-'}</span>
+        &nbsp;&nbsp;<span class="created-at" style="color:#888;">Besteld om: ${order.created_at || '-'}</span>
       </div>
     </div>
+
     <div><strong>Naam:</strong> ${order.customer_name || ''}</div>
     <div><strong>Telefoon:</strong> ${order.phone || ''}</div>
     ${order.email ? `<div><strong>Email:</strong> <a href="mailto:${order.email}">${order.email}</a></div>` : ''}
+
     <div><strong>Items:</strong><ul>${items}</ul></div>
     ${order.opmerking ? `<div><strong>Opmerking:</strong> ${order.opmerking}</div>` : ''}
-    ${verpakkingskosten > 0 ? `<div><strong>Verpakkingskosten:</strong> €${verpakkingDisplay}</div>` : ''}
-    ${bezorgkosten > 0 ? `<div><strong>Bezorgkosten:</strong> €${bezorgDisplay}</div>` : ''}
-    ${showKorting ? `<div><strong>Korting:</strong> -€${kortingDisplay}</div>` : ''}
-    <div><strong>Totaal:</strong> €${totaalDisplay}</div>
-    ${fooi > 0 ? `<div><strong>Fooi:</strong> €${fooiDisplay}</div>` : ''}
-    ${address !== '-' ? `
-  <div class="qr-address">
-    <strong>Adres:</strong> ${address}
-    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}" target="_blank" style="margin-left:6px;">📍Maps</a>
-  </div>
-  <div class="qr-wrapper">
-    <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent('https://www.google.com/maps?q=' + address)}" alt="QR Code">
-  </div>
-` : ''}
 
+    ${btw_total     > 0 ? `<div><strong>BTW:</strong> €${fmt2(btw_total)}</div>` : ''}
+    ${packaging_fee > 0 ? `<div><strong>Verpakkingskosten:</strong> €${fmt2(packaging_fee)}</div>` : ''}
+    ${delivery_fee  > 0 ? `<div><strong>Bezorgkosten:</strong> €${fmt2(delivery_fee)}</div>` : ''}
+
+    ${usedKortingHtml}
+
+    <div><strong>Totaal:</strong> €${fmt2(totaal)}</div>
+    ${tip > 0 ? `<div><strong>Fooi:</strong> €${fmt2(tip)}</div>` : ''}
+
+    ${address !== '-' ? `
+      <div class="qr-address">
+        <strong>Adres:</strong> ${address}
+        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}" target="_blank" style="margin-left:6px;">📍Maps</a>
+      </div>
+      <div class="qr-wrapper">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent('https://www.google.com/maps?q=' + address)}" alt="QR Code">
+      </div>
+    ` : ''}
 
     ${order.payment_method ? `<div><strong>Betaalwijze:</strong> ${order.payment_method}</div>` : ''}
+
+    ${volgendeHtml}
   `;
 
   const actions = document.createElement('div');
@@ -2910,8 +2925,9 @@ function addRow(order, highlight = false) {
       data-type="${isDelivery ? 'bezorg' : 'afhaal'}">
       Klaar
     </button>
-   <button class="btn-print" onclick="printThisOrder(this)" data-number="${order.order_number}">🖨️ Print</button>
 
+    <!-- 打印直接带上整单 JSON，避免再查 -->
+    <button class="btn-print" onclick="printThisOrder(this)" data-order='${JSON.stringify(order)}'>🖨️ Print</button>
 
     <button class="btn-annuleer" onclick="toggleCancel(this)"
       data-number="${order.order_number}"
@@ -2928,75 +2944,155 @@ function addRow(order, highlight = false) {
   wrapper.appendChild(card);
   wrapper.appendChild(actions);
   container.appendChild(wrapper);
-}
 
+  return wrapper;
+}
 
 
 const orderQueue = [];
 let isModalActive = false;
 let currentOrder = null;
+const processed = new Set();
+
+function normalizeOrder(o) {
+  return {
+    order_number: o.order_number || o.orderNumber || '',
+    order_type:   o.order_type || '',
+    customer:     o.customer || {},
+    timeslot:     o.tijdslot || o.timeslot || o.pickup_time || o.delivery_time || '',
+    summary:      o.summary || { total: o.totaal ?? 0 },
+    items:        Array.isArray(o.items) ? o.items : [],
+    notes:        o.notes || o.opmerking || '',
+    source:       o,
+  };
+}
+function toUIOrder(o) {
+  const src = o || {};
+  // 1) 时间（优先 tijdslot；送餐显示 delivery_time，自取显示 pickup_time）
+  const tijdslot = (src.tijdslot ?? src.timeslot ?? src.pickup_time ?? src.delivery_time ?? '').toString();
+  const isDelivery = (src.order_type === 'bezorgen' || src.order_type === 'delivery');
+  const uiPickup   = isDelivery ? '' : (src.pickup_time || tijdslot || '');
+  const uiDelivery = isDelivery ? (src.delivery_time || tijdslot || '') : '';
+
+  // 2) 金额（兼容 totaal / summary.total；并把字符串数字转成数值）
+  const toNum = v => (v === null || v === undefined || v === '') ? 0 : Number(v);
+  const totaal        = (src.totaal ?? src.summary?.total ?? src.total ?? 0);
+  const subtotal      = (src.subtotal ?? src.summary?.subtotal ?? 0);
+  const packaging_fee = toNum(src.packaging_fee ?? src.summary?.packaging_fee ?? src.verpakkingskosten ?? 0);
+  const delivery_fee  = toNum(src.delivery_fee  ?? src.summary?.delivery_fee  ?? src.bezorgkosten      ?? 0);
+  const fooi          = toNum(src.tip ?? src.fooi ?? 0);
+  const btw           = toNum(src.btw ?? src.summary?.btw ?? src.btw_total ?? 0);
+  const discount      = toNum(src.discount_amount ?? src.summary?.discount ?? src.discountAmount ?? 0);
+
+  // 3) 明细：UI 现在用对象 { name: {qty, price,...} }；如果传来是数组就转对象
+  let itemsObj = {};
+  if (src.items && typeof src.items === 'object' && !Array.isArray(src.items)) {
+    itemsObj = src.items; // 已是对象
+  } else if (Array.isArray(src.items)) {
+    itemsObj = src.items.reduce((acc, it) => {
+      const name = it.name || it.title || 'Item';
+      acc[name] = {
+        qty: it.quantity ?? it.qty ?? 1,
+        price: toNum(it.unit_price ?? it.price ?? 0),
+        packaging: toNum(it.packaging ?? 0),
+        line_total: toNum(it.line_total ?? ((it.unit_price ?? it.price ?? 0) * (it.quantity ?? it.qty ?? 1)))
+      };
+      return acc;
+    }, {});
+  }
+
+  // 4) 地址：送餐单通常会有这些；自取可能为空
+  return {
+    order_number: src.order_number || src.orderNumber || '',
+    customer_name: src.customer?.name ?? src.customer_name ?? '',
+    phone: src.customer?.phone ?? src.phone ?? '',
+    email: src.customer?.email ?? src.email ?? '',
+    street: src.street ?? src.customer?.street ?? '',
+    house_number: src.house_number ?? src.customer?.house_number ?? '',
+    postcode: src.postcode ?? src.customer?.postcode ?? '',
+    city: src.city ?? src.customer?.city ?? '',
+
+    // UI 习惯字段（保持你原逻辑）
+    totaal, subtotal,
+    verpakkingskosten: packaging_fee,
+    bezorgkosten: delivery_fee,
+    fooi,
+    btw,
+    discount_amount: discount,
+    discount_code: (src.discount_code ?? src.discountCode ?? ''),
+
+    tijdslot,                    // 原始显示
+    pickup_time: uiPickup,       // 自取弹窗显示这个
+    delivery_time: uiDelivery,   // 送餐弹窗显示这个
+    opmerking: src.opmerking ?? src.notes ?? '',
+
+    items: itemsObj,             // UI 旧逻辑用对象
+    __source: src                // 备用
+  };
+}
+
+
 
 socket.on('new_order', async (order) => {
-  console.log('🆕 Nieuwe bestelling ontvangen!', order);
-  if (!order || !order.order_number) {
-    console.warn("❌ 接收到的订单无有效 order_number:", order);
-    return;
-  }
-
-  // 1) 播声音
-  try { window.api?.playDing && window.api.playDing(); } catch {}
-
-  // 2) 渲染卡片（保持你原逻辑）
   try {
-    const row = addRow(order, true);
-    // 顺手把按钮的 data-number 设为 order_number（后面“按数据库打印”用）
-    // 假设 addRow 返回行元素，里面有打印按钮类名 .btn-print
-    try {
-      const btn = row?.querySelector?.('.btn-print');
-      if (btn) btn.setAttribute('data-number', order.order_number);
-    } catch {}
-    console.log("✅ 卡片添加成功", row);
-  } catch (err) {
-    console.error("❌ addRow 失败", err);
-  }
+    console.log('🆕 Nieuwe bestelling ontvangen!', order);
 
-  // 3) 入队 & 弹窗（保持你原逻辑）
-  orderQueue.push(order);
-  console.log("📥 已加入 orderQueue，当前队列长度:", orderQueue.length);
-  if (!isModalActive) {
-    console.log("📢 弹出订单提示框");
-    showNextOrderModal();
-  } else {
-    console.log("⏳ 弹窗已激活，等待当前处理完成...");
-  }
+    // UI 专用对象（兼容老字段：totaal/tijdslot/items{}）
+    const uiOrder = toUIOrder(order);      // ✅ 用它给 UI
+    // 入库专用对象（结构化、稳定）
+    const norm    = normalizeOrder(order); // ✅ 用它写 DB
 
-  // 4) 本地 SQLite 去重保存
-  try {
-    const existed = await window.localDB?.getOrderByNumber?.(order.order_number);
-    if (!existed) {
-      await window.localDB?.saveOrder?.(order, JSON.stringify(order));
-      console.log("💾 已保存到本地 SQLite:", order.order_number);
-    } else {
-      console.log("↩️ 本地已存在，跳过保存:", order.order_number);
+    if (!norm.order_number) {
+      console.warn('❌ 无有效 order_number:', order);
+      return;
     }
-  } catch (e) {
-    console.warn("⚠️ 本地保存失败（不影响其它流程）:", e);
-  }
+    if (processed.has(norm.order_number)) {
+      console.log('↩️ 已处理过，跳过:', norm.order_number);
+      return;
+    }
 
-  // 5) （可选）立即按“数据库源”打印 —— 如需自动打印，放开下面这段
-  // try {
-  //   const apiUrl = `https://nova-asia.onrender.com/api/orders/${encodeURIComponent(order.order_number)}`;
-  //   const res = await fetch(apiUrl);
-  //   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  //   const orderFromDB = await res.json();
-  //   if (window.api?.printReceipt) {
-  //     window.api.printReceipt(JSON.stringify(orderFromDB));
-  //     console.log("🖨️ 已按数据库源打印:", orderFromDB.order_number);
-  //   }
-  // } catch (e) {
-  //   console.warn("⚠️ 自动按数据库打印失败，保留手动打印:", e);
-  // }
+    // 1) 播声音
+    try { window.api?.playDing?.(); } catch {}
+
+    // 2) 渲染卡片 —— 用 uiOrder（保持你原有 UI 字段）
+    try {
+      const row = addRow(uiOrder, true);
+      row?.querySelector?.('.btn-print')?.setAttribute('data-number', uiOrder.order_number);
+      console.log('✅ 卡片添加成功', row);
+    } catch (err) {
+      console.error('❌ addRow 失败', err);
+    }
+
+    // 3) 入队 & 弹窗 —— 也用 uiOrder（showNextOrderModal 才能读到正确字段）
+    orderQueue.push(uiOrder);
+    console.log('📥 已加入 orderQueue，当前队列长度:', orderQueue.length);
+    if (!isModalActive) {
+      console.log('📢 弹出订单提示框');
+      showNextOrderModal();
+    } else {
+      console.log('⏳ 弹窗已激活，等待当前处理完成...');
+    }
+
+    // 4) 本地 SQLite 落库 —— 用 norm（结构化入库）
+    if (!window.pos?.saveOrder) {
+      console.warn('⚠️ window.pos.saveOrder 不存在，检查 preload.js 是否正确暴露');
+      return;
+    }
+    console.log('[R->IPC] will save', norm.order_number);
+    const res = await window.pos.saveOrder(norm);
+    console.log('[R->IPC] done', res);
+    if (res?.ok) {
+      processed.add(norm.order_number);
+      console.log('💾 已保存到本地 SQLite:', norm.order_number);
+    } else {
+      console.warn('⚠️ 保存失败，未加入去重集:', norm.order_number, res);
+    }
+
+  } catch (e) {
+    console.warn('⚠️ 处理 new_order 失败（不影响其它流程）:', e);
+  }
 });
+
 
 
 function showNextOrderModal() {
@@ -3078,6 +3174,8 @@ async function printThisOrder(button) {
     console.error("❌ 打印订单失败:", err);
   }
 }
+
+
 
 
 
