@@ -2825,41 +2825,42 @@ function addRow(order, highlight = false) {
   const btw_9  = window.toNum(order.btw_9  ?? 0);
   const btw_21 = window.toNum(order.btw_21 ?? 0);
 
-  // —— 折扣（严格分流，**不容错**）
-  // 1) 本次使用折扣：只取 discountCode / discountAmount
-  let usedKortingHtml = '';
-  const usedCode = order.discountCode || '';
-  const usedAmt  = window.toNum(order.discountAmount);
-  if (usedCode || usedAmt !== 0) {
-    const isKassa = usedCode.toUpperCase() === 'KASSA';
-    if (isKassa) {
-      usedKortingHtml = `<div><strong>Kassa korting</strong></div>`;
-    } else {
-      const amtTxt = usedAmt !== 0 ? `-€${fmt2(usedAmt)}` : '';
-      const codeTxt = usedCode ? ` (Code: ${usedCode})` : '';
-      usedKortingHtml = `<div><strong>Korting ${amtTxt}${codeTxt}</strong></div>`;
-    }
-  }
+  // --- 本次使用的折扣（唯一标准：直接取订单包字段） ---
+let usedKortingHtml = '';
+const usedCode = order.discountCode; // 必须直接用订单包里的字段
+const usedAmt  = window.toNum(order.discountAmount); // 必须直接用订单包里的字段
 
-  // 2) 下次奖励码：只取 discount_code / discount_amount（金额可为百分比或固定金额）
-  let volgendeHtml = '';
-  const nextCode = order.discount_code || '';
-  const nextAmtRaw = order.discount_amount;
-  const nextAmtNum = window.toNum(nextAmtRaw);
-  let nextAmtTxt = '';
-  if (typeof nextAmtRaw === 'string' && nextAmtRaw.trim().endsWith('%')) {
-    nextAmtTxt = nextAmtRaw.trim();
-  } else if (!isNaN(nextAmtNum) && nextAmtNum !== 0) {
-    nextAmtTxt = (nextAmtNum > 0 && nextAmtNum < 1)
-      ? `${fmt2(nextAmtNum * 100)}%`
-      : `€${fmt2(nextAmtNum)}`;
+if ((usedCode && usedCode.trim() !== '') || usedAmt !== 0) {
+  if (usedCode && usedCode.toUpperCase() === 'KASSA') {
+    // 特殊处理：现场收银手动优惠
+    usedKortingHtml = `<div><strong>Kassa korting</strong></div>`;
+  } else {
+    const amtTxt = usedAmt !== 0 ? `-€${fmt2(usedAmt)}` : '';
+    const codeTxt = usedCode && usedCode.trim() !== '' ? ` (Code: ${usedCode})` : '';
+    usedKortingHtml = `<div><strong>Korting ${amtTxt}${codeTxt}</strong></div>`;
   }
-  if (nextAmtTxt) {
-    volgendeHtml = `<div class="next-coupon" style="margin-top:6px;">
-                      <div><strong>Hier is uw korting ${nextAmtTxt} voor volgende bedrag</strong></div>
-                      ${nextCode ? `<div style="font-size:1.1em;">Code: ${nextCode}</div>` : ''}
-                    </div>`;
-  }
+}
+
+
+  // --- 下次奖励码（唯一标准：直接取订单包字段） ---
+// --- 下次奖励码（唯一标准：直接取订单包字段） ---
+let volgendeHtml = '';
+const nextCode   = order.discount_code;       // 只取订单包字段
+const nextAmtNum = window.toNum(order.discount_amount); // 直接转成数字
+
+if (nextAmtNum !== 0) {
+  const nextAmtTxt = `€${fmt2(nextAmtNum)}`; // 永远显示欧元金额
+  const codeLine = (nextCode && String(nextCode).trim() !== '')
+    ? `<div style="font-size:1.1em;">Code: ${nextCode}</div>` : '';
+
+  volgendeHtml = `
+    <div class="next-coupon" style="margin-top:6px;">
+      <div><strong>Hier is uw korting ${nextAmtTxt} voor volgende bedrag</strong></div>
+      ${codeLine}
+    </div>`;
+}
+
+
 
   // —— 时间显示（优先 tijdslot_display；ZSM 则显示 ZSM）
   const tijdslotRaw = order.tijdslot_display || (isDelivery ? order.delivery_time : order.pickup_time);
@@ -2969,18 +2970,52 @@ let isModalActive = false;
 let currentOrder = null;
 const processed = new Set();
 
-function normalizeOrder(o) {
+function normalizeOrder(o = {}) {
+  const toNum = v => (v === null || v === undefined || v === '') ? null : Number(v);
+
   return {
-    order_number: o.order_number || o.orderNumber || '',
-    order_type:   o.order_type || '',
-    customer:     o.customer || {},
-    timeslot:     o.tijdslot || o.timeslot || o.pickup_time || o.delivery_time || '',
-    summary:      o.summary || { total: o.totaal ?? 0 },
-    items:        Array.isArray(o.items) ? o.items : [],
-    notes:        o.notes || o.opmerking || '',
-    source:       o,
+    // —— 这些与库里一一对应 ——
+    order_id:        String(o.id ?? ''),               // 可选
+    order_number:    String(o.order_number || o.orderNumber || ''),
+    order_type:      String(o.order_type || ''),
+    customer_name:   String(o.customer?.name ?? o.customer_name ?? ''),
+    phone:           String(o.customer?.phone ?? o.phone ?? ''),
+    email:           String(o.customer?.email ?? o.email ?? ''),
+    pickup_time:     String(o.pickup_time ?? ''),
+    delivery_time:   String(o.delivery_time ?? ''),
+    payment_method:  String(o.payment_method ?? ''),
+    postcode:        String(o.postcode ?? o.customer?.postcode ?? ''),
+    house_number:    String(o.house_number ?? o.customer?.house_number ?? ''),
+    street:          String(o.street ?? o.customer?.street ?? ''),
+    city:            String(o.city ?? o.customer?.city ?? ''),
+    opmerking:       String(o.opmerking ?? o.notes ?? ''),
+
+    // 金额专栏
+    subtotal:        toNum(o.subtotal ?? o.summary?.subtotal),
+    total:           toNum(o.total ?? o.summary?.total ?? o.totaal),
+    packaging_fee:   toNum(o.packaging_fee ?? o.summary?.packaging_fee ?? o.verpakkingskosten),
+    delivery_fee:    toNum(o.delivery_fee  ?? o.summary?.delivery_fee  ?? o.bezorgkosten),
+    tip:             toNum(o.tip),
+    btw_9:           toNum(o.btw_9),
+    btw_21:          toNum(o.btw_21),
+    btw_total:       toNum(o.btw_total ?? o.btw),
+
+    // ✅ 下次优惠（库里就这一套列名）
+
+    discountAmount:  toNum(o.discountAmount ?? null),
+    discountCode:    String(o.discountCode ?? ''),
+
+    discount_code:   (o.discount_code ?? null),
+    discount_amount: (o.discount_amount ?? null),
+    
+    // 其余
+    items:           JSON.stringify(Array.isArray(o.items) ? o.items : o.items ? o.items : []),
+    data:            JSON.stringify(o),  // ⚠️ 必填：你的 data 列 NOT NULL
+    // is_completed / is_cancelled 如需也可赋值
   };
 }
+
+
 function toUIOrder(o) {
   const src = o || {};
   // 1) 时间（优先 tijdslot；送餐显示 delivery_time，自取显示 pickup_time）
@@ -3069,63 +3104,34 @@ function toUIOrder(o) {
 
 
 
-socket.on('new_order', async (order) => {
+socket.on('new_order', async (incoming) => {
+  // 1) 先即时反馈：播声 + 弹窗（用轻量 UI 对象，不等库）
+  try { window.api?.playDing?.(); } catch {}
+  const uiForModal = toUIOrder(incoming);
+  orderQueue.push(uiForModal);
+  if (!isModalActive) showNextOrderModal();
+
+  // 2) 入库 → 回读 → 渲染卡片（只用 DB 回读结果）
   try {
-    console.log('🆕 Nieuwe bestelling ontvangen!', order);
+    const norm = normalizeOrder(incoming);
+    if (!norm.order_number) return;
 
-    // UI 专用对象（兼容老字段：totaal/tijdslot/items{}）
-    const uiOrder = toUIOrder(order);      // ✅ 用它给 UI
-    // 入库专用对象（结构化、稳定）
-    const norm    = normalizeOrder(order); // ✅ 用它写 DB
+    const r = await window.pos.saveOrder(norm);             // UPSERT
+    if (!r?.ok) throw new Error('saveOrder failed');
 
-    if (!norm.order_number) {
-      console.warn('❌ 无有效 order_number:', order);
-      return;
-    }
-    if (processed.has(norm.order_number)) {
-      console.log('↩️ 已处理过，跳过:', norm.order_number);
-      return;
-    }
+    const dbOrder = await window.pos.getOrderByNumber(norm.order_number);
+    const uiForCard = toUIOrder(dbOrder || norm);
+    addRow(uiForCard, true);                                 // ✅ 现在 addRow 只接收 DB 回读对象
 
-    // 1) 播声音
-    try { window.api?.playDing?.(); } catch {}
-
-    // 2) 渲染卡片 —— 用 uiOrder（保持你原有 UI 字段）
-    try {
-      const row = addRow(uiOrder, true);
-      row?.querySelector?.('.btn-print')?.setAttribute('data-number', uiOrder.order_number);
-      console.log('✅ 卡片添加成功', row);
-    } catch (err) {
-      console.error('❌ addRow 失败', err);
-    }
-
-    // 3) 入队 & 弹窗 —— 也用 uiOrder（showNextOrderModal 才能读到正确字段）
-    orderQueue.push(uiOrder);
-    console.log('📥 已加入 orderQueue，当前队列长度:', orderQueue.length);
-    if (!isModalActive) {
-      console.log('📢 弹出订单提示框');
-      showNextOrderModal();
-    } else {
-      console.log('⏳ 弹窗已激活，等待当前处理完成...');
-    }
-
-    // 4) 本地 SQLite 落库 —— 用 norm（结构化入库）
-    if (!window.pos?.saveOrder) {
-      console.warn('⚠️ window.pos.saveOrder 不存在，检查 preload.js 是否正确暴露');
-      return;
-    }
-    console.log('[R->IPC] will save', norm.order_number);
-    const res = await window.pos.saveOrder(norm);
-    console.log('[R->IPC] done', res);
-    if (res?.ok) {
-      processed.add(norm.order_number);
-      console.log('💾 已保存到本地 SQLite:', norm.order_number);
-    } else {
-      console.warn('⚠️ 保存失败，未加入去重集:', norm.order_number, res);
-    }
+    // 刷新“今日订单数”徽章（若有）
+    window.pos?.getTodayCount?.().then(res => {
+      if (res?.ok) document.querySelectorAll('.today-badge')
+        .forEach(el => el.textContent = res.count ? String(res.count) : '');
+    });
 
   } catch (e) {
-    console.warn('⚠️ 处理 new_order 失败（不影响其它流程）:', e);
+    console.warn('回读失败，使用回退渲染：', e);
+    addRow(toUIOrder(incoming), true); // 回退，不推荐，先用再排查
   }
 });
 
@@ -3189,6 +3195,8 @@ document.getElementById('modal-confirm').addEventListener('click', () => {
   isModalActive = false;
   showNextOrderModal();
 });
+
+
 async function printThisOrder(button) {
   const orderNo = button.getAttribute('data-number');
   if (!orderNo) {
