@@ -175,6 +175,8 @@ function formatCurrency(value) {
   const num = parseFloat(value);
   return isNaN(num) ? "€0.00" : `€${num.toFixed(2)}`;
 }
+const toNum = v => (v === null || v === undefined || v === '' ? 0 : Number(String(v).replace(',', '.')));
+const fmt2  = n => toNum(n).toFixed(2);
 
 function pad(num) {
   return num.toString().padStart(2, '0');
@@ -207,7 +209,7 @@ function parseTimeToMinutes(str){
 
 function getSortKey(order){
   const isDelivery=['delivery','bezorgen'].includes(order.order_type);
-  const t=isDelivery ? (order.delivery_time||order.deliveryTime) : (order.pickup_time||order.pickupTime);
+  const t=isDelivery ? order.delivery_time : order.pickup_time;
   return parseTimeToMinutes(t);
 }
 
@@ -239,25 +241,42 @@ function insertSorted(tbody,tr){
     return `<li>${n} x ${qty}</li>`;
   }).join('');
 
-  // 只读：总价优先取 totaal，其次 total，再其次 summary.total
-  let totaalVal = order.totaal ?? order.total ?? order.summary?.total ?? 0;
+  // 只读：总价字段
+  let totaalVal = order.totaal ?? order.total ?? 0;
   if (typeof totaalVal === 'string') {
     totaalVal = parseFloat(totaalVal.replace(/[^\d,.-]/g, '').replace(',', '.').trim());
   }
 
   // 只读：时间字段
-  const pickup   = order.pickup_time   ?? order.pickupTime   ?? '';
-  const delivery = order.delivery_time ?? order.deliveryTime ?? '';
+  const pickup   = order.pickup_time   || '';
+  const delivery = order.delivery_time || '';
   const tijdslot = isDelivery ? delivery : pickup;
 
-  // 下单时间只做展示用（不推算）
-  let time = order.created_at || order.created_at_local || '';
+  // 下单时间展示
+  const created = order.created_at_local || order.created_at || '';
+  let time = created;
   if (typeof time === 'string' && time.includes(' ')) {
     time = time.split(' ')[1]?.slice(0,5) || time;
   }
 
+  // 折扣显示
+  const usedCode = order.discountCode || '';
+  const usedAmt  = toNum(order.discountAmount);
+  const showUsed = usedCode || usedAmt !== 0;
+  const isKassa  = usedCode.toUpperCase() === 'KASSA';
+  const usedStr  = showUsed
+    ? `${isKassa ? 'Kassa korting' : `Korting${usedCode && !isKassa ? ` (Code: ${usedCode})` : ''}`}${usedAmt !== 0 ? `: -€${fmt2(usedAmt)}` : ''}`
+    : '-';
+
+  const nextCode = order.discount_code || '';
+  const nextAmt  = toNum(order.discount_amount);
+  const showNext = nextCode || nextAmt !== 0;
+  const nextStr  = showNext
+    ? `${nextCode || '-'}` + (nextAmt !== 0 ? ` (waarde: €${fmt2(nextAmt)})` : '')
+    : '-';
+
   tr.innerHTML = `
-    <td>${order.created_date || order.created_at?.slice?.(0,10) || ''}</td>
+    <td>${created ? created.slice(0,10) : ''}</td>
     <td>${time || ''}</td>
     <td>${tijdslot || '-'}</td>
     <td>${isDelivery ? 'Bezorgen' : 'Afhalen'}</td>
@@ -276,6 +295,8 @@ function insertSorted(tbody,tr){
     }</td>
     <td>${order.payment_method || '-'}</td>
     <td>${order.order_number || ''}</td>
+    <td>${usedStr}</td>
+    <td>${nextStr}</td>
   `;
 
   // 仅用“取/送时间”排序，不再做任何金额相关推算

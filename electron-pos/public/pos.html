@@ -2822,29 +2822,36 @@ function addRow(order, highlight = false) {
     }).join('');
 
   // —— 金额区（严格“只读订单包”，不重新计算）
-  const totaal        = window.toNum(order.totaal ?? order.total ?? order.summary?.total ?? 0);
-  const packaging_fee = window.toNum(order.verpakkingskosten ?? order.packaging_fee ?? 0);
-  const delivery_fee  = window.toNum(order.bezorgkosten      ?? order.delivery_fee    ?? order.delivery_cost ?? 0);
-  const tip           = window.toNum(order.fooi ?? order.tip ?? 0);
-  const btw_total     = window.toNum(order.btw  ?? order.btw_total ?? order.btw_9 ?? 0);
+  const subtotal      = window.toNum(order.subtotal ?? 0);
+  const totaal        = window.toNum(order.totaal ?? order.total ?? 0);
+  const packaging_fee = window.toNum(order.packaging_fee ?? 0);
+  const delivery_fee  = window.toNum(order.delivery_fee ?? 0);
+  const tip           = window.toNum(order.tip ?? 0);
+  const btw_9         = window.toNum(order.btw_9 ?? 0);
+  const btw_21        = window.toNum(order.btw_21 ?? 0);
+  const btw_total     = window.toNum(order.btw_total ?? order.btw ?? 0);
 
   // —— 折扣（严格分流，**不容错**）
   // 1) 本次使用折扣：只取 discountCode / discountAmount
   let usedKortingHtml = '';
-  if (order.discountCode && Number(order.discountAmount) > 0) {
-    const isKassa = order.discountCode.toUpperCase() === 'KASSA';
-    const lbl = isKassa ? 'Kassa korting' : 'Korting';
-    const tail = !isKassa ? ` <span style="color:#888;">(Code: ${order.discountCode})</span>` : '';
-    usedKortingHtml = `<div><strong>${lbl}:</strong> -€${fmt2(order.discountAmount)}${tail}</div>`;
+  const usedCode = order.discountCode || '';
+  const usedAmt  = window.toNum(order.discountAmount);
+  if (usedCode || usedAmt !== 0) {
+    const isKassa = usedCode.toUpperCase() === 'KASSA';
+    const lbl = isKassa ? 'Kassa korting' : `Korting${usedCode && !isKassa ? ` (Code: ${usedCode})` : ''}`;
+    const amtTxt = usedAmt !== 0 ? `: -€${fmt2(usedAmt)}` : '';
+    usedKortingHtml = `<div><strong>${lbl}</strong>${amtTxt}</div>`;
   }
 
   // 2) 下次奖励码：只取 discount_code / discount_amount（金额可有可无）
   let volgendeHtml = '';
-  if (order.discount_code) {
-    const amt = Number(order.discount_amount) > 0 ? ` — €${fmt2(order.discount_amount)}` : '';
+  const nextCode = order.discount_code || '';
+  const nextAmt  = window.toNum(order.discount_amount);
+  if (nextCode || nextAmt !== 0) {
+    const amtTxt = nextAmt !== 0 ? ` — €${fmt2(nextAmt)}` : '';
     volgendeHtml = `<div class="next-coupon" style="margin-top:6px;">
                       <div><strong>Hier uw kortings code volgende bestelling:</strong></div>
-                      <div style="font-size:1.1em;">${order.discount_code}${amt}</div>
+                      <div style="font-size:1.1em;">${nextCode}${amtTxt}</div>
                     </div>`;
   }
 
@@ -2890,9 +2897,12 @@ function addRow(order, highlight = false) {
     <div><strong>Items:</strong><ul>${items}</ul></div>
     ${order.opmerking ? `<div><strong>Opmerking:</strong> ${order.opmerking}</div>` : ''}
 
-    ${btw_total     > 0 ? `<div><strong>BTW:</strong> €${fmt2(btw_total)}</div>` : ''}
+    ${subtotal      > 0 ? `<div><strong>Subtotal:</strong> €${fmt2(subtotal)}</div>` : ''}
     ${packaging_fee > 0 ? `<div><strong>Verpakkingskosten:</strong> €${fmt2(packaging_fee)}</div>` : ''}
     ${delivery_fee  > 0 ? `<div><strong>Bezorgkosten:</strong> €${fmt2(delivery_fee)}</div>` : ''}
+    ${btw_9         > 0 ? `<div><strong>BTW 9%:</strong> €${fmt2(btw_9)}</div>` : ''}
+    ${btw_21        > 0 ? `<div><strong>BTW 21%:</strong> €${fmt2(btw_21)}</div>` : ''}
+    ${btw_total     > 0 ? `<div><strong>BTW Totaal:</strong> €${fmt2(btw_total)}</div>` : ''}
 
     ${usedKortingHtml}
 
