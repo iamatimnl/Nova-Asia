@@ -220,9 +220,11 @@ def order_to_dict(order):
         "created_at": order.created_at.isoformat() if order.created_at else None,
         "is_completed": order.is_completed,
         "bezorging": delivery,
-        "is_cancelled": order.is_cancelled
+        "is_cancelled": order.is_cancelled,
+        "btw_9": order.btw_9 or 0.0,
+        "btw_21": order.btw_21 or 0.0,
+        "btw_total": order.btw_total or ((order.btw_9 or 0.0) + (order.btw_21 or 0.0)),
     }
-
 
 def generate_pdf_today(include_cancelled: bool = False):
     today = datetime.now(NL_TZ).date()
@@ -763,7 +765,6 @@ def payment_success_page():
 
 # POS
 @app.route('/pos', methods=["GET", "POST"])
-@login_required
 def pos():
     if request.method == "POST":
         data = request.get_json() or {}
@@ -1799,16 +1800,18 @@ def admin_orders():
 def admin_review_list():
     return render_template('admin/review-list.html')
 @app.route('/pos/orders_today')
-@login_required
+
 def pos_orders_today():
     today = datetime.now(NL_TZ).date()
     start_local = datetime.combine(today, datetime.min.time(), tzinfo=NL_TZ)
     start = start_local.astimezone(UTC).replace(tzinfo=None)
 
-    orders = Order.query.filter(Order.created_at >= start).order_by(Order.created_at.desc()).all()
+    orders = Order.query.filter(Order.created_at >= start)\
+                        .order_by(Order.created_at.desc()).all()
     order_dicts = []
 
     for o in orders:
+        # 原有 items 解析逻辑……
         try:
             o.items_dict = json.loads(o.items or "{}")
         except Exception:
@@ -1819,22 +1822,23 @@ def pos_orders_today():
                 print(f"❌ JSON解析失败: {e}")
                 o.items_dict = {}
 
-        # ✅ 正确使用数据库中的 totaal
+        # 你原来的金额/税/配送费推断逻辑（保留）
         totaal = o.totaal or 0
-        subtotal = sum(
-            float(i.get("price", 0)) * int(i.get("qty", 0))
-            for i in o.items_dict.values()
-        )
-        delivery_calc = totaal + (o.discountAmount or 0) - subtotal - o.verpakkingskosten - (o.fooi or 0)
+        subtotal = sum(float(i.get("price", 0)) * int(i.get("qty", 0))
+                       for i in o.items_dict.values())
+
+        discount_val = (getattr(o, "discount_amount", None)
+                        or getattr(o, "discountAmount", 0) or 0)
+
+        delivery_calc = totaal + discount_val - subtotal - (o.verpakkingskosten or 0) - (o.fooi or 0)
         delivery_calc = round(delivery_calc, 2)
         delivery = o.bezorgkosten if o.bezorgkosten not in [None, 0] else max(delivery_calc, 0)
         o.bezorgkosten = delivery
+
         if o.btw_total is None:
-            heineken_total = sum(
-                float(item.get("price", 0)) * int(item.get("qty", 0))
-                for name, item in o.items_dict.items()
-                if "heineken" in name.lower()
-            )
+            heineken_total = sum(float(item.get("price", 0)) * int(item.get("qty", 0))
+                                 for name, item in o.items_dict.items()
+                                 if "heineken" in name.lower())
             if o.btw_21 is None:
                 o.btw_21 = round(heineken_total * 0.21, 2)
             if o.btw_9 is None:
@@ -1842,32 +1846,8 @@ def pos_orders_today():
                 o.btw_9 = round(base_total * 0.09, 2)
             o.btw_total = (o.btw_9 or 0) + (o.btw_21 or 0)
 
-        o.created_at_local = to_nl(o.created_at)
-        summary = "\n".join(f"{name} x {item['qty']}" for name, item in o.items_dict.items())
-
-        is_pickup = o.order_type in ["afhalen", "pickup"]
-        if is_pickup:
-            details = f"[Afhalen]\nNaam: {o.customer_name}\nTelefoon: {o.phone}"
-            if o.email:
-                details += f"\nEmail: {o.email}"
-            details += f"\nAfhaaltijd: {o.pickup_time}\nBetaalwijze: {o.payment_method}"
-        else:
-            details = f"[Bezorgen]\nNaam: {o.customer_name}\nTelefoon: {o.phone}"
-            if o.email:
-                details += f"\nEmail: {o.email}"
-            details += (
-                f"\nAdres: {o.street} {o.house_number}"\
-                f"\nPostcode: {o.postcode}\nBezorgtijd: {o.delivery_time}"\
-                f"\nBetaalwijze: {o.payment_method}"
-            )
-
-        o.formatted = (
-            f"📦 Nieuwe bestelling bij *Nova Asia*:\n\n"
-            f"Bestelnummer: {o.order_number}\n"  # ✅ 插入编号
-            f"{summary}\n{details}\nTotaal: €{totaal:.2f}"
-
-        )
-
+        # 供 Jinja 用的时间字段（保持 datetime）
+        created_local = to_nl(o.created_at)
 
         order_dicts.append({
             "id": o.id,
@@ -1879,35 +1859,44 @@ def pos_orders_today():
             "pickup_time": o.pickup_time,
             "delivery_time": o.delivery_time,
             "tijdslot_display": o.tijdslot_display,
-            "pickupTime": o.pickup_time,
-            "deliveryTime": o.delivery_time,
+
+            "created_at_local": created_local,                  # Jinja: .strftime(...)
+            "created_date": created_local.strftime("%Y-%m-%d"),
+            "created_at": created_local.strftime("%H:%M"),
+
+            "items_dict": o.items_dict,                         # 模板 for 循环用
+            "items": o.items_dict,
+
             "postcode": o.postcode,
             "house_number": o.house_number,
             "street": o.street,
             "city": o.city,
             "maps_link": build_maps_link(o.street, o.house_number, o.postcode, o.city),
+
             "opmerking": o.opmerking,
-            "created_date": to_nl(o.created_at).strftime("%Y-%m-%d"),
-            "created_at": to_nl(o.created_at).strftime("%H:%M"),
-            "items": o.items_dict,
-            "total": totaal,   # ✅ 关键是这里：使用数据库中的 totaal
+            "order_number": o.order_number,
+
             "totaal": totaal,
-            "verpakkingskosten": o.verpakkingskosten,
-            "bezorgkosten": o.bezorgkosten,
+            "total": totaal,
+            "verpakkingskosten": o.verpakkingskosten or 0,
+            "bezorgkosten": o.bezorgkosten or 0,
             "btw_9": o.btw_9 or 0,
             "btw_21": o.btw_21 or 0,
             "btw_total": o.btw_total or 0,
             "fooi": o.fooi or 0,
-            "order_number": o.order_number,  # ✅ 加上这行
-            "korting": o.discountAmount,
+
+            "discountAmount": discount_val,                     # 标准键，给模板显示 korting
+            "discountCode": getattr(o, "discount_code", None) or getattr(o, "discountCode", None) or "",
+            "korting": discount_val,                            # 兼容旧模板
+
             "is_completed": o.is_completed,
             "is_cancelled": o.is_cancelled
         })
 
+    # ?json=1 时给前端 AJAX 用；否则渲染 pos.html
     if request.args.get("json"):
         return jsonify(order_dicts)
-
-    return render_template("pos_orders.html", orders=orders)
+    return render_template("pos.html", orders=order_dicts)
 
 
 @app.route('/pos/orders_by_date')
@@ -1943,7 +1932,6 @@ def pos_orders_by_date():
 
 
 @app.route('/pos/orders_range')
-@login_required
 def pos_orders_range():
     start_str = request.args.get('start')
     end_str = request.args.get('end')
@@ -1994,7 +1982,6 @@ socketio = SocketIO(app)
 
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000, debug=True)
-
 
 
 
