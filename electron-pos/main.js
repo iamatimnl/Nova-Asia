@@ -1,30 +1,17 @@
+// main.js
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 const fs = require('fs');
-const os = require('os');
 const wavPlayer = require('node-wav-player');
 
-// 🔌 ESC/POS 打印支持
+// ⛳ 数据库：如果 db.js 内部已完成 IPC 注册（db:save-order / db:get-orders-today / db:ping）
+// 只需 require 一次即可，让其 side-effect 生效
+require('./db'); 
+
+// 🖨️ ESC/POS（暂时做成日志桩，避免前端报错）
 const escpos = require('escpos');
 escpos.USB = require('escpos-usb');
-// 可选：若你的 escpos 版本支持 profile，打开下面两行更稳
-// const profile = escpos.profile ? escpos.profile('epson') : null;
-
-// 默认打印配置，确保调用打印时有基础参数
-const CONFIG = {
-  WIDTH: 42,
-  RIGHT_RESERVE: 8,
-  CUT_STRATEGY: 'atomic',
-  CUT_MODE: 'partial',
-  FEED_BEFORE_CUT: 6,
-  TRANSPORT: 'USB',
-  USB: {},
-  SHOW_BTW_SPLIT: false,
-  USE_QR: false,
-  SHOP: { name: 'Nova Asia' },
-  QR: {}
-};
 
 const dingPath = path.join(__dirname, 'assets', 'ding.wav');
 const flaskAppPath = path.join(__dirname, '..', 'app.py');
@@ -45,7 +32,7 @@ function createWindow() {
     }
   });
 
-  // Flask 可能还在启动，简单做个重试
+  // Flask 可能还在启动，简单重试
   const target = 'http://localhost:5000/login';
   const tryLoad = (attempt = 0) => {
     mainWindow.loadURL(target).catch(() => {
@@ -57,47 +44,45 @@ function createWindow() {
 
 function startFlaskServer() {
   const pythonPath = process.platform === 'win32' ? 'python' : 'python3';
+  flaskProcess = spawn(pythonPath, [flaskAppPath], { cwd: flaskAppDir, shell: false });
 
-  flaskProcess = spawn(pythonPath, [flaskAppPath], {
-    cwd: flaskAppDir,
-    shell: false
-  });
-
-  flaskProcess.stdout.on('data', (data) => console.log('[Flask]', data.toString()));
-  flaskProcess.stderr.on('data', (data) => console.error('[Flask 错误]', data.toString()));
-  flaskProcess.on('exit', (code) => console.log(`Flask 进程退出，代码 ${code}`));
+  flaskProcess.stdout.on('data', (d) => console.log('[Flask]', d.toString().trim()));
+  flaskProcess.stderr.on('data', (d) => console.error('[Flask ERROR]', d.toString().trim()));
+  flaskProcess.on('exit', (code) => console.log('[Flask] exit code', code));
 }
 
+// === IPC：与 preload.js 对应 ===
+
+// Google Maps Key（preload: invoke）
 ipcMain.handle('get-google-maps-key', () => {
-  return '';
+  return ''; // TODO: 生产别硬编码
 });
 
-app.whenReady().then(() => {
-  startFlaskServer();
-  setTimeout(createWindow, 1200);
-});
 
-ipcMain.on('login-success', () => {
-  if (mainWindow) {
-    mainWindow.loadURL('http://localhost:5000/pos').catch(() => {});
-  }
-});
-
-ipcMain.on('play-ding', () => {
+// 声音（preload: send → 这里用 on）
+ipcMain.on('play-ding', async () => {
   stopDing = false;
-  function loop() {
+  const loop = async () => {
     if (stopDing) return;
-    wavPlayer.play({ path: dingPath }).then(() => {
+    try {
+      await wavPlayer.play({ path: dingPath });
       if (!stopDing) setTimeout(loop, 1000);
-    }).catch(() => {
+    } catch {
       if (!stopDing) setTimeout(loop, 1500);
-    });
-  }
+    }
+  };
   loop();
 });
 
-ipcMain.on('stop-ding', () => {
-  stopDing = true;
+ipcMain.on('stop-ding', () => { stopDing = true; });
+
+// （可选）主进程通知渲染端登录成功
+// mainWindow.webContents.send('login-success', { at: Date.now() });
+
+// App lifecycle
+app.whenReady().then(() => {
+  startFlaskServer();
+  createWindow();
 });
 
 app.on('window-all-closed', () => {
@@ -106,11 +91,13 @@ app.on('window-all-closed', () => {
 });
 
 
+// db.js (主进程)
+
 const Database = require('better-sqlite3');
 
 
-// === DB 路径（使用仓库内 data/orders.db）===
-const dbPath = path.join(__dirname, '..', 'data', 'orders.db');
+// === DB 路径（保持你原来的路径；也可以换成 app.getPath('userData') 更稳）===
+const dbPath = path.join('D:', 'NovaAsia1', 'data', 'orders.db');
 fs.mkdirSync(path.dirname(dbPath), { recursive: true });
 
 // === 连接 & 基础设置 ===
@@ -125,7 +112,6 @@ db.exec(`
     order_id       TEXT,
     order_number   TEXT UNIQUE,
     data           TEXT NOT NULL,
-    source_json    TEXT NOT NULL,
     created_at     DATETIME DEFAULT (datetime('now','localtime'))
   );
   CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at DESC);
@@ -134,113 +120,122 @@ db.exec(`
 
 // === 预编译语句 ===
 const upsertOrderStmt = db.prepare(`
-  INSERT INTO orders (order_id, order_number, data, source_json)
-  VALUES (@order_id, @order_number, @data, @source_json)
+  INSERT INTO orders (order_id, order_number, data)
+  VALUES (@order_id, @order_number, @data)
   ON CONFLICT(order_number) DO UPDATE SET
-    order_id    = excluded.order_id,
-    data        = excluded.data,
-    source_json = excluded.source_json,
-    created_at  = datetime('now','localtime')
+    order_id   = excluded.order_id,
+    data       = excluded.data,
+    created_at = datetime('now','localtime')
 `);
 
 const getByNumberStmt = db.prepare(`SELECT * FROM orders WHERE order_number = ?`);
 const getByIdStmt     = db.prepare(`SELECT * FROM orders WHERE id = ?`);
 const listRecentStmt  = db.prepare(`SELECT * FROM orders ORDER BY created_at DESC LIMIT ?`);
-const listTodayStmt   = db.prepare(`SELECT * FROM orders WHERE date(created_at) = date('now','localtime') ORDER BY created_at DESC`);
 
-
-// 金额字段统一保留两位小数
-function normalizeAmounts(o) {
-    const fields = [
-        'totaal','subtotal','total','packaging','delivery','discount',
-        'bezorgkosten','verpakkingskosten','fooi','discountAmount','discount_amount',
-        'btw','btw_9','btw_21','btw_total'
-    ];
-    fields.forEach(k => {
-        if (o[k] != null && o[k] !== '') {
-            o[k] = Number(parseFloat(o[k]).toFixed(2));
-        }
-    });
-    return o;
-}
-
-// 保存订单（写入数据库）
-function saveOrderToLocalDB(order, source) {
-    const payload = {
-        order_id: order.id || null,
-        order_number: String(order.order_number || ''),
-        data: JSON.stringify(normalizeAmounts({ ...order })),
-        source_json: typeof source === 'string' ? source : JSON.stringify(source || order)
-    };
-    try {
-        upsertOrderStmt.run(payload);
-        console.log(`✅ 已保存订单到本地 SQLite: ${payload.order_number}`);
-        return true;
-    } catch (err) {
-        console.error('❌ 保存订单到 SQLite 失败:', err);
-        throw err;
-    }
+// === 封装（同步，try/catch 容错）===
+function saveLocalOrder(order) {
+  // 兼容你原先传入的对象结构
+  const payload = {
+    order_id:     String(order.id ?? ''),
+    order_number: String(order.order_number ?? ''),
+    data:         JSON.stringify(order)
+  };
+  upsertOrderStmt.run(payload);   // 同步执行，出错会抛异常
+  return true;
 }
 
 function getOrderByNumber(no) {
-    return getByNumberStmt.get(String(no));
+  return getByNumberStmt.get(String(no ?? '')) || null;
 }
-
 function getOrderById(id) {
-    return getByIdStmt.get(id);
+  return getByIdStmt.get(Number(id)) || null;
 }
-
 function listRecent(limit = 50) {
-    return listRecentStmt.all(limit);
+  return listRecentStmt.all(Number(limit));
 }
 
-function getOrdersToday() {
-    return listTodayStmt.all();
-}
+const { saveOrder } = require('./db');
 
-// ===================== IPC绑定 =====================
-ipcMain.handle('local.saveOrder', async (_evt, orderObj, source) => {
-    saveOrderToLocalDB(orderObj, source);
+ipcMain.removeHandler('db:save-order');
+ipcMain.handle('db:save-order', (_e, payload) => {
+  try {
+    saveOrder(payload);
     return { ok: true };
+  } catch (err) {
+    return { ok: false, error: String(err?.message || err) };
+  }
+});
+
+// === IPC：与之前保持一致的通道名称 ===
+ipcMain.handle('local.saveOrder', async (_evt, orderObj) => {
+  try {
+    saveLocalOrder(orderObj);
+    return { ok: true };
+  } catch (err) {
+    console.error('[local.saveOrder] failed:', err);
+    return { ok: false, error: String(err && err.message || err) };
+  }
 });
 
 ipcMain.handle('local.getOrderByNumber', async (_evt, no) => {
-    return await getOrderByNumber(no);
+  try {
+    const row = getOrderByNumber(no);
+    return row ? { ok: true, row } : { ok: false, error: 'NOT_FOUND' };
+  } catch (err) {
+    return { ok: false, error: String(err && err.message || err) };
+  }
 });
 
 ipcMain.handle('local.getOrderById', async (_evt, id) => {
-    return await getOrderById(id);
+  try {
+    const row = getOrderById(id);
+    return row ? { ok: true, row } : { ok: false, error: 'NOT_FOUND' };
+  } catch (err) {
+    return { ok: false, error: String(err && err.message || err) };
+  }
 });
 
 ipcMain.handle('local.listRecent', async (_evt, limit = 50) => {
-    return await listRecent(limit);
+  try {
+    const rows = listRecent(limit);
+    return { ok: true, rows };
+  } catch (err) {
+    return { ok: false, error: String(err && err.message || err) };
+  }
 });
 
-ipcMain.handle('local.getOrdersToday', async () => {
-    return getOrdersToday();
-});
-
-// 打印小票
-ipcMain.handle('print-receipt', async (_evt, payload) => {
-    try {
-        const raw = parseIncomingPayload(payload);
-        if (!raw) throw new Error('Invalid order payload');
-        const order = normalizeForPrint(raw);
-        await doEscposPrint(order);
-        return { ok: true };
-    } catch (err) {
-        console.error('❌ 打印失败:', err);
-        return { ok: false, error: err.message };
-    }
-});
+// === 优雅关闭（合并 WAL，避免 .wal 越长越大） ===
+function shutdownDb() {
+  try { db.pragma('wal_checkpoint(TRUNCATE)'); } catch {}
+  try { db.close(); } catch {}
+}
+app.on('before-quit', shutdownDb);
 
 module.exports = {
-    saveOrderToLocalDB,
-    getOrderByNumber,
-    getOrderById,
-    listRecent,
-    getOrdersToday
+  saveLocalOrder, getOrderByNumber, getOrderById, listRecent, shutdownDb, dbPath
 };
+
+
+
+
+
+// —— 打印
+ipcMain.handle('print-receipt', async (_evt, payload) => {
+  try {
+    const raw = parseIncomingPayload(payload);
+    if (!raw) throw new Error('Invalid order payload');
+    const order = normalizeForPrint(raw);  // 确保已定义/引入
+    const err  = validateOrder(order);
+    if (err) throw new Error(err);
+    await doEscposPrint(order);
+    return { ok: true };
+  } catch (err) {
+    console.error('❌ 打印失败:', err);
+    return { ok: false, error: err.message };
+  }
+});
+
+
 // ========= Helpers: parse / normalize / validate =========
 function parseIncomingPayload(input) {
   if (typeof input === 'string') {
@@ -743,4 +738,3 @@ resolve();
     });
   });
 }
-
