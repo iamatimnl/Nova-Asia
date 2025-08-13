@@ -55,7 +55,7 @@ th:last-child {
         <th>Betaling</th>
         <th class="nowrap">Bestelnummer</th>
         <th class="nowrap">Korting (gebruikt)</th>
-        <th class="nowrap">Volgende kortingscode</th>
+        <th class="nowrap">Volgende korting</th>
       </tr>
     </thead>
 
@@ -134,23 +134,27 @@ th:last-child {
             {% if is_kassa %}
               Kassa korting
             {% else %}
-              Korting{% if used_code %} (Code: {{ used_code }}){% endif %}
-            {% endif %}
-            {% if used_amt is not none and used_amt_num != 0 %}
-              : -€{{ '%.2f' % used_amt_num }}
+              Korting{% if used_amt is not none and used_amt_num != 0 %} -€{{ '%.2f' % used_amt_num }}{% endif %}{% if used_code %} (Code: {{ used_code }}){% endif %}
             {% endif %}
           {% else %}
             -
           {% endif %}
         </td>
 
-        {# —— 下次奖励码：严格显示 discount_code；金额可作为说明 #}
+        {# —— 下次奖励：显示 discount_amount（可为百分比或固定金额） #}
+        {% set next_amt_txt = '' %}
+        {% if next_amt is string and next_amt|trim|endswith('%') %}
+          {% set next_amt_txt = next_amt|trim %}
+        {% elif next_amt is not none and next_amt_num != 0 %}
+          {% if 0 < next_amt_num < 1 %}
+            {% set next_amt_txt = ('%.2f' % (next_amt_num * 100)) ~ '%' %}
+          {% else %}
+            {% set next_amt_txt = '€' ~ ('%.2f' % next_amt_num) %}
+          {% endif %}
+        {% endif %}
         <td class="nowrap">
-          {% if show_next %}
-            {% if next_code %}{{ next_code }}{% else %}-{% endif %}
-            {% if next_amt is not none and next_amt_num != 0 %}
-              (waarde: €{{ '%.2f' % next_amt_num }})
-            {% endif %}
+          {% if next_amt_txt %}
+            Hier is uw korting {{ next_amt_txt }} voor volgende bedrag{% if next_code %} (Code: {{ next_code }}){% endif %}
           {% else %}
             -
           {% endif %}
