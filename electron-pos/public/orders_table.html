@@ -1,0 +1,284 @@
+
+
+<style>
+.orders-cards {
+  display: flex;
+  margin-top: -8px;
+  flex-wrap: wrap;
+  gap: 15px 15px;
+  padding: 0px 10px 10px 10px;  /* ✅ 去掉顶部 padding */
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.order-card-wrapper {
+  position: relative;          /* ✅ 启用 top 生效 */
+  flex: 0 0 340px;
+  display: flex;
+  flex-direction: column;
+  background: #fdfdfd;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+  overflow: hidden;
+  top: 10px;                  /* ✅ 向上移动 */
+  /* margin-top: -15px; ❌ 不需要，容易和 gap 冲突 */
+}
+
+
+.order-card {
+  padding: 12px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-header {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card-content-scroll {
+  font-size: 14px;
+  line-height: 1.4;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.card-content-scroll ul {
+  margin: 0.4rem 0;
+  padding-left: 1.5rem;
+  color: #333;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 12px;
+  gap: 6px;
+  background: #f3f3f3;
+  border-top: 1px solid #ddd;
+}
+
+.card-actions button {
+  flex: 1;
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-klaar {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-bewerk {
+  background-color: #ffc107;
+  color: black;
+}
+
+.btn-annuleer {
+  background-color: #dc3545;
+  color: white;
+}
+
+/* 状态样式 */
+.order-card.completed {
+  background-color: #557556 !important;
+  color: gray;
+}
+
+.order-card.cancelled {
+  background-color: #865050 !important;
+  color: gray;
+}
+
+.type-afhalen {
+  color: #007e33;
+}
+
+.type-bezorging {
+  color: #184ed8;
+}
+
+.orders-cards {
+  counter-reset: order-count; /* 初始化计数器 */
+}
+
+
+  .map-id {
+    background-color: #692802ff;
+    color: white;
+    padding: 2px 6px;
+    margin-right: 6px;
+    border-radius: 6px;
+    font-size: 1em;
+  }
+
+  #admin-orders-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border: none;
+    border-radius: 50%;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    font-size: 26px;
+  }
+
+  #admin-orders-btn:hover {
+    background-color: #0056b3;
+  }
+
+
+
+
+
+
+
+
+
+
+
+</style>
+
+<div class="orders-cards">
+  {% for order in orders %}
+  {% set is_delivery = order.order_type in ['delivery', 'bezorgen'] %}
+
+  <div class="order-card-wrapper">
+    <div
+      class="order-card {% if order.is_cancelled %}cancelled{% elif order.is_completed %}completed{% endif %}"
+      data-id="{{ order.id }}"
+      data-order="{{ order|tojson }}"
+    >
+      <div class="card-header">
+        <strong>{{ order.customer_name or '' }}</strong> -
+        <span class="{{ 'type-bezorging' if is_delivery else 'type-afhalen' }}">
+          {{ 'Bezorging' if is_delivery else 'Afhalen' }}
+        </span>
+        <span class="order-time">
+          {{ order.created_at_local.strftime('%Y-%m-%d %H:%M') if order.created_at_local else (order.created_at or '') }}
+        </span>
+      </div>
+
+      <div class="card-content-scroll">
+        <p><strong>Tijdslot:</strong>
+          {{ order.tijdslot_display or (order.delivery_time if is_delivery else order.pickup_time) or '-' }}
+        </p>
+
+        <p><strong>Telefoon:</strong> {{ order.phone or '' }}</p>
+        <p><strong>Email:</strong> {{ order.email or '-' }}</p>
+
+        <p><strong>Items:</strong></p>
+        <ul>
+          {# 优先 items_dict；否则退回 items #}
+          {% set items_src = order.items_dict if order.items_dict is defined else order.items %}
+          {% if items_src %}
+            {% for name, item in items_src.items() %}
+              <li>{{ name }} x {{ item['qty'] }}</li>
+            {% endfor %}
+          {% else %}
+            <li>-</li>
+          {% endif %}
+        </ul>
+
+        <p><strong>Opmerking:</strong> {{ order.opmerking or '-' }}</p>
+        <p><strong>Ordernummer:</strong> {{ order.order_number or '' }}</p>
+
+        {# 价格只显示订单包里的值，不计算 #}
+        {% set totaal_val =
+             (order.totaal if order.totaal is not none else
+             (order.total if order.total is not none else 0)) %}
+        <p><strong>Totaal:</strong> €{{ '%.2f' % totaal_val }}</p>
+
+        <p><strong>BTW 9%:</strong> €{{ '%.2f' % (order.btw_9 or 0) }}</p>
+        {% if order.btw_21 %}
+          <p><strong>BTW 21%:</strong> €{{ '%.2f' % (order.btw_21 or 0) }}</p>
+        {% endif %}
+        {% set btw_total_val =
+             (order.btw_total if order.btw_total is not none
+              else ((order.btw_9 or 0) + (order.btw_21 or 0))) %}
+        <p><strong>BTW Totaal:</strong> €{{ '%.2f' % btw_total_val }}</p>
+
+        {# ===================== 折扣区（严格字段，不容错） ===================== #}
+        {# 本次使用：只看 discountCode / discountAmount；KASSA 显示 Kassa korting #}
+        {% set used_code = order.discountCode or '' %}
+        {% set used_amt_raw = order.discountAmount %}
+        {% set used_amt_num = 0 if used_amt_raw is none else
+                               (used_amt_raw if used_amt_raw is number
+                                else ((used_amt_raw|string)|replace(',', '.')|float)) %}
+        {% set is_kassa = used_code|string|upper == 'KASSA' %}
+        {% if used_code or used_amt_num != 0 %}
+          <p>
+            <strong>{{ 'Kassa korting' if is_kassa else 'Korting' }}</strong>
+            {% if not is_kassa and used_code %}(Code: {{ used_code }}){% endif %}
+            {% if used_amt_num != 0 %}: -€{{ '%.2f' % used_amt_num }}{% endif %}
+          </p>
+        {% endif %}
+
+        {# 下次可用：只看 discount_code / discount_amount；金额仅作说明 #}
+        {% set next_code = order.discount_code or '' %}
+        {% set next_amt_raw = order.discount_amount %}
+        {% set next_amt_num = 0 if next_amt_raw is none else
+                               (next_amt_raw if next_amt_raw is number
+                                else ((next_amt_raw|string)|replace(',', '.')|float)) %}
+        {% if next_code or next_amt_num != 0 %}
+          <p>
+            <strong>Hier uw kortingscode volgende bestelling:</strong>
+            {{ next_code }}
+            {% if next_amt_num != 0 %} — €{{ '%.2f' % next_amt_num }}{% endif %}
+          </p>
+        {% endif %}
+        {# =================== 折扣区结束 =================== #}
+
+        <p><strong>Adres:</strong>
+          {% if is_delivery %}
+            {{ order.street }} {{ order.house_number }} {{ order.postcode }} {{ order.city }}
+            {% if order.maps_link %}
+              <a href="{{ order.maps_link }}" target="_blank">📍Maps</a>
+            {% endif %}
+          {% else %}-{% endif %}
+        </p>
+
+        <p><strong>Betaalwijze:</strong> {{ order.payment_method or '-' }}</p>
+        <p><strong>Fooi:</strong> €{{ '%.2f' % (order.fooi or order.tip or 0) }}</p>
+      </div>
+    </div>
+
+    <div class="card-actions">
+      <button class="btn-klaar" onclick="toggleComplete(this)">Klaar</button>
+      <button class="btn-bewerk" onclick="editOrder(this)">Bewerk</button>
+      <button class="btn-annuleer" onclick="cancelOrder(this)">Annuleer</button>
+    </div>
+  </div>
+
+  {% endfor %}
+</div>
+
+  <!-- 管理订单列表按钮 -->
+  <button id="admin-orders-btn" title="Admin Orders">📋</button>
+
+  <script>
+    const toggleBtn = document.getElementById('toggle-map-btn');
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', () => {
+        window.open('/map', '_blank');
+      });
+    }
+
+    const adminBtn = document.getElementById('admin-orders-btn');
+    if (adminBtn) {
+      adminBtn.addEventListener('click', () => {
+        window.open('/admin/orders', '_blank');
+      });
+    }
+  </script>
