@@ -1,0 +1,333 @@
+
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bestellingen Vandaag</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      padding: 20px;
+      max-width: 1200px;
+      margin: auto;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+    ul { margin: 0; padding-left: 20px; }
+    td:last-child,
+th:last-child {
+  padding-right: 20px;
+}
+
+.type-bezorging { color: red; font-weight: bold; }
+.type-afhalen { color: green; font-weight: bold; }
+
+/* 新订单动画效果 */
+.new-order {
+  animation: highlightBlink 6s ease-in-out;
+  animation-iteration-count: 10;
+}
+@keyframes highlightBlink {
+  0%,100% { background-color: green; }
+  50% { background-color: blue; }
+}
+
+  </style>
+</head>
+<body>
+  <h1>Bestellingen Vandaag</h1>
+<table>
+    <thead>
+      <tr>
+        <th class="nowrap">Datum</th>
+        <th class="nowrap">Besteld</th>
+        <th class="nowrap">Tijdslot</th>
+        <th class="nowrap">Type</th>
+        <th>Klant</th>
+        <th>Telefoon</th>
+        <th>Email</th>
+        <th>Items</th>
+        <th>Opmerking</th>
+        <th class="nowrap">Totaal (€)</th>
+        <th>Adres</th>
+        <th>Betaling</th>
+        <th class="nowrap">Bestelnummer</th>
+        <th class="nowrap">Korting (gebruikt)</th>
+        <th class="nowrap">Volgende kortingscode</th>
+      </tr>
+    </thead>
+
+    <tbody>
+    {% for order in orders %}
+      {% set is_delivery = order.order_type in ['delivery', 'bezorgen'] %}
+
+      {# —— 本次使用的折扣（严格使用 discountCode / discountAmount，不容错到 next_* 字段） #}
+      {% set used_code = (order.discountCode or '') %}
+      {% set used_amt  = order.discountAmount %}
+      {% set used_amt_num = (used_amt if used_amt is number else (used_amt|string)|replace(',', '.')|float(default=0)) %}
+      {% set show_used = used_code or (used_amt is not none and used_amt_num != 0) %}
+      {% set is_kassa = used_code|string|upper == 'KASSA' %}
+
+      {# —— 下次可用的奖励码（严格使用 discount_code / discount_amount；金额可显示但只作说明） #}
+      {% set next_code = (order.discount_code or '') %}
+      {% set next_amt  = order.discount_amount %}
+      {% set next_amt_num = (next_amt if next_amt is number else (next_amt|string)|replace(',', '.')|float(default=0)) %}
+      {% set show_next = next_code or (next_amt is not none and next_amt_num != 0) %}
+
+      <tr>
+        <td class="nowrap">{{ order.created_at_local.strftime('%Y-%m-%d') }}</td>
+        <td class="nowrap">{{ order.created_at_local.strftime('%H:%M') }}</td>
+
+        <td class="nowrap">
+          {% if is_delivery %}
+            {{ order.delivery_time or '-' }}
+          {% else %}
+            {{ order.pickup_time or '-' }}
+          {% endif %}
+        </td>
+
+        <td class="nowrap">
+          <span class="{{ 'type-bezorging' if is_delivery else 'type-afhalen' }}">
+            {{ 'Bezorging' if is_delivery else 'Afhalen' }}
+          </span>
+        </td>
+
+        <td>{{ order.customer_name or '' }}</td>
+        <td>{{ order.phone or '' }}</td>
+        <td>{{ order.email or '-' }}</td>
+
+        <td>
+          <ul>
+            {% set items_src = order.items_dict if order.items_dict is defined else order.items %}
+            {% if items_src %}
+              {% for name, item in items_src.items() %}
+                <li>{{ name }} x {{ item['qty'] }}</li>
+              {% endfor %}
+            {% else %}
+              <li>-</li>
+            {% endif %}
+          </ul>
+        </td>
+
+        <td>{{ order.opmerking or '-' }}</td>
+
+        {# 只显示订单包里的总价字段，不做任何计算 #}
+        <td class="nowrap">€{{ '%.2f' % (order.totaal or order.total or 0) }}</td>
+
+        <td>
+          {% if is_delivery %}
+            {{ (order.street or '') ~ ' ' ~ (order.house_number or '') ~ ' ' ~ (order.postcode or '') ~ ' ' ~ (order.city or '') }}
+            {% if order.maps_link %}
+              <a href="{{ order.maps_link }}" target="_blank">📍Maps</a>
+            {% endif %}
+          {% else %}-{% endif %}
+        </td>
+
+        <td>{{ order.payment_method or '-' }}</td>
+        <td class="nowrap">{{ order.order_number or '' }}</td>
+
+        {# —— 本次使用的折扣：仅显示 discountCode/discountAmount #}
+        <td class="nowrap">
+          {% if show_used %}
+            {% if is_kassa %}
+              Kassa korting
+            {% else %}
+              Korting{% if used_code %} (Code: {{ used_code }}){% endif %}
+            {% endif %}
+            {% if used_amt is not none and used_amt_num != 0 %}
+              : -€{{ '%.2f' % used_amt_num }}
+            {% endif %}
+          {% else %}
+            -
+          {% endif %}
+        </td>
+
+        {# —— 下次奖励码：严格显示 discount_code；金额可作为说明 #}
+        <td class="nowrap">
+          {% if show_next %}
+            {% if next_code %}{{ next_code }}{% else %}-{% endif %}
+            {% if next_amt is not none and next_amt_num != 0 %}
+              (waarde: €{{ '%.2f' % next_amt_num }})
+            {% endif %}
+          {% else %}
+            -
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <p><a href="{{ url_for('pos') }}">Terug naar POS</a></p>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script>
+    const socket = io({transports:['websocket']});
+    let pollTimer;
+    window.addEventListener('beforeunload',()=>socket.disconnect());
+    socket.on('connect_error',()=>{setTimeout(()=>socket.connect(),1000);});
+    socket.on('disconnect', startPolling);
+    socket.on('connect', stopPolling);
+function formatCurrency(value) {
+  if (typeof value === 'string') {
+    value = value.replace(/[^\d,.-]/g, '').replace(',', '.').trim();
+  }
+  const num = parseFloat(value);
+  return isNaN(num) ? "€0.00" : `€${num.toFixed(2)}`;
+}
+
+function pad(num) {
+  return num.toString().padStart(2, '0');
+}
+
+// 声音提示
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function beep(){
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(660, audioCtx.currentTime);
+  gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + 0.2);
+}
+
+function parseTimeToMinutes(str){
+  if(!str) return Infinity;
+  const s=str.trim().toUpperCase();
+  if(s==='ZSM' || s==='Z.S.M.') return -1;
+  const p=str.split(':');
+  const h=parseInt(p[0],10);
+  const m=parseInt(p[1],10);
+  if(isNaN(h)||isNaN(m)) return Infinity;
+  return h*60+m;
+}
+
+function getSortKey(order){
+  const isDelivery=['delivery','bezorgen'].includes(order.order_type);
+  const t=isDelivery ? (order.delivery_time||order.deliveryTime) : (order.pickup_time||order.pickupTime);
+  return parseTimeToMinutes(t);
+}
+
+function insertSorted(tbody,tr){
+  const val=parseFloat(tr.dataset.sortKey);
+  const rows=Array.from(tbody.querySelectorAll('tr'));
+  for(const row of rows){
+    if(parseFloat(row.dataset.sortKey)>val){
+      tbody.insertBefore(tr,row);
+      return;
+    }
+  }
+  tbody.appendChild(tr);
+}
+
+     
+
+
+  function addRow(order, highlight=false) {
+  const tbody = document.querySelector('table tbody');
+  const tr = document.createElement('tr');
+
+  const isDelivery = ['delivery','bezorgen'].includes(order.order_type);
+
+  // items 兼容：后端可能是 items_dict，也可能是 items(object)
+  const itemsObj = order.items_dict || order.items || {};
+  const items = Object.entries(itemsObj).map(([n,i]) => {
+    const qty = (i && (i.qty ?? i.quantity)) || 0;
+    return `<li>${n} x ${qty}</li>`;
+  }).join('');
+
+  // 只读：总价优先取 totaal，其次 total，再其次 summary.total
+  let totaalVal = order.totaal ?? order.total ?? order.summary?.total ?? 0;
+  if (typeof totaalVal === 'string') {
+    totaalVal = parseFloat(totaalVal.replace(/[^\d,.-]/g, '').replace(',', '.').trim());
+  }
+
+  // 只读：时间字段
+  const pickup   = order.pickup_time   ?? order.pickupTime   ?? '';
+  const delivery = order.delivery_time ?? order.deliveryTime ?? '';
+  const tijdslot = isDelivery ? delivery : pickup;
+
+  // 下单时间只做展示用（不推算）
+  let time = order.created_at || order.created_at_local || '';
+  if (typeof time === 'string' && time.includes(' ')) {
+    time = time.split(' ')[1]?.slice(0,5) || time;
+  }
+
+  tr.innerHTML = `
+    <td>${order.created_date || order.created_at?.slice?.(0,10) || ''}</td>
+    <td>${time || ''}</td>
+    <td>${tijdslot || '-'}</td>
+    <td>${isDelivery ? 'Bezorgen' : 'Afhalen'}</td>
+    <td>${order.customer_name || ''}</td>
+    <td>${order.phone || ''}</td>
+    <td>${order.email || '-'}</td>
+    <td><ul>${items}</ul></td>
+    <td>${(order.opmerking || order.remark || '-') }</td>
+    <td>${formatCurrency(totaalVal)}</td>
+    <td>${
+      isDelivery
+        ? `${order.street||''} ${order.house_number||''} ${order.postcode||''} ${order.city||''}${
+            order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''
+          }`
+        : '-'
+    }</td>
+    <td>${order.payment_method || '-'}</td>
+    <td>${order.order_number || ''}</td>
+  `;
+
+  // 仅用“取/送时间”排序，不再做任何金额相关推算
+  const sortKey = (() => {
+    const t = tijdslot?.trim()?.toUpperCase();
+    if (!t) return 1e9;
+    if (t === 'ZSM' || t === 'Z.S.M.') return -1;
+    const m = t.match(/^(\d{1,2}):(\d{2})$/);
+    if (!m) return 1e9;
+    return (+m[1])*60 + (+m[2]);
+  })();
+  tr.dataset.sortKey = sortKey;
+
+  if (highlight) {
+    tr.classList.add('new-order');
+    setTimeout(() => tr.classList.remove('new-order'), 10000);
+    beep();
+  }
+
+  insertSorted(tbody, tr);
+  return tr;
+}
+
+  socket.on('new_order', order => {
+  // 只展示后端给的字段
+  const row = addRow(order, true);
+  if (row && confirm('Nieuwe bestelling ontvangen!')) {
+    row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+});
+
+function fetchOrders(){
+  fetch('/pos/orders_today?json=1').then(r=>r.json()).then(data=>{
+      const tbody = document.querySelector('table tbody');
+      if(!tbody) return;
+      tbody.innerHTML='';
+      data.sort((a,b)=>getSortKey(a)-getSortKey(b)).forEach(o=>addRow(o));
+      }).catch(()=>{});
+    }
+
+    function startPolling(){
+      if(pollTimer) return;
+      fetchOrders();
+      pollTimer = setInterval(fetchOrders,10000);
+    }
+
+    function stopPolling(){
+      if(pollTimer){
+        clearInterval(pollTimer);
+        pollTimer = null;
+      }
+    }
+  </script>
+</body>
+</html>
