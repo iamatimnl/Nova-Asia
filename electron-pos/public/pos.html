@@ -2993,7 +2993,14 @@ function toUIOrder(o) {
   const toNum = v => (v === null || v === undefined || v === '') ? 0 : Number(v);
   const totaal        = toNum(src.totaal ?? src.total ?? 0);
   const subtotal      = toNum(src.subtotal ?? 0);
-  const packaging_fee = toNum(src.packaging_fee ?? 0);
+  const packaging_fee = toNum(
+    src.packaging_fee ??
+    src.summary?.packaging_fee ??
+    src.verpakkingskosten ??
+    src.packaging ??
+    src.package_fee ??
+    0
+  );
   const delivery_fee  = toNum(
     src.delivery_fee ??
     src.summary?.delivery_fee ??
