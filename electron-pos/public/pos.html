@@ -1066,7 +1066,7 @@ dialog::backdrop {
   </div>
 </div>
 
-<div class="summary-row">
+<div class="summary-row" id="summaryBtw9Row" style="display:none;">
   <label>BTW 9%:</label>
   <span id="summaryBtw9">€0,00</span>
 </div>
@@ -1074,11 +1074,6 @@ dialog::backdrop {
 <div class="summary-row" id="summaryBtw21Row" style="display:none;">
   <label>BTW 21%:</label>
   <span id="summaryBtw21">€0,00</span>
-</div>
-
-<div class="summary-row">
-  <label>BTW Totaal:</label>
-  <span id="summaryBtw">€0,00</span>
 </div>
 
 <div class="summary-row">
@@ -1786,8 +1781,8 @@ function updateCart() {
   document.getElementById('summaryDiscount').textContent = discount ? `- ${fmt(discount)}` : '€0,00';
   document.getElementById('summaryBtw9').textContent = fmt(btw9);
   document.getElementById('summaryBtw21').textContent = fmt(btw21);
-  document.getElementById('summaryBtw21Row').style.display = btw21>0?'' : 'none';
-  document.getElementById('summaryBtw').textContent = fmt(btw);
+  document.getElementById('summaryBtw9Row').style.display = btw9>0 ? '' : 'none';
+  document.getElementById('summaryBtw21Row').style.display = btw21>0 ? '' : 'none';
   document.getElementById('total').textContent = fmt(total);
 
   const badge = document.getElementById('cartCount');
@@ -2827,9 +2822,8 @@ function addRow(order, highlight = false) {
   const packaging_fee = window.toNum(order.packaging_fee ?? 0);
   const delivery_fee  = window.toNum(order.delivery_fee ?? 0);
   const tip           = window.toNum(order.tip ?? 0);
-  const btw_9         = window.toNum(order.btw_9 ?? 0);
-  const btw_21        = window.toNum(order.btw_21 ?? 0);
-  const btw_total     = window.toNum(order.btw_total ?? order.btw ?? 0);
+  const btw_9  = window.toNum(order.btw_9  ?? 0);
+  const btw_21 = window.toNum(order.btw_21 ?? 0);
 
   // —— 折扣（严格分流，**不容错**）
   // 1) 本次使用折扣：只取 discountCode / discountAmount
@@ -2902,7 +2896,6 @@ function addRow(order, highlight = false) {
     ${delivery_fee  > 0 ? `<div><strong>Bezorgkosten:</strong> €${fmt2(delivery_fee)}</div>` : ''}
     ${btw_9         > 0 ? `<div><strong>BTW 9%:</strong> €${fmt2(btw_9)}</div>` : ''}
     ${btw_21        > 0 ? `<div><strong>BTW 21%:</strong> €${fmt2(btw_21)}</div>` : ''}
-    ${btw_total     > 0 ? `<div><strong>BTW Totaal:</strong> €${fmt2(btw_total)}</div>` : ''}
 
     ${usedKortingHtml}
 
@@ -2984,15 +2977,20 @@ function toUIOrder(o) {
   const uiPickup   = isDelivery ? '' : (src.pickup_time || tijdslot || '');
   const uiDelivery = isDelivery ? (src.delivery_time || tijdslot || '') : '';
 
-  // 2) 金额（兼容 totaal / summary.total；并把字符串数字转成数值）
+  // 2) 金额：直接读取订单包字段，不做推导或容错
   const toNum = v => (v === null || v === undefined || v === '') ? 0 : Number(v);
-  const totaal        = (src.totaal ?? src.summary?.total ?? src.total ?? 0);
-  const subtotal      = (src.subtotal ?? src.summary?.subtotal ?? 0);
-  const packaging_fee = toNum(src.packaging_fee ?? src.summary?.packaging_fee ?? src.verpakkingskosten ?? 0);
-  const delivery_fee  = toNum(src.delivery_fee  ?? src.summary?.delivery_fee  ?? src.bezorgkosten      ?? 0);
-  const fooi          = toNum(src.tip ?? src.fooi ?? 0);
-  const btw           = toNum(src.btw ?? src.summary?.btw ?? src.btw_total ?? 0);
-  const discount      = toNum(src.discount_amount ?? src.summary?.discount ?? src.discountAmount ?? 0);
+  const totaal        = toNum(src.totaal ?? src.total ?? 0);
+  const subtotal      = toNum(src.subtotal ?? 0);
+  const packaging_fee = toNum(src.packaging_fee ?? 0);
+  const delivery_fee  = toNum(src.delivery_fee  ?? 0);
+  const fooi          = toNum(src.tip ?? 0);
+  const btw_9         = toNum(src.btw_9 ?? 0);
+  const btw_21        = toNum(src.btw_21 ?? 0);
+  const btw_total     = toNum(src.btw_total ?? src.btw ?? 0);
+  const discountAmount = toNum(src.discountAmount ?? 0);
+  const discountCode   = src.discountCode ?? '';
+  const nextDiscountAmount = toNum(src.discount_amount ?? 0);
+  const nextDiscountCode   = src.discount_code ?? '';
 
   // 3) 明细：UI 现在用对象 { name: {qty, price,...} }；如果传来是数组就转对象
   let itemsObj = {};
@@ -3022,14 +3020,18 @@ function toUIOrder(o) {
     postcode: src.postcode ?? src.customer?.postcode ?? '',
     city: src.city ?? src.customer?.city ?? '',
 
-    // UI 习惯字段（保持你原逻辑）
-    totaal, subtotal,
-    verpakkingskosten: packaging_fee,
-    bezorgkosten: delivery_fee,
-    fooi,
-    btw,
-    discount_amount: discount,
-    discount_code: (src.discount_code ?? src.discountCode ?? ''),
+    totaal,
+    subtotal,
+    packaging_fee,
+    delivery_fee,
+    tip: fooi,
+    btw_9,
+    btw_21,
+    btw_total,
+    discountCode,
+    discountAmount,
+    discount_code: nextDiscountCode,
+    discount_amount: nextDiscountAmount,
 
     tijdslot,                    // 原始显示
     pickup_time: uiPickup,       // 自取弹窗显示这个
