@@ -152,34 +152,118 @@
 
 <div class="orders-cards">
   {% for order in orders %}
+  {% set is_delivery = order.order_type in ['delivery', 'bezorgen'] %}
+
   <div class="order-card-wrapper">
-    <div class="order-card {% if order.is_cancelled %}cancelled{% elif order.is_completed %}completed{% endif %}" data-id="{{ order.id }}" data-order="{{ order|tojson }}">
-      {% set is_delivery = order.order_type in ['delivery', 'bezorgen'] %}
+    <div
+      class="order-card {% if order.is_cancelled %}cancelled{% elif order.is_completed %}completed{% endif %}"
+      data-id="{{ order.id }}"
+      data-order="{{ order|tojson }}"
+    >
       <div class="card-header">
         <strong>{{ order.customer_name or '' }}</strong> -
         <span class="{{ 'type-bezorging' if is_delivery else 'type-afhalen' }}">
           {{ 'Bezorging' if is_delivery else 'Afhalen' }}
         </span>
-        <span class="order-time">{{ order.created_at_local.strftime('%Y-%m-%d %H:%M') }}</span>
+        <span class="order-time">
+          {{ order.created_at_local.strftime('%Y-%m-%d %H:%M') if order.created_at_local else (order.created_at or '') }}
+        </span>
       </div>
+
       <div class="card-content-scroll">
-        <p><strong>Tijdslot:</strong> {{ order.tijdslot_display or (order.delivery_time if is_delivery else order.pickup_time) or '-' }}</p>
+        <p><strong>Tijdslot:</strong>
+          {{ order.tijdslot_display or (order.delivery_time if is_delivery else order.pickup_time) or '-' }}
+        </p>
+
         <p><strong>Telefoon:</strong> {{ order.phone or '' }}</p>
         <p><strong>Email:</strong> {{ order.email or '-' }}</p>
+
         <p><strong>Items:</strong></p>
         <ul>
-          {% for name, item in order.items_dict.items() %}
-          <li>{{ name }} x {{ item['qty'] }}</li>
-          {% endfor %}
+          {# 优先 items_dict；否则退回 items #}
+          {% set items_src = order.items_dict if order.items_dict is defined else order.items %}
+          {% if items_src %}
+            {% for name, item in items_src.items() %}
+              <li>{{ name }} x {{ item['qty'] }}</li>
+            {% endfor %}
+          {% else %}
+            <li>-</li>
+          {% endif %}
         </ul>
+
         <p><strong>Opmerking:</strong> {{ order.opmerking or '-' }}</p>
         <p><strong>Ordernummer:</strong> {{ order.order_number or '' }}</p>
-        <p><strong>Totaal:</strong> €{{ '%.2f' % (order.totaal or 0) }}</p>
-        <p><strong>BTW 9%:</strong> €{{ '%.2f' % (order.btw_9 or 0) }}</p>
-        {% if order.btw_21 %}
-        <p><strong>BTW 21%:</strong> €{{ '%.2f' % (order.btw_21 or 0) }}</p>
+
+        {# 价格字段：严格只读订单包，不做任何推导 #}
+        {% set subtotal_val = order.subtotal if order.subtotal is not none else 0 %}
+        {% if subtotal_val %}
+          <p><strong>Subtotal:</strong> €{{ '%.2f' % subtotal_val }}</p>
         {% endif %}
-        <p><strong>BTW Totaal:</strong> €{{ '%.2f' % (order.btw_total or ((order.btw_9 or 0) + (order.btw_21 or 0))) }}</p>
+        {% if order.packaging_fee %}
+          <p><strong>Verpakkingskosten:</strong> €{{ '%.2f' % order.packaging_fee }}</p>
+        {% endif %}
+        {% if order.delivery_fee %}
+          <p><strong>Bezorgkosten:</strong> €{{ '%.2f' % order.delivery_fee }}</p>
+        {% endif %}
+        {% if order.btw_9 is not none %}
+          <p><strong>BTW 9%:</strong> €{{ '%.2f' % order.btw_9 }}</p>
+        {% endif %}
+        {% if order.btw_21 is not none %}
+          <p><strong>BTW 21%:</strong> €{{ '%.2f' % order.btw_21 }}</p>
+        {% endif %}
+        {% if order.btw_total is not none %}
+          <p><strong>BTW Totaal:</strong> €{{ '%.2f' % order.btw_total }}</p>
+        {% elif order.btw is not none %}
+          <p><strong>BTW:</strong> €{{ '%.2f' % order.btw }}</p>
+        {% endif %}
+        {% set totaal_val = order.totaal if order.totaal is not none else (order.total if order.total is not none else 0) %}
+        <p><strong>Totaal:</strong> €{{ '%.2f' % totaal_val }}</p>
+        {% if order.tip %}
+          <p><strong>Fooi:</strong> €{{ '%.2f' % order.tip }}</p>
+        {% endif %}
+
+        {# ===================== 折扣区（严格字段，不容错） ===================== #}
+        {# 本次使用：只看 discountCode / discountAmount；KASSA 显示 Kassa korting #}
+        {% set used_code = order.discountCode or '' %}
+        {% set used_amt_raw = order.discountAmount %}
+        {% set used_amt_num = 0 if used_amt_raw is none else
+                               (used_amt_raw if used_amt_raw is number
+                                else ((used_amt_raw|string)|replace(',', '.')|float)) %}
+        {% set is_kassa = used_code|string|upper == 'KASSA' %}
+        {% if used_code or used_amt_num != 0 %}
+          <p>
+            {% if is_kassa %}
+              <strong>Kassa korting</strong>
+            {% else %}
+              <strong>Korting {% if used_amt_num != 0 %}-€{{ '%.2f' % used_amt_num }}{% endif %}{% if used_code %} (Code: {{ used_code }}){% endif %}</strong>
+            {% endif %}
+          </p>
+        {% endif %}
+
+        {# 下次可用：只看 discount_code / discount_amount；金额仅作说明 #}
+        {% set next_code = order.discount_code or '' %}
+        {% set next_amt_raw = order.discount_amount %}
+        {% set next_amt_num = 0 if next_amt_raw is none else
+                               (next_amt_raw if next_amt_raw is number
+                                else ((next_amt_raw|string)|replace(',', '.')|float)) %}
+        {% set next_amt_txt = '' %}
+        {% if next_amt_raw is string and next_amt_raw|trim|endswith('%') %}
+          {% set next_amt_txt = next_amt_raw|trim %}
+        {% elif next_amt_num != 0 %}
+          {% if 0 < next_amt_num < 1 %}
+            {% set next_amt_txt = ('%.2f' % (next_amt_num * 100)) ~ '%' %}
+          {% else %}
+            {% set next_amt_txt = '€' ~ ('%.2f' % next_amt_num) %}
+          {% endif %}
+        {% endif %}
+        {% if next_amt_txt %}
+          <p>
+            <strong>Hier is uw korting {{ next_amt_txt }} voor volgende bedrag</strong>
+            {% if next_code %}(Code: {{ next_code }}){% endif %}
+          </p>
+        {% endif %}
+        {# =================== 折扣区结束 =================== #}
+
         <p><strong>Adres:</strong>
           {% if is_delivery %}
             {{ order.street }} {{ order.house_number }} {{ order.postcode }} {{ order.city }}
@@ -188,21 +272,21 @@
             {% endif %}
           {% else %}-{% endif %}
         </p>
-        <p><strong>Betaalwijze:</strong> {{ order.payment_method }}</p>
+
+        <p><strong>Betaalwijze:</strong> {{ order.payment_method or '-' }}</p>
         <p><strong>Fooi:</strong> €{{ '%.2f' % (order.fooi or order.tip or 0) }}</p>
       </div>
     </div>
+
     <div class="card-actions">
       <button class="btn-klaar" onclick="toggleComplete(this)">Klaar</button>
       <button class="btn-bewerk" onclick="editOrder(this)">Bewerk</button>
       <button class="btn-annuleer" onclick="cancelOrder(this)">Annuleer</button>
     </div>
   </div>
-    {% endfor %}
-    <!-- 页面右下角的地图开关按钮 -->
 
-
-  </div>
+  {% endfor %}
+</div>
 
   <!-- 管理订单列表按钮 -->
   <button id="admin-orders-btn" title="Admin Orders">📋</button>
@@ -222,4 +306,3 @@
       });
     }
   </script>
-
