@@ -232,9 +232,11 @@
         {% set is_kassa = used_code|string|upper == 'KASSA' %}
         {% if used_code or used_amt_num != 0 %}
           <p>
-            <strong>{{ 'Kassa korting' if is_kassa else 'Korting' }}</strong>
-            {% if not is_kassa and used_code %}(Code: {{ used_code }}){% endif %}
-            {% if used_amt_num != 0 %}: -€{{ '%.2f' % used_amt_num }}{% endif %}
+            {% if is_kassa %}
+              <strong>Kassa korting</strong>
+            {% else %}
+              <strong>Korting {% if used_amt_num != 0 %}-€{{ '%.2f' % used_amt_num }}{% endif %}{% if used_code %} (Code: {{ used_code }}){% endif %}</strong>
+            {% endif %}
           </p>
         {% endif %}
 
@@ -244,11 +246,20 @@
         {% set next_amt_num = 0 if next_amt_raw is none else
                                (next_amt_raw if next_amt_raw is number
                                 else ((next_amt_raw|string)|replace(',', '.')|float)) %}
-        {% if next_code or next_amt_num != 0 %}
+        {% set next_amt_txt = '' %}
+        {% if next_amt_raw is string and next_amt_raw|trim|endswith('%') %}
+          {% set next_amt_txt = next_amt_raw|trim %}
+        {% elif next_amt_num != 0 %}
+          {% if 0 < next_amt_num < 1 %}
+            {% set next_amt_txt = ('%.2f' % (next_amt_num * 100)) ~ '%' %}
+          {% else %}
+            {% set next_amt_txt = '€' ~ ('%.2f' % next_amt_num) %}
+          {% endif %}
+        {% endif %}
+        {% if next_amt_txt %}
           <p>
-            <strong>Hier uw kortingscode volgende bestelling:</strong>
-            {{ next_code }}
-            {% if next_amt_num != 0 %} — €{{ '%.2f' % next_amt_num }}{% endif %}
+            <strong>Hier is uw korting {{ next_amt_txt }} voor volgende bedrag</strong>
+            {% if next_code %}(Code: {{ next_code }}){% endif %}
           </p>
         {% endif %}
         {# =================== 折扣区结束 =================== #}
