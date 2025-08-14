@@ -72,6 +72,9 @@ with app.app_context():
         if "tijdslot_display" not in cols:
             with db.engine.begin() as conn:
                 conn.execute(text("ALTER TABLE orders ADD COLUMN tijdslot_display TEXT"))
+        if "bron" not in cols:
+            with db.engine.begin() as conn:
+                conn.execute(text("ALTER TABLE orders ADD COLUMN bron VARCHAR(20)"))
         # Ensure BTW columns exist
         if "btw_9" not in cols:
             with db.engine.begin() as conn:
@@ -196,6 +199,7 @@ def order_to_dict(order):
         "id": order.id,
         "order_number": order.order_number,
         "order_type": order.order_type,
+        "bron": order.bron,
         "customer_name": order.customer_name,
         "phone": order.phone,
         "email": order.email,
@@ -415,6 +419,7 @@ def orders_to_dicts(orders):
         result.append({
             "id": o.id,
             "order_type": o.order_type,
+            "bron": o.bron,
             "customer_name": o.customer_name,
             "phone": o.phone,
             "email": o.email,
@@ -521,6 +526,7 @@ class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     order_number = db.Column(db.String(20))
     order_type = db.Column(db.String(20))
+    bron = db.Column(db.String(20))
     customer_name = db.Column(db.String(100))
     phone = db.Column(db.String(20))
     email = db.Column(db.String(120))
@@ -555,6 +561,7 @@ class Order(db.Model):
             "id": self.id,
             "order_number": self.order_number,
             "order_type": self.order_type,
+            "bron": self.bron,
             "customer_name": self.customer_name,
             "phone": self.phone,
             "email": self.email,
@@ -891,6 +898,7 @@ def api_orders():
         summary_data = data.get("summary") or {}
         order = Order(
             order_type=order_type,
+            bron=data.get("bron"),
             customer_name=data.get("name") or data.get("customer_name"),
             phone=data.get("phone"),
             email=data.get("customerEmail") or data.get("email"),
@@ -1163,7 +1171,7 @@ def edit_order(order_id: int):
     allowed = [
         'customer_name', 'phone', 'email', 'street', 'house_number', 'postcode',
         'city', 'pickup_time', 'delivery_time', 'order_type', 'items',
-        'payment_method', 'totaal', 'fooi'
+        'payment_method', 'totaal', 'fooi', 'bron'
     ]
     for f in allowed:
         if f not in data:
