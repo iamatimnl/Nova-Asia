@@ -2315,16 +2315,24 @@ body.portrait-mode .cart-badge {
     font-size: 0.9em;
     color: #585656;
 }
-
-
+/* 手机端字体更小 */
+/* 桌面端（默认向下移动） */
 .menu-item h3,
 .menu-item p {
     background: rgba(255, 255, 255, 0.678);
     border-radius: 8px;
     padding: 4px 8px;
-    margin: 0 0 2px 0; /* 上边距设为 0，底边距 2px */
+    margin: 0 0 2px 0;
     position: relative;
-    top: -6px; /* 向上移动 4px，可调 */
+    top: 6px; /* 向下移动 */
+}
+
+/* 手机端（向上移动） */
+@media (max-width: 768px) {
+    .menu-item h3,
+    .menu-item p {
+        top: -6px; /* 向上移动 */
+    }
 }
 
 /* 手机端字体更小 */
@@ -2344,10 +2352,10 @@ h3 {
 
 h3 .sub {
   display: block;       /* 换行显示 */
-  font-size: 22px;      /* 副标题大小 */
+  font-size: 25px;      /* 副标题大小 */
   font-weight: normal;
   color: #130b00;
-  margin-top:6px;          /* 副标题颜色 */
+  margin-top:5px;          /* 副标题颜色 */
 }
 @media (max-width: 767px) {
  h3 .sub {
@@ -2355,7 +2363,7 @@ h3 .sub {
   font-size: 16px;      /* 副标题大小 */
   font-weight: normal;
   color: #130b00;    
-  margin-top:3px;           /* 副标题颜色 */
+  margin-top:1px;           /* 副标题颜色 */
 }}
 
 </style>
