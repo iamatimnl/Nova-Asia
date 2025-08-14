@@ -2322,7 +2322,9 @@ body.portrait-mode .cart-badge {
     background: rgba(255, 255, 255, 0.678);
     border-radius: 8px;
     padding: 4px 8px;
-    margin: 2px 0;
+    margin: 0 0 2px 0; /* 上边距设为 0，底边距 2px */
+    position: relative;
+    top: -6px; /* 向上移动 4px，可调 */
 }
 
 /* 手机端字体更小 */
@@ -2334,7 +2336,27 @@ body.portrait-mode .cart-badge {
         font-size: 0.678em; /* 说明文字更小 */
     }
 }
+h3 {
+  font-size: 28px;      /* 主标题大小 */
+  font-weight: bold;
+  line-height: 1.2;
+}
 
+h3 .sub {
+  display: block;       /* 换行显示 */
+  font-size: 22px;      /* 副标题大小 */
+  font-weight: normal;
+  color: #130b00;
+  margin-top:6px;          /* 副标题颜色 */
+}
+@media (max-width: 767px) {
+ h3 .sub {
+  display: block;       /* 换行显示 */
+  font-size: 16px;      /* 副标题大小 */
+  font-weight: normal;
+  color: #130b00;    
+  margin-top:3px;           /* 副标题颜色 */
+}}
 
 </style>
 
@@ -2643,7 +2665,8 @@ body.portrait-mode .cart-badge {
 <img alt="Japans Chicken Bento" src="{{ url_for('static', filename='images/chicken-bento.jpg') }}"/>
 </div>
 <div class="menu-content">
-<h3>Japans Chicken Bento €22.00</h3>
+<h3>Japans Chicken Bento <span class="sub">€22.00</span>
+</h3> 
 <p class="ingredients">Teriyaki kipfilet, sushi-rijst, kimchi-komkommer, chicken karaage</p>
 
 
