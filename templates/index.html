@@ -5991,27 +5991,6 @@ function checkout() {
 
   const pickupSel = document.getElementById('pickup_time').value;
   const deliverySel = document.getElementById('delivery_time').value;
-  const zsmSelected = (orderType === 'afhalen' && pickupSel === 'Z.S.M.') ||
-                      (orderType === 'bezorgen' && deliverySel === 'Z.S.M.');
-  if (zsmSelected) {
-    const now = new Date();
-    const minuteKey = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
-    const hourKey = `${pad(now.getHours())}:00`;
-    const openStr = orderType === 'afhalen' ? pickupOpenTime : deliveryOpenTime;
-    const closeStr = orderType === 'afhalen' ? pickupCloseTime : deliveryCloseTime;
-    const closedMap = orderType === 'afhalen' ? pickupClosedSlots : deliveryClosedSlots;
-    const inClosedSlot = closedMap[minuteKey] || closedMap[hourKey];
-    if (!inRange(openStr, closeStr) || inClosedSlot) {
-      alert('当前不可选择 ZSM，请选择其他时间');
-      if (sliderText && sliderButton && sliderTrack) {
-        sliderText.innerText = 'Schuif om te bestellen';
-        sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
-        sliderTrack.style.pointerEvents = 'auto';
-      }
-      isSubmitting = false;
-      return;
-    }
-  }
   const pickupValue = pickupSel === 'Z.S.M.' ? getAsapTime() : pickupSel;
   const deliveryValue = deliverySel === 'Z.S.M.' ? getAsapTime() : deliverySel;
   const tijdslotDisplay = orderType === 'afhalen' ? pickupSel : deliverySel;
@@ -6074,7 +6053,6 @@ function checkout() {
     body: JSON.stringify({
       // ✅ 关键：声明来源 index，让后端走 index 分支并采用前端 BTW
       source: 'index',
-      bron: 'Online',
       orderType,
       name: orderType === 'afhalen' ? document.getElementById('pickupName').value.trim() : document.getElementById('deliveryName').value.trim(),
       phone: orderType === 'afhalen' ? document.getElementById('pickupPhone').value.trim() : document.getElementById('deliveryPhone').value.trim(),
