@@ -310,13 +310,7 @@
     padding: 8px;
   }
 
-  .menu-item h3,
-  .menu-item p {
-    background: rgba(255, 255, 255, 0.7);
-    border-radius: 8px;
-    padding: 4px 8px;
-    margin: 2px 0;
-  }
+  
 
   .qty-box {
     position: absolute;
@@ -2321,8 +2315,32 @@ body.portrait-mode .cart-badge {
     font-size: 0.9em;
     color: #666;
 }
+/* 针对屏幕宽度小于 768px（常见手机尺寸）时字体更小 */
+@media (max-width: 768px) {
+    .ingredients {
+        font-size: 0.8em;
+    }
+}
 
-  
+.menu-item h3,
+.menu-item p {
+    background: rgba(255, 255, 255, 0.265);
+    border-radius: 8px;
+    padding: 4px 8px;
+    margin: 2px 0;
+}
+
+/* 手机端字体更小 */
+@media (max-width: 768px) {
+    .menu-item h3 {
+        font-size: 0.9em; /* 比桌面端小一点 */
+    }
+    .menu-item p {
+        font-size: 0.5562em; /* 说明文字更小 */
+    }
+}
+
+
 </style>
 
 
@@ -2630,9 +2648,9 @@ body.portrait-mode .cart-badge {
 <img alt="Japans Chicken Bento" src="{{ url_for('static', filename='images/chicken-bento.jpg') }}"/>
 </div>
 <div class="menu-content">
-<h3>Japans Chicken Bento</h3>
+<h3>Japans Chicken Bento €22.00</h3>
 <p class="ingredients">Teriyaki kipfilet, sushi-rijst, kimchi-komkommer, chicken karaage</p>
-<p>€ 22.00</p>
+
 
 
 <p id="soldoutJapansChickenBento" class="sold-out-msg hidden">Uitverkocht!</p>
@@ -2650,11 +2668,11 @@ body.portrait-mode .cart-badge {
 <img alt="Korean Chicken Bento" src="{{ url_for('static', filename='images/chicken-bento.jpg') }}"/>
 </div>
 <div class="menu-content">
-<h3>Korean Spicy Chicken Bento 🌶</h3>
+<h3>Korean Spicy Chicken Bento 🌶 €22.00 </h3>
 <p class="ingredients">Gegrilde Koreaanse kipfilet, sushi-rijst,kimchi-komkommer, spicycrispy chicken</p>
 
 
-<p>€ 22.00</p>
+
 <p id="soldoutKoreanChickenBento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 
@@ -2670,10 +2688,10 @@ body.portrait-mode .cart-badge {
 <img alt="Korean Beef Bento" src="{{ url_for('static', filename='images/Meatlove bento.png') }}"/>
 </div>
 <div class="menu-content">
-<h3>Korean Beef Bento</h3>
+<h3>Korean Beef Bento €25.00</h3>
 <p class="ingredients">Gegrilde Koreaanse beef, sushi-rijst, kimchi-komkommer, spicycrispy chicken</p>
 
-<p>€ 25.00</p>
+
 <p id="soldoutKoreanBeefBento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 
