@@ -1711,6 +1711,7 @@ function submitOrder() {
   const deliveryVal = deliverySel === 'Z.S.M.' ? getAsapTime() : deliverySel;
   const tijdslotDisplay = delivery ? deliverySel : pickupSel;
   const payload = {
+    bron: 'Kassa',
     orderType,
     name,
     phone,
