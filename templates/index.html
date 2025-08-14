@@ -5991,6 +5991,27 @@ function checkout() {
 
   const pickupSel = document.getElementById('pickup_time').value;
   const deliverySel = document.getElementById('delivery_time').value;
+  const zsmSelected = (orderType === 'afhalen' && pickupSel === 'Z.S.M.') ||
+                      (orderType === 'bezorgen' && deliverySel === 'Z.S.M.');
+  if (zsmSelected) {
+    const now = new Date();
+    const minuteKey = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+    const hourKey = `${pad(now.getHours())}:00`;
+    const openStr = orderType === 'afhalen' ? pickupOpenTime : deliveryOpenTime;
+    const closeStr = orderType === 'afhalen' ? pickupCloseTime : deliveryCloseTime;
+    const closedMap = orderType === 'afhalen' ? pickupClosedSlots : deliveryClosedSlots;
+    const inClosedSlot = closedMap[minuteKey] || closedMap[hourKey];
+    if (!inRange(openStr, closeStr) || inClosedSlot) {
+      alert('当前不可选择 ZSM，请选择其他时间');
+      if (sliderText && sliderButton && sliderTrack) {
+        sliderText.innerText = 'Schuif om te bestellen';
+        sliderButton.innerHTML = '<img src="cart-icon.svg" class="cart-icon" />';
+        sliderTrack.style.pointerEvents = 'auto';
+      }
+      isSubmitting = false;
+      return;
+    }
+  }
   const pickupValue = pickupSel === 'Z.S.M.' ? getAsapTime() : pickupSel;
   const deliveryValue = deliverySel === 'Z.S.M.' ? getAsapTime() : deliverySel;
   const tijdslotDisplay = orderType === 'afhalen' ? pickupSel : deliverySel;
