@@ -265,7 +265,8 @@ th:last-child {
         items: parseItemsString(newItemsInput, data.items || {}),
         payment_method: payment,
         totaal: parseFloat(totaal) || 0,
-        fooi: parseFloat(fooi) || 0
+        fooi: parseFloat(fooi) || 0,
+        bron: data.bron
       })
     }).then(()=>fetchOrders());
   }

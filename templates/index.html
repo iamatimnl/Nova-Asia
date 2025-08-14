@@ -6074,6 +6074,7 @@ function checkout() {
     body: JSON.stringify({
       // ✅ 关键：声明来源 index，让后端走 index 分支并采用前端 BTW
       source: 'index',
+      bron: 'Online',
       orderType,
       name: orderType === 'afhalen' ? document.getElementById('pickupName').value.trim() : document.getElementById('deliveryName').value.trim(),
       phone: orderType === 'afhalen' ? document.getElementById('pickupPhone').value.trim() : document.getElementById('deliveryPhone').value.trim(),

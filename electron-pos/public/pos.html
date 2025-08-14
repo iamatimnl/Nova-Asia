@@ -2235,6 +2235,7 @@ function submitOrder() {
   const pickupVal = !delivery && isZsm ? getAsapTime() : pickupSel;
   const deliveryVal = delivery && isZsm ? getAsapTime() : deliverySel;
   const payload = {
+    bron: 'Kassa',
     orderType,
     name,
     phone,
@@ -2540,6 +2541,7 @@ function orderComplete(btn) {
     phone: orderData.phone || btn.dataset.phone,
     email: orderData.email || btn.dataset.email,
     order_type: orderType,
+    bron: orderData.bron || 'Kassa',
     tijdslot: orderData.tijdslot || orderData.delivery_time || orderData.pickup_time || '',
     street: orderData.street || '',
     house_number: orderData.house_number || '',
@@ -2648,6 +2650,7 @@ function confirmDeliveryPerson() {
     phone: orderData.phone || btn.dataset.phone,
     email: orderData.email || btn.dataset.email,
     order_type: btn.dataset.type,
+    bron: orderData.bron || 'Kassa',
     tijdslot: orderData.tijdslot || orderData.delivery_time || orderData.pickup_time || '',
     street: orderData.street || '',
     house_number: orderData.house_number || '',
@@ -2688,7 +2691,8 @@ function orderCancelNotify(btn) {
     name: btn.dataset.name,
     phone: btn.dataset.phone,
     email: btn.dataset.email,
-    order_type: btn.dataset.type
+    order_type: btn.dataset.type,
+    bron: 'Kassa'
   };
 
   fetch('https://flask-order-api.onrender.com/api/order_cancelled', {

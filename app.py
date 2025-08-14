@@ -196,6 +196,7 @@ def order_to_dict(order):
         "id": order.id,
         "order_number": order.order_number,
         "order_type": order.order_type,
+        "bron": order.bron,
         "customer_name": order.customer_name,
         "phone": order.phone,
         "email": order.email,
@@ -419,6 +420,7 @@ def orders_to_dicts(orders):
             "phone": o.phone,
             "email": o.email,
             "payment_method": o.payment_method,
+            "bron": o.bron,
             "pickup_time": o.pickup_time,
             "delivery_time": o.delivery_time,
             "tijdslot_display": o.tijdslot_display,
@@ -521,6 +523,7 @@ class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     order_number = db.Column(db.String(20))
     order_type = db.Column(db.String(20))
+    bron = db.Column(db.String(20))
     customer_name = db.Column(db.String(100))
     phone = db.Column(db.String(20))
     email = db.Column(db.String(120))
@@ -555,6 +558,7 @@ class Order(db.Model):
             "id": self.id,
             "order_number": self.order_number,
             "order_type": self.order_type,
+            "bron": self.bron,
             "customer_name": self.customer_name,
             "phone": self.phone,
             "email": self.email,
@@ -838,6 +842,7 @@ def api_orders():
         settings = {s.key: s.value for s in Setting.query.all()}
         now = datetime.now(NL_TZ)
         source = (data.get("source") or "").lower()
+        bron = data.get("bron") or ("Kassa" if source == "pos" else "Online")
         is_zsm = str(data.get("is_zsm")).lower() == "true"
 
         if not (source == "pos" and is_zsm):
@@ -891,6 +896,7 @@ def api_orders():
         summary_data = data.get("summary") or {}
         order = Order(
             order_type=order_type,
+            bron=bron,
             customer_name=data.get("name") or data.get("customer_name"),
             phone=data.get("phone"),
             email=data.get("customerEmail") or data.get("email"),
@@ -1163,7 +1169,7 @@ def edit_order(order_id: int):
     allowed = [
         'customer_name', 'phone', 'email', 'street', 'house_number', 'postcode',
         'city', 'pickup_time', 'delivery_time', 'order_type', 'items',
-        'payment_method', 'totaal', 'fooi'
+        'payment_method', 'totaal', 'fooi', 'bron'
     ]
     for f in allowed:
         if f not in data:
@@ -1186,6 +1192,9 @@ def edit_order(order_id: int):
             order.fooi = float(data['tip'])
         except (TypeError, ValueError):
             order.fooi = 0.0
+    if not order.bron:
+        source = (data.get("source") or "").lower()
+        order.bron = data.get("bron") or ("Kassa" if source == "pos" else "Online")
     db.session.commit()
     return jsonify({'success': True})
 
