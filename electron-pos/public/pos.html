@@ -948,6 +948,39 @@ dialog::backdrop {
   height: 50px;
 }
 
+.change-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+.change-modal.hidden { display: none; }
+.change-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 320px;
+  text-align: center;
+}
+.quick-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin: 10px 0;
+}
+.quick-buttons button {
+  flex: 1 0 45%;
+  padding: 10px;
+}
+
 </style>
 </head>
 <body>
@@ -2349,6 +2382,20 @@ function formatCurrency(value){
 </script>
 
   
+<div id="change-modal" class="change-modal hidden">
+  <div class="change-box">
+    <p>应收: €<span id="change-total">0.00</span></p>
+    <label>实收: €<input type="number" id="cash-given" inputmode="decimal" /></label>
+    <div class="quick-buttons">
+      <button onclick="quickAmount(5)">5</button>
+      <button onclick="quickAmount(10)">10</button>
+      <button onclick="quickAmount(20)">20</button>
+      <button onclick="quickAmount(50)">50</button>
+    </div>
+    <p>找零: €<span id="change-amount">0.00</span></p>
+    <button onclick="closeChangeModal()">关闭</button>
+  </div>
+</div>
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script>
   const socketUrl = (typeof process !== 'undefined' && process.env && process.env.SOCKET_URL) ? process.env.SOCKET_URL : 'https://flask-order-api.onrender.com';
@@ -2795,6 +2842,7 @@ function addRow(order, highlight = false) {
   const address = isDelivery
     ? `${order.street || ''} ${order.house_number || ''}, ${order.postcode || ''} ${order.city || ''}`.trim()
     : '-';
+  const pay = (order.payment_method || '').toLowerCase();
 
   // —— 卡片编号（用于地图/显示）
   const map_id = document.querySelectorAll('.order-card-wrapper').length + 1;
@@ -2974,6 +3022,7 @@ if (nextAmtNum !== 0) {
   const actions = document.createElement('div');
   actions.className = 'card-actions';
   actions.innerHTML = `
+  ${['contant','cash'].includes(pay) ? '<button class="btn-change" onclick="openChangeModal(this)">找零</button>' : ''}
   <button class="btn-klaar" onclick="toggleComplete(this)"
     data-number="${order.order_number}"
     data-name="${order.customer_name || ''}"
@@ -2996,7 +3045,7 @@ if (nextAmtNum !== 0) {
     Annuleer
   </button>
   <span class="notify"></span>
-`;
+  `;
 
   wrapper.appendChild(card);
   wrapper.appendChild(actions);
@@ -3425,6 +3474,32 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
     }, 2000);
   }
 
+
+    function openChangeModal(btn) {
+      const card = btn.closest('.order-card');
+      const order = JSON.parse(card.dataset.order || '{}');
+      const total = order.totaal ?? order.total ?? 0;
+      const modal = document.getElementById('change-modal');
+      modal.dataset.total = total;
+      document.getElementById('change-total').textContent = total.toFixed(2);
+      document.getElementById('cash-given').value = '';
+      document.getElementById('change-amount').textContent = '0.00';
+      modal.classList.remove('hidden');
+      document.getElementById('cash-given').focus();
+    }
+    function closeChangeModal() {
+      document.getElementById('change-modal').classList.add('hidden');
+    }
+    function quickAmount(val) {
+      const input = document.getElementById('cash-given');
+      input.value = ((parseFloat(input.value) || 0) + val).toFixed(2);
+      input.dispatchEvent(new Event('input'));
+    }
+    document.getElementById('cash-given')?.addEventListener('input', e => {
+      const total = Number(document.getElementById('change-total').textContent) || 0;
+      const given = parseFloat(e.target.value) || 0;
+      document.getElementById('change-amount').textContent = (given - total).toFixed(2);
+    });
 
   const xbowlModal=document.getElementById('xBowlAddedModal');
   const againBtn=document.getElementById('xBowlAgain');
