@@ -78,6 +78,9 @@ with app.app_context():
         if "is_cancelled" not in cols:
             with db.engine.begin() as conn:
                 conn.execute(text("ALTER TABLE orders ADD COLUMN is_cancelled BOOLEAN DEFAULT FALSE"))
+        if "bron" not in cols:
+            with db.engine.begin() as conn:
+                conn.execute(text("ALTER TABLE orders ADD COLUMN bron VARCHAR(20)"))
         if "btw_9" not in cols:
             with db.engine.begin() as conn:
                 conn.execute(text("ALTER TABLE orders ADD COLUMN btw_9 FLOAT DEFAULT 0"))
@@ -195,6 +198,7 @@ def order_to_dict(order):
         "id": order.id,
         "order_number": order.order_number,
         "order_type": order.order_type,
+        "bron": order.bron,
         "customer_name": order.customer_name,
         "phone": order.phone,
         "email": order.email,
@@ -404,6 +408,7 @@ def orders_to_dicts(orders):
         result.append({
             "id": o.id,
             "order_type": o.order_type,
+            "bron": o.bron,
             "customer_name": o.customer_name,
             "phone": o.phone,
             "email": o.email,
@@ -516,6 +521,7 @@ class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     order_number = db.Column(db.String(20))
     order_type = db.Column(db.String(20))
+    bron = db.Column(db.String(20))
     customer_name = db.Column(db.String(100))
     phone = db.Column(db.String(20))
     email = db.Column(db.String(120))
@@ -550,6 +556,7 @@ class Order(db.Model):
             "id": self.id,
             "order_number": self.order_number,
             "order_type": self.order_type,
+            "bron": self.bron,
             "customer_name": self.customer_name,
             "phone": self.phone,
             "email": self.email,
@@ -1879,6 +1886,7 @@ def pos_orders_today():
         order_dicts.append({
             "id": o.id,
             "order_type": o.order_type,
+            "bron": o.bron,
             "customer_name": o.customer_name,
             "phone": o.phone,
             "email": o.email,
