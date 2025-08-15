@@ -9,12 +9,13 @@
 <title>POS Interface</title>
 <style>
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+   
     padding: 20px;
     max-width: 1200px;
     margin: auto;
-    background: var(--primary-color);
-    color: var(--secondary-color);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, "Helvetica Neue", sans-serif;
+    color:  #111111;
+    background:#9ca37a; 
     padding-top: 60px;
     text-align: center;
   }
@@ -22,15 +23,29 @@
     body { padding: 10px; }
   }
 
-  :root {
-    --primary-color: #f2e9d8;
-    --secondary-color: #333333;
-    --accent-color: #3f5c4b;
-    --off-white: #faf8f3;
-    --section-alt-bg: #f0e6d7;
-    --sakura: #f6d4dc;
-    --gold: #c5a253;
+  /* ===== Cupertino 基础色 & 字体 ===== */
+:root{
+  --ios-bg:        #f2f2f7;
+  --ios-card:      #ffffff;
+  --ios-sep:       #e5e5ea;
+  --ios-label:     #ada0a0;
+  --ios-secondary: #3c3c4399; /* 次级文字 */
+  --ios-blue:      #0a84ff;   /* 系统蓝 */
+  --ios-blue-press:#0066d6;
+  --ios-chip:      #ffffff;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --ios-bg:        #646464;
+    --ios-card:      #1c1c1e;
+    --ios-sep:       #3a3a3c;
+    --ios-label:     #ffffff;
+    --ios-secondary: #ebebf599;
+    --ios-blue:      #0a84ff;
+    --ios-blue-press:#0a6ed1;
+    --ios-chip:      #2c2c2e;
   }
+}
   .navbar-container::-webkit-scrollbar { display: none; }
   .navbar-container {
     -ms-overflow-style: none;
@@ -969,28 +984,155 @@ dialog::backdrop {
   box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
 }
 
-.btn-wissel {
-  background: linear-gradient(#8787db, #5454f5);
-  color: #000;
-  border: 1px solid #c6c6cc;
-  border-radius: 12px;
-  padding: 6px 14px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-  transition: all 0.2s ease-in-out;
+.btn-wissel{
+  appearance:none;
+  background: linear-gradient(180deg, var(--ios-blue), var(--ios-blue-press));
+  color:#fff;                            /* iOS 主按钮文字是白色 */
+  border:none;
+  border-radius:14px;
+  padding:8px 14px;
+  font-size:14px;
+  font-weight:600;
+  cursor:pointer;
+  box-shadow:
+    0 1px 0 rgba(0,0,0,0.10),
+    0 4px 10px rgba(10,132,255,0.25);    /* 柔和外阴影 */
+  transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+}
+.btn-wissel:hover{ filter: brightness(1.05); }
+.btn-wissel:active{
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 1px 2px rgba(0,0,0,0.25),
+    0 0 0 rgba(0,0,0,0);
+}
+.btn-wissel:focus-visible{
+  outline: none;
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px var(--ios-blue);           /* 焦点环 */
 }
 
-.btn-wissel:hover {
-  background: linear-gradient(#090949, #4f4fc2);
+/* ===== 父页对话框（#wissel-modal-pos） ===== */
+/* 只在 wissel 弹窗里启用深色+白字 & 大字号 */
+#wissel-modal-pos{
+  /* 全局变量在此作用域内覆写 */
+  --ios-label: #fff;                     /* 默认文字白 */
+  --ios-card:  #1c1c1e;                  /* 深色卡片底 */
+  --ios-chip:  #2c2c2e;                  /* 深色胶囊底 */
+  --ios-sep:   rgba(255,255,255,.18);    /* 细分隔线 */
+  font-size: 18px;                       /* 整体字号放大 */
+  border:0; padding:0; background:transparent;
+}
+/* 未 open 时不拦截点击 */
+#wissel-modal-pos:not([open]){ display:none !important; pointer-events:none !important; }
+#wissel-modal-pos::backdrop{ background:rgba(0,0,0,.45); backdrop-filter:blur(6px); }
+
+/* 卡片容器 */
+#wissel-modal-pos .card{
+  background: var(--ios-card);
+  color: white;                          /* ← 修正拼写 & 强制白字 */
+  width: 360px;                          /* 略加宽更好看 */
+  max-width: 92%;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(0,0,0,.18);
+  border: 1px solid var(--ios-sep);
+  text-align: center;
+}
+#wissel-modal-pos h3{ margin:0 0 8px; font-size:22px; font-weight:700; }
+
+/* 金额行更醒目 */
+#pos-wissel-due, #pos-wissel-change{ font-size:20px; font-weight:700; }
+
+/* 输入框：深底白字（含光标/占位符） */
+#wissel-modal-pos input{
+  width:100%; margin:12px 0; padding:12px 14px;
+  font-size:20px; text-align:center;
+  background:#2c2c2e;                   /* 深底 */
+  color:#fff; caret-color:#fff;          /* 白字 + 白光标 */
+  border:1px solid var(--ios-sep);
+  border-radius:12px; outline:none; box-sizing:border-box;
+  transition: box-shadow .12s ease, border-color .12s ease, background .12s ease;
+}
+#wissel-modal-pos input::placeholder{ color:rgba(255,255,255,.6); }
+#wissel-modal-pos input:focus{
+  border-color:#0a84ff;
+  box-shadow:0 0 0 3px rgba(10,132,255,.25);
 }
 
-.btn-wissel:active {
-  background: linear-gradient(#464661, #606091);
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+/* 快捷面额（胶囊）深底白字 */
+#wissel-modal-pos .quick{
+  display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin:12px 0 8px;
+}
+#wissel-modal-pos .quick button{
+  appearance:none;
+  padding:9px 14px;
+  border:1px solid var(--ios-sep);
+  border-radius:9999px;
+  background: var(--ios-chip);           /* 深色底 */
+  color:#fff; cursor:pointer;
+  font-weight:600;
+  transition: transform .1s ease, background .12s ease, border-color .12s ease, filter .12s ease;
+}
+#wissel-modal-pos .quick button:hover{ filter: brightness(1.08); }
+#wissel-modal-pos .quick button:active{ transform: scale(.98); }
+
+/* 底部动作按钮 */
+#wissel-modal-pos .actions{ display:flex; gap:12px; margin-top:16px; }
+#wissel-modal-pos .btn{
+  flex:1; padding:12px 12px; border:0; border-radius:12px;
+  font-weight:700; cursor:pointer;
+  transition: transform .1s ease, filter .12s ease, box-shadow .12s ease;
+}
+#wissel-modal-pos .btn-primary{
+  background: linear-gradient(180deg, #0a84ff, #0066d6);
+  color:#fff; box-shadow:0 6px 16px rgba(10,132,255,.28);
+}
+#wissel-modal-pos .btn-primary:hover{ filter:brightness(1.05); }
+#wissel-modal-pos .btn-primary:active{ transform: translateY(1px); }
+
+#wissel-modal-pos .btn-secondary{
+  background: transparent;
+  color:#fff; border:1px solid var(--ios-sep);
+}
+#wissel-modal-pos .btn-secondary:hover{
+  background: rgba(255,255,255,.06);
 }
 
+/* 辅助文字也统一白色 */
+#wissel-modal-pos .muted{ color:#fff; opacity:.8; font-size:16px; }
+
+/* 列表里的“Wissel”触发按钮：也可稍微放大一点 */
+.btn-wissel{
+  appearance:none;
+  background: linear-gradient(180deg, #0a84ff, #0066d6);
+  color:#fff; border:none; border-radius:14px;
+  padding:9px 16px; font-size:15px; font-weight:700; cursor:pointer;
+  box-shadow:0 1px 0 rgba(0,0,0,.10), 0 4px 10px rgba(10,132,255,0.25);
+  transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+}
+.btn-wissel:hover{ filter:brightness(1.05); }
+.btn-wissel:active{ transform:translateY(1px); box-shadow: inset 0 1px 2px rgba(0,0,0,.25); }
+.btn-wissel:focus-visible{
+  outline:none; box-shadow:0 0 0 2px #fff, 0 0 0 4px #0a84ff;
+}
+
+/* 提示颜色 & 禁用态 & 抖动 */
+#wissel-modal-pos .hint{ margin-top:6px; font-size:14px; }
+#wissel-modal-pos .hint.error{ color:#ff453a; } /* iOS Red */
+#wissel-modal-pos .hint.ok{ color:#34c759; }    /* iOS Green */
+
+#wissel-modal-pos .btn-primary.is-disabled,
+#wissel-modal-pos .btn-primary:disabled{
+  filter: grayscale(.3) opacity(.6);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+@keyframes posShake{ 0%,100%{transform:translateX(0)} 20%{transform:translateX(-4px)} 40%{transform:translateX(4px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
+#wissel-modal-pos input.invalid{ animation: posShake .25s linear; }
 
 
 
@@ -1283,116 +1425,27 @@ dialog::backdrop {
   </form>
 </dialog>
 
-<style>
-  /* 半透明模糊背景 */
-  #wissel-modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    z-index: 10006570;
-    justify-content: center;
-    align-items: center;
-    animation: fadeIn 0.25s ease;
-  }
-
-  /* 弹窗主体 */
-  #wissel-modal .modal-content {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 16px;
-    padding: 20px;
-    width: 300px;
-    max-width: 90%;
-    text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-    animation: popUp 0.25s ease;
-  }
-
-  #wissel-modal h3 {
-    margin-bottom: 10px;
-    font-weight: 600;
-    font-size: 1.3em;
-    color: #222;
-  }
-
-#wissel-modal input {
-  width: 100%;
-  margin: 8px 0;
-  padding: 10px;
-  font-size: 1.2em;
-  border: 1px solid rgba(29, 161, 238, 0.15); /* 淡淡的灰色边框 */
-  border-radius: 12px;
-  background: #f5f7ff; /* 比原来的 #9eabf1 更柔和，浅蓝白 */
-  text-align: center; /* 输入的文字居中 */
-  outline: none;
-  box-sizing: border-box; /* 避免 padding 撑破布局 */
-}
-
-
-  .wissel-quick {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    justify-content: center;
-    margin-bottom: 8px;
-  }
-
-  .wissel-quick button {
-    padding: 8px 14px;
-    border: none;
-    border-radius: 12px;
-    background: #007aff;
-    color: #fff;
-    font-size: 0.9em;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.2s ease;
-  }
-  .wissel-quick button:hover {
-    background: #005ecb;
-  }
-
-  #wissel-close {
-    background: #a3a1a1;
-    color: #333;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 12px;
-    margin-top: 12px;
-    cursor: pointer;
-    font-weight: 500;
-  }
-
-  /* 动画 */
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  @keyframes popUp {
-    from { transform: scale(0.9); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-  }
-</style>
-
-<div id="wissel-modal">
-  <div class="modal-content">
+<dialog id="wissel-modal-pos">
+  <div class="card">
     <h3>Wissel</h3>
-    <p>Te ontvangen: <span id="wissel-due"></span></p>
-    <input id="wissel-paid" type="number" step="0.05" />
-    <div class="wissel-quick">
+    <p>Te ontvangen: <strong id="pos-wissel-due">€0,00</strong></p>
+    <input id="pos-wissel-paid" type="number" step="0.05" placeholder="Betaald bedrag" />
+    <div class="quick">
       <button type="button" data-add="5">+5</button>
       <button type="button" data-add="10">+10</button>
       <button type="button" data-add="20">+20</button>
       <button type="button" data-add="50">+50</button>
-      <button type="button" id="wissel-exact">Exact</button>
+      <button type="button" id="pos-wissel-exact">Exact</button>
     </div>
-    <p>Wisselgeld: <span id="wissel-change">€0,00</span></p>
-    <div id="wissel-denoms" style="margin-top:8px; text-align:left;"></div>
-    <button id="wissel-close">Sluiten</button>
+    <p>Wisselgeld: <strong id="pos-wissel-change">€0,00</strong></p>
+    <div id="pos-wissel-denoms" class="muted"></div>
+    <div class="actions">
+      <button id="pos-wissel-close" class="btn btn-secondary">Sluiten</button>
+      <button id="pos-wissel-ok" class="btn btn-primary">Bevestigen</button>
+    </div>
   </div>
-</div>
+</dialog>
+
 
 
 <script>
@@ -2306,14 +2359,141 @@ function generateOrderNumber() {
   return `NV${date}-${rand}`;
 }
 
+function isCashMethod(v) {
+  const m = String(v || '').toLowerCase();
+  return m === 'cash' || m === 'contant';
+}
 
-function submitOrder() {
+// 放到父页全局
+const euroFmtPOS = new Intl.NumberFormat('nl-NL', { style:'currency', currency:'EUR' });
+const r05POS = v => Math.round(v*20)/20;
+const parseEuro = v => (typeof v === 'number') ? v :
+  (Number.parseFloat(String(v).replace(/[^\d,.-]/g,'').replace(',', '.')) || 0);
+
+function openWisselAwaitPOS(total) {
+  return new Promise((resolve) => {
+    const dlg = document.getElementById('wissel-modal-pos');
+    if (!dlg) return resolve(null);
+
+    const euroFmtPOS = new Intl.NumberFormat('nl-NL', { style:'currency', currency:'EUR' });
+    const r05POS = v => Math.round(v*20)/20;
+    const parseEuro = v => (typeof v === 'number')
+      ? v : (parseFloat(String(v).replace(/[^\d,.-]/g,'').replace(',', '.')) || 0);
+
+    const due = r05POS(parseEuro(total));
+    const paid     = document.getElementById('pos-wissel-paid');
+    const dueEl    = document.getElementById('pos-wissel-due');
+    const changeEl = document.getElementById('pos-wissel-change');
+    const denomsEl = document.getElementById('pos-wissel-denoms');
+    const exactBtn = document.getElementById('pos-wissel-exact');
+    const closeBtn = document.getElementById('pos-wissel-close');
+    const okBtn    = document.getElementById('pos-wissel-ok');
+    const quickBox = dlg.querySelector('.quick');
+
+    // 提示行
+    let hintEl = document.getElementById('pos-wissel-hint');
+    if (!hintEl) {
+      hintEl = document.createElement('div');
+      hintEl.id = 'pos-wissel-hint';
+      hintEl.className = 'hint';
+      dlg.querySelector('.actions')?.insertAdjacentElement('beforebegin', hintEl);
+    }
+
+    // 初始化
+    dueEl.textContent = euroFmtPOS.format(due);
+    paid.value = '';
+    changeEl.textContent = euroFmtPOS.format(0);
+    denomsEl.innerHTML = '';
+    hintEl.textContent = '';
+    // ✂️ 不再禁用确认按钮
+    // okBtn.disabled = true; okBtn.classList.add('is-disabled');
+
+    const recompute = () => {
+      const p = r05POS(parseEuro(paid.value));
+      const c = Math.max(0, r05POS(p - due));
+      changeEl.textContent = euroFmtPOS.format(c);
+
+      // 面额分解
+      if (c > 0) {
+        const ds = [50,20,10,5,2,1,0.5,0.2,0.1,0.05];
+        let left = c, lines = [];
+        for (const d of ds) {
+          const cnt = Math.floor((left + 1e-8) / d);
+          if (cnt>0){ lines.push(`${cnt} × ${euroFmtPOS.format(d)}`); left = r05POS(left - cnt*d); }
+        }
+        denomsEl.innerHTML = lines.join('<br>');
+      } else denomsEl.innerHTML = '';
+
+      // 提示（但不影响确认）
+      const diff = r05POS(due - p);
+      if (diff > 0) {
+        hintEl.textContent = `Te weinig betaald: nog ${euroFmtPOS.format(diff)}`;
+        hintEl.className = 'hint error';
+        // ✂️ 不再禁用 okBtn
+      } else if (Math.abs(diff) < 1e-9) {
+        hintEl.textContent = `Exact bedrag`;
+        hintEl.className = 'hint ok';
+      } else {
+        hintEl.textContent = '';
+        hintEl.className = 'hint';
+      }
+    };
+
+    const finish = (ok=true) => {
+      const p = r05POS(parseEuro(paid.value));
+      const c = Math.max(0, r05POS(p - due));
+      const diff = r05POS(due - p);
+
+      cleanup();
+      try { dlg.close(); } catch {}
+      // ✅ 总是允许确认，顺便把状态带回（可选字段，兼容你现有 {paid, change, due}）
+      const status = diff > 0 ? 'underpaid' : (Math.abs(diff) < 1e-9 ? 'exact' : 'change');
+      const underpaidBy = diff > 0 ? diff : 0;
+      resolve(ok ? { paid: p, change: c, due, status, underpaidBy } : null);
+    };
+
+    const onBackdrop = e => { if (e.target === dlg) finish(false); }; // 点击空白仍视为取消
+    const onExact    = () => { paid.value = due.toFixed(2); recompute(); };
+    const onKey      = (e) => { if (e.key==='Escape') finish(false); if (e.key==='Enter') finish(true); };
+    const onOk       = () => finish(true);
+
+    function cleanup(){
+      paid.removeEventListener('input', recompute);
+      dlg.removeEventListener('click', onBackdrop);
+      exactBtn?.removeEventListener('click', onExact);
+      closeBtn?.removeEventListener('click', onOk);
+      okBtn?.removeEventListener('click', onOk);
+      quickBox?.removeEventListener('click', onQuick);
+      window.removeEventListener('keydown', onKey);
+    }
+
+    const onQuick = (e) => {
+      const btn = e.target.closest('[data-add]');
+      if (!btn) return;
+      const inc = Number(btn.dataset.add) || 0;
+      const cur = parseEuro(paid.value);
+      paid.value = r05POS(cur + inc).toFixed(2);
+      recompute();
+    };
+    
+    paid.addEventListener('input', recompute);
+    dlg.addEventListener('click', onBackdrop);
+    exactBtn?.addEventListener('click', onExact);
+    closeBtn?.addEventListener('click', onOk);
+    okBtn?.addEventListener('click', onOk);
+    quickBox?.addEventListener('click', onQuick);
+    window.addEventListener('keydown', onKey);
+
+    dlg.showModal();
+    paid.focus({ preventScroll:true });
+  });
+}
+
+
+async function submitOrder() {
   const name = document.getElementById('custName').value.trim() || 'Guest';
   const phone = document.getElementById('custPhone').value.trim();
-
   const delivery = document.getElementById('typeDelivery').checked;
-
-
 
   if (Object.keys(cart).length === 0) {
     alert('Geen producten geselecteerd.');
@@ -2324,7 +2504,7 @@ function submitOrder() {
 
   let orderText = Object.entries(cart).map(([name, item]) => {
     let line = `${name} x ${item.qty} (€${(item.qty * item.price).toFixed(2)})`;
-    if(item.prefs){
+    if (item.prefs) {
       const pref = item.prefs.map((p,i)=>`${i+1}. ${p}`).join(' | ');
       line += ` [${pref}]`;
     }
@@ -2344,18 +2524,16 @@ function submitOrder() {
 
   const orderNumber = generateOrderNumber();
 
-  // ✅ 获取结账明细数据
+  // ✅ 结算汇总
   const subtotal = Object.values(cart).reduce((sum, item) => sum + item.price * item.qty, 0);
   const packagingTotal = Object.values(cart).reduce((sum, item) => sum + (item.packaging || 0) * item.qty, 0);
   const deliveryCost = delivery ? 2.5 : 0;
   const discountType = document.getElementById('discountType').value;
   const discountVal = parseFloat(document.getElementById('discountValue').value) || 0;
   let discount = 0;
-  if (discountType === 'amount') {
-    discount = Math.min(discountVal, subtotal);
-  } else if (discountType === 'percent') {
-    discount = Math.min(100, discountVal) / 100 * subtotal;
-  }
+  if (discountType === 'amount') discount = Math.min(discountVal, subtotal);
+  else if (discountType === 'percent') discount = Math.min(100, discountVal) / 100 * subtotal;
+
   const totalBeforeBtw = subtotal + packagingTotal + deliveryCost - discount;
   const heinekenTotal = Object.entries(cart).reduce((sum,[k,v])=>{
     const name = v.displayName || k;
@@ -2364,7 +2542,7 @@ function submitOrder() {
   const btw9 = (subtotal + packagingTotal + deliveryCost - discount - heinekenTotal) * 0.09;
   const btw21 = heinekenTotal * 0.21;
   const btw = btw9 + btw21;
-  const total = totalBeforeBtw;
+  const totalGross = totalBeforeBtw; // ← 含税总额（真正应收）
 
   const summary = {
     subtotal: parseFloat(subtotal.toFixed(2)),
@@ -2378,8 +2556,7 @@ function submitOrder() {
     btw_21: parseFloat(btw21.toFixed(2)),
     btw_total: parseFloat(btw.toFixed(2)),
     btw_split: { '9': btw9.toFixed(2), '21': btw21.toFixed(2) },
-    total: parseFloat(total.toFixed(2))
-  };
+    total: parseFloat(totalBeforeBtw.toFixed(2)), total_gross: parseFloat(totalGross.toFixed(2)) };
 
 
   const orderType = delivery ? 'bezorgen' : 'afhalen';
@@ -2390,59 +2567,77 @@ function submitOrder() {
   const isZsm = !raw || raw === 'zsm' || raw === 'asap';
   const pickupVal = !delivery && isZsm ? getAsapTime() : pickupSel;
   const deliveryVal = delivery && isZsm ? getAsapTime() : deliverySel;
-  const payload = {
-    orderType,
-    name,
-    phone,
-    email: '',
-    customerEmail: '',
-    pickup_time: !delivery ? pickupVal : '',
-    delivery_time: delivery ? deliveryVal : '',
-    tijdslot_display: tijdslotDisplay,
-    is_zsm: isZsm,
-    paymentMethod: delivery
+
+  const paymentMethod = delivery
       ? document.getElementById('deliveryPayment').value
-      : document.getElementById('pickupPayment').value,
-    postcode: delivery ? document.getElementById('postcode').value.trim() : '',
-    house_number: delivery ? document.getElementById('houseNumber').value.trim() : '',
-    street: delivery ? document.getElementById('street').value.trim() : '',
-    city: delivery ? document.getElementById('city').value.trim() : '',
-    order_number: orderNumber,
-    items: itemsToSend,
-    message: orderText,
-    opmerking: remark,
-    totaal: total.toFixed(2),
-    source: 'pos',
+      : document.getElementById('pickupPayment').value;
 
-    summary  // ✅ 加入结账明细
-  };
+  const payload = {
+  orderType,
+  name,
+  phone,
+  email: '',
+  customerEmail: '',
+  pickup_time: !delivery ? pickupVal : '',
+  delivery_time: delivery ? deliveryVal : '',
+  tijdslot_display: tijdslotDisplay,
+  is_zsm: isZsm,
+  paymentMethod,
+  postcode: delivery ? document.getElementById('postcode').value.trim() : '',
+  house_number: delivery ? document.getElementById('houseNumber').value.trim() : '',
+  street: delivery ? document.getElementById('street').value.trim() : '',
+  city: delivery ? document.getElementById('city').value.trim() : '',
+  order_number: orderNumber,
+  items: itemsToSend,
+  message: orderText,
+  opmerking: remark,
 
-  // ✅ 手动折扣：无真实折扣码但有折扣金额时，写入固定折扣码
+  // ✅ 与卡片一致：含税应收
+  totaal: totalGross.toFixed(2),
+
+  source: 'pos',
+  summary
+};
+
+
   if (discount > 0) {
     payload.discountCode = 'KASSA';
     payload.discountAmount = parseFloat(discount.toFixed(2));
   }
 
-  // ✅ 提交到后端
-  fetch('https://flask-order-api.onrender.com/submit_order', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  })
-    .then(r => r.json())
-    .then(res => {
-      if (res.success || res.status === 'ok') {
-        
-        showToast('Bestelling succesvol verzonden! Bestelnummer: ' + orderNumber);
-        clearForm();
-        fetchOrders();
-      } else {
-       
-        showToast('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.');
-      }
-    })
-    
-    .catch(() => showToast('Verzendfout – server niet bereikbaar.'));
+  /* ⬇️⬇️ 就在这里：现金→先弹找零；关闭后继续提交 */
+  // 现金：父页先弹自己的 modal，关掉后再提交
+if (isCashMethod(paymentMethod)) {
+  const due = Number(payload.totaal) || parseEuro(payload.totaal) || 0; // 含税应收
+  const res = await openWisselAwaitPOS(due);
+  if (!res) {
+    // 用户取消时若不想提交，可直接 return;
+    // return;
+  } else {
+    payload._wissel = res; // { paid, change, due } 可用于打印/入库
+  }
+}
+
+
+  // ✅ 提交到后端（改为 await 写法，逻辑等价）
+  try {
+    const r = await fetch('https://flask-order-api.onrender.com/submit_order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const res = await r.json();
+
+    if (res.success || res.status === 'ok') {
+      showToast('Bestelling succesvol verzonden! Bestelnummer: ' + orderNumber);
+      clearForm();
+      fetchOrders();
+    } else {
+      showToast('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.');
+    }
+  } catch (err) {
+    showToast('Verzendfout – server niet bereikbaar.');
+  }
 }
 
 
