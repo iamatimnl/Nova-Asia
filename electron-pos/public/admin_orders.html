@@ -85,9 +85,14 @@
 
     <!-- 新增：订单数量 -->
     <tr><td>Aantal Bestellingen</td><td id="totalOrders">0</td></tr>
+    <tr><td>Gemiddelde Bestelwaarde</td><td id="avgOrder">€0,00</td></tr>
 
     <!-- Geannuleerd 行加 id，便于为 0 时整行隐藏 -->
     <tr id="cancelledRow"><td>Geannuleerd (aantal / bedrag)</td><td id="totalCancelled">0 / €0,00</td></tr>
+
+    <tr><td>Totale korting</td><td id="totalDiscount">€0,00</td></tr>
+    <tr><td>Totale fooi</td><td id="totalTip">€0,00</td></tr>
+    <tr><td>Bezorgkosten (bedrag / aantal)</td><td id="totalDelivery">€0,00 / 0</td></tr>
 
     <tr><td>Online betaling</td><td id="totalOnline">€0,00</td></tr>
     <tr><td>Contant</td><td id="totalContant">€0,00</td></tr>
@@ -119,7 +124,9 @@
       // 初始化统计数据
       let total = 0, pin = 0, online = 0, contant = 0, credit = 0, unknown = 0;
       let cancelled = 0, cancelledCount = 0;
-      let tipTotal = 0;
+      let tipTotal = 0, discountTotal = 0;
+      let deliveryFeeTotal = 0, deliveryCount = 0;
+      let orderCount = 0;
       let btw9Total = 0, btw21Total = 0;
       // 显示或隐藏订单表格
       if (data.length) {
@@ -175,6 +182,11 @@
         } else {
           total += tot;
           tipTotal += fooi;
+          discountTotal += Number(order.discountAmount ?? order.korting ?? 0);
+          const delFee = Number(order.delivery_fee ?? order.bezorgkosten ?? 0);
+          deliveryFeeTotal += delFee;
+          if (isDelivery) deliveryCount++;
+          orderCount++;
           btw9Total += Number(order.btw_9 || 0);
           btw21Total += Number(order.btw_21 || 0);
           const norm = normalizePaymentMethod(order.payment_method);
@@ -221,9 +233,14 @@ document.getElementById('btw21Amount').textContent  = formatCurrency(btw21Total)
 updateBTWDisplay(btw9Total, btw21Total);
 
 document.getElementById('totalPin').textContent     = formatCurrency(pin);
+document.getElementById('totalOrders').textContent  = orderCount;
+document.getElementById('avgOrder').textContent     = formatCurrency(orderCount ? total / orderCount : 0);
 document.getElementById('totalOnline').textContent  = formatCurrency(online);
 document.getElementById('totalContant').textContent = formatCurrency(contant);
 document.getElementById('totalCredit').textContent  = formatCurrency(credit);
+document.getElementById('totalDiscount').textContent = formatCurrency(discountTotal);
+document.getElementById('totalTip').textContent      = formatCurrency(tipTotal);
+document.getElementById('totalDelivery').textContent = `${formatCurrency(deliveryFeeTotal)} / ${deliveryCount}`;
 
 const cancelledDisplay = `${cancelledCount} / ${formatCurrency(cancelled)}`;
 document.getElementById('totalCancelled').textContent = cancelledDisplay;
