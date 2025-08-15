@@ -120,6 +120,25 @@
     font-size: 1em;
   }
 
+  /* Floating map button */
+  #toggle-map-btn {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border: none;
+    border-radius: 50%;
+    background-color: #17a2b8;
+    color: #fff;
+    cursor: pointer;
+    font-size: 26px;
+  }
+
+  #toggle-map-btn:hover {
+    background-color: #117a8b;
+  }
+
   #admin-orders-btn {
     position: fixed;
     bottom: 20px;
@@ -337,7 +356,8 @@
   </div>
 </div>
 
-  <!-- 管理订单列表按钮 -->
+  <!-- 地图与管理订单按钮 -->
+  <button id="toggle-map-btn" title="Map">🗺️</button>
   <button id="admin-orders-btn" title="Admin Orders">📋</button>
   <script>
     function openChangeModal(btn) {
@@ -368,19 +388,22 @@
       const change = given - total;
       document.getElementById('change-amount').textContent = change > 0 ? change.toFixed(2) : '0.00';
     }
-    document.getElementById('cash-given').addEventListener('input', calculateChange);
+    const cashInput = document.getElementById('cash-given');
+    if (cashInput) {
+      cashInput.addEventListener('input', calculateChange);
+    }
 
     const toggleBtn = document.getElementById('toggle-map-btn');
     if (toggleBtn) {
       toggleBtn.addEventListener('click', () => {
-        window.open('/map', '_blank');
+        window.location.href = '/map';
       });
     }
 
     const adminBtn = document.getElementById('admin-orders-btn');
     if (adminBtn) {
       adminBtn.addEventListener('click', () => {
-        window.open('/admin/orders', '_blank');
+        window.location.href = '/admin/orders';
       });
     }
   </script>
