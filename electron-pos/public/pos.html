@@ -1237,7 +1237,23 @@ dialog::backdrop {
   </form>
 </dialog>
 
-
+<div id="wissel-modal" class="modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:10000; justify-content:center; align-items:center;">
+  <div style="background:#fff; padding:20px; border-radius:8px; width:300px; max-width:90%; text-align:center;">
+    <h3>Wissel</h3>
+    <p>Te ontvangen: <span id="wissel-due"></span></p>
+    <input id="wissel-paid" type="number" step="0.05" style="width:100%; margin:8px 0; padding:8px; font-size:1.2em;" />
+    <div class="wissel-quick" style="display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:8px;">
+      <button type="button" data-add="5">+5</button>
+      <button type="button" data-add="10">+10</button>
+      <button type="button" data-add="20">+20</button>
+      <button type="button" data-add="50">+50</button>
+      <button type="button" id="wissel-exact">Exact</button>
+    </div>
+    <p>Wisselgeld: <span id="wissel-change">€0,00</span></p>
+    <div id="wissel-denoms" style="margin-top:8px; text-align:left;"></div>
+    <button id="wissel-close" style="margin-top:10px;">Sluiten</button>
+  </div>
+</div>
 
 <script>
 const cart = {};
@@ -2986,6 +3002,8 @@ if (nextAmtNum !== 0) {
   <!-- ✅ 安全打印：把编码后的 JSON 放在 data-order 上 -->
   <button class="btn-print" onclick="printThisOrder(this)" data-order="${encodedOrder}">🖨️ Print</button>
 
+  ${['cash','contant'].includes(String(order.payment_method || '').toLowerCase()) ? `<button class="btn-wissel" data-order-id="${order.id || ''}" data-total="${totaal}" onclick="openWissel(this)">Wissel</button>` : ''}
+
   <button class="btn-annuleer" onclick="toggleCancel(this)"
     data-number="${order.order_number}"
     data-name="${order.customer_name || ''}"
@@ -3425,6 +3443,69 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
     }, 2000);
   }
 
+
+
+  // —— Wissel (找零) 功能 ——
+  const euroFmt = new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' });
+  const round05 = v => Math.round(v * 20) / 20;
+  let wisselDue = 0;
+
+  function openWissel(btn) {
+    wisselDue = round05(Number(btn.dataset.total || 0));
+    const modal = document.getElementById('wissel-modal');
+    document.getElementById('wissel-due').textContent = euroFmt.format(wisselDue);
+    const paid = document.getElementById('wissel-paid');
+    paid.value = '';
+    document.getElementById('wissel-change').textContent = euroFmt.format(0);
+    document.getElementById('wissel-denoms').innerHTML = '';
+    modal.style.display = 'flex';
+    paid.focus();
+  }
+
+  function closeWissel() {
+    document.getElementById('wissel-modal').style.display = 'none';
+  }
+
+  function updateWissel() {
+    const paidInput = document.getElementById('wissel-paid');
+    let paid = round05(parseFloat(String(paidInput.value).replace(',', '.')) || 0);
+    const change = round05(paid - wisselDue);
+    document.getElementById('wissel-change').textContent = euroFmt.format(change > 0 ? change : 0);
+    const denomsDiv = document.getElementById('wissel-denoms');
+    if (change > 0) {
+      const denoms = [50,20,10,5,2,1,0.5,0.2,0.1,0.05];
+      let remaining = change;
+      const lines = [];
+      for (const d of denoms) {
+        const cnt = Math.floor((remaining + 1e-8) / d);
+        if (cnt > 0) {
+          lines.push(`${cnt} × ${euroFmt.format(d)}`);
+          remaining = round05(remaining - cnt * d);
+        }
+      }
+      denomsDiv.innerHTML = lines.join('<br>');
+    } else {
+      denomsDiv.innerHTML = '';
+    }
+  }
+
+  document.getElementById('wissel-paid').addEventListener('input', updateWissel);
+  document.getElementById('wissel-close').addEventListener('click', closeWissel);
+  document.getElementById('wissel-modal').addEventListener('click', e => { if (e.target.id === 'wissel-modal') closeWissel(); });
+  document.getElementById('wissel-exact').addEventListener('click', () => {
+    const paidInput = document.getElementById('wissel-paid');
+    paidInput.value = wisselDue.toFixed(2);
+    updateWissel();
+  });
+  document.querySelectorAll('#wissel-modal [data-add]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const paidInput = document.getElementById('wissel-paid');
+      const current = parseFloat(paidInput.value || 0);
+      const newVal = round05(current + Number(btn.dataset.add));
+      paidInput.value = newVal.toFixed(2);
+      updateWissel();
+    });
+  });
 
   const xbowlModal=document.getElementById('xBowlAddedModal');
   const againBtn=document.getElementById('xBowlAgain');
