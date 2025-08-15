@@ -137,50 +137,6 @@
   #admin-orders-btn:hover {
     background-color: #0056b3;
   }
-
-  .change-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-  }
-  .change-modal.hidden { display: none; }
-  .change-box {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 320px;
-    text-align: center;
-  }
-  .quick-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: center;
-    margin: 10px 0;
-  }
-  .quick-buttons button {
-    flex: 1 0 45%;
-    padding: 10px;
-  }
-
-
-
-
-
-
-
-
-
-
-
 </style>
 
 <div class="orders-cards">
@@ -311,7 +267,7 @@
     <div class="card-actions">
       {% set pay = (order.payment_method or '')|lower %}
       {% if pay in ['contant', 'cash'] %}
-      <button class="btn-change" onclick="openChangeModal(this)">找零</button>
+      <button class="btn-wissel" data-total="{{ '%.2f' % (order.totaal or order.total or 0) }}" onclick="openWissel(this)">Wissel</button>
       {% endif %}
       <button class="btn-klaar" onclick="toggleComplete(this)">Klaar</button>
       <button class="btn-bewerk" onclick="editOrder(this)">Bewerk</button>
@@ -322,53 +278,66 @@
   {% endfor %}
 </div>
 
-<div id="change-modal" class="change-modal hidden">
-  <div class="change-box">
-    <p>应收: €<span id="change-total">0.00</span></p>
-    <label>实收: €<input type="number" id="cash-given" inputmode="decimal" /></label>
-    <div class="quick-buttons">
-      <button onclick="quickAmount(5)">5</button>
-      <button onclick="quickAmount(10)">10</button>
-      <button onclick="quickAmount(20)">20</button>
-      <button onclick="quickAmount(50)">50</button>
+<div id="wissel-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:2147483647; justify-content:center; align-items:center;">
+  <div style="background:#fff; padding:20px; border-radius:8px; width:90%; max-width:320px; text-align:center;">
+    <p>Te ontvangen: <span id="wissel-due"></span></p>
+    <input id="wissel-paid" type="number" step="0.05" style="width:100%; margin:8px 0; padding:8px; font-size:1.2em;" />
+    <div class="wissel-quick" style="display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:8px;">
+      <button type="button" data-add="5">+5</button>
+      <button type="button" data-add="10">+10</button>
+      <button type="button" data-add="20">+20</button>
+      <button type="button" data-add="50">+50</button>
+      <button type="button" id="wissel-exact">Exact</button>
     </div>
-    <p>找零: €<span id="change-amount">0.00</span></p>
-    <button onclick="closeChangeModal()">关闭</button>
+    <p>Wisselgeld: <span id="wissel-change">€0,00</span></p>
+    <div id="wissel-denoms" style="margin-top:8px; text-align:left;"></div>
+    <button id="wissel-close" style="margin-top:10px;">Sluiten</button>
   </div>
 </div>
 
   <!-- 管理订单列表按钮 -->
   <button id="admin-orders-btn" title="Admin Orders">📋</button>
   <script>
-    function openChangeModal(btn) {
-      const card = btn.closest('.order-card');
-      const order = JSON.parse(card.dataset.order || '{}');
-      const total = order.totaal ?? order.total ?? 0;
-      const modal = document.getElementById('change-modal');
-      modal.dataset.total = total;
-      document.getElementById('change-total').textContent = total.toFixed(2);
-      document.getElementById('cash-given').value = '';
-      document.getElementById('change-amount').textContent = '0.00';
-      modal.classList.remove('hidden');
-      document.getElementById('cash-given').focus();
+    const euroFmt = new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR'});
+    const denoms=[50,20,10,5,2,1,0.5,0.2,0.1,0.05];
+    function round05(val){ return Math.round(val*20)/20; }
+    let wisselDue=0;
+    function openWissel(btn){
+      wisselDue=round05(Number(btn.dataset.total||0));
+      const modal=document.getElementById('wissel-modal');
+      modal.style.display='flex';
+      document.getElementById('wissel-due').textContent=euroFmt.format(wisselDue);
+      const paidInput=document.getElementById('wissel-paid');
+      paidInput.value='';
+      document.getElementById('wissel-change').textContent=euroFmt.format(0);
+      document.getElementById('wissel-denoms').innerHTML='';
+      paidInput.focus();
     }
-    function closeChangeModal() {
-      document.getElementById('change-modal').classList.add('hidden');
+    function closeWissel(){ document.getElementById('wissel-modal').style.display='none'; }
+    function updateWissel(){
+      const paid=round05(Number(document.getElementById('wissel-paid').value||0));
+      const change=round05(paid - wisselDue);
+      document.getElementById('wissel-change').textContent=euroFmt.format(change>0?change:0);
+      const denomsDiv=document.getElementById('wissel-denoms');
+      denomsDiv.innerHTML='';
+      let remaining=change;
+      if(remaining>0){
+        const parts=[];
+        for(const d of denoms){
+          const count=Math.floor(remaining/d+0.0001);
+          if(count>0){
+            parts.push(`${count} × ${euroFmt.format(d)}`);
+            remaining=round05(remaining - count*d);
+          }
+        }
+        denomsDiv.innerHTML=parts.map(p=>`<div>${p}</div>`).join('');
+      }
     }
-    function quickAmount(val) {
-      const input = document.getElementById('cash-given');
-      const current = parseFloat(input.value || '0');
-      input.value = (current + val).toFixed(2);
-      calculateChange();
-    }
-    function calculateChange() {
-      const modal = document.getElementById('change-modal');
-      const total = parseFloat(modal.dataset.total || '0');
-      const given = parseFloat(document.getElementById('cash-given').value || '0');
-      const change = given - total;
-      document.getElementById('change-amount').textContent = change > 0 ? change.toFixed(2) : '0.00';
-    }
-    document.getElementById('cash-given').addEventListener('input', calculateChange);
+    document.getElementById('wissel-paid').addEventListener('input', updateWissel);
+    document.getElementById('wissel-close').addEventListener('click', closeWissel);
+    document.getElementById('wissel-modal').addEventListener('click',e=>{ if(e.target.id==='wissel-modal') closeWissel(); });
+    document.getElementById('wissel-exact').addEventListener('click',()=>{ const paid=document.getElementById('wissel-paid'); paid.value=wisselDue.toFixed(2); updateWissel(); });
+    document.querySelectorAll('#wissel-modal [data-add]').forEach(b=>b.addEventListener('click',()=>{ const inp=document.getElementById('wissel-paid'); inp.value=(Number(inp.value||0)+Number(b.dataset.add)).toFixed(2); updateWissel(); }));
 
     const toggleBtn = document.getElementById('toggle-map-btn');
     if (toggleBtn) {
