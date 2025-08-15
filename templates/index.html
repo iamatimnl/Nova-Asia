@@ -729,13 +729,13 @@ body.portrait-mode .cart-section.mobile-visible .cart-summary #closeCartBtn {
 @media (min-width: 768px) {
   .cart-section {
     position: fixed;
-    top: 69px;
+    top: 62px;
     right: 25px;
     width: 600px;
     height: 95vh;
     display: flex;
     flex-direction: column;
-    
+    bottom: 0px;
     border-radius: 12px;
     z-index: 1000;
   }
@@ -748,9 +748,9 @@ body.portrait-mode .cart-section.mobile-visible .cart-summary #closeCartBtn {
   font-size: large;
   flex-direction: column;
   overflow: hidden;
-  margin-top: 15px;
-
-  background: #F8F8F8;
+  margin-top: 12px;
+  
+  background: #ffffffcc;
   backdrop-filter: blur(18px);
   padding: 16px;
 
@@ -773,8 +773,8 @@ body.portrait-mode .cart-section.mobile-visible .cart-summary #closeCartBtn {
   width: 100%;
   position: static;
   font-size: larger;
-
-  background: #F8F8F8;
+  margin-bottom: -10px;
+  background: #ffffffcc;
   backdrop-filter: blur(18px);
   padding: 20px;
 
@@ -2076,14 +2076,12 @@ body.portrait-mode .spinner {
   top: 670px;            /* 距离页面顶端 80px */
   left: 6px;             /* 贴右边 */
   width: 600px;
-  background: yellow;
+  background: #3e2f24ea;
+  color: #d1b780;
   padding: 16px;
   text-align: center;
-  border-top-right-radius: 16px;
-  border-bottom-right-radius: 16px;
-  box-shadow:
-    0 -4px 8px rgba(224, 176, 126, 0.15),
-    4px 0 8px rgba(224, 176, 126, 0.15);
+  
+ 
   z-index: 1000;       /* 确保它在上层可见 */
 }
 body.portrait-mode #cart-toggle {
@@ -2107,7 +2105,7 @@ body.portrait-mode #cart-toggle {
   justify-content: center; /* ✅ 加这个就能居中标题 */
   gap: 8px;
   font-size: 1.4rem;
-  color: #333;
+  color: #f2e9d8;
   margin-bottom: 12px;
   white-space: nowrap;
   text-align: center;
@@ -2115,7 +2113,7 @@ body.portrait-mode #cart-toggle {
 
 
 .clipboard-content {
-  color: var(--accent-color);
+  color: #d1b780;
   font-size: 1rem;
   line-height: 1.5;
 }
