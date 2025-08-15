@@ -228,7 +228,7 @@
   backdrop-filter: blur(8px);
   border-radius: 16px;
   padding: 20px;
-  background: linear-gradient(to bottom, #fdfaf6, #f0e6d7);
+  background:#9ca37a; 
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(0, 0, 0, 0.06);
 }
@@ -381,6 +381,26 @@
 }
 
 #toggle-map-btn:hover {
+  transform: scale(1.2);
+}
+#admin-orders-btn {
+  background-color: transparent;  /* 修正拼写 */
+  border: none;
+  top:15px;
+  padding: 8px 0; /* 调整上下边距让图标居中 */
+  width: 28px;
+  height: 24px;
+  cursor: pointer;
+  margin-right: 18px;
+  transition: background-color 0.2s ease;
+  font-size: 28px; /* 控制 emoji 大小 */
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#admin-orders-btn:hover {
   transform: scale(1.2);
 }
 
@@ -1166,9 +1186,10 @@ dialog::backdrop {
 
       <!-- 固定导航栏 -->
       <div class="orders-header">
+        <button id="admin-orders-btn">📙</button>
         <button id="toggle-map-btn">🗺️</button>
         <button id="closeToday">✕</button>
-      
+        
     
       </div>
      
