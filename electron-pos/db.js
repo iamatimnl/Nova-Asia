@@ -1,25 +1,44 @@
-// db.js — Electron 主进程：稳健版
+// db.js — Electron 主进程：稳健完整版（含批量同步 & 更新功能）
 const { app, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const Database = require('better-sqlite3');
 
-// ---------- 配置 & 路径 ----------
+/* ===================== 配置 ===================== */
+// 数据库路径优先级：环境变量 > 你的 D 盘默认路径 > Electron userData
 const ENV_DB = process.env.NOVA_DB_PATH && process.env.NOVA_DB_PATH.trim();
-const defaultDbPath = path.join('D:', 'NovaAsia1', 'data', 'orders.db'); // 兼容你原方案
+const defaultDbPath = path.join('D:', 'NovaAsia1', 'data', 'orders.db');
 const userDataDbPath = app?.getPath ? path.join(app.getPath('userData'), 'orders.db') : defaultDbPath;
-
-// 优先级：环境变量 > 你的 D 盘路径 > userData
 const dbPath = ENV_DB || defaultDbPath || userDataDbPath;
+
+// 是否强制 bron 必填（true：缺失报错并拒绝写入；false：缺失时使用默认值 DEFAULT_BRON）
+const REQUIRE_BRON = true;
+const DEFAULT_BRON = 'pos'; // 当 REQUIRE_BRON=false 时生效
+
+// 允许通过“更新接口”修改的列（白名单）
+const WRITABLE_COLUMNS = new Set([
+  'order_id','order_number',
+  'customer_name','phone','email',
+  'order_type','pickup_time','delivery_time','payment_method',
+  'postcode','house_number','street','city',
+  'opmerking','items',
+  'subtotal','total','packaging_fee','delivery_fee','tip',
+  'btw_9','btw_21','btw_total',
+  'discount_amount','discount_code','discountAmount','discountCode',
+  'is_completed','is_cancelled',
+  'bron',
+  // 如确需支持修改 data / created_at，可在确认风险后加入：
+  // 'data', 'created_at'
+]);
+
+/* ===================== 初始化连接 ===================== */
 fs.mkdirSync(path.dirname(dbPath), { recursive: true });
 console.log('[DB] file =', dbPath);
-
-// ---------- 连接 ----------
-const db = new Database(dbPath, { timeout: 8000 }); // 8s 超时，防止 “database is locked”
+const db = new Database(dbPath, { timeout: 8000 }); // 8s 防锁
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
 
-// ---------- 安全 JSON ----------
+/* ===================== 工具函数 ===================== */
 function safeStringify(v) {
   try { return JSON.stringify(v); }
   catch (e) {
@@ -27,8 +46,6 @@ function safeStringify(v) {
     catch { return '{"__stringify_error__":"unknown"}'; }
   }
 }
-
-// ---------- 工具 ----------
 function pick(obj, ...paths) {
   for (const p of paths) {
     if (!p) continue;
@@ -45,7 +62,7 @@ function pick(obj, ...paths) {
 const toStr = v => (v===undefined || v===null) ? '' : String(v);
 const toNum = v => (v===null || v===undefined || v==='') ? null : Number(v);
 
-// ---------- 首次建表 ----------
+/* ===================== 建表（与现有结构对齐） ===================== */
 db.exec(`
   CREATE TABLE IF NOT EXISTS orders (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -86,11 +103,10 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_orders_order_id   ON orders(order_id);
 `);
 
-// ---------- 轻量“自愈迁移” ----------
+/* ===================== 轻量自愈迁移 ===================== */
 function ensureColumn(table, column, type) {
-  const row = db.prepare(`PRAGMA table_info(${table})`).all()
-    .find(r => r.name === column);
-  if (!row) {
+  const exists = db.prepare(`PRAGMA table_info(${table})`).all().some(c => c.name === column);
+  if (!exists) {
     db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${type};`);
     console.log(`[DB] MIGRATION: add ${table}.${column} ${type}`);
   }
@@ -101,33 +117,8 @@ ensureColumn('orders', 'discount_code', 'TEXT');
 ensureColumn('orders', 'discountAmount', 'REAL');
 ensureColumn('orders', 'discountCode', 'TEXT');
 
-// 把 camelCase 合并到 snake_case（可选：按需启用一次）
-function unifyDiscountOnce() {
-  const has = db.prepare(`
-    SELECT EXISTS(
-      SELECT 1 FROM orders 
-      WHERE (discount_amount IS NULL OR discount_amount=0) 
-        AND (discountAmount IS NOT NULL AND discountAmount!=0)
-    ) AS need
-  `).get().need;
-  if (has) {
-    const tx = db.transaction(() => {
-      db.exec(`
-        UPDATE orders
-        SET discount_amount = COALESCE(discount_amount, discountAmount),
-            discount_code   = COALESCE(discount_code,   discountCode)
-        WHERE (discountAmount IS NOT NULL AND discountAmount!=0)
-           OR (discountCode   IS NOT NULL AND discountCode   !='');
-      `);
-    });
-    tx();
-    console.log('[DB] MIGRATION: unify discountAmount/discountCode -> discount_amount/discount_code');
-  }
-}
-// 可选择调用一次（若你决定统一字段）
-// unifyDiscountOnce();
 
-// ---------- 映射 & 校验 ----------
+/* ===================== 字段映射（含 bron 约束） ===================== */
 function toRow(oInput) {
   const o = oInput || {};
   const c = o.customer || {};
@@ -180,7 +171,14 @@ function toRow(oInput) {
   const payment_method = toStr(pick(o,'payment_method','payment.method','paymentMethod') || '');
   const is_completed   = Number(pick(o,'is_completed') ?? 0);
   const is_cancelled   = Number(pick(o,'is_cancelled') ?? 0);
-  const bron           = toStr(pick(o,'bron','source') || 'pos'); // 关键：保证一定有
+
+  // bron：强制 or 默认
+  let bron = toStr(pick(o,'bron','source') || '');
+  if (REQUIRE_BRON) {
+    if (!bron.trim()) throw new Error('bron required');
+  } else {
+    if (!bron.trim()) bron = DEFAULT_BRON;
+  }
 
   // 明细列
   const items = typeof o.items === 'string'
@@ -207,7 +205,7 @@ function toRow(oInput) {
   };
 }
 
-// ---------- 预编译 SQL ----------
+/* ===================== 预编译 SQL & 事务 ===================== */
 const upsertSQL = `
 INSERT INTO orders (
   order_id, order_number, order_type, customer_name, phone, email,
@@ -254,7 +252,6 @@ ON CONFLICT(order_number) DO UPDATE SET
   data=excluded.data
 `;
 const upsertStmt = db.prepare(upsertSQL);
-
 const getByNumberStmt = db.prepare(`SELECT * FROM orders WHERE order_number = ?`);
 const getByIdStmt     = db.prepare(`SELECT * FROM orders WHERE id = ?`);
 const listRecentStmt  = db.prepare(`SELECT * FROM orders ORDER BY created_at DESC LIMIT ?`);
@@ -264,38 +261,182 @@ const listTodayStmt   = db.prepare(`
   ORDER BY created_at DESC
 `);
 
-// ---------- 事务包装 ----------
 const txUpsert = db.transaction((row) => upsertStmt.run(row));
 
-// ---------- API ----------
+/* ===================== 基础 API ===================== */
 function saveOrder(order)  {
-  try {
-    const row = toRow(order);
-    txUpsert(row);
-    return true;
-  } catch (err) {
-    // 带参数快照便于追查
-    console.error('[DB] save failed:', err?.stack || err);
-    try { console.error('[DB] lastOrderPreview =', safeStringify(order)); } catch {}
-    return false;
-  }
+  const row = toRow(order); // 缺 bron / 缺 order_number 会 throw
+  txUpsert(row);
+  return true;
 }
-function getOrderByNumber(no) { try { return getByNumberStmt.get(String(no || '')) || null; } catch (e) { console.error(e); return null; } }
-function getOrderById(id)     { try { return getByIdStmt.get(Number(id)) || null; } catch (e) { console.error(e); return null; } }
-function listRecent(limit=50) { try { return listRecentStmt.all(Number(limit)); } catch (e) { console.error(e); return []; } }
-function getOrdersToday()     { try { return listTodayStmt.all(); } catch (e) { console.error(e); return []; } }
+function getOrderByNumber(no) { return getByNumberStmt.get(String(no || '')) || null; }
+function getOrderById(id)     { return getByIdStmt.get(Number(id)) || null; }
+function listRecent(limit=50) { return listRecentStmt.all(Number(limit)); }
+function getOrdersToday()     { return listTodayStmt.all(); }
 
-// ---------- IPC ----------
+/* ===================== 批量 UPSERT（给 fetch 后同步用） ===================== */
+function upsertBatch(orders = []) {
+  if (!Array.isArray(orders)) throw new Error('orders must be an array');
+  const result = { saved: 0, skipped: 0, errors: [] };
+
+  const tx = db.transaction((arr) => {
+    for (let i = 0; i < arr.length; i++) {
+      const raw = arr[i];
+      try {
+        const row = toRow(raw);
+        txUpsert(row);
+        result.saved++;
+      } catch (e) {
+        result.skipped++;
+        result.errors.push({
+          index: i,
+          order_number: (raw && (raw.order_number || raw.orderNumber)) || null,
+          message: e && e.message ? e.message : String(e)
+        });
+      }
+    }
+  });
+
+  tx(orders);
+  return result;
+}
+
+/* ===================== 更新（按 id / 按 order_number） ===================== */
+function sanitizePatch(patch = {}) {
+  const out = {};
+  for (const [k, v] of Object.entries(patch)) {
+    if (!WRITABLE_COLUMNS.has(k)) continue;
+    switch (k) {
+      case 'subtotal':
+      case 'total':
+      case 'packaging_fee':
+      case 'delivery_fee':
+      case 'tip':
+      case 'btw_9':
+      case 'btw_21':
+      case 'btw_total':
+      case 'discount_amount':
+      case 'discountAmount':
+        out[k] = toNum(v);
+        break;
+      case 'is_completed':
+      case 'is_cancelled':
+        out[k] = Number(v ? 1 : 0);
+        break;
+      case 'bron':
+        if (REQUIRE_BRON && !toStr(v).trim()) throw new Error('bron cannot be empty');
+        out[k] = toStr(v);
+        break;
+      default:
+        out[k] = toStr(v);
+        break;
+    }
+  }
+  return out;
+}
+function buildUpdateSQL(table, patchObj) {
+  const keys = Object.keys(patchObj);
+  if (keys.length === 0) return null;
+  const sets = keys.map(k => `${k}=@${k}`).join(', ');
+  return `UPDATE ${table} SET ${sets} WHERE `;
+}
+function updateOrderById(id, patch = {}) {
+  const rowId = Number(id);
+  if (!rowId) throw new Error('invalid id');
+
+  const clean = sanitizePatch(patch);
+  const base = buildUpdateSQL('orders', clean);
+  if (!base) return 0;
+
+  const sql = base + `id=@__id`;
+  const stmt = db.prepare(sql);
+
+  const tx = db.transaction(() => {
+    const exist = getByIdStmt.get(rowId);
+    if (!exist) return 0;
+    const params = { ...clean, __id: rowId };
+    const info = stmt.run(params);
+    return info.changes || 0;
+  });
+  return tx();
+}
+function updateOrderByNumber(orderNumber, patch = {}) {
+  const no = toStr(orderNumber).trim();
+  if (!no) throw new Error('invalid order_number');
+
+  const clean = sanitizePatch(patch);
+  const base = buildUpdateSQL('orders', clean);
+  if (!base) return 0;
+
+  const sql = base + `order_number=@__no`;
+  const stmt = db.prepare(sql);
+
+  const tx = db.transaction(() => {
+    const exist = getByNumberStmt.get(no);
+    if (!exist) return 0;
+    const params = { ...clean, __no: no };
+    const info = stmt.run(params);
+    return info.changes || 0;
+  });
+  return tx();
+}
+
+/* ===================== IPC 注册 ===================== */
 function handleOnce(channel, fn) { ipcMain.removeHandler(channel); ipcMain.handle(channel, fn); }
 
-handleOnce('db:save-order', (_e, payload) => ({ ok: !!saveOrder(payload) }));
+// 保存/单条
+handleOnce('db:save-order', (_e, payload) => {
+  try { return { ok: !!saveOrder(payload) }; }
+  catch (err) {
+    console.error('[DB] save failed:', err?.stack || err);
+    try { console.error('[DB] lastOrderPreview =', safeStringify(payload)); } catch {}
+    return { ok: false, error: err?.message || String(err) };
+  }
+});
+
+// 批量 upsert（用于 fetch /pos/orders_today 后同步到本地）
+handleOnce('db:upsert-batch', (_e, ordersArray) => {
+  try {
+    const stat = upsertBatch(ordersArray || []);
+    return { ok: true, ...stat };
+  } catch (err) {
+    console.error('[DB] upsert-batch failed:', err?.stack || err);
+    return { ok: false, error: err?.message || String(err) };
+  }
+});
+
+// 更新
+handleOnce('db:update-order-by-id', (_e, id, patch) => {
+  try {
+    const changes = updateOrderById(id, patch);
+    const updated = changes ? getByIdStmt.get(Number(id)) : null;
+    return { ok: true, changes, data: updated };
+  } catch (err) {
+    console.error('[DB] update by id failed:', err?.stack || err);
+    return { ok: false, error: err?.message || String(err) };
+  }
+});
+handleOnce('db:update-order-by-number', (_e, no, patch) => {
+  try {
+    const changes = updateOrderByNumber(no, patch);
+    const updated = changes ? getByNumberStmt.get(String(no)) : null;
+    return { ok: true, changes, data: updated };
+  } catch (err) {
+    console.error('[DB] update by number failed:', err?.stack || err);
+    return { ok: false, error: err?.message || String(err) };
+  }
+});
+
+// 查询
 handleOnce('db:get-orders-today', () => { try { return getOrdersToday(); } catch (e) { console.error(e); return []; } });
 handleOnce('db:get-order-by-number', (_e, no) => { try { return getOrderByNumber(no); } catch (e) { console.error(e); return null; } });
 handleOnce('db:get-order-by-id', (_e, id) => { try { return getOrderById(id); } catch (e) { console.error(e); return null; } });
 handleOnce('db:list-recent', (_e, limit=50) => { try { return listRecent(limit); } catch (e) { console.error(e); return []; } });
 
-// ---------- exports ----------
+/* ===================== 导出 ===================== */
 module.exports = {
   dbPath, db,
-  saveOrder, getOrderByNumber, getOrderById, listRecent, getOrdersToday
+  saveOrder, upsertBatch,
+  updateOrderById, updateOrderByNumber,
+  getOrderByNumber, getOrderById, listRecent, getOrdersToday
 };
