@@ -2640,22 +2640,11 @@ body.portrait-mode .cart-badge {
   <!-- 右侧: 结算区域 -->
   <div class="cart-summary pretty-gradient">
 
-   <button class="circle-back-btn" onclick="goBack()" 
-        style="background: none; border: none; padding: 6px 10px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-
-  <!-- 这里替换成你上传的SVG内容 -->
-  <!-- 例如： -->
-  <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"
-       viewBox="0 0 24 24"
-       fill="none" stroke="#000000" stroke-width="2"
-       stroke-linecap="round" stroke-linejoin="round">
-       <!-- 这里是你的SVG路径们 -->
-  </svg>
-
-  <!-- 文字 -->
-  <span style="color:#000000; font-size:16px; font-weight:500;">Terug</span>
+   <button class="circle-x-btn" onclick="toggleMobileCart()" 
+        style="background: none; border: none; padding: 0; cursor: pointer;">
+  <img src="/static/images/back.svg" alt="Back" width="40" height="40" />
 </button>
->
+
 
 
 
@@ -7671,3 +7660,4 @@ document.addEventListener('click', e => {
 
 
 </body></html>
+
