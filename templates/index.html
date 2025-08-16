@@ -473,7 +473,7 @@
 @media (min-width: 768px) {
   .new-set-msg {
     font-size: 2.2rem !important;
-    color: white;
+    color: #1a1009;
     font-weight: 600;
     letter-spacing: 0.8px;
     margin: 0;
@@ -2640,16 +2640,22 @@ body.portrait-mode .cart-badge {
   <!-- 右侧: 结算区域 -->
   <div class="cart-summary pretty-gradient">
 
-   <button class="circle-x-btn" onclick="toggleMobileCart()" style="background: none; border: none; padding: 0; cursor: pointer;">
-  <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
+   <button class="circle-back-btn" onclick="goBack()" 
+        style="background: none; border: none; padding: 6px 10px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+
+  <!-- 这里替换成你上传的SVG内容 -->
+  <!-- 例如： -->
+  <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"
        viewBox="0 0 24 24"
-       fill="black" stroke="#f2e9d8" stroke-width="2"
+       fill="none" stroke="#000000" stroke-width="2"
        stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="12" r="10" />
-    <line x1="15" y1="9" x2="9" y2="15" />
-    <line x1="9" y1="9" x2="15" y2="15" />
+       <!-- 这里是你的SVG路径们 -->
   </svg>
+
+  <!-- 文字 -->
+  <span style="color:#000000; font-size:16px; font-weight:500;">Terug</span>
 </button>
+>
 
 
 
@@ -2724,6 +2730,7 @@ body.portrait-mode .cart-badge {
 <div class="menu-content">
 <h3>Zalm crispy rice sandwich</h3>
 <p>€ 7.00</p>
+<p class="ingredients">Verse zalm, crispy sushirijst, komkommer, avocado</p>
 <p id="soldoutZalmCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 
@@ -2742,6 +2749,7 @@ body.portrait-mode .cart-badge {
 <div class="menu-content">
 <h3>Spicytuna crispy rice sandwich</h3>
 <p>€ 7.00</p>
+<p class="ingredients">Verse spicy tuna, crispy sushirijst, komkommer, avocado</p>
 <p id="soldoutSpicytunaCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 
@@ -2761,6 +2769,7 @@ body.portrait-mode .cart-badge {
 <div class="menu-content">
 <h3>Ebi crispy rice sandwich</h3>
 <p>€ 7.00</p>
+<p class="ingredients">Ebi fry, crispy sushirijst, komkommer, avocado</p>
 <p id="soldoutEbiCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 
@@ -2778,6 +2787,7 @@ body.portrait-mode .cart-badge {
 <div class="menu-content">
 <h3>Beef crispy rice sandwich</h3>
 <p>€ 7.50</p>
+<p class="ingredients">Terriyaki beef, crispy sushirijst, gebakken uitjes</p>
 <p id="soldoutBeefCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 
@@ -2795,6 +2805,7 @@ body.portrait-mode .cart-badge {
 <div class="menu-content">
 <h3>California crispy rice sandwich</h3>
 <p>€ 7.50</p>
+<p class="ingredients">Krabstick, crispy sushirijst, komkommer, avocado, masago/p>
 <p id="soldoutCaliforniaCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 
@@ -2812,6 +2823,7 @@ body.portrait-mode .cart-badge {
 <div class="menu-content">
 <h3>Chicken crispy rice sandwich</h3>
 <p>€ 7.00</p>
+<p class="ingredients">Crispy chicken, crispy sushirijst, komkommer, avocado</p>
 <p id="soldoutChickenCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 
