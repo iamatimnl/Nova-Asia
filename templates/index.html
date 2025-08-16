@@ -2309,60 +2309,53 @@ body.portrait-mode .cart-badge {
   }
 }
 
-.ingredients {
-    font-size: 0.9em;
-    color: #585656;
-}
-/* 手机端字体更小 */
-/* 桌面端（默认向下移动） */
-.menu-item h3,
-.menu-item p {
-    background: rgba(255, 255, 255, 0.678);
-    border-radius: 8px;
-    padding: 4px 8px;
-    margin: 0 0 2px 0;
-    position: relative;
-    top: 6px; /* 向下移动 */
+/* 通用基础样式 */
+.menu-content {
+  border-bottom: 1px solid #eeeeeec4;
+  padding: 0.3em 0;   /* 原来 0.06em 太小，建议改成 0.3em 左右更平衡 */
 }
 
-/* 手机端（向上移动） */
-@media (max-width: 768px) {
-    .menu-item h3,
-    .menu-item p {
-        top: -6px; /* 向上移动 */
-    }
+.menu-content h3 {
+  margin: 0 0 0.2em 0;   /* 原来 0.3em → 改小到 0.2em */
+  font-weight: 600;
 }
 
-/* 手机端字体更小 */
-@media (max-width: 768px) {
-    .menu-item h3 {
-        font-size: 1.1em; /* 比桌面端小一点 */
-    }
-    .menu-item p {
-        font-size: 0.678em; /* 说明文字更小 */
-    }
-}
-h3 {
-  font-size: 28px;      /* 主标题大小 */
+.menu-content > p:first-of-type {
   font-weight: bold;
-  line-height: 1.2;
+  margin: 0.1em 0;       /* 上下间距保持极小 */
 }
 
-h3 .sub {
-  display: block;       /* 换行显示 */
-  font-size: 25px;      /* 副标题大小 */
-  font-weight: normal;
-  color: #130b00;
-  margin-top:5px;          /* 副标题颜色 */
+.menu-content .ingredients {
+  color: #555;
+  margin: 0.1em 0 0 0;   /* 只留极小的上间距 */
 }
+
+
+/* 桌面端 (大屏幕) */
+@media (min-width: 768px) {
+  .menu-content h3 {
+    font-size: 1.6em;
+  }
+  .menu-content > p:first-of-type {
+    font-size: 1.3em;  /* 价格更显眼 */
+  }
+  .menu-content .ingredients {
+    font-size: 1em;    /* 正常文字大小 */
+  }
+}
+
+/* 手机端 (小屏幕) */
 @media (max-width: 767px) {
- h3 .sub {
-  display: block;       /* 换行显示 */
-  font-size: 16px;      /* 副标题大小 */
-  font-weight: normal;
-  color: #130b00;    
-  margin-top:1px;           /* 副标题颜色 */
-}}
+  .menu-content h3 {
+    font-size: 1em;
+  }
+  .menu-content > p:first-of-type {
+    font-size: 0.8rem;  /* 价格稍大 */
+  }
+  .menu-content .ingredients {
+    font-size: 0.65rem; /* 配料小一点 */
+  }
+}
 
 </style>
 
@@ -2671,9 +2664,10 @@ h3 .sub {
 <img alt="Japans Chicken Bento" src="{{ url_for('static', filename='images/chicken-bento.jpg') }}"/>
 </div>
 <div class="menu-content">
-<h3>Japans Chicken Bento <span class="sub">€22.00</span>
-</h3> 
+<h3>Japans Chicken Bento</h3>
+<p>€ 22.00</p>
 <p class="ingredients">Teriyaki kipfilet, Sushi-rijst, Kimchi-komkommer, Chicken karaage</p>
+
 
 
 
@@ -2692,8 +2686,8 @@ h3 .sub {
 <img alt="Korean Chicken Bento" src="{{ url_for('static', filename='images/chicken-bento.jpg') }}"/>
 </div>
 <div class="menu-content">
-<h3>Korean Chicken Bento <span class="sub">€22.00</span>
-</h3> 
+<h3>Korean Chicken Bento</h3> 
+<p>€ 22.00</p>
 <p class="ingredients">Spicy kipfilet, Sushi-rijst, Kimchi-komkommer, Spicy crispy chicken</p>
 
 
@@ -2712,8 +2706,8 @@ h3 .sub {
 <img alt="Korean Beef Bento" src="{{ url_for('static', filename='images/Meatlove bento.png') }}"/>
 </div>
 <div class="menu-content">
-<h3>Korean Beef Bento <span class="sub">€25.00</span>
-</h3> 
+<h3>Korean Beef Bento </h3> 
+<p>€ 25.00</p>
 <p class="ingredients">Gerilde Korean beef, Sushi-rijst, Kimchi-komkommer, Gyoza</p>
 
 <p id="soldoutKoreanBeefBento" class="sold-out-msg hidden">Uitverkocht!</p>
@@ -2732,8 +2726,8 @@ h3 .sub {
 <img alt="Meatlover Bento" src="{{ url_for('static', filename='images/Meatlove bento.png') }}"/>
 </div>
 <div class="menu-content">
-<h3>Korean Beef Bento <span class="sub">€25.00</span>
-</h3> 
+<h3>Korean Beef Bento</h3> 
+<p>€ 25.00</p>
 <p class="ingredients">Gerilde Terriyaki Beef, Sushi-rijst, Kimchi-komkommer, Crispy chicken</p>
 <p id="soldoutMeatloverBento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
@@ -2750,8 +2744,8 @@ h3 .sub {
 <img alt="Zalm Lover Bento" src="{{ url_for('static', filename='images/zalm-lover-bento.jpg') }}"/>
 </div>
 <div class="menu-content">
-<h3>Zalmlover Bento <span class="sub">€23.00</span>
-</h3> 
+<h3>Zalmlover Bento</h3> 
+<p>€ 23.00</p>
 <p class="ingredients">Gerilde terriyaki zalm, Sushi-rijst, Kimchi-komkommer, Crispy zalm nugget</p>
 <p id="soldoutZalmLoverBento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
@@ -2768,8 +2762,8 @@ h3 .sub {
 <img alt="EbiLover Bento" src="{{ url_for('static', filename='images/ebi-lover-bento.png') }}"/>
 </div>
 <div class="menu-content">
-<h3>Ebi lover Bento <span class="sub">€23.00</span>
-</h3> 
+<h3>Ebi lover Bento</h3> 
+<p>€ 23.00</p>
 <p class="ingredients">Gerilde gamba, Sushi-rijst, Kimchi-komkommer,Crispy ebi fry</p>
 <p id="soldoutEbiLoverBento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
@@ -2786,8 +2780,8 @@ h3 .sub {
 <img alt="Surf &amp; Turf Bento" src="{{ url_for('static', filename='images/surf-turf-bento.jpg') }}"/>
 </div>
 <div class="menu-content">
-<h3>Surf & Turf Bento <span class="sub">€25.00</span>
-</h3> 
+<h3>Surf & Turf Bento</h3> 
+<p>€ 25.00</p>
 <p class="ingredients">Gerilde beef, Sushi-rijst, Kimchi-komkommer, Crispy ebi fry</p>
 <p id="soldoutSurfTurfBento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
@@ -2804,7 +2798,8 @@ h3 .sub {
 <img alt="Dimsum Bento" src="{{ url_for('static', filename='images/dimsum-bento.png') }}"/>
 </div>
 <div class="menu-content">
-<h3>Dimsum Bento <span class="sub">€20.00</span></h3>
+<h3>Dimsum Bento</h3>
+<p>€ 20.00</p>
 <p class="ingredients">Shanghai Bun, Siu Mai, Hakau, Gyoza</p>
 
 <p id="soldoutDimsumBento" class="sold-out-msg hidden">Uitverkocht!</p>
@@ -2822,8 +2817,8 @@ h3 .sub {
 <img alt="Lamskotelet Bento" src="{{ url_for('static', filename='images/lamskotelet-bento.jpg') }}"/>
 </div>
 <div class="menu-content">
-<h3>Lamskotelet NZL Bento <span class="sub">€30.00</span>
-</h3>
+<h3>Lamskotelet NZL Bento</h3>
+<p>€ 30.00</p>
 <p class="ingredients">Gegrilde Lamskotelet NZL, Sushi-rijst, Kimchi-komkommer, Gyoza</p>
 <p id="soldoutLamskoteletBento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
@@ -2840,8 +2835,8 @@ h3 .sub {
 <img alt="Unagi Bento" src="{{ url_for('static', filename='images/UNA.jpg') }}"/>
 </div>
 <div class="menu-content">
-<h3>Unagi Bento <span class="sub">€24.00</span>
-</h3> 
+<h3>Unagi Bento</h3>
+<p>€ 24.00</p> 
 <p class="ingredients">Gerilde paling, Sushi-rijst, Kimchi-komkommer, Gyoza</p>
 <p id="soldoutUnagiBento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
@@ -2858,8 +2853,8 @@ h3 .sub {
 <img alt="Tuna Bento" src="{{ url_for('static', filename='images/tunapo.png') }}"/>
 </div>
 <div class="menu-content">
-<h3>Usuyaki Bento <span class="sub">€25.00</span>
-</h3> 
+<h3>Usuyaki Bento</h3> 
+<p>€ 25.00</p>
 <p class="ingredients">Gerilde beef rolletjes, Sushi-rijst, Kimchi-komkommer, Crispy chicken</p>
 <p id="soldoutTunaBento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
@@ -2876,8 +2871,8 @@ h3 .sub {
 <img alt="Veggie Bento" src="{{ url_for('static', filename='images/veggie-bento.png') }}"/>
 </div>
 <div class="menu-content">
-<h3>Veggie Bento <span class="sub">€20.00</span>
-</h3> 
+<h3>Veggie Bento</h3> 
+<p>€ 20.00</p>
 <p class="ingredients">Gerilde groente, Sushi-rijst, Kimchi-komkommer, Tempura veegie</p>
 <p id="soldoutVeggieBento" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
@@ -2893,8 +2888,12 @@ h3 .sub {
 <img alt="Bento Sushi Omakase" src="{{ url_for('static', filename='images/SUSHI.png') }}"/>
 </div>
 <div class="menu-content">
-<h3>Sushi Bento <span class="sub">€24.00</span></h3>
-<p class="ingredients">16 Stuks Chefschoice Vis/Vlees Verrassend Samengesteld</p>
+<h3>Sushi Bento</h3>
+<p>€ 24.00</p>
+<p class="ingredients">
+16 stuks Chefschoice – keuze uit vis/vlees – verrassend samengesteld
+</p>
+
 
 
 <p id="soldoutSushiBento" class="sold-out-msg hidden">Uitverkocht!</p>
