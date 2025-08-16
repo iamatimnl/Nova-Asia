@@ -1,23 +1,104 @@
 <!doctype html>
-<title>Login</title>
-<h1>Login</h1>
-<form method="post">
-  <label>Username</label><br>
-  <input type="text" name="username"><br>
-  <label>Password</label><br>
-  <input type="password" name="password"><br>
-  <button type="submit">Login</button>
-</form>
-{% if error %}<p style="color:red;">Invalid credentials</p>{% endif %}
-{% if auto_login %}
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('form');
-    if (form) {
-      form.username.value = 'admin';
-      form.password.value = 'novaasia3693';
-      form.submit();
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <title>Nova Asia Admin Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(135deg, #f0f2f5, #d6e4ff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
     }
-  });
-</script>
-{% endif %}
+    .login-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+      animation: fadeIn 0.8s ease;
+    }
+    h1 {
+      margin-bottom: 1.5rem;
+      font-size: 1.5rem;
+      color: #333;
+    }
+    label {
+      display: block;
+      text-align: left;
+      font-weight: 600;
+      margin: 0.5rem 0 0.25rem;
+    }
+    input {
+      width: 100%;
+      padding: 0.6rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+    }
+    input:focus {
+      border-color: #4c8bf5;
+      outline: none;
+      box-shadow: 0 0 4px rgba(76,139,245,0.4);
+    }
+    button {
+      width: 100%;
+      padding: 0.7rem;
+      border: none;
+      border-radius: 8px;
+      background: #4c8bf5;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #3a6fd8;
+    }
+    .error {
+      color: red;
+      margin-top: 0.5rem;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h1>🔑 Admin Login</h1>
+    <form method="post">
+      <label>Username</label>
+      <input type="text" name="username" required>
+      
+      <label>Password</label>
+      <input type="password" name="password" required>
+      
+      <button type="submit">Login</button>
+    </form>
+    {% if error %}<p class="error">❌ Invalid credentials</p>{% endif %}
+  </div>
+
+  {% if auto_login %}
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.querySelector('form');
+      if (form) {
+        form.username.value = 'admin';
+        form.password.value = 'novaasia3693';
+        form.submit();
+      }
+    });
+  </script>
+  {% endif %}
+</body>
+</html>
