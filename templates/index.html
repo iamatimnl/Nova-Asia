@@ -781,10 +781,20 @@ body.portrait-mode .cart-section.mobile-visible .cart-summary #closeCartBtn {
 
 }
 
-  /* 移动端相关按钮桌面隐藏 */
-  #cart-toggle, #circle-x-btn, .slider-container {
-    display: none !important;
-  }
+  /* 默认隐藏（桌面端） */
+#cart-toggle, .slider-container {
+  display: none;
+}
+
+#circle-x-btn {
+  display: none;
+}
+
+/* 移动端 portrait-mode 下显示 */
+body.portrait-mode #circle-x-btn {
+  display: block !important;
+}
+
 }
 
 
