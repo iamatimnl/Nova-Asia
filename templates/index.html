@@ -461,22 +461,23 @@
 }
 
 .new-set-msg {
-  font-size: 1rem;  /* 稍微加大，更友好 */
-  color: white;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.8);
+  color: #111;
   font-weight: 200;
   letter-spacing: 0.2px;
-  margin: 0;
+  margin: 0 0 2px 0;   /* 下方留 8px 间距 */
   line-height: 1;
 }
-
 
 @media (min-width: 768px) {
   .new-set-msg {
     font-size: 2.2rem !important;
-    color: #1a1009;
+    background: rgba(255, 255, 255, 0.8);
+    color: #111;
     font-weight: 600;
     letter-spacing: 0.8px;
-    margin: 0;
+    margin: 0 0 10px 0;  /* 桌面端间距更大 */
     line-height: 1.4;
   }
 }
