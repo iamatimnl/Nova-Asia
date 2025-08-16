@@ -1609,8 +1609,12 @@ body.portrait-mode .cart-extra-item select {
   align-items: center;
 }
 
-  #xBowlMains select, #xBowlToppings select { width: 100%; }
+  #xBowlMains select, #xBowlToppings select {
+    flex: 1;
+    min-width: 0;
+  }
   #xBowlMains button, #xBowlToppings button {
+    flex: 0 0 auto;
     width: 1.4rem;
     height: 1.4rem;
     font-size: 0.7rem;
@@ -1636,16 +1640,30 @@ body.portrait-mode .cart-extra-item select {
 
 #xBowlMains select,
 #xBowlToppings select {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   font-size: 0.8rem;
   padding: 4px;
 }
+
+#xBowlMains button,
+#xBowlToppings button {
+  flex: 0 0 auto;
+}
 @media (min-width: 768px) {
-  #xBowlBase,
-  #xBowlMains select,
-  #xBowlToppings select {
+  #xBowlBase {
     width: 280px !important;          /* 统一宽度 */
     max-width: 100% !important;
+    font-size: 1.3rem !important;
+    padding: 6px 10px !important;
+    border: 1px solid #aaa !important;
+    border-radius: 6px !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    box-sizing: border-box !important;
+  }
+
+  #xBowlMains select,
+  #xBowlToppings select {
     font-size: 1.3rem !important;
     padding: 6px 10px !important;
     border: 1px solid #aaa !important;
