@@ -204,7 +204,7 @@
  
 
   /* 移动端专用样式（小于 768px 时生效） */
-@media (max-width: 767px) {
+@media (max-width: 900px) {
 
   .navbar-container {
     width: 100%; /* ✅ 移动端缩小药丸宽度 */
@@ -1309,7 +1309,7 @@ input:focus, select:focus, textarea:focus {
   max-height: 100vh;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 900px) {
   #xBowlBase {
     width: 100%;
     font-size: 0.8rem;
@@ -1586,7 +1586,7 @@ body.portrait-mode .cart-extra-item select {
 .menu-item[data-name="X-Bowl"] .menu-content {
   align-items: flex-start;
 }
-@media (max-width: 767px) {
+@media (max-width: 900px) {
   .menu-item[data-name="X-Bowl"] { aspect-ratio: auto; height: auto; }
   .menu-item[data-name="X-Bowl"] .menu-content { position: static; }
   .menu-item[data-name="X-Bowl"] img { position: static; width: 100%; height: auto; }
@@ -1660,6 +1660,36 @@ body.portrait-mode .cart-extra-item select {
     max-width: 280px !important;
   }
 }
+#xBowlMains > div,
+#xBowlToppings > div {
+  display: flex;
+  align-items: center;
+  gap: 2px;   /* ← 增大这里就行 */
+}
+
+/* 仅作用于 X-Bowl 的“主料/配料”行里的删除按钮 */
+.menu-item[data-name="X-Bowl"] #xBowlMains > div > button.xb-remove,
+.menu-item[data-name="X-Bowl"] #xBowlToppings > div > button.xb-remove {
+  border-radius: 4px !important;   /* 直角用 0 */
+  background: rgba(255, 255, 255, 0.9) !important;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  line-height: 1;
+}
+/* 手机端专属样式 */
+@media (max-width: 768px) {
+  .menu-item[data-name="X-Bowl"] #xBowlMains > div > button.xb-remove,
+  .menu-item[data-name="X-Bowl"] #xBowlToppings > div > button.xb-remove {
+    width: 1.3rem;        /* 稍微小点 */
+    height: 1.3rem;
+    font-size: 1.1rem;    /* 文字缩小 */
+    margin-left: 8px;     /* 手机端间距调小一些 */
+    border-radius: 4px;   /* 保持圆角 */
+    background: rgba(255,255,255,0.95); 
+  }
+}
+
 
 /* Increase font size on larger screens for better readability */
 @media (min-width: 768px) {
@@ -1740,7 +1770,7 @@ body.portrait-mode .cart-extra-item select {
 }
 
 /* 手机端优化：≤ 767px */
-@media (max-width: 767px) {
+@media (max-width: 900px) {
   .p-h3 {
     font-size: 1.3rem !important;
     line-height: 1.3 !important;
@@ -2289,7 +2319,7 @@ body.portrait-mode #back-to-top-logo img {
   line-height: 1;
   z-index: 10;
 }
-@media (max-width: 767px) {
+@media (max-width: 900px) {
   .cart-badge {
     top: -4px;
     right: -4px;
@@ -2311,22 +2341,22 @@ body.portrait-mode .cart-badge {
 
 /* 通用基础样式 */
 .menu-content {
+  padding: 0.3em 0.6em;   /* 上下 0.3em，左右 0.6em */
   
-  padding: 0.3em 0;   /* 原来 0.06em 太小，建议改成 0.3em 左右更平衡 */
 }
 
 .menu-content h3 {
   margin: 0 0 0.092em 0;   /* 原来 0.3em → 改小到 0.2em */
   font-weight: 600;
   background: rgba(255, 255, 255, 0.678);
-    
+  padding: 0.3em 1em;   
   border-radius: 8px;
 }
 
 .menu-content > p:first-of-type {
   font-weight: bold;
   margin:0px;       /* 上下间距保持极小 */
-   
+  padding: 0.3em 0.6em;  
   background: rgba(255, 255, 255, 0.678);
     
   border-radius: 8px;
@@ -2335,7 +2365,7 @@ body.portrait-mode .cart-badge {
 .menu-content .ingredients {
   color: #555;
   margin: 0.1em 0 0 0;   /* 只留极小的上间距 */
-   
+  padding: 0.2em 0.6em;  
   background: rgba(255, 255, 255, 0.678);
     
   border-radius: 8px;
@@ -2356,7 +2386,7 @@ body.portrait-mode .cart-badge {
 }
 
 /* 手机端 (小屏幕) */
-@media (max-width: 767px) {
+@media (max-width: 900px) {
   .menu-content h3 {
     font-size: 1em;
   }
@@ -2386,13 +2416,13 @@ body.portrait-mode .cart-badge {
 <div class="nav-categories">
 <a href="#delivery-options">Bestelwijze</a>
 <a href="#checkbox-group">Benodigdheden</a>
+<a href="#Crispy-rice-sandwich">Crispy Rice sandwich</a>
 <a href="#bento">Bento Box</a>
 <a href="#Ramen">Ramen</a>
 <a href="#Pokebowl">Pokebowl</a>
 <a href="#Teppanyaki">Teppanyaki Gebakken Rijst</a>
 <a href="#sushi">Omakase Sushi</a>
 <a href="#sashimi">Sashimi</a>
-<a href="#Crispy-rice-sandwich">Crispy Rice</a>
 <a href="#snack">Snack</a>
 <a href="#dessert">Dessert</a>
 <a href="#drinks">Drinks</a>
@@ -2663,6 +2693,118 @@ body.portrait-mode .cart-badge {
 
 </button>
 <img alt="Back to top" id="back-to-top-logo" src="{{ url_for('static', filename='images/Logo.png') }}"/>
+<section id="Crispy-rice-sandwich">
+<div class="menu-group">
+<h2 style="margin-top: -8px; font-size: 1.5rem; color: #333; text-align: center; font-weight: bold;">
+      Crispy rice sandwich
+    </h2>
+<!-- Zalm -->
+<div class="menu-row menu-item" data-name="Zalm crispy rice sandwich" data-packaging="0.2" data-price="7">
+<div class="menu-img">
+<img alt="Zalm crispy rice sandwich" src="{{ url_for('static', filename='images/zalm.png') }}"/>
+</div>
+<div class="menu-content">
+<h3>Zalm crispy rice sandwich</h3>
+<p>€ 7.00</p>
+<p id="soldoutZalmCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
+<div class="qty-box">
+
+<button class="qty-minus remove-button" data-target="zalm-crispy-rice-sandwich" type="button">-</button>
+<select id="zalm-crispy-rice-sandwich" name="Zalm crispy rice sandwich"></select>
+<button class="qty-plus add-button" data-target="zalm-crispy-rice-sandwich" type="button">+</button>
+</div>
+</div>
+</div>
+
+<!-- Zalm -->
+<div class="menu-row menu-item" data-name="Spicytuna crispy rice sandwich" data-packaging="0.2" data-price="7">
+<div class="menu-img">
+<img alt="Spicytuna crispy rice sandwich" src="{{ url_for('static', filename='images/zalm.png') }}"/>
+</div>
+<div class="menu-content">
+<h3>Spicytuna crispy rice sandwich</h3>
+<p>€ 7.00</p>
+<p id="soldoutSpicytunaCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
+<div class="qty-box">
+
+<button class="qty-minus remove-button" data-target="spicytuna-crispy-rice-sandwich" type="button">-</button>
+<select id="spicytuna-crispy-rice-sandwich" name="Spicytuna crispy rice sandwich"></select>
+<button class="qty-plus add-button" data-target="spicytuna-crispy-rice-sandwich" type="button">+</button>
+</div>
+</div>
+</div>
+  
+<!-- Ebi -->
+<!-- Ebi Crispy Rice Sandwich -->
+<div class="menu-row menu-item" data-name="Ebi crispy rice sandwich" data-packaging="0.2" data-price="7">
+<div class="menu-img">
+<img alt="Ebi Crispy Rice Sandwich" src="{{ url_for('static', filename='images/zalm.png') }}"/>
+</div>
+<div class="menu-content">
+<h3>Ebi crispy rice sandwich</h3>
+<p>€ 7.00</p>
+<p id="soldoutEbiCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
+<div class="qty-box">
+
+<button class="qty-minus remove-button" data-target="ebiCrispyRiceSandwich" type="button">-</button>
+<select id="ebiCrispyRiceSandwich" name="ebiCrispyRiceSandwich"></select>
+<button class="qty-plus add-button" data-target="ebiCrispyRiceSandwich" type="button">+</button>
+</div>
+</div>
+</div>
+<!-- Beef Crispy Rice Sandwich -->
+<div class="menu-row menu-item" data-name="Beef crispy rice sandwich" data-packaging="0.2" data-price="7.5">
+<div class="menu-img">
+<img alt="Beef Crispy Rice Sandwich" src="{{ url_for('static', filename='images/zalm.png') }}"/>
+</div>
+<div class="menu-content">
+<h3>Beef crispy rice sandwich</h3>
+<p>€ 7.50</p>
+<p id="soldoutBeefCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
+<div class="qty-box">
+
+<button class="qty-minus remove-button" data-target="beefCrispyRiceSandwich" type="button">-</button>
+<select id="beefCrispyRiceSandwich" name="beefCrispyRiceSandwich"></select>
+<button class="qty-plus add-button" data-target="beefCrispyRiceSandwich" type="button">+</button>
+</div>
+</div>
+</div>
+<!-- California Crispy Rice Sandwich -->
+<div class="menu-row menu-item" data-name="California crispy rice sandwich" data-packaging="0.2" data-price="7.5">
+<div class="menu-img">
+<img alt="California Crispy Rice Sandwich" src="{{ url_for('static', filename='images/zalm.png') }}"/>
+</div>
+<div class="menu-content">
+<h3>California crispy rice sandwich</h3>
+<p>€ 7.50</p>
+<p id="soldoutCaliforniaCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
+<div class="qty-box">
+
+<button class="qty-minus remove-button" data-target="californiaCrispyRiceSandwich" type="button">-</button>
+<select id="californiaCrispyRiceSandwich" name="californiaCrispyRiceSandwich"></select>
+<button class="qty-plus add-button" data-target="californiaCrispyRiceSandwich" type="button">+</button>
+</div>
+</div>
+</div>
+<!-- Chicken Crispy Rice Sandwich -->
+<div class="menu-row menu-item" data-name="Chicken crispy rice sandwich" data-packaging="0.2" data-price="7">
+<div class="menu-img">
+<img alt="Chicken Crispy Rice Sandwich" src="{{ url_for('static', filename='images/zalm.png') }}"/>
+</div>
+<div class="menu-content">
+<h3>Chicken crispy rice sandwich</h3>
+<p>€ 7.00</p>
+<p id="soldoutChickenCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
+<div class="qty-box">
+
+<button class="qty-minus remove-button" data-target="chickenCrispyRiceSandwich" type="button">-</button>
+<select id="chickenCrispyRiceSandwich" name="chickenCrispyRiceSandwich"></select>
+<button class="qty-plus add-button" data-target="chickenCrispyRiceSandwich" type="button">+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
 
 <section id="bento">
 <div class="menu-group">
@@ -3405,7 +3547,7 @@ body.portrait-mode .cart-badge {
         <p>€ 15.50</p>
         <p id="soldoutSpicyTunaBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
-          <label for="spicyTunaBowlQty">Aantal</label>
+         
           <button class="qty-minus remove-button" data-target="spicyTunaBowlQty" type="button">-</button>
           <select id="spicyTunaBowlQty" name="spicyTunaBowlQty"></select>
           <button class="qty-plus add-button" data-target="spicyTunaBowlQty" type="button">+</button>
@@ -3475,7 +3617,7 @@ body.portrait-mode .cart-badge {
         <div class="qty-box">
       
           <button class="qty-minus remove-button" data-target="xBowlQty" type="button">-</button>
-          <select id="xBowlQty" class="qty-select" name="xBowlQty"></select>
+          <select id="Qty" class="qty-select" name="xBowlQty"></select>
           <button class="qty-plus add-button" data-target="xBowlQty" type="button">+</button>
         </div>
       </div>
@@ -3730,118 +3872,7 @@ body.portrait-mode .cart-badge {
 
 </div>
 </section>
-<section id="Crispy-rice-sandwich">
-<div class="menu-group">
-<h2 style="margin-top: -8px; font-size: 1.5rem; color: #333; text-align: center; font-weight: bold;">
-      Crispy rice sandwich
-    </h2>
-<!-- Zalm -->
-<div class="menu-row menu-item" data-name="Zalm crispy rice sandwich" data-packaging="0.2" data-price="7">
-<div class="menu-img">
-<img alt="Zalm crispy rice sandwich" src="{{ url_for('static', filename='images/zalm.png') }}"/>
-</div>
-<div class="menu-content">
-<h3>Zalm crispy rice sandwich</h3>
-<p>€ 7.00</p>
-<p id="soldoutZalmCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
-<div class="qty-box">
 
-<button class="qty-minus remove-button" data-target="zalm-crispy-rice-sandwich" type="button">-</button>
-<select id="zalm-crispy-rice-sandwich" name="Zalm crispy rice sandwich"></select>
-<button class="qty-plus add-button" data-target="zalm-crispy-rice-sandwich" type="button">+</button>
-</div>
-</div>
-</div>
-
-<!-- Zalm -->
-<div class="menu-row menu-item" data-name="Spicytuna crispy rice sandwich" data-packaging="0.2" data-price="7">
-<div class="menu-img">
-<img alt="Spicytuna crispy rice sandwich" src="{{ url_for('static', filename='images/zalm.png') }}"/>
-</div>
-<div class="menu-content">
-<h3>Spicytuna crispy rice sandwich</h3>
-<p>€ 7.00</p>
-<p id="soldoutSpicytunaCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
-<div class="qty-box">
-
-<button class="qty-minus remove-button" data-target="spicytuna-crispy-rice-sandwich" type="button">-</button>
-<select id="spicytuna-crispy-rice-sandwich" name="Spicytuna crispy rice sandwich"></select>
-<button class="qty-plus add-button" data-target="spicytuna-crispy-rice-sandwich" type="button">+</button>
-</div>
-</div>
-</div>
-  
-<!-- Ebi -->
-<!-- Ebi Crispy Rice Sandwich -->
-<div class="menu-row menu-item" data-name="Ebi crispy rice sandwich" data-packaging="0.2" data-price="7">
-<div class="menu-img">
-<img alt="Ebi Crispy Rice Sandwich" src="{{ url_for('static', filename='images/Ebi.png') }}"/>
-</div>
-<div class="menu-content">
-<h3>Ebi crispy rice sandwich</h3>
-<p>€ 7.00</p>
-<p id="soldoutEbiCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
-<div class="qty-box">
-
-<button class="qty-minus remove-button" data-target="ebiCrispyRiceSandwich" type="button">-</button>
-<select id="ebiCrispyRiceSandwich" name="ebiCrispyRiceSandwich"></select>
-<button class="qty-plus add-button" data-target="ebiCrispyRiceSandwich" type="button">+</button>
-</div>
-</div>
-</div>
-<!-- Beef Crispy Rice Sandwich -->
-<div class="menu-row menu-item" data-name="Beef crispy rice sandwich" data-packaging="0.2" data-price="7.5">
-<div class="menu-img">
-<img alt="Beef Crispy Rice Sandwich" src="{{ url_for('static', filename='images/beef-crispy.png') }}"/>
-</div>
-<div class="menu-content">
-<h3>Beef crispy rice sandwich</h3>
-<p>€ 7.50</p>
-<p id="soldoutBeefCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
-<div class="qty-box">
-
-<button class="qty-minus remove-button" data-target="beefCrispyRiceSandwich" type="button">-</button>
-<select id="beefCrispyRiceSandwich" name="beefCrispyRiceSandwich"></select>
-<button class="qty-plus add-button" data-target="beefCrispyRiceSandwich" type="button">+</button>
-</div>
-</div>
-</div>
-<!-- California Crispy Rice Sandwich -->
-<div class="menu-row menu-item" data-name="California crispy rice sandwich" data-packaging="0.2" data-price="7.5">
-<div class="menu-img">
-<img alt="California Crispy Rice Sandwich" src="{{ url_for('static', filename='images/california-crispy.png') }}"/>
-</div>
-<div class="menu-content">
-<h3>California crispy rice sandwich</h3>
-<p>€ 7.50</p>
-<p id="soldoutCaliforniaCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
-<div class="qty-box">
-
-<button class="qty-minus remove-button" data-target="californiaCrispyRiceSandwich" type="button">-</button>
-<select id="californiaCrispyRiceSandwich" name="californiaCrispyRiceSandwich"></select>
-<button class="qty-plus add-button" data-target="californiaCrispyRiceSandwich" type="button">+</button>
-</div>
-</div>
-</div>
-<!-- Chicken Crispy Rice Sandwich -->
-<div class="menu-row menu-item" data-name="Chicken crispy rice sandwich" data-packaging="0.2" data-price="7">
-<div class="menu-img">
-<img alt="Chicken Crispy Rice Sandwich" src="{{ url_for('static', filename='images/chicken-crispy.png') }}"/>
-</div>
-<div class="menu-content">
-<h3>Chicken crispy rice sandwich</h3>
-<p>€ 7.00</p>
-<p id="soldoutChickenCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
-<div class="qty-box">
-
-<button class="qty-minus remove-button" data-target="chickenCrispyRiceSandwich" type="button">-</button>
-<select id="chickenCrispyRiceSandwich" name="chickenCrispyRiceSandwich"></select>
-<button class="qty-plus add-button" data-target="chickenCrispyRiceSandwich" type="button">+</button>
-</div>
-</div>
-</div>
-</div>
-</section>
 <section id="snack">
 <div class="menu-group">
 <h2 style="margin-top: -8px; font-size: 1.5rem; color: #333; text-align: center; font-weight: bold;">
@@ -5244,7 +5275,10 @@ function createXBowlMainSelect(){
   const sel=document.createElement('select');
   sel.innerHTML='<option value="">Hoofdingredient</option>';
   xbowlMains.forEach(o=>{const opt=document.createElement('option');opt.value=o.name;opt.dataset.price=o.price;opt.textContent=o.name;sel.appendChild(opt);});
-  const del=document.createElement('button');del.type='button';del.textContent='❌';
+   const del = document.createElement('button');
+del.type = 'button';
+del.className = 'xb-remove';   // 关键：专属类，方便 CSS 精准覆盖
+del.textContent = '✕';
   del.addEventListener('click',()=>{div.remove();ensureXBowlMain();updateXBowlDisplay();updateXBowlControls();changeXbowlQty(0);});
   sel.addEventListener('change',()=>{
     const val = sel.value.toLowerCase();
@@ -5265,7 +5299,11 @@ function createXBowlToppingSelect(){
   const sel=document.createElement('select');
   sel.innerHTML='<option value="">Topping</option>';
   xbowlToppings.forEach(n=>{const opt=document.createElement('option');opt.value=n;opt.textContent=n;sel.appendChild(opt);});
-  const del=document.createElement('button');del.type='button';del.textContent='❌';
+  const del = document.createElement('button');
+  del.type = 'button';
+  del.className = 'xb-remove';
+  del.textContent = '✕';
+
   del.addEventListener('click',()=>{div.remove();ensureXBowlTopping();updateXBowlDisplay();updateXBowlControls();changeXbowlQty(0);});
   sel.addEventListener('change',()=>{
     const val = sel.value.toLowerCase();
@@ -5696,6 +5734,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.querySelectorAll('.menu-item select').forEach(sel => {
     if (['bubbleTeaQty','bubbleType','bubbleFlavor','bubbleTopping','xBentoMain','xBentoSide','xBentoRice','xBentoVeg','xBowlBase','xBowlQty','ebiBase','ebiSmaak','ebiQty','chickenBase','chickenSmaak','chickenQty','beefBase','beefSmaak','beefQty','ribeyeBase','ribeyeSmaak','ribeyeQty','chasiuBase','chasiuSmaak','chasiuQty','zhaiBase','zhaiSmaak','zhaiQty'].includes(sel.id)) return;
+    if (sel.closest('#xBowlMains') || sel.closest('#xBowlToppings')) return;
     populateSelect(sel);
     const parent = sel.closest('.menu-item');
     const name = parent.dataset.name;
