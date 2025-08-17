@@ -3125,7 +3125,16 @@ function toggleComplete(btn) {
     if (done) orderComplete(btn);
     row.classList.toggle('completed', done);
     const notify = wrapper.querySelector('.notify');
-    if (notify) notify.textContent = done ? 'Voltooid' : '';
+    let order = {};
+try { order = JSON.parse(row.dataset.order || '{}'); } catch {}
+order.is_completed = true;
+order.is_cancelled = false;
+row.dataset.order = JSON.stringify(order);
+
+const mode = window.orderSortMode || 'service';
+wrapper.dataset.sortKey = JSON.stringify(buildSortKeyByMode(order, mode));
+const container = document.querySelector('.orders-cards');
+if (container) reorderCards(container);
   });
 }
 
@@ -3257,9 +3266,31 @@ function toggleCancel(btn) {
     if (cancelled) orderCancelNotify(btn);
     row.classList.toggle('cancelled', cancelled);
     const notify = wrapper.querySelector('.notify');
-    if (notify) notify.textContent = cancelled ? 'Geannuleerd' : '';
+    
+    // ★ 新增：更新排序所用的数据（data-order）
+    let order = {};
+    try { order = JSON.parse(row.dataset.order || '{}'); } catch {}
+    order.is_cancelled = !!cancelled;
+    if (cancelled) order.is_completed = false; // 取消与完成互斥
+    row.dataset.order = JSON.stringify(order);
+
+    // ★ 新增：按当前模式重算 sortKey 并重排
+    const mode = window.orderSortMode || 'service';
+    wrapper.dataset.sortKey = JSON.stringify(buildSortKeyByMode(order, mode));
+    const container = document.querySelector('.orders-cards');
+    if (container) reorderCards(container);
+
+    // （可选）滚动到列表底部，方便看到它已被放到最后
+    // container?.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  })
+  .catch(err => {
+    console.error('取消失败', err);
   });
 }
+
+
+
+
 async function fetchOrders() {
   try {
     const res = await fetch('/pos/orders_today?json=1', { cache: 'no-store' });
