@@ -153,18 +153,29 @@ def generate_excel_today(include_cancelled: bool = False):
             "Datum": to_nl(o.created_at).strftime("%Y-%m-%d"),
             "Tijd": to_nl(o.created_at).strftime("%H:%M"),
             "Naam": o.customer_name,
-            "Telefoon": o.phone,
+            "Telefoon": o.phone or "",
             "Email": o.email,
             "Adres": f"{o.street} {o.house_number}, {o.postcode} {o.city}",
             "Betaalwijze": o.payment_method,
-            "Totaal": f"€{o.totaal:.2f}",
+            "Totaal": o.totaal or 0,
             "Items": summary,
             "Status": status,
         })
 
     df = pd.DataFrame(data)
     output = BytesIO()
-    df.to_excel(output, index=False, engine='xlsxwriter')
+    with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
+        df.to_excel(writer, index=False, sheet_name="Bestellingen")
+        workbook = writer.book
+        worksheet = writer.sheets["Bestellingen"]
+        currency_fmt = workbook.add_format({"num_format": "€ #,##0.00"})
+        text_fmt = workbook.add_format({"num_format": "@"})
+        if "Totaal" in df.columns:
+            col_idx = df.columns.get_loc("Totaal")
+            worksheet.set_column(col_idx, col_idx, None, currency_fmt)
+        if "Telefoon" in df.columns:
+            col_idx = df.columns.get_loc("Telefoon")
+            worksheet.set_column(col_idx, col_idx, None, text_fmt)
     output.seek(0)
     return output
 
@@ -353,6 +364,31 @@ def build_excel(orders):
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
         df.to_excel(writer, index=False, sheet_name='Bestellingen')
         omzet_df.to_excel(writer, index=False, sheet_name='Omzet Overzicht')
+
+        workbook = writer.book
+        orders_ws = writer.sheets['Bestellingen']
+        omzet_ws = writer.sheets['Omzet Overzicht']
+
+        currency_fmt = workbook.add_format({'num_format': '€ #,##0.00'})
+        text_fmt = workbook.add_format({'num_format': '@'})
+
+        currency_cols = [
+            'total', 'totaal', 'verpakkingskosten', 'bezorgkosten',
+            'btw_9', 'btw_21', 'btw_total', 'fooi', 'korting'
+        ]
+        for col in currency_cols:
+            if col in df.columns:
+                idx = df.columns.get_loc(col)
+                orders_ws.set_column(idx, idx, None, currency_fmt)
+
+        if 'phone' in df.columns:
+            idx = df.columns.get_loc('phone')
+            orders_ws.set_column(idx, idx, None, text_fmt)
+
+        if 'Bedrag' in omzet_df.columns:
+            idx = omzet_df.columns.get_loc('Bedrag')
+            omzet_ws.set_column(idx, idx, None, currency_fmt)
+
     output.seek(0)
 
     return output
