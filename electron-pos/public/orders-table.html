@@ -71,10 +71,27 @@
   cursor: pointer;
   border: none;
 }
+.btn-klaar:hover {
+  background: linear-gradient(#39dd41, #43d409);
+}
 
+.btn-klaar:active {
+  background: linear-gradient(#217c05, #016817);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);}
+
+/* 状态样式 */
 .btn-klaar {
-  background-color: #28a745;
-  color: white;
+
+  background: linear-gradient(#57c70d, #1e9201);
+  color: #000;
+  border: 1px solid #c6c6cc;
+  border-radius: 12px;
+  padding: 6px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  transition: all 0.2s ease-in-out;
 }
 
 .btn-bewerk {
@@ -83,9 +100,27 @@
 }
 
 .btn-annuleer {
-  background-color: #dc3545;
-  color: white;
+  
+ 
+  background: linear-gradient(#f7a9a9, #f74848);
+  color: #000;
+  border: 1px solid #c6c6cc;
+  border-radius: 12px;
+  padding: 6px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  transition: all 0.2s ease-in-out;
 }
+
+.btn-annuleer:hover {
+  background: linear-gradient(#ff5151, #ee3e3e);
+}
+
+.btn-annuleer:active {
+  background: linear-gradient(#ee0404, #e70d0d);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);}
 
 /* 状态样式 */
 .order-card.completed {
@@ -120,76 +155,10 @@
     font-size: 1em;
   }
 
-  /* Floating map button */
-  #toggle-map-btn {
-    position: fixed;
-    bottom: 80px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-    border: none;
-    border-radius: 50%;
-    background-color: #17a2b8;
-    color: #fff;
-    cursor: pointer;
-    font-size: 26px;
-  }
+  
 
-  #toggle-map-btn:hover {
-    background-color: #117a8b;
-  }
 
-  #admin-orders-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-    border: none;
-    border-radius: 50%;
-    background-color: #007bff;
-    color: #fff;
-    cursor: pointer;
-    font-size: 26px;
-  }
-
-  #admin-orders-btn:hover {
-    background-color: #0056b3;
-  }
-
-   .change-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-  }
-  .change-modal.hidden { display: none; }
-  .change-box {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 320px;
-    text-align: center;
-  }
-  .quick-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: center;
-    margin: 10px 0;
-  }
-  .quick-buttons button {
-    flex: 1 0 45%;
-    padding: 10px;
-  }
-
+   
 
 
 
@@ -343,69 +312,131 @@
   {% endfor %}
 </div>
 
-<div id="change-modal" class="change-modal hidden">
-  <div class="change-box">
-    <p>应收: €<span id="change-total">0.00</span></p>
-    <label>实收: €<input type="number" id="cash-given" inputmode="decimal" /></label>
-    <div class="quick-buttons">
-      <button onclick="quickAmount(5)">5</button>
-      <button onclick="quickAmount(10)">10</button>
-      <button onclick="quickAmount(20)">20</button>
-      <button onclick="quickAmount(50)">50</button>
+<style>
+  /* 半透明模糊背景 */
+  #wissel-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 10006570;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.25s ease;
+  }
+
+  /* 弹窗主体 */
+  #wissel-modal .modal-content {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 16px;
+    padding: 20px;
+    width: 300px;
+    max-width: 90%;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    animation: popUp 0.25s ease;
+  }
+
+  #wissel-modal h3 {
+    margin-bottom: 10px;
+    font-weight: 600;
+    font-size: 1.3em;
+    color: #222;
+  }
+
+#wissel-modal input {
+  width: 100%;
+  margin: 8px 0;
+  padding: 10px;
+  font-size: 1.2em;
+  border: 1px solid rgba(29, 161, 238, 0.15); /* 淡淡的灰色边框 */
+  border-radius: 12px;
+  background: #f5f7ff; /* 比原来的 #9eabf1 更柔和，浅蓝白 */
+  text-align: center; /* 输入的文字居中 */
+  outline: none;
+  box-sizing: border-box; /* 避免 padding 撑破布局 */
+}
+
+
+  .wissel-quick {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 8px;
+  }
+
+  .wissel-quick button {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 12px;
+    background: #007aff;
+    color: #fff;
+    font-size: 0.9em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  .wissel-quick button:hover {
+    background: #005ecb;
+  }
+
+  #wissel-close {
+    background: #a3a1a1;
+    color: #333;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 12px;
+    margin-top: 12px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  /* 动画 */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes popUp {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+</style>
+
+<div id="wissel-modal">
+  <div class="modal-content">
+    <h3>Wissel</h3>
+    <p>Te ontvangen: <span id="wissel-due"></span></p>
+    <input id="wissel-paid" type="number" step="0.05" />
+    <div class="wissel-quick">
+      <button type="button" data-add="5">+5</button>
+      <button type="button" data-add="10">+10</button>
+      <button type="button" data-add="20">+20</button>
+      <button type="button" data-add="50">+50</button>
+      <button type="button" id="wissel-exact">Exact</button>
     </div>
-    <p>找零: €<span id="change-amount">0.00</span></p>
-    <button onclick="closeChangeModal()">关闭</button>
+    <p>Wisselgeld: <span id="wissel-change">€0,00</span></p>
+    <div id="wissel-denoms" style="margin-top:8px; text-align:left;"></div>
+    <button id="wissel-close">Sluiten</button>
   </div>
 </div>
 
-  <!-- 地图与管理订单按钮 -->
-  <button id="toggle-map-btn" title="Map">🗺️</button>
-  <button id="admin-orders-btn" title="Admin Orders">📋</button>
   <script>
-    function openChangeModal(btn) {
-      const card = btn.closest('.order-card');
-      const order = JSON.parse(card.dataset.order || '{}');
-      const total = order.totaal ?? order.total ?? 0;
-      const modal = document.getElementById('change-modal');
-      modal.dataset.total = total;
-      document.getElementById('change-total').textContent = total.toFixed(2);
-      document.getElementById('cash-given').value = '';
-      document.getElementById('change-amount').textContent = '0.00';
-      modal.classList.remove('hidden');
-      document.getElementById('cash-given').focus();
-    }
-    function closeChangeModal() {
-      document.getElementById('change-modal').classList.add('hidden');
-    }
-    function quickAmount(val) {
-      const input = document.getElementById('cash-given');
-      const current = parseFloat(input.value || '0');
-      input.value = (current + val).toFixed(2);
-      calculateChange();
-    }
-    function calculateChange() {
-      const modal = document.getElementById('change-modal');
-      const total = parseFloat(modal.dataset.total || '0');
-      const given = parseFloat(document.getElementById('cash-given').value || '0');
-      const change = given - total;
-      document.getElementById('change-amount').textContent = change > 0 ? change.toFixed(2) : '0.00';
-    }
-    const cashInput = document.getElementById('cash-given');
-    if (cashInput) {
-      cashInput.addEventListener('input', calculateChange);
-    }
+   
 
     const toggleBtn = document.getElementById('toggle-map-btn');
     if (toggleBtn) {
       toggleBtn.addEventListener('click', () => {
-        window.location.href = '/map';
+        window.open('/map', '_blank');
       });
     }
 
     const adminBtn = document.getElementById('admin-orders-btn');
     if (adminBtn) {
       adminBtn.addEventListener('click', () => {
-        window.location.href = '/admin/orders';
+        window.open('/admin/orders', '_blank');
       });
     }
   </script>
