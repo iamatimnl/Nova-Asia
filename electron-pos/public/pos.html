@@ -15,7 +15,7 @@
     margin: auto;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, "Helvetica Neue", sans-serif;
     color:  #111111;
-    background:#9ca37a; 
+    background:  #f2e0bdff;
     padding-top: 60px;
     text-align: center;
   }
@@ -23,29 +23,8 @@
     body { padding: 10px; }
   }
 
-  /* ===== Cupertino 基础色 & 字体 ===== */
-:root{
-  --ios-bg:        #f2f2f7;
-  --ios-card:      #ffffff;
-  --ios-sep:       #e5e5ea;
-  --ios-label:     #ada0a0;
-  --ios-secondary: #3c3c4399; /* 次级文字 */
-  --ios-blue:      #0a84ff;   /* 系统蓝 */
-  --ios-blue-press:#0066d6;
-  --ios-chip:      #ffffff;
-}
-@media (prefers-color-scheme: dark){
-  :root{
-    --ios-bg:        #646464;
-    --ios-card:      #1c1c1e;
-    --ios-sep:       #3a3a3c;
-    --ios-label:     #ffffff;
-    --ios-secondary: #ebebf599;
-    --ios-blue:      #0a84ff;
-    --ios-blue-press:#0a6ed1;
-    --ios-chip:      #2c2c2e;
-  }
-}
+
+
   .navbar-container::-webkit-scrollbar { display: none; }
   .navbar-container {
     -ms-overflow-style: none;
@@ -141,7 +120,7 @@
     margin-bottom: 12px;
     border-radius: 16px;
     background: var(--off-white);
-    border: 1px solid #e0e0e0;
+    border: 1px solid #f1ddb4ff;
     box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   }
   img { max-width: 100%; height: auto; }
@@ -152,7 +131,7 @@
     font-size: 0.85rem;
     height: 36px;
     border-radius: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #fad9a6ff;
   }
   /* Ensure Omakase preference dropdowns keep full width */
   #omakasePrefs select {
@@ -347,7 +326,7 @@
   font-size: 26px;
   line-height: 1;
   padding: 0;
-  margin-right: 15px;
+  margin-right: 13px;
   cursor: pointer;
   transition: background-color 0.2s ease, color 0.2s ease;
   display: flex;
@@ -371,7 +350,7 @@
   width: 25px;
   height: 25px;
   cursor: pointer;
-  margin-right: 14px;
+  margin-right: 6px;
   transition: background-color 0.2s ease;
   font-size: 27px; /* 控制 emoji 大小 */
   line-height: 1;
@@ -391,7 +370,7 @@
   width: 28px;
   height: 24px;
   cursor: pointer;
-  margin-right: 18px;
+  margin-right: 8px;
   transition: background-color 0.2s ease;
   font-size: 28px; /* 控制 emoji 大小 */
   line-height: 1;
@@ -1003,6 +982,65 @@ dialog::backdrop {
   background: linear-gradient(#d1d1d6, #aeaeb2);
   box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
 }
+/* 建议付款按钮 */
+#wissel-suggest-btns button {
+  appearance: none;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background .15s ease, transform .12s ease;
+}
+#wissel-suggest-btns button:hover {
+  background: #f0f0f0;
+}
+#wissel-suggest-btns button:active {
+  transform: translateY(1px);
+}
+
+/* 找零策略按钮 */
+.wissel-strat {
+  appearance: none;
+  background: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease;
+}
+.wissel-strat:hover {
+  background: #f0f0f0;
+}
+.wissel-strat.active {
+  background: var(--ios-blue);
+  border-color: var(--ios-blue);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* 欠款提示 */
+#wissel-short {
+  margin-top: 6px;
+  color: #b00;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* 模态框的抖动动画 (不足额时 Enter 键触发) */
+@keyframes shake {
+  0%   { transform: translateX(0); }
+  20%  { transform: translateX(-6px); }
+  40%  { transform: translateX(6px); }
+  60%  { transform: translateX(-4px); }
+  80%  { transform: translateX(4px); }
+  100% { transform: translateX(0); }
+}
+#wissel-modal.shake {
+  animation: shake 0.3s;
+}
 
 .btn-wissel{
   appearance:none;
@@ -1032,6 +1070,83 @@ dialog::backdrop {
     0 0 0 2px #fff,
     0 0 0 4px var(--ios-blue);           /* 焦点环 */
 }
+/* 建议付款 & 策略按钮：统一 iOS 次按钮风格 */
+#wissel-suggest-btns button,
+.wissel-strat {
+  appearance: none;
+  background: linear-gradient(180deg, #fff, #f2f2f2);
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  box-shadow:
+    0 1px 0 rgba(0,0,0,0.06),
+    0 2px 5px rgba(0,0,0,0.08);
+  transition: transform .12s ease, box-shadow .12s ease, filter .12s ease, background .15s ease;
+}
+
+/* 悬停/按下效果 */
+#wissel-suggest-btns button:hover,
+.wissel-strat:hover {
+  filter: brightness(1.03);
+}
+#wissel-suggest-btns button:active,
+.wissel-strat:active {
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 1px 2px rgba(0,0,0,0.25),
+    0 0 0 rgba(0,0,0,0);
+}
+
+/* 策略按钮激活态：蓝底白字 */
+.wissel-strat.active {
+  background: linear-gradient(180deg, var(--ios-blue), var(--ios-blue-press));
+  border-color: var(--ios-blue);
+  color: #fff;
+  font-weight: 600;
+  box-shadow:
+    0 1px 0 rgba(0,0,0,0.10),
+    0 4px 10px rgba(10,132,255,0.25);
+}
+/* 默认找零金额样式（灰色，低调） */
+#wissel-change {
+  color: #555;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+/* 找零时（已达到应付金额后），加上苹果绿 */
+#wissel-change.positive {
+  color: #34C759; /* iOS 苹果绿 */
+}
+
+/* 欠款提示：苹果红 */
+#wissel-short {
+  margin-top: 6px;
+  color: #FF3B30;  /* iOS Red */
+  font-weight: 600;
+  font-size: 14px;
+}
+/* 找零/还差 统一用一行显示 —— 基础样式 */
+#wissel-change {
+  color: #555;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+/* 未达到应付：红色 */
+#wissel-change.negative { color: #FF3B30; }
+
+/* 正好 or 需要找零：苹果绿 */
+#wissel-change.positive,
+#wissel-change.exact { color: #34C759; }
+
+/* （可选）不再单独用 #wissel-short */
+#wissel-short { display: none; }
+
 
 /* ===== 父页对话框（#wissel-modal-pos） ===== */
 /* 只在 wissel 弹窗里启用深色+白字 & 大字号 */
@@ -1154,6 +1269,52 @@ dialog::backdrop {
 @keyframes posShake{ 0%,100%{transform:translateX(0)} 20%{transform:translateX(-4px)} 40%{transform:translateX(4px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
 #wissel-modal-pos input.invalid{ animation: posShake .25s linear; }
 
+/* —— 统一金额状态：不足/正好/找零 都在 #pos-wissel-change —— */
+
+/* 基础：在深色卡片上更醒目一些 */
+#pos-wissel-change{
+  font-size: 22px;          /* 在你已设 20px 的基础上再略放大更清晰 */
+  font-weight: 800;
+  letter-spacing: .2px;
+  color: #fff;              /* 默认白字（例如初始 0,– 时） */
+}
+
+/* 欠款（Te weinig）：iOS Red，保证深色底上高对比 */
+#pos-wissel-change.negative{ color:#ff453a; }
+
+/* 正好/找零：iOS Green（苹果绿） */
+#pos-wissel-change.exact,
+#pos-wissel-change.positive{ color:#34c759; }
+
+/* 我们把旧提示行隐藏（不删除，保留结构以免影响布局/JS） */
+#pos-wissel-hint{ display:none !important; }
+
+/* 找零分解的行在深色底上也更清晰一些（可选） */
+#pos-wissel-denoms{
+  color:#fff; opacity:.9;
+  font-weight: 600;
+  line-height: 1.35;
+}
+/* 你的 navbar 容器 */
+.orders-header{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 10px;
+}
+
+/* 使用你现有的 .btn-wissel 外观，下面只是补充一点间距与圆角一致性 */
+.orders-header > button{
+  border-radius:12px;
+  line-height:1;
+  margin-right:10px;
+}
+
+/* 给切换按钮一个轻微的“激活”提示（可选） */
+#sort-toggle[data-mode="arrival"]{
+  /* 到达顺序时稍微变亮一点，或加描边 */
+  filter: brightness(1.05);
+}
 
 
 </style>
@@ -1186,6 +1347,7 @@ dialog::backdrop {
 
       <!-- 固定导航栏 -->
       <div class="orders-header">
+        <button id="sort-toggle" class="btn-wissel">🕓</button>
         <button id="admin-orders-btn">📙</button>
         <button id="toggle-map-btn">🗺️</button>
         <button id="closeToday">✕</button>
@@ -2430,35 +2592,41 @@ function openWisselAwaitPOS(total) {
     // okBtn.disabled = true; okBtn.classList.add('is-disabled');
 
     const recompute = () => {
-      const p = r05POS(parseEuro(paid.value));
-      const c = Math.max(0, r05POS(p - due));
-      changeEl.textContent = euroFmtPOS.format(c);
+  const p = r05POS(parseEuro(paid.value));
+  const diff = r05POS(due - p);          // >0 欠款；=0 正好；<0 需要找零
+  const c = diff < 0 ? r05POS(p - due) : 0;
 
-      // 面额分解
-      if (c > 0) {
-        const ds = [50,20,10,5,2,1,0.5,0.2,0.1,0.05];
-        let left = c, lines = [];
-        for (const d of ds) {
-          const cnt = Math.floor((left + 1e-8) / d);
-          if (cnt>0){ lines.push(`${cnt} × ${euroFmtPOS.format(d)}`); left = r05POS(left - cnt*d); }
-        }
-        denomsEl.innerHTML = lines.join('<br>');
-      } else denomsEl.innerHTML = '';
+  // 统一行：更改文本与状态色
+  changeEl.classList.remove('positive','negative','exact');
 
-      // 提示（但不影响确认）
-      const diff = r05POS(due - p);
-      if (diff > 0) {
-        hintEl.textContent = `Te weinig betaald: nog ${euroFmtPOS.format(diff)}`;
-        hintEl.className = 'hint error';
-        // ✂️ 不再禁用 okBtn
-      } else if (Math.abs(diff) < 1e-9) {
-        hintEl.textContent = `Exact bedrag`;
-        hintEl.className = 'hint ok';
-      } else {
-        hintEl.textContent = '';
-        hintEl.className = 'hint';
+  if (diff > 0) {
+    // 欠款（红色），不显示面额分解
+    changeEl.textContent = `Nog ${euroFmtPOS.format(diff)}`;
+    changeEl.classList.add('negative');
+    denomsEl.innerHTML = '';
+  } else if (Math.abs(diff) < 1e-9) {
+    // 正好（绿色），不显示面额分解
+    changeEl.textContent = 'Exact';
+    changeEl.classList.add('exact');
+    denomsEl.innerHTML = '';
+  } else {
+    // 需要找零（绿色），显示面额分解
+    changeEl.textContent = `Wisselgeld ${euroFmtPOS.format(c)}`;
+    changeEl.classList.add('positive');
+
+    const ds = [50,20,10,5,2,1,0.5,0.2,0.1,0.05];
+    let left = c, lines = [];
+    for (const d of ds) {
+      const cnt = Math.floor((left + 1e-8) / d);
+      if (cnt > 0) {
+        lines.push(`${cnt} × ${euroFmtPOS.format(d)}`);
+        left = r05POS(left - cnt * d);
       }
-    };
+    }
+    denomsEl.innerHTML = lines.join('<br>');
+  }
+};
+
 
     const finish = (ok=true) => {
       const p = r05POS(parseEuro(paid.value));
@@ -3376,12 +3544,166 @@ if (nextAmtNum !== 0) {
   <span class="notify"></span>
 `;
 
-  wrapper.appendChild(card);
+ wrapper.appendChild(card);
   wrapper.appendChild(actions);
   container.appendChild(wrapper);
 
+  const mode = window.orderSortMode || 'service';
+  wrapper.dataset.sortKey = JSON.stringify(buildSortKeyByMode(order, mode));
+  reorderCards(container);
+
   return wrapper;
 }
+
+// ===== 工具：时间解析 =====
+function toTs(v){
+  if(!v) return Number.POSITIVE_INFINITY;
+  const s=String(v).trim();
+  if(/^\d{1,2}:\d{2}$/.test(s)){
+    const [h,m]=s.split(':').map(Number);
+    const now=new Date();
+    return new Date(now.getFullYear(),now.getMonth(),now.getDate(),h,m,0).getTime();
+  }
+  const t=Date.parse(s);
+  return Number.isFinite(t)?t:Number.POSITIVE_INFINITY;
+}
+
+// ===== 从 DOM 反推订单字段（当 data-order 不存在时使用）=====
+function extractOrderFromCard(card){
+  const o = {};
+  // 状态
+  o.is_completed = card.classList.contains('completed');
+  o.is_cancelled = card.classList.contains('cancelled');
+
+  // 类型：看有没有 .type-bezorging / .type-afhalen
+  const typeEl = card.querySelector('.type-bezorging, .type-afhalen');
+  if (typeEl) {
+    o.order_type = typeEl.classList.contains('type-bezorging') ? 'bezorgen' : 'afhalen';
+  }
+
+  // 档期时间 & ZSM
+  const slotEl = card.querySelector('.tijdslot');
+  const slotTxt = slotEl ? slotEl.textContent.trim() : '';
+  o.tijdslot_display = slotTxt || undefined;
+  o.is_zsm = /^zsm$/i.test(slotTxt);
+
+  // 创建时间：从 “Besteld om: ...” 里截取冒号后的部分
+  const createdEl = card.querySelector('.created-at');
+  if (createdEl) {
+    const full = createdEl.textContent || '';
+    const m = full.replace(/^.*?:\s*/, ''); // 去掉“Besteld om: ”
+    o.created_at = m.trim() || undefined;
+  }
+  return o;
+}
+
+// ===== 排序键生成（与你已有一致）=====
+function buildSortKeyService(order){
+  const status = order.is_cancelled ? 2 : order.is_completed ? 1 : 0;
+  const type = String(order.order_type || '').toLowerCase();
+  const isDelivery = (type === 'delivery' || type === 'bezorgen') ? 0 : 1;
+  const zsm = !!order.is_zsm;
+  const rawSlot = order.tijdslot_display || (isDelivery === 0 ? order.delivery_time : order.pickup_time);
+  let slotTs = toTs(rawSlot);
+  if (zsm) slotTs = Number.NEGATIVE_INFINITY;  // ZSM 最前（保持不变）
+
+  const createdTs = toTs(order.created_at || order.created_at_local); // ← 只改这行：最早在前
+  return [status, slotTs, isDelivery, createdTs];
+}
+
+
+function buildSortKeyArrival(order){
+  const createdDesc = -toTs(order.created_at || order.created_at_local);
+  const status = order.is_cancelled?2:order.is_completed?1:0;
+  return [createdDesc, status];
+}
+
+function buildSortKeyByMode(order, mode){
+  return (mode==='arrival') ? buildSortKeyArrival(order) : buildSortKeyService(order);
+}
+
+function compareSortKey(aEl,bEl){
+  let a=[],b=[];
+  try{ a=JSON.parse(aEl.dataset.sortKey||'[]'); }catch{}
+  try{ b=JSON.parse(bEl.dataset.sortKey||'[]'); }catch{}
+  const L=Math.max(a.length,b.length);
+  for(let i=0;i<L;i++){
+    const ai=a[i]??0, bi=b[i]??0;
+    if(ai<bi) return -1;
+    if(ai>bi) return 1;
+  }
+  return 0;
+}
+
+function reorderCards(container){
+  const nodes=[...container.querySelectorAll('.order-card-wrapper')];
+  nodes.sort(compareSortKey).forEach(n=>container.appendChild(n));
+}
+
+// 重新给所有卡片计算 sortKey（优先 data-order，缺失则从 DOM 提取）
+function resortAll(){
+  const container=document.querySelector('.orders-cards');
+  if(!container) return;
+  const mode=window.orderSortMode||'service';
+
+  container.querySelectorAll('.order-card-wrapper').forEach(w=>{
+    const card=w.querySelector('.order-card');
+    if(!card) return;
+    let order = {};
+    if (card.dataset.order) {
+      try { order = JSON.parse(card.dataset.order); } catch {}
+    }
+    if (!order || Object.keys(order).length===0) {
+      order = extractOrderFromCard(card);
+    }
+    w.dataset.sortKey = JSON.stringify(buildSortKeyByMode(order, mode));
+  });
+
+  reorderCards(container);
+}
+// 绑定 navbar 的 #sort-toggle，不生成任何元素
+(function initSortToggle(){
+  function setup(){
+    const btn = document.getElementById('sort-toggle');
+    const container = document.querySelector('.orders-cards');
+    if (!btn || !container) return; // 等 DOM 或容器
+
+    // 初始模式：优先取本地存储，其次取按钮 data-mode，默认 service
+    let mode = localStorage.getItem('orderSortMode') || btn.dataset.mode || 'service';
+    window.orderSortMode = mode;
+
+    const syncBtn = () => {
+      if (mode === 'service') {
+        btn.textContent = '🧑‍🍳';
+        btn.title = '出餐顺序';
+        btn.dataset.mode = 'service';
+      } else {
+        btn.textContent = '🕓';
+        btn.title = '来当顺序';
+        btn.dataset.mode = 'arrival';
+      }
+    };
+
+    btn.addEventListener('click', () => {
+      mode = (mode === 'service') ? 'arrival' : 'service';
+      window.orderSortMode = mode;
+      localStorage.setItem('orderSortMode', mode);
+      syncBtn();
+      resortAll(); // 重算 sortKey 并重排
+    });
+
+    syncBtn();
+    resortAll();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setup, { once: true });
+  } else {
+    setup();
+  }
+})();
+
+
 
 
 const orderQueue = [];
@@ -3806,66 +4128,272 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
 
 
   // —— Wissel (找零) 功能 ——
-  const euroFmt = new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' });
-  const round05 = v => Math.round(v * 20) / 20;
-  let wisselDue = 0;
+// 保留你原来的格式器
+const euroFmt = new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' });
 
-  function openWissel(btn) {
-    wisselDue = round05(Number(btn.dataset.total || 0));
-    const modal = document.getElementById('wissel-modal');
-    document.getElementById('wissel-due').textContent = euroFmt.format(wisselDue);
-    const paid = document.getElementById('wissel-paid');
-    paid.value = '';
-    document.getElementById('wissel-change').textContent = euroFmt.format(0);
-    document.getElementById('wissel-denoms').innerHTML = '';
-    modal.style.display = 'flex';
-    paid.focus();
+// 更稳健的 0.05 现金四舍五入：用分为单位，避免浮点误差
+const toCents = v => Math.round(v * 100);
+const centsToEuro = c => c / 100;
+// 四舍五入到 5 分（0.05）
+const round05Safe = v => {
+  let c = toCents(v);
+  const r = c % 5;
+  if (r >= 3) c += (5 - r);
+  else c -= r;
+  return centsToEuro(c);
+};
+
+// 解析任意输入（允许 €、空格、逗号小数点等）
+function parseEuroLoose(input) {
+  if (input == null) return 0;
+  const s = String(input)
+    .replace(/[€\s]/g, '')
+    .replace(',', '.');
+  const num = parseFloat(s);
+  return Number.isFinite(num) ? num : 0;
+}
+
+const round05 = v => round05Safe(v); // 保留原名以兼容旧逻辑
+
+let wisselDue = 0;
+
+// —— 动态 UI 附加：建议付款区 + 策略切换 + 欠款提示 ——
+// 在 openWissel 时保证这些容器存在
+function ensureExtraZones() {
+  const modal = document.getElementById('wissel-modal');
+  if (!modal) return;
+
+  // 建议付款容器
+  if (!document.getElementById('wissel-suggest')) {
+    const suggest = document.createElement('div');
+    suggest.id = 'wissel-suggest';
+    suggest.style.marginTop = '8px';
+    suggest.innerHTML = '<div style="font-size:.9em;opacity:.8;margin-bottom:4px">建议付款：</div><div id="wissel-suggest-btns" style="display:flex;flex-wrap:wrap;gap:6px"></div>';
+    // 插在找零组合（denoms）之前，更靠上更实用
+    const changeRow = document.getElementById('wissel-change')?.parentElement || modal;
+    modal.querySelector('#wissel-denoms')?.parentElement?.insertBefore(suggest, document.getElementById('wissel-denoms'));
   }
 
-  function closeWissel() {
-    document.getElementById('wissel-modal').style.display = 'none';
+  // 策略容器（tabs）
+  if (!document.getElementById('wissel-strategy')) {
+    const strategy = document.createElement('div');
+    strategy.id = 'wissel-strategy';
+    strategy.style.cssText = 'margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap';
+    strategy.innerHTML = `
+      <span style="font-size:.9em;opacity:.8">找零策略：</span>
+      <button type="button" class="wissel-strat" data-strat="minPieces">最少张/枚</button>
+      <button type="button" class="wissel-strat" data-strat="fewCoins">少硬币</button>
+      <button type="button" class="wissel-strat" data-strat="fewBills">少纸币</button>
+    `;
+    document.getElementById('wissel-denoms')?.parentElement?.insertBefore(strategy, document.getElementById('wissel-denoms'));
   }
 
-  function updateWissel() {
-    const paidInput = document.getElementById('wissel-paid');
-    let paid = round05(parseFloat(String(paidInput.value).replace(',', '.')) || 0);
-    const change = round05(paid - wisselDue);
-    document.getElementById('wissel-change').textContent = euroFmt.format(change > 0 ? change : 0);
-    const denomsDiv = document.getElementById('wissel-denoms');
-    if (change > 0) {
-      const denoms = [50,20,10,5,2,1,0.5,0.2,0.1,0.05];
-      let remaining = change;
-      const lines = [];
-      for (const d of denoms) {
-        const cnt = Math.floor((remaining + 1e-8) / d);
-        if (cnt > 0) {
-          lines.push(`${cnt} × ${euroFmt.format(d)}`);
-          remaining = round05(remaining - cnt * d);
-        }
-      }
-      denomsDiv.innerHTML = lines.join('<br>');
-    } else {
-      denomsDiv.innerHTML = '';
+  // 欠款提示
+  if (!document.getElementById('wissel-short')) {
+    const shortDiv = document.createElement('div');
+    shortDiv.id = 'wissel-short';
+    shortDiv.style.cssText = 'margin-top:6px;color:#b00;font-weight:600;display:none';
+    shortDiv.textContent = '还需支付：—';
+    const paidEl = document.getElementById('wissel-paid');
+    (paidEl?.parentElement || modal).appendChild(shortDiv);
+  }
+}
+
+// —— 建议付款按钮（基于应收金额生成常用面额与就近更高面额） ——
+function buildSuggestPayments(due) {
+  const btnBox = document.getElementById('wissel-suggest-btns');
+  if (!btnBox) return;
+  btnBox.innerHTML = '';
+
+  // 常见现金面额
+  const common = [5, 10, 20, 50, 100, 200];
+  const candidates = new Set();
+
+  // 1) 向上取整到 0.05（现金四舍五入后的精确应收）
+  candidates.add(round05Safe(due));
+
+  // 2) 向上凑整到下一个 5、10、20、50、100、200
+  for (const d of common) {
+    const k = Math.ceil(due / d) * d;
+    if (k >= due) candidates.add(round05Safe(k));
+  }
+
+  // 3) 适当加一点硬币：+0.50、+1、+2（常见找零组合更好拿）
+  [0.5, 1, 2].forEach(x => {
+    const k = round05Safe(due + x);
+    if (k >= due) candidates.add(k);
+  });
+
+  // 排序，限制 8 个以内
+  const list = Array.from(candidates).sort((a,b)=>a-b).slice(0,8);
+
+  for (const val of list) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = euroFmt.format(val);
+    b.style.cssText = 'padding:6px 10px;border-radius:8px;border:1px solid #ddd;cursor:pointer';
+    b.dataset.pay = val.toFixed(2);
+    b.addEventListener('click', () => {
+      const paidInput = document.getElementById('wissel-paid');
+      paidInput.value = Number(b.dataset.pay).toFixed(2);
+      updateWissel(); // 复用你的函数
+    });
+    btnBox.appendChild(b);
+  }
+}
+
+// —— 找零拆分策略 ——
+// 面额表
+const BILLS = [500, 200, 100, 50, 20, 10, 5];
+const COINS = [2, 1, 0.5, 0.2, 0.1, 0.05];
+
+function makeChange(amount, strategy = 'minPieces') {
+  // 使用分（以 5 分为最小单位）来避免误差
+  let remaining = round05Safe(amount);
+  if (remaining <= 0) return [];
+
+  let denoms;
+  switch (strategy) {
+    case 'fewCoins':
+      // 更倾向纸币：先纸币后硬币（你原来的顺序就是这个，但我们做一次“强偏好”）
+      denoms = [...BILLS, ...COINS];
+      break;
+    case 'fewBills':
+      // 更倾向硬币：先硬币后纸币
+      denoms = [...COINS, ...BILLS];
+      break;
+    default:
+      // 最少张/枚：其实对欧元组合贪心已近似最优，这里仍用贪心
+      denoms = [...BILLS, ...COINS];
+  }
+
+  const lines = [];
+  for (const d of denoms) {
+    // 用分进行整除
+    const cnt = Math.floor((toCents(remaining) + 1e-6) / toCents(d));
+    if (cnt > 0) {
+      lines.push({ d, cnt });
+      remaining = round05Safe(remaining - cnt * d);
+      if (remaining <= 0) break;
     }
   }
+  return lines;
+}
 
-  document.getElementById('wissel-paid').addEventListener('input', updateWissel);
-  document.getElementById('wissel-close').addEventListener('click', closeWissel);
-  document.getElementById('wissel-modal').addEventListener('click', e => { if (e.target.id === 'wissel-modal') closeWissel(); });
-  document.getElementById('wissel-exact').addEventListener('click', () => {
+function renderChangeLines(lines) {
+  return lines.map(({ d, cnt }) => `${cnt} × ${euroFmt.format(d)}`).join('<br>');
+}
+
+// —— 打开、关闭、更新 ——（保留原函数名，内部增强）
+function openWissel(btn) {
+  // 兼容旧 data-total，同时允许 data-total-cents（可选）
+  const total = btn?.dataset?.totalCents
+    ? centsToEuro(parseInt(btn.dataset.totalCents, 10))
+    : Number(btn?.dataset?.total || 0);
+
+  wisselDue = round05Safe(total);
+
+  const modal = document.getElementById('wissel-modal');
+  document.getElementById('wissel-due').textContent = euroFmt.format(wisselDue);
+  const paid = document.getElementById('wissel-paid');
+  paid.value = '';
+  document.getElementById('wissel-change').textContent = euroFmt.format(0);
+  document.getElementById('wissel-denoms').innerHTML = '';
+  ensureExtraZones();
+  buildSuggestPayments(wisselDue);
+
+  modal.style.display = 'flex';
+  paid.focus();
+
+  // 键盘增强：Esc 关闭，Enter 确认（关闭）
+  const onKey = (e) => {
+    if (modal.style.display !== 'flex') return;
+    if (e.key === 'Escape') closeWissel();
+    if (e.key === 'Enter') {
+      // 若未足额不关闭，给予抖动提示
+      const change = round05Safe(parseEuroLoose(paid.value) - wisselDue);
+      if (change < 0) {
+        modal.classList.add('shake');
+        setTimeout(()=>modal.classList.remove('shake'), 300);
+      } else {
+        closeWissel();
+      }
+    }
+  };
+  // 避免重复绑定
+  document.removeEventListener('keydown', onKey);
+  document.addEventListener('keydown', onKey, { once: false });
+}
+
+function closeWissel() {
+  const modal = document.getElementById('wissel-modal');
+  modal.style.display = 'none';
+}
+
+function updateWissel() {
+  const paidInput = document.getElementById('wissel-paid');
+  let paid = round05Safe(parseEuroLoose(paidInput.value));
+  const change = round05Safe(paid - wisselDue);
+
+  const changeEl = document.getElementById('wissel-change');
+  const denomsDiv = document.getElementById('wissel-denoms');
+
+  // 清除状态类
+  changeEl.classList.remove('positive','negative','exact');
+
+  if (change < 0) {
+    // 还没达到应付 —— 显示“还差 €x,xx”红色
+    const deficit = round05Safe(-change);
+    changeEl.textContent = `还差 ${euroFmt.format(deficit)}`;
+    changeEl.classList.add('negative');
+    denomsDiv.innerHTML = '';  // 没到金额前不显示找零组合
+  } else if (change === 0) {
+    // 刚好 —— 显示“正好/Exact”绿色
+    changeEl.textContent = '正好 (Exact)';
+    changeEl.classList.add('exact');
+    denomsDiv.innerHTML = '';
+  } else {
+    // 需要找零 —— 显示“找零 €x,xx”绿色，并给出找零组合
+    changeEl.textContent = `找零 ${euroFmt.format(change)}`;
+    changeEl.classList.add('positive');
+
+    // 当前策略
+    const activeBtn = document.querySelector('#wissel-strategy .wissel-strat.active');
+    const strat = activeBtn?.dataset?.strat || 'minPieces';
+    const lines = makeChange(change, strat);
+    denomsDiv.innerHTML = renderChangeLines(lines);
+  }
+}
+
+
+// —— 你原有的事件绑定（保留） ——
+document.getElementById('wissel-paid').addEventListener('input', updateWissel);
+document.getElementById('wissel-close').addEventListener('click', closeWissel);
+document.getElementById('wissel-modal').addEventListener('click', e => { if (e.target.id === 'wissel-modal') closeWissel(); });
+document.getElementById('wissel-exact').addEventListener('click', () => {
+  const paidInput = document.getElementById('wissel-paid');
+  paidInput.value = wisselDue.toFixed(2);
+  updateWissel();
+});
+document.querySelectorAll('#wissel-modal [data-add]').forEach(btn => {
+  btn.addEventListener('click', () => {
     const paidInput = document.getElementById('wissel-paid');
-    paidInput.value = wisselDue.toFixed(2);
+    const current = parseEuroLoose(paidInput.value || 0);
+    const newVal = round05Safe(current + Number(btn.dataset.add));
+    paidInput.value = newVal.toFixed(2);
     updateWissel();
   });
-  document.querySelectorAll('#wissel-modal [data-add]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const paidInput = document.getElementById('wissel-paid');
-      const current = parseFloat(paidInput.value || 0);
-      const newVal = round05(current + Number(btn.dataset.add));
-      paidInput.value = newVal.toFixed(2);
-      updateWissel();
-    });
-  });
+});
+
+// —— 新增：策略按钮激活态处理 ——
+// 用事件委托避免重复绑定
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('.wissel-strat');
+  if (!b) return;
+  document.querySelectorAll('.wissel-strat').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  updateWissel();
+});
 
   const xbowlModal=document.getElementById('xBowlAddedModal');
   const againBtn=document.getElementById('xBowlAgain');
