@@ -1,3 +1,4 @@
+
 <section id="bubble">
 <div class="menu-group">
 <h2 style="margin-top: -8px; font-size: 1.5rem; color: #333; text-align: center; font-weight: bold;">
@@ -5,7 +6,7 @@
 </h2>
 <div class="menu-row menu-item" data-name="Bubble Tea" data-packaging="0.2" data-price="5">
 <div class="menu-img">
-<img alt="Bubble Tea" src="https://cdn.sushinova.nl/menu/bubble-tea-main.jpg"/>
+<img alt="Bubble Tea" src="{{ url_for('static', filename='images/bubble-tea-main.jpg') }}"/>
 </div>
 <div class="menu-content">
 <h3>Bubble Tea</h3>
@@ -54,7 +55,7 @@
 <!-- Japans Chicken Bento -->
 <div class="menu-row menu-item" data-name="Japans Chicken Bento" data-packaging="0.2" data-price="22">
 <div class="menu-img">
-<img alt="Japans Chicken Bento" src="https://cdn.sushinova.nl/menu/chicken-bento.jpg"/>
+<img alt="Japans Chicken Bento" src="{{ url_for('static', filename='images/chicken-bento.jpg') }}"/>
 </div>
 <div class="menu-content">
 <h3>Japans Chicken Bento</h3>
@@ -70,7 +71,7 @@
 <!-- Korean Chicken Bento -->
 <div class="menu-row menu-item" data-name="Korean Chicken Bento" data-packaging="0.2" data-price="22">
 <div class="menu-img">
-<img alt="Korean Chicken Bento" src="https://cdn.sushinova.nl/menu/chicken-bento.jpg"/>
+<img alt="Korean Chicken Bento" src="{{ url_for('static', filename='images/chicken-bento.jpg') }}"/>
 </div>
 <div class="menu-content">
 <h3>Korean Chicken Bento</h3>
@@ -83,11 +84,27 @@
 </div>
 </div>
 </div>
+<!-- Korean Beef Bento -->
+<div class="menu-row menu-item" data-name="Korean Beef Bento" data-packaging="0.2" data-price="25">
+<div class="menu-img">
+<img alt="Korean Beef Bento" src="{{ url_for('static', filename='images/Meatlove bento.png') }}"/>
+</div>
+<div class="menu-content">
+<h3>Korean Beef Bento</h3>
+<p>€ 25.00</p>
+<div class="qty-box">
+<label for="koreanBeefBentoCount">Aantal</label>
+<button class="qty-minus remove-button" data-target="koreanBeefBentoCount" type="button">-</button>
+<select id="koreanBeefBentoCount" name="koreanBeefBentoCount"></select>
+<button class="qty-plus add-button" data-target="koreanBeefBentoCount" type="button">+</button>
+</div>
+</div>
+</div>
 <!-- Meatlover Bento -->
 <!-- Meatlover Bento -->
 <div class="menu-row menu-item" data-name="Meatlover Bento" data-packaging="0.2" data-price="25">
 <div class="menu-img">
-<img alt="Meatlover Bento" src="https://cdn.sushinova.nl/menu/Meatlove bento.png"/>
+<img alt="Meatlover Bento" src="{{ url_for('static', filename='images/Meatlove bento.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>Meatlover Bento</h3>
@@ -103,7 +120,7 @@
 <!-- Zalm Lover Bento -->
 <div class="menu-row menu-item" data-name="Zalm Lover Bento" data-packaging="0.2" data-price="23">
 <div class="menu-img">
-<img alt="Zalm Lover Bento" src="https://cdn.sushinova.nl/menu/zalm-lover-bento.jpg"/>
+<img alt="Zalm Lover Bento" src="{{ url_for('static', filename='images/zalm-lover-bento.jpg') }}"/>
 </div>
 <div class="menu-content">
 <h3>Zalm Lover Bento</h3>
@@ -119,7 +136,7 @@
 <!-- Ebi Lover Bento -->
 <div class="menu-row menu-item" data-name="Ebi Lover Bento" data-packaging="0.2" data-price="23">
 <div class="menu-img">
-<img alt="Ebi Lover Bento" src="https://cdn.sushinova.nl/menu/ebi-lover-bento.png"/>
+<img alt="Ebi Lover Bento" src="{{ url_for('static', filename='images/ebi-lover-bento.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>Ebi Lover Bento</h3>
@@ -135,7 +152,7 @@
 <!-- Surf & Turf Bento -->
 <div class="menu-row menu-item" data-name="Surf &amp; Turf Bento" data-packaging="0.2" data-price="25">
 <div class="menu-img">
-<img alt="Surf &amp; Turf Bento" src="https://cdn.sushinova.nl/menu/surf-turf-bento.jpg"/>
+<img alt="Surf &amp; Turf Bento" src="{{ url_for('static', filename='images/surf-turf-bento.jpg') }}"/>
 </div>
 <div class="menu-content">
 <h3>Surf &amp; Turf Bento</h3>
@@ -151,7 +168,7 @@
 <!-- Dimsum Bento -->
 <div class="menu-row menu-item" data-name="Dimsum Bento" data-packaging="0.2" data-price="15">
 <div class="menu-img">
-<img alt="Dimsum Bento" src="https://cdn.sushinova.nl/menu/dimsum-bento.png"/>
+<img alt="Dimsum Bento" src="{{ url_for('static', filename='images/dimsum-bento.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>Dimsum Bento</h3>
@@ -165,13 +182,13 @@
 </div>
 </div>
 <!-- Lamskotelet Bento -->
-<div class="menu-row menu-item" data-name="Lamskotelet Bento" data-packaging="0.2" data-price="28">
+<div class="menu-row menu-item" data-name="Lamskotelet Bento" data-packaging="0.2" data-price="30">
 <div class="menu-img">
-<img alt="Lamskotelet Bento" src="https://cdn.sushinova.nl/menu/lamskotelet-bento.jpg"/>
+<img alt="Lamskotelet Bento" src="{{ url_for('static', filename='images/lamskotelet-bento.jpg') }}"/>
 </div>
 <div class="menu-content">
 <h3>Lamskotelet Bento</h3>
-<p>€ 28.00</p>
+<p>€ 30.00</p>
 <div class="qty-box">
 <label for="lamsBentoCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="lamsBentoCount" type="button">-</button>
@@ -183,7 +200,7 @@
 <!-- Unagi Bento -->
 <div class="menu-row menu-item" data-name="Unagi Bento" data-packaging="0.2" data-price="24">
 <div class="menu-img">
-<img alt="Unagi Bento" src="https://cdn.sushinova.nl/menu/UNA.jpg"/>
+<img alt="Unagi Bento" src="{{ url_for('static', filename='images/UNA.jpg') }}"/>
 </div>
 <div class="menu-content">
 <h3>Unagi Bento</h3>
@@ -196,10 +213,26 @@
 </div>
 </div>
 </div>
+<!-- Tuna Bento -->
+<div class="menu-row menu-item" data-name="Tuna Bento" data-packaging="0.2" data-price="25">
+<div class="menu-img">
+<img alt="Tuna Bento" src="{{ url_for('static', filename='images/tunapo.png') }}"/>
+</div>
+<div class="menu-content">
+<h3>Tuna Bento</h3>
+<p>€ 25.00</p>
+<div class="qty-box">
+<label for="tunaBentoCount">Aantal</label>
+<button class="qty-minus remove-button" data-target="tunaBentoCount" type="button">-</button>
+<select id="tunaBentoCount" name="tunaBentoCount"></select>
+<button class="qty-plus add-button" data-target="tunaBentoCount" type="button">+</button>
+</div>
+</div>
+</div>
 <!-- Veggie Bento -->
 <div class="menu-row menu-item" data-name="Veggie Bento" data-packaging="0.2" data-price="20">
 <div class="menu-img">
-<img alt="Veggie Bento" src="https://cdn.sushinova.nl/menu/veggie-bento.png"/>
+<img alt="Veggie Bento" src="{{ url_for('static', filename='images/veggie-bento.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>Veggie Bento</h3>
@@ -214,7 +247,7 @@
 </div>
 <div class="menu-row menu-item" data-name="Bento Sushi Omakase" data-packaging="0.2" data-price="22">
 <div class="menu-img">
-<img alt="Bento Sushi Omakase" src="https://cdn.sushinova.nl/menu/sushi-bento.jpg"/>
+<img alt="Bento Sushi Omakase" src="{{ url_for('static', filename='images/sushi-bento.jpg') }}"/>
 </div>
 <div class="menu-content">
 <h3>Bento Sushi Omakase</h3>
@@ -233,7 +266,7 @@
 <!-- Xbento - Stel je eigen bento samen -->
 <div class="menu-row menu-item" data-name="Xbento" data-packaging="0.2" data-price="25">
 <div class="menu-img">
-<img alt="Xbento" src="https://cdn.sushinova.nl/menu/xbento.png"/>
+<img alt="Xbento" src="{{ url_for('static', filename='images/xbento.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>Xbento (stel zelf samen)</h3>
@@ -259,8 +292,8 @@
   </select>
 </div>
     <div class="new-set-wrap hidden" id="xBentoNewWrap">
-      <span class="new-set-msg">Toegevoegd. Nieuw selecteren?</span>
-      <button type="button" class="new-set-button" id="xBentoNew">druk op</button>
+      <span class="new-set-msg">Toegevoegd aan winkelwagen!</span>
+      <button type="button" class="new-set-button" id="xBentoNew">Selecteer een nieuwe optie</button>
     </div>
 <div class="qty-box">
   <label for="xBentoQty">Aantal</label>
@@ -280,7 +313,7 @@
   <!-- Ebi Furai Ramen -->
   <div class="menu-row menu-item" data-code="ebi" data-name="Ebi Furai" data-packaging="0.2" data-price="18">
     <div class="menu-img">
-      <img alt="Ebi Furai Ramen" src="https://cdn.sushinova.nl/menu/tonkotsu-ramen.png"/>
+      <img alt="Ebi Furai Ramen" src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}"/>
     </div>
     <div class="menu-content">
       <h3>Ebi Furai</h3>
@@ -314,7 +347,7 @@
   <!-- Chicken Ramen -->
   <div class="menu-row menu-item" data-code="chicken" data-name="Chicken" data-packaging="0.2" data-price="18">
     <div class="menu-img">
-      <img alt="Chicken Ramen" src="https://cdn.sushinova.nl/menu/tonkotsu-ramen.png"/>
+      <img alt="Chicken Ramen" src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}"/>
     </div>
     <div class="menu-content">
       <h3>Chicken</h3>
@@ -348,7 +381,7 @@
   <!-- Beef Ramen -->
   <div class="menu-row menu-item" data-code="beef" data-name="Beef" data-packaging="0.2" data-price="18">
     <div class="menu-img">
-      <img alt="Beef Ramen" src="https://cdn.sushinova.nl/menu/tonkotsu-ramen.png"/>
+      <img alt="Beef Ramen" src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}"/>
     </div>
     <div class="menu-content">
       <h3>Beef</h3>
@@ -382,7 +415,7 @@
   <!-- Ribeye Ramen -->
   <div class="menu-row menu-item" data-code="ribeye" data-name="Ribeye" data-packaging="0.2" data-price="18">
     <div class="menu-img">
-      <img alt="Ribeye Ramen" src="https://cdn.sushinova.nl/menu/tonkotsu-ramen.png"/>
+      <img alt="Ribeye Ramen" src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}"/>
     </div>
     <div class="menu-content">
       <h3>Ribeye</h3>
@@ -416,7 +449,7 @@
   <!-- Chasiu Ramen -->
   <div class="menu-row menu-item" data-code="chasiu" data-name="Chasiu" data-packaging="0.2" data-price="18">
     <div class="menu-img">
-      <img alt="Chasiu Ramen" src="https://cdn.sushinova.nl/menu/tonkotsu-ramen.png"/>
+      <img alt="Chasiu Ramen" src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}"/>
     </div>
     <div class="menu-content">
       <h3>Chasiu</h3>
@@ -447,10 +480,10 @@
       </div>
     </div>
   </div>
-  <!-- Zhai Ramen -->
+   <!-- Zhai Ramen -->
   <div class="menu-row menu-item" data-code="zhai" data-name="Zhai" data-packaging="0.2" data-price="18">
     <div class="menu-img">
-      <img alt="Zhai Ramen" src="https://cdn.sushinova.nl/menu/tonkotsu-ramen.png"/>
+      <img alt="Zhai Ramen" src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}"/>
     </div>
     <div class="menu-content">
       <h3>Zhai</h3>
@@ -488,7 +521,7 @@
   <div class="menu-section">
     <div class="menu-row menu-item" data-name="Zalm Bowl" data-price="15" data-packaging="0.2">
       <div class="menu-img">
-        <img src="https://cdn.sushinova.nl/menu/zwp.png" alt="Zalm Bowl">
+        <img src="{{ url_for('static', filename='images/zwp.png') }}" alt="Zalm Bowl">
       </div>
       <div class="menu-content">
         <h3>Zalm Bowl</h3>
@@ -499,11 +532,12 @@
           <select id="zalmBowlQty" name="zalmBowlQty"></select>
           <button class="qty-plus add-button" data-target="zalmBowlQty" type="button">+</button>
         </div>
+        <div id="zalmBowlQtySauces" class="pokebowl-sauces"></div>
       </div>
     </div>
     <div class="menu-row menu-item" data-name="Tuna Bowl" data-price="15" data-packaging="0.2">
       <div class="menu-img">
-        <img src="https://cdn.sushinova.nl/menu/tup.png" alt="Tuna Bowl">
+        <img src="{{ url_for('static', filename='images/tup.png') }}" alt="Tuna Bowl">
       </div>
       <div class="menu-content">
         <h3>Tuna Bowl</h3>
@@ -514,12 +548,13 @@
           <select id="tunaBowlQty" name="tunaBowlQty"></select>
           <button class="qty-plus add-button" data-target="tunaBowlQty" type="button">+</button>
         </div>
+        <div id="tunaBowlQtySauces" class="pokebowl-sauces"></div>
       </div>
     </div>
 
     <div class="menu-row menu-item" data-name="Ebi Fry Bowl" data-price="15.5" data-packaging="0.2">
       <div class="menu-img">
-        <img src="https://cdn.sushinova.nl/menu/虾boel.png" alt="Ebi Fry Bowl">
+        <img src="{{ url_for('static', filename='images/虾boel.png') }}" alt="Ebi Fry Bowl">
       </div>
       <div class="menu-content">
         <h3>Ebi Fry Bowl</h3>
@@ -530,12 +565,13 @@
           <select id="ebiFryBowlQty" name="ebiFryBowlQty"></select>
           <button class="qty-plus add-button" data-target="ebiFryBowlQty" type="button">+</button>
         </div>
+        <div id="ebiFryBowlQtySauces" class="pokebowl-sauces"></div>
       </div>
     </div>
 
     <div class="menu-row menu-item" data-name="Chicken Karaage Bowl" data-price="15.5" data-packaging="0.2">
       <div class="menu-img">
-        <img src="https://cdn.sushinova.nl/menu/chicken-kar.jpg" alt="Chicken Karaage Bowl">
+        <img src="{{ url_for('static', filename='images/chicken-kar.jpg') }}" alt="Chicken Karaage Bowl">
       </div>
       <div class="menu-content">
         <h3>Chicken Karaage Bowl</h3>
@@ -546,12 +582,13 @@
           <select id="chickenKaraageBowlQty" name="chickenKaraageBowlQty"></select>
           <button class="qty-plus add-button" data-target="chickenKaraageBowlQty" type="button">+</button>
         </div>
+        <div id="chickenKaraageBowlQtySauces" class="pokebowl-sauces"></div>
       </div>
     </div>
 
     <div class="menu-row menu-item" data-name="Spicy Chicken Bowl" data-price="15.5" data-packaging="0.2">
       <div class="menu-img">
-        <img src="https://cdn.sushinova.nl/menu/chicken-kar.jpg" alt="Spicy Chicken Bowl">
+        <img src="{{ url_for('static', filename='images/chicken-kar.jpg') }}" alt="Spicy Chicken Bowl">
       </div>
       <div class="menu-content">
         <h3>Spicy Chicken Bowl</h3>
@@ -562,12 +599,13 @@
           <select id="spicyChickenBowlQty" name="spicyChickenBowlQty"></select>
           <button class="qty-plus add-button" data-target="spicyChickenBowlQty" type="button">+</button>
         </div>
+        <div id="spicyChickenBowlQtySauces" class="pokebowl-sauces"></div>
       </div>
     </div>
 
     <div class="menu-row menu-item" data-name="Teriyaki Chicken Bowl" data-price="15.5" data-packaging="0.2">
       <div class="menu-img">
-        <img src="https://cdn.sushinova.nl/menu/teriyaki-chicken-bowl.jpg" alt="Teriyaki Chicken Bowl">
+        <img src="{{ url_for('static', filename='images/teriyaki-chicken-bowl.jpg') }}" alt="Teriyaki Chicken Bowl">
       </div>
       <div class="menu-content">
         <h3>Teriyaki Chicken Bowl</h3>
@@ -578,12 +616,13 @@
           <select id="teriyakiChickenBowlQty" name="teriyakiChickenBowlQty"></select>
           <button class="qty-plus add-button" data-target="teriyakiChickenBowlQty" type="button">+</button>
         </div>
+        <div id="teriyakiChickenBowlQtySauces" class="pokebowl-sauces"></div>
       </div>
     </div>
 
     <div class="menu-row menu-item" data-name="Teriyaki Beef Bowl" data-price="15.5" data-packaging="0.2">
       <div class="menu-img">
-        <img src="https://cdn.sushinova.nl/menu/nrp.png" alt="Teriyaki Beef Bowl">
+        <img src="{{ url_for('static', filename='images/nrp.png') }}" alt="Teriyaki Beef Bowl">
       </div>
       <div class="menu-content">
         <h3>Teriyaki Beef Bowl</h3>
@@ -594,12 +633,13 @@
           <select id="teriyakiBeefBowlQty" name="teriyakiBeefBowlQty"></select>
           <button class="qty-plus add-button" data-target="teriyakiBeefBowlQty" type="button">+</button>
         </div>
+        <div id="teriyakiBeefBowlQtySauces" class="pokebowl-sauces"></div>
       </div>
     </div>
 
     <div class="menu-row menu-item" data-name="California Bowl" data-price="14" data-packaging="0.2">
       <div class="menu-img">
-          <img src="https://cdn.sushinova.nl/menu/calibowl.png" alt="California Bowl">
+          <img src="{{ url_for('static', filename='images/calibowl.png') }}" alt="California Bowl">
       </div>
       <div class="menu-content">
         <h3>California Bowl</h3>
@@ -610,12 +650,13 @@
           <select id="californiaBowlQty" name="californiaBowlQty"></select>
           <button class="qty-plus add-button" data-target="californiaBowlQty" type="button">+</button>
         </div>
+        <div id="californiaBowlQtySauces" class="pokebowl-sauces"></div>
       </div>
     </div>
 
     <div class="menu-row menu-item" data-name="Vega Bowl" data-price="13" data-packaging="0.2">
       <div class="menu-img">
-          <img src="https://cdn.sushinova.nl/menu/vega-bowl.jpg" alt="Vega Bowl">
+          <img src="{{ url_for('static', filename='images/vega-bowl.jpg') }}" alt="Vega Bowl">
       </div>
       <div class="menu-content">
         <h3>Vega Bowl (Vegetarisch)</h3>
@@ -626,12 +667,13 @@
           <select id="vegaBowlQty" name="vegaBowlQty"></select>
           <button class="qty-plus add-button" data-target="vegaBowlQty" type="button">+</button>
         </div>
+        <div id="vegaBowlQtySauces" class="pokebowl-sauces"></div>
       </div>
     </div>
 
     <div class="menu-row menu-item" data-name="Meatlover Bowl" data-price="17" data-packaging="0.2">
       <div class="menu-img">
-          <img src="https://cdn.sushinova.nl/menu/meatlover-bowl.jpg" alt="Meatlover Bowl">
+          <img src="{{ url_for('static', filename='images/meatlover-bowl.jpg') }}" alt="Meatlover Bowl">
       </div>
       <div class="menu-content">
         <h3>Meatlover Bowl</h3>
@@ -642,12 +684,13 @@
           <select id="meatloverBowlQty" name="meatloverBowlQty"></select>
           <button class="qty-plus add-button" data-target="meatloverBowlQty" type="button">+</button>
         </div>
+        <div id="meatloverBowlQtySauces" class="pokebowl-sauces"></div>
       </div>
     </div>
 
     <div class="menu-row menu-item" data-name="Rainbow Bowl" data-price="17" data-packaging="0.2">
       <div class="menu-img">
-          <img src="https://cdn.sushinova.nl/menu/rainbowl.png" alt="Rainbow Bowl">
+          <img src="{{ url_for('static', filename='images/rainbowl.png') }}" alt="Rainbow Bowl">
       </div>
       <div class="menu-content">
         <h3>Rainbow Bowl</h3>
@@ -658,12 +701,13 @@
           <select id="rainbowBowlQty" name="rainbowBowlQty"></select>
           <button class="qty-plus add-button" data-target="rainbowBowlQty" type="button">+</button>
         </div>
+        <div id="rainbowBowlQtySauces" class="pokebowl-sauces"></div>
       </div>
     </div>
 
     <div class="menu-row menu-item" data-name="Spicy Tuna Bowl" data-price="15.5" data-packaging="0.2">
       <div class="menu-img">
-          <img src="https://cdn.sushinova.nl/menu/spicy-tuna-bowl.jpg" alt="Spicy Tuna Bowl">
+          <img src="{{ url_for('static', filename='images/spicy-tuna-bowl.jpg') }}" alt="Spicy Tuna Bowl">
       </div>
       <div class="menu-content">
         <h3>Spicy Tuna Bowl</h3>
@@ -674,12 +718,13 @@
           <select id="spicyTunaBowlQty" name="spicyTunaBowlQty"></select>
           <button class="qty-plus add-button" data-target="spicyTunaBowlQty" type="button">+</button>
         </div>
+        <div id="spicyTunaBowlQtySauces" class="pokebowl-sauces"></div>
       </div>
     </div>
 
     <div class="menu-row menu-item" data-name="Flamed Zalm Bowl" data-price="16" data-packaging="0.2">
       <div class="menu-img">
-          <img src="https://cdn.sushinova.nl/menu/flamed-salmon-bowl.jpg" alt="Flamed Zalm Bowl">
+          <img src="{{ url_for('static', filename='images/flamed-salmon-bowl.jpg') }}" alt="Flamed Zalm Bowl">
       </div>
       <div class="menu-content">
         <h3>Flamed Zalm Bowl</h3>
@@ -690,12 +735,13 @@
           <select id="flamedZalmBowlQty" name="flamedZalmBowlQty"></select>
           <button class="qty-plus add-button" data-target="flamedZalmBowlQty" type="button">+</button>
         </div>
+        <div id="flamedZalmBowlQtySauces" class="pokebowl-sauces"></div>
       </div>
     </div>
 
     <div class="menu-row menu-item" data-name="Flamed Tuna Bowl" data-price="16" data-packaging="0.2">
       <div class="menu-img">
-        <img src="https://cdn.sushinova.nl/menu/flamed-tuna-bowl.png" alt="Flamed Tuna Bowl">
+        <img src="{{ url_for('static', filename='images/flamed-tuna-bowl.png') }}" alt="Flamed Tuna Bowl">
       </div>
       <div class="menu-content">
         <h3>Flamed Tuna Bowl</h3>
@@ -706,12 +752,13 @@
           <select id="flamedTunaBowlQty" name="flamedTunaBowlQty"></select>
           <button class="qty-plus add-button" data-target="flamedTunaBowlQty" type="button">+</button>
         </div>
+        <div id="flamedTunaBowlQtySauces" class="pokebowl-sauces"></div>
       </div>
     </div>
 
     <div class="menu-row menu-item" data-name="X-Bowl" data-price="0" data-packaging="0.2">
       <div class="menu-img">
-          <img src="https://cdn.sushinova.nl/menu/Xbowl.png" alt="X-Bowl">
+          <img src="{{ url_for('static', filename='images/Xbowl.png') }}" alt="X-Bowl">
       </div>
       <div class="menu-content">
         <h3>X-Bowl (Vrije samenstelling)</h3>
@@ -740,16 +787,85 @@
       </div>
     </div>
 
+</div>
+</section>
+<section id="Teppanyaki">
+  <h2>Teppanyaki Gebakken Rijst-Japanse stijl</h2>
+  <div class="menu-section">
+    <div class="menu-row menu-item" data-name="Teppanyaki Shrimp" data-price="18" data-packaging="0.2">
+      <div class="menu-img">
+        <img src="{{ url_for('static', filename='images/虾炒饭.png') }}" alt="Teppanyaki Shrimp" />
+      </div>
+      <div class="menu-content">
+        <h3>Garnaal</h3>
+        <p>€ 18.00</p>
+        <p id="soldoutTeppShrimp" class="sold-out-msg hidden">Uitverkocht!</p>
+        <div class="qty-box">
+
+          <button class="qty-minus remove-button" data-target="teppShrimpQty" type="button">-</button>
+          <select id="teppShrimpQty" name="teppShrimpQty"></select>
+          <button class="qty-plus add-button" data-target="teppShrimpQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-row menu-item" data-name="Teppanyaki Beef" data-price="18" data-packaging="0.2">
+      <div class="menu-img">
+        <img src="{{ url_for('static', filename='images/牛炒饭.png') }}" alt="Teppanyaki Beef" />
+      </div>
+      <div class="menu-content">
+        <h3>Rundvlees</h3>
+        <p>€ 18.00</p>
+        <p id="soldoutTeppBeef" class="sold-out-msg hidden">Uitverkocht!</p>
+        <div class="qty-box">
+
+          <button class="qty-minus remove-button" data-target="teppBeefQty" type="button">-</button>
+          <select id="teppBeefQty" name="teppBeefQty"></select>
+          <button class="qty-plus add-button" data-target="teppBeefQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-row menu-item" data-name="Teppanyaki Chicken" data-price="18" data-packaging="0.2">
+      <div class="menu-img">
+        <img src="{{ url_for('static', filename='images/鸡炒饭.png') }}" alt="Teppanyaki Chicken" />
+      </div>
+      <div class="menu-content">
+        <h3>Kip</h3>
+        <p>€ 18.00</p>
+        <p id="soldoutTeppChicken" class="sold-out-msg hidden">Uitverkocht!</p>
+        <div class="qty-box">
+
+          <button class="qty-minus remove-button" data-target="teppChickenQty" type="button">-</button>
+          <select id="teppChickenQty" name="teppChickenQty"></select>
+          <button class="qty-plus add-button" data-target="teppChickenQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-row menu-item" data-name="Teppanyaki Char Siu" data-price="18" data-packaging="0.2">
+      <div class="menu-img">
+        <img src="{{ url_for('static', filename='images/叉烧炒饭.png') }}" alt="Teppanyaki Char Siu" />
+      </div>
+      <div class="menu-content">
+        <h3>Char Siu (BBQ-varkensvlees)</h3>
+        <p>€ 18.00</p>
+        <p id="soldoutTeppCharSiu" class="sold-out-msg hidden">Uitverkocht!</p>
+        <div class="qty-box">
+
+          <button class="qty-minus remove-button" data-target="teppCharSiuQty" type="button">-</button>
+          <select id="teppCharSiuQty" name="teppCharSiuQty"></select>
+          <button class="qty-plus add-button" data-target="teppCharSiuQty" type="button">+</button>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 <section id="sushi">
 <div class="menu-group">
 <h2 style="margin-top: -8px; font-size: 1.5rem; color: #333; text-align: center; font-weight: bold;">
-  Special Sushi Rolls
+  Omakase Sushi
 </h2>
 <div class="menu-row menu-item" data-name="Salmon Roll Omakase" data-packaging="0.2" data-price="16">
 <div class="menu-img">
-<img alt="Green Dragon Roll" src="https://cdn.sushinova.nl/menu/green-dragon-roll.png"/>
+<img alt="Green Dragon Roll" src="{{ url_for('static', filename='images/green-dragon-roll.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>Salmon Roll Omakase</h3>
@@ -764,7 +880,7 @@
 </div>
 <div class="menu-row menu-item" data-name="Dragon Roll Omakase" data-packaging="0.2" data-price="16">
 <div class="menu-img">
-<img alt="Angry Dragon Roll" src="https://cdn.sushinova.nl/menu/angry-dragon.png"/>
+<img alt="Angry Dragon Roll" src="{{ url_for('static', filename='images/angry-dragon.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>Dragon Roll Omakase</h3>
@@ -780,7 +896,7 @@
 </div>
 <div class="menu-row menu-item" data-name="Beef Roll Omakase" data-packaging="0.2" data-price="16">
 <div class="menu-img">
-<img alt="Beef Roll Omakase" src="https://cdn.sushinova.nl/menu/牛圈.png"/>
+<img alt="Beef Roll Omakase" src="{{ url_for('static', filename='images/牛圈.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>Beef Roll Omakase</h3>
@@ -795,7 +911,7 @@
 </div>
 <div class="menu-row menu-item" data-name="Chicken Roll Omakase" data-packaging="0.2" data-price="16">
 <div class="menu-img">
-<img alt="Chicken Roll Omakase" src="https://cdn.sushinova.nl/menu/几卷.png"/>
+<img alt="Chicken Roll Omakase" src="{{ url_for('static', filename='images/几卷.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>Chicken Roll Omakase</h3>
@@ -808,6 +924,21 @@
 </div>
 </div>
 </div>
+<div class="menu-row menu-item" data-name="Nigiri Box Omakase" data-packaging="0.2" data-price="10">
+<div class="menu-img">
+<img alt="Nigiri Box Omakase" src="{{ url_for('static', filename='images/NIG.png') }}"/>
+</div>
+<div class="menu-content">
+<h3>Nigiri Box Omakase</h3>
+<p>5 stuks nigiri, verrassend samengesteld door de chef<br/>€ 10.00</p>
+<div class="qty-box">
+<label for="nigiriBoxCount">Aantal</label>
+<button class="qty-minus remove-button" data-target="nigiriBoxCount" type="button">-</button>
+<select id="nigiriBoxCount" name="nigiriBoxCount"></select>
+<button class="qty-plus add-button" data-target="nigiriBoxCount" type="button">+</button>
+</div>
+</div>
+</div>
 </div></section>
 <section id="sashimi">
 <div class="menu-group">
@@ -815,13 +946,13 @@
       Sashimi per 6 stuks
     </h2>
 
-<div class="menu-row menu-item" data-name="Salmon sashimi" data-packaging="0.2" data-price="9">
+<div class="menu-row menu-item" data-name="Salmon sashimi" data-packaging="0.2" data-price="10">
 <div class="menu-img">
-<img alt="Salmon sashimi" src="https://cdn.sushinova.nl/menu/ss.png"/>
+<img alt="Salmon sashimi" src="{{ url_for('static', filename='images/ss.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>Salmon sashimi</h3>
-<p>€ 9.00</p>
+<p>€ 10.00</p>
 <div class="qty-box">
 <label for="salmonSashimiQty">Aantal</label>
 <button class="qty-minus remove-button" data-target="salmonSashimiQty" type="button">-</button>
@@ -830,13 +961,13 @@
 </div>
 </div>
 </div>
- <div class="menu-row menu-item" data-name="Flamed salmon sashimi" data-packaging="0.2" data-price="10">
+ <div class="menu-row menu-item" data-name="Flamed salmon sashimi" data-packaging="0.2" data-price="11">
 <div class="menu-img">
-<img alt="Flamed salmon sashimi" src="https://cdn.sushinova.nl/menu/fz.png"/>
+<img alt="Flamed salmon sashimi" src="{{ url_for('static', filename='images/fz.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>Flamed salmon sashimi</h3>
-<p>€ 10.00</p>
+<p>€ 11.00</p>
 <div class="qty-box">
 <label for="flamedsalmonSashimiQty">Aantal</label>
 <button class="qty-minus remove-button" data-target="flamedsalmonSashimiQty" type="button">-</button>
@@ -847,7 +978,7 @@
 </div>
 <div class="menu-row menu-item" data-name="Tonijn sashimi" data-packaging="0.2" data-price="10">
 <div class="menu-img">
-<img alt="Tonijn sashimi" src="https://cdn.sushinova.nl/menu/st.png"/>
+<img alt="Tonijn sashimi" src="{{ url_for('static', filename='images/st.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>Tonijn sashimi</h3>
@@ -860,13 +991,13 @@
 </div>
 </div>
 </div>
-<div class="menu-row menu-item" data-name="Salmon sashimi" data-packaging="0.2" data-price="10.5">
+<div class="menu-row menu-item" data-name="Salmon sashimi" data-packaging="0.2" data-price="11">
 <div class="menu-img">
-<img alt="Salmon sashimi" src="https://cdn.sushinova.nl/menu/ft.png"/>
+<img alt="Salmon sashimi" src="{{ url_for('static', filename='images/ft.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>Flamed tonijn sashimi</h3>
-<p>€ 10.50</p>
+<p>€ 11</p>
 <div class="qty-box">
 <label for="flamedtonijnSashimiQty">Aantal</label>
 <button class="qty-minus remove-button" data-target="flamedtonijnSashimiQty" type="button">-</button>
@@ -876,13 +1007,13 @@
 </div>
 </div>
 
-<div class="menu-row menu-item" data-name="Beef sashimi" data-packaging="0.2" data-price="10">
+<div class="menu-row menu-item" data-name="Beef sashimi" data-packaging="0.2" data-price="12">
 <div class="menu-img">
-<img alt="Beef sashimi" src="https://cdn.sushinova.nl/menu/suy.png"/>
+<img alt="Beef sashimi" src="{{ url_for('static', filename='images/suy.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>Beef sashimi</h3>
-<p>€ 10.00</p>
+<p>€ 12.00</p>
 <div class="qty-box">
 <label for="beefSashimiQty">Aantal</label>
 <button class="qty-minus remove-button" data-target="beefSashimiQty" type="button">-</button>
@@ -902,7 +1033,7 @@
 <!-- Zalm -->
 <div class="menu-row menu-item" data-name="Zalm crispy rice sandwich" data-packaging="0.2" data-price="10">
 <div class="menu-img">
-<img alt="Zalm crispy rice sandwich" src="https://cdn.sushinova.nl/menu/zalm.png"/>
+<img alt="Zalm crispy rice sandwich" src="{{ url_for('static', filename='images/zalm.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>Zalm crispy rice sandwich</h3>
@@ -918,7 +1049,7 @@
 <!-- Spicytuna -->
 <div class="menu-row menu-item" data-name="Spicytuna crispy rice sandwich" data-packaging="0.2" data-price="10">
 <div class="menu-img">
-<img alt="Spicytuna crispy rice sandwich" src="https://cdn.sushinova.nl/menu/zalm.png"/>
+<img alt="Spicytuna crispy rice sandwich" src="{{ url_for('static', filename='images/zalm.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>Spicytuna crispy rice sandwich</h3>
@@ -935,7 +1066,7 @@
 <!-- Ebi Crispy Rice Sandwich -->
 <div class="menu-row menu-item" data-name="Ebi crispy rice sandwich" data-packaging="0.2" data-price="10">
 <div class="menu-img">
-<img alt="Ebi Crispy Rice Sandwich" src="https://cdn.sushinova.nl/menu/Ebi.png"/>
+<img alt="Ebi Crispy Rice Sandwich" src="{{ url_for('static', filename='images/Ebi.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>Ebi crispy rice sandwich</h3>
@@ -951,7 +1082,7 @@
 <!-- Beef Crispy Rice Sandwich -->
 <div class="menu-row menu-item" data-name="Beef crispy rice sandwich" data-packaging="0.2" data-price="10">
 <div class="menu-img">
-<img alt="Beef Crispy Rice Sandwich" src="https://cdn.sushinova.nl/menu/beef-crispy.png"/>
+<img alt="Beef Crispy Rice Sandwich" src="{{ url_for('static', filename='images/beef-crispy.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>Beef crispy rice sandwich</h3>
@@ -967,7 +1098,7 @@
 <!-- California Crispy Rice Sandwich -->
 <div class="menu-row menu-item" data-name="California crispy rice sandwich" data-packaging="0.2" data-price="10">
 <div class="menu-img">
-<img alt="California Crispy Rice Sandwich" src="https://cdn.sushinova.nl/menu/california-crispy.png"/>
+<img alt="California Crispy Rice Sandwich" src="{{ url_for('static', filename='images/california-crispy.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>California crispy rice sandwich</h3>
@@ -983,7 +1114,7 @@
 <!-- Chicken Crispy Rice Sandwich -->
 <div class="menu-row menu-item" data-name="Chicken crispy rice sandwich" data-packaging="0.2" data-price="10">
 <div class="menu-img">
-<img alt="Chicken Crispy Rice Sandwich" src="https://cdn.sushinova.nl/menu/chicken-crispy.png"/>
+<img alt="Chicken Crispy Rice Sandwich" src="{{ url_for('static', filename='images/chicken-crispy.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>Chicken crispy rice sandwich</h3>
@@ -1004,7 +1135,7 @@
   Snack
 </h2>
 <div class="menu-row menu-item" data-name="Karaage" data-packaging="0.2" data-price="6.5">
-<img alt="Karaage" class="menu-img" loading="lazy" src="https://cdn.sushinova.nl/menu/karaage.png">
+<img alt="Karaage" class="menu-img" loading="lazy" src="{{ url_for('static', filename='images/karaage.png') }}">
 <div class="menu-content">
 <h3>Karaage (Japanse gefrituurde kip)</h3>
 <p>€ 6.50</p>
@@ -1014,44 +1145,64 @@
 <select id="snackCount" name="snackCount"></select>
 <button class="qty-plus add-button" data-target="snackCount" type="button">+</button>
 </div>
+<div id="snackCountSauces" class="pokebowl-sauces"></div>
 </div>
 </img></div>
 <!-- Ebi Fry -->
-<div class="menu-row menu-item" data-name="Ebi Fry – 4 st" data-packaging="0.2" data-price="6.2">
+<div class="menu-row menu-item" data-name="Ebi Fry – 4 st" data-packaging="0.2" data-price="6.5">
   <div class="menu-img">
-    <img alt="Ebi Fry" loading="lazy" src="https://cdn.sushinova.nl/menu/EB.jpg">
+    <img alt="Ebi Fry" loading="lazy" src="{{ url_for('static', filename='images/EB.jpg') }}">
     </img></div>
   <div class="menu-content">
     <h3>Ebi Fry – 4 st</h3>
-    <p>€ 6.20</p>
+    <p>€ 6.50</p>
     <div class="qty-box">
       <label for="ebiFryCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="ebiFryCount" type="button">-</button>
       <select id="ebiFryCount" name="ebiFryCount"></select>
       <button class="qty-plus add-button" data-target="ebiFryCount" type="button">+</button>
     </div>
+    <div id="ebiFryCountSauces" class="pokebowl-sauces"></div>
   </div>
 </div>
 <!-- Spicy Crispy Chicken -->
-<div class="menu-row menu-item" data-name="Spicy Crispy Chicken – 5 st" data-packaging="0.2" data-price="5.5">
+<div class="menu-row menu-item" data-name="Spicy Crispy Chicken – 5 st" data-packaging="0.2" data-price="6.5">
   <div class="menu-img">
-    <img alt="Spicy Crispy Chicken" loading="lazy" src="https://cdn.sushinova.nl/menu/karaage.png">
+    <img alt="Spicy Crispy Chicken" loading="lazy" src="{{ url_for('static', filename='images/karaage.png') }}">
     </img></div>
   <div class="menu-content">
     <h3>Spicy Crispy Chicken – 5 st</h3>
-    <p>€ 5.50</p>
+    <p>€ 6.50</p>
     <div class="qty-box">
       <label for="spicyCrispyChickenCount">Aantal</label>
       <button class="qty-minus remove-button" data-target="spicyCrispyChickenCount" type="button">-</button>
       <select id="spicyCrispyChickenCount" name="spicyCrispyChickenCount"></select>
       <button class="qty-plus add-button" data-target="spicyCrispyChickenCount" type="button">+</button>
     </div>
+    <div id="spicyCrispyChickenCountSauces" class="pokebowl-sauces"></div>
+</div>
+</div>
+<!-- Japans Zalm Nugget -->
+<div class="menu-row menu-item" data-name="Japans Zalm Nugget" data-packaging="0.2" data-price="6.5">
+  <div class="menu-img">
+    <img alt="Japans Zalm Nugget" loading="lazy" src="{{ url_for('static', filename='images/JZN.png') }}">
+    </img></div>
+  <div class="menu-content">
+    <h3>Japans Zalm Nugget</h3>
+    <p>€ 6.50</p>
+    <div class="qty-box">
+      <label for="japansZalmNuggetCount">Aantal</label>
+      <button class="qty-minus remove-button" data-target="japansZalmNuggetCount" type="button">-</button>
+      <select id="japansZalmNuggetCount" name="japansZalmNuggetCount"></select>
+      <button class="qty-plus add-button" data-target="japansZalmNuggetCount" type="button">+</button>
+    </div>
+    <div id="japansZalmNuggetCountSauces" class="pokebowl-sauces"></div>
   </div>
 </div>
 <!-- Chicken Loempia -->
 <div class="menu-row menu-item" data-name="Chicken Loempia – 2 st" data-packaging="0.2" data-price="5">
   <div class="menu-img">
-    <img alt="Chicken Loempia" loading="lazy" src="https://cdn.sushinova.nl/menu/KIPL.png">
+    <img alt="Chicken Loempia" loading="lazy" src="{{ url_for('static', filename='images/KIPL.png') }}">
     </img></div>
   <div class="menu-content">
     <h3>Chicken Loempia – 2 st</h3>
@@ -1062,12 +1213,13 @@
       <select id="chickenLoempiaCount" name="chickenLoempiaCount"></select>
       <button class="qty-plus add-button" data-target="chickenLoempiaCount" type="button">+</button>
     </div>
+    <div id="chickenLoempiaCountSauces" class="pokebowl-sauces"></div>
   </div>
 </div>
 <!-- Gyoza -->
 <div class="menu-row menu-item" data-name="Gyoza – 5 st" data-packaging="0.2" data-price="5">
   <div class="menu-img">
-    <img alt="Gyoza" loading="lazy" src="https://cdn.sushinova.nl/menu/GYO.jpg">
+    <img alt="Gyoza" loading="lazy" src="{{ url_for('static', filename='images/GYO.jpg') }}">
     </img></div>
   <div class="menu-content">
     <h3>Gyoza – 5 st</h3>
@@ -1078,12 +1230,13 @@
       <select id="gyozaCount" name="gyozaCount"></select>
       <button class="qty-plus add-button" data-target="gyozaCount" type="button">+</button>
     </div>
+    <div id="gyozaCountSauces" class="pokebowl-sauces"></div>
   </div>
 </div>
 
   <div class="menu-row menu-item" data-name="Ebi kroket" data-packaging="0.2" data-price="5">
   <div class="menu-img">
-    <img alt="Ebi kroket" loading="lazy" src="https://cdn.sushinova.nl/menu/KRO.png">
+    <img alt="Ebi kroket" loading="lazy" src="{{ url_for('static', filename='images/KRO.png') }}">
     </img></div>
   <div class="menu-content">
     <h3>Ebi kroket 4st</h3>
@@ -1094,12 +1247,13 @@
       <select id="ebikroketCount" name="ebikroketCount"></select>
       <button class="qty-plus add-button" data-target="ebikroketCount" type="button">+</button>
     </div>
+    <div id="ebikroketCountSauces" class="pokebowl-sauces"></div>
   </div>
 </div> 
 <!-- Inktvis Ringen -->
 <div class="menu-row menu-item" data-name="Inktvis Ringen – 5 st" data-packaging="0.2" data-price="5">
   <div class="menu-img">
-    <img alt="Inktvis Ringen" loading="lazy" src="https://cdn.sushinova.nl/menu/INKT.jpg">
+    <img alt="Inktvis Ringen" loading="lazy" src="{{ url_for('static', filename='images/INKT.jpg') }}">
     </img></div>
   <div class="menu-content">
     <h3>Inktvis Ringen – 5 st</h3>
@@ -1110,11 +1264,12 @@
       <select id="inktvisRingenCount" name="inktvisRingenCount"></select>
       <button class="qty-plus add-button" data-target="inktvisRingenCount" type="button">+</button>
     </div>
+    <div id="inktvisRingenCountSauces" class="pokebowl-sauces"></div>
   </div>
 </div>
 <div class="menu-row menu-item" data-name="Mini Loempia – 6 st" data-packaging="0.2" data-price="3.5">
   <div class="menu-img">
-    <img alt="Mini Loempia" loading="lazy" src="https://cdn.sushinova.nl/menu/LOM.png">
+    <img alt="Mini Loempia" loading="lazy" src="{{ url_for('static', filename='images/LOM.png') }}">
     </img></div>
   <div class="menu-content">
     <h3>Mini Loempia – 6 st</h3>
@@ -1125,13 +1280,14 @@
       <select id="miniLoempiaCount" name="miniLoempiaCount"></select>
       <button class="qty-plus add-button" data-target="miniLoempiaCount" type="button">+</button>
     </div>
+    <div id="miniLoempiaCountSauces" class="pokebowl-sauces"></div>
   </div>
 </div>
   
 <!-- Sesambal -->
 <div class="menu-row menu-item" data-name="Sesambal – 5 st" data-packaging="0.2" data-price="5">
   <div class="menu-img">
-    <img alt="Sasambal" loading="lazy" src="https://cdn.sushinova.nl/menu/SEM.jpg">
+    <img alt="Sasambal" loading="lazy" src="{{ url_for('static', filename='images/SEM.jpg') }}">
     </img></div>
   <div class="menu-content">
     <h3>Sesambal – 5 st</h3>
@@ -1147,7 +1303,7 @@
 <!-- Yakitori -->
 <div class="menu-row menu-item" data-name="Yakitori – 4 st" data-packaging="0.2" data-price="6">
   <div class="menu-img">
-    <img alt="Yakitori" loading="lazy" src="https://cdn.sushinova.nl/menu/YAK.jpg">
+    <img alt="Yakitori" loading="lazy" src="{{ url_for('static', filename='images/YAK.jpg') }}">
     </img></div>
   <div class="menu-content">
     <h3>Yakitori – 4 st</h3>
@@ -1163,7 +1319,7 @@
 <!-- Mini Loempia -->
 <div class="menu-row menu-item" data-name="Mini Loempia – 6 st" data-packaging="0.2" data-price="3.5">
   <div class="menu-img">
-    <img alt="Mini Loempia" loading="lazy" src="https://cdn.sushinova.nl/menu/LOM.png">
+    <img alt="Mini Loempia" loading="lazy" src="{{ url_for('static', filename='images/LOM.png') }}">
     </img></div>
   <div class="menu-content">
     <h3>Mini Loempia – 6 st</h3>
@@ -1174,12 +1330,13 @@
       <select id="miniLoempiaCount" name="miniLoempiaCount"></select>
       <button class="qty-plus add-button" data-target="miniLoempiaCount" type="button">+</button>
     </div>
+    <div id="miniLoempiaCountSauces" class="pokebowl-sauces"></div>
   </div>
 </div>
 <!-- Edamame -->
 <div class="menu-row menu-item" data-name="Edamame" data-packaging="0.2" data-price="4.5">
   <div class="menu-img">
-    <img alt="Edamame" loading="lazy" src="https://cdn.sushinova.nl/menu/EDA.jpg">
+    <img alt="Edamame" loading="lazy" src="{{ url_for('static', filename='images/EDA.jpg') }}">
     </img></div>
   <div class="menu-content">
     <h3>Edamame</h3>
@@ -1195,7 +1352,7 @@
 <!-- Kimchi Komkommer -->
 <div class="menu-row menu-item" data-name="Kimchi Komkommer" data-packaging="0.2" data-price="4.5">
   <div class="menu-img">
-    <img alt="Kimchi Komkommer" loading="lazy" src="https://cdn.sushinova.nl/menu/KKK.jpg">
+    <img alt="Kimchi Komkommer" loading="lazy" src="{{ url_for('static', filename='images/KKK.jpg') }}">
     </img></div>
   <div class="menu-content">
     <h3>Kimchi Komkommer</h3>
@@ -1211,7 +1368,7 @@
 <!-- Kimchi Kool -->
 <div class="menu-row menu-item" data-name="Kimchi Kool" data-packaging="0.2" data-price="5">
   <div class="menu-img">
-    <img alt="Kimchi Kool" loading="lazy" src="https://cdn.sushinova.nl/menu/KIM.png">
+    <img alt="Kimchi Kool" loading="lazy" src="{{ url_for('static', filename='images/KIM.png') }}">
     </img></div>
   <div class="menu-content">
     <h3>Kimchi Kool</h3>
@@ -1227,7 +1384,7 @@
 <!-- Zeewiersalade -->
 <div class="menu-row menu-item" data-name="Zeewiersalade – 100g" data-packaging="0.2" data-price="5">
   <div class="menu-img">
-    <img alt="Zeewiersalade" loading="lazy" src="https://cdn.sushinova.nl/menu/ZEW.png">
+    <img alt="Zeewiersalade" loading="lazy" src="{{ url_for('static', filename='images/ZEW.png') }}">
     </img></div>
   <div class="menu-content">
     <h3>Zeewiersalade – 100g</h3>
@@ -1247,7 +1404,7 @@
 <!-- Mango -->
 <div class="menu-row menu-item" data-name="Mochi Mango" data-packaging="0.2" data-price="4">
 <div class="menu-img">
-<img alt="Mochi Mango" loading="lazy" src="https://cdn.sushinova.nl/menu/mochi-mango.png">
+<img alt="Mochi Mango" loading="lazy" src="{{ url_for('static', filename='images/mochi-mango.png') }}">
 </img></div>
 <div class="menu-content">
 <h3>Mochi – Mango</h3>
@@ -1263,7 +1420,7 @@
 <!-- Aardbei -->
 <div class="menu-row menu-item" data-name="Mochi Aardbei" data-packaging="0.2" data-price="4">
 <div class="menu-img">
-<img alt="Mochi Aardbei" loading="lazy" src="https://cdn.sushinova.nl/menu/mochi-aardbei.png">
+<img alt="Mochi Aardbei" loading="lazy" src="{{ url_for('static', filename='images/mochi-aardbei.png') }}">
 </img></div>
 <div class="menu-content">
 <h3>Mochi – Aardbei</h3>
@@ -1279,7 +1436,7 @@
 <!-- Matcha -->
 <div class="menu-row menu-item" data-name="Mochi Matcha" data-packaging="0.2" data-price="4">
 <div class="menu-img">
-<img alt="Mochi Matcha" loading="lazy" src="https://cdn.sushinova.nl/menu/mochi-matcha.png">
+<img alt="Mochi Matcha" loading="lazy" src="{{ url_for('static', filename='images/mochi-matcha.png') }}">
 </img></div>
 <div class="menu-content">
 <h3>Mochi – Matcha</h3>
@@ -1295,7 +1452,7 @@
 <!-- Pistachio -->
 <div class="menu-row menu-item" data-name="Mochi Pistachio" data-packaging="0.2" data-price="4">
 <div class="menu-img">
-<img alt="Mochi Pistachio" loading="lazy" src="https://cdn.sushinova.nl/menu/mochi-pistachio.png">
+<img alt="Mochi Pistachio" loading="lazy" src="{{ url_for('static', filename='images/mochi-pistachio.png') }}">
 </img></div>
 <div class="menu-content">
 <h3>Mochi – Pistachio</h3>
@@ -1314,7 +1471,7 @@
 <div class="menu-group">
 <div class="menu-row menu-item" data-name="Cola" data-packaging="0.2" data-price="2.5">
 <div class="menu-img">
- <img alt="Cola" loading="lazy" src="https://cdn.sushinova.nl/menu/COLA.png">
+ <img alt="Cola" loading="lazy" src="{{ url_for('static', filename='images/COLA.png') }}">
 </div>
 <div class="menu-content">
 <h3>Cola</h3>
@@ -1329,7 +1486,7 @@
 </div>
 <div class="menu-row menu-item" data-name="Cola Zero" data-packaging="0.2" data-price="2.5">
 <div class="menu-img">
- <img alt="Cola Zero" loading="lazy" src="https://cdn.sushinova.nl/menu/COLAZERO.webp">
+ <img alt="Cola Zero" loading="lazy" src="{{ url_for('static', filename='images/COLAZERO.webp') }}">
 </div>
 <div class="menu-content">
 <h3>Cola Zero</h3>
@@ -1338,4 +1495,71 @@
 <label for="colaZeroCount">Aantal</label>
 <button class="qty-minus remove-button" data-target="colaZeroCount" type="button">-</button>
 <select id="colaZeroCount" name="colaZeroCount"></select>
-<button class="qty">
+<button class="qty-plus add-button" data-target="colaZeroCount" type="button">+</button>
+  </div>
+</div>
+</div>
+<div class="menu-row menu-item" data-name="Spa Blauw" data-packaging="0.2" data-price="2.5">
+<div class="menu-img">
+ <img alt="Spa Blauw" loading="lazy" src="{{ url_for('static', filename='images/SPA_BLAUW.png') }}">
+</div>
+<div class="menu-content">
+<h3>Spa Blauw</h3>
+<p>€ 2.50</p>
+<div class="qty-box">
+<label for="spaBlauwCount">Aantal</label>
+<button class="qty-minus remove-button" data-target="spaBlauwCount" type="button">-</button>
+<select id="spaBlauwCount" name="spaBlauwCount"></select>
+<button class="qty-plus add-button" data-target="spaBlauwCount" type="button">+</button>
+</div>
+</div>
+</div>
+<div class="menu-row menu-item" data-name="Spa Rood" data-packaging="0.2" data-price="2.5">
+<div class="menu-img">
+ <img alt="Spa Rood" loading="lazy" src="{{ url_for('static', filename='images/SPA_ROOD.png') }}">
+</div>
+<div class="menu-content">
+<h3>Spa Rood</h3>
+<p>€ 2.50</p>
+<div class="qty-box">
+<label for="spaRoodCount">Aantal</label>
+<button class="qty-minus remove-button" data-target="spaRoodCount" type="button">-</button>
+<select id="spaRoodCount" name="spaRoodCount"></select>
+<button class="qty-plus add-button" data-target="spaRoodCount" type="button">+</button>
+</div>
+</div>
+</div>
+<div class="menu-row menu-item" data-name="Red Bull" data-packaging="0.2" data-price="3">
+<div class="menu-img">
+ <img alt="Red Bull" loading="lazy" src="{{ url_for('static', filename='images/RED_BULL.png') }}">
+</div>
+<div class="menu-content">
+<h3>Red Bull</h3>
+<p>€ 3</p>
+<div class="qty-box">
+<label for="redBullCount">Aantal</label>
+<button class="qty-minus remove-button" data-target="redBullCount" type="button">-</button>
+<select id="redBullCount" name="redBullCount"></select>
+<button class="qty-plus add-button" data-target="redBullCount" type="button">+</button>
+</div>
+</div>
+</div>
+<div class="menu-row menu-item" data-name="Heineken 330ml" data-packaging="0.15" data-price="3">
+  <div class="menu-img">
+    <img alt="Heineken 330ml" loading="lazy" src="{{ url_for('static', filename='images/HEINEKEN.png') }}">
+  </div>
+  <div class="menu-content">
+    <h3>Heineken 330ml</h3>
+    <p>€ 3.00</p>
+    <p id="soldoutHeineken" class="sold-out-msg hidden">Uitverkocht!</p>
+    <div class="qty-box">
+      <label for="heinekenCount">Aantal</label>
+      <button class="qty-minus remove-button" data-target="heinekenCount" type="button">-</button>
+      <select id="heinekenCount" name="heinekenCount"></select>
+      <button class="qty-plus add-button" data-target="heinekenCount" type="button">+</button>
+    </div>
+  </div>
+</div>
+
+</div>
+</section>
