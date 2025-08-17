@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -26,6 +27,31 @@
     }
     .completed { background-color: #c8e6c9; }
     .cancelled { background-color: #e0e0e0; }
+
+
+    /* 基础 */
+.report { width:100%; border-collapse:collapse; font-size:0.95em; }
+.report td, .report th { padding:0.4em 0.6em; border-bottom:1px solid #eee; }
+.report th { text-align:left; font-size:0.85em; color:#666; background:#fafafa; }
+.report tr.section th { border-top:1px solid #ddd; border-bottom:1px solid #ddd; }
+.report td:first-child { text-align:left; }
+.report td:last-child { text-align:right; font-weight:600; }
+.report .emph td:last-child { font-weight:700; }
+.report .warn td:last-child { color:#b00020; font-weight:700; }
+@media (max-width:767px){ .report{font-size:0.9em;} .report td,.report th{padding:0.35em 0.5em;} }
+/* 所有金额列统一强调 */
+.money {
+  text-align: right;
+  font-weight: 700;   /* 更粗 */
+  color: #0b63b6;     /* 统一颜色，可换成 #333 深灰 或 #006400 墨绿 */
+  font-size: 1.05em;  /* 字体稍大 */
+}
+
+/* 特别警告行（差额） */
+.report .warn .money {
+  color: #b00020;     /* 红色强调 */
+}
+
   </style>
 </head>
 <body>
@@ -69,22 +95,45 @@
   </div>
 
   <div id="totals" style="display:none;">
-    <h2>Omzet Overzicht</h2>
-    <table>
-      <tr><td>Totale omzet</td><td id="totalOmzet">€0,00</td></tr>
-      <tr><td>BTW 9%</td><td id="btw9Amount">€0,00</td></tr>
-      <tr id="btw21Row"><td>BTW 21%</td><td id="btw21Amount">€0,00</td></tr>
-      <tr><td>BTW Totaal</td><td id="btwTotalAmount">€0,00</td></tr>
-      <tr><td>Pin betaling</td><td id="totalPin">€0,00</td></tr>
-      <tr><td>Geannuleerd (aantal / bedrag)</td><td id="totalCancelled">0 / €0,00</td></tr>
+  <h2>Omzet Overzicht</h2>
+  <table class="report">
+  <!-- 订单信息 -->
+  <tr class="section"><th colspan="2">Bestellingen</th></tr>
+  <tr><td>Aantal bestellingen</td><td id="totalOrders">0</td></tr>
+  <tr id="cancelledRow"><td>Geannuleerd (aantal / bedrag)</td><td id="totalCancelled">0 / €0,00</td></tr>
+  <tr><td>Gemiddelde bestelwaarde</td><td id="avgOrder">€0,00</td></tr>
 
-      <tr><td>Online betaling</td><td id="totalOnline">€0,00</td></tr>
-      <tr><td>Contant</td><td id="totalContant">€0,00</td></tr>
-      <tr><td>Op rekening</td><td id="totalCredit">€0,00</td></tr>
-    </table>
-  </div>
+  
+
+  <!-- 折扣 / 小费 / 配送费 -->
+  <tr class="section"><th colspan="2">Correcties & toeslagen</th></tr>
+  <tr id="discountRow"><td>Totale korting</td><td id="totalDiscount">€0,00</td></tr>
+  <tr id="tipRow"><td>Totale fooi</td><td id="totalTip">€0,00</td></tr>
+  <tr id="deliveryRow"><td>Bezorgkosten (bedrag / aantal)</td><td id="totalDelivery">€0,00 / 0</td></tr>
+
+
+  <!-- 营业额 & 税 -->
+<tr class="section"><th colspan="2">Omzet & btw</th></tr>
+<tr class="emph"><td>Totale omzet (incl. btw)</td><td class="money" id="totalOmzet">€0,00</td></tr>
+<tr id="btw9Row"><td>BTW 9%</td><td class="mone" id="btw9Amount">€0,00</td></tr>
+<tr id="btw21Row"><td>BTW 21%</td><td class="mone" id="btw21Amount">€0,00</td></tr>
+<tr id="btwTotalRow" style="display:none;"><td>BTW Totaal</td><td class="mone" id="btwTotalAmount">€0,00</td></tr>
+
+<tr class="section"><th colspan="2">Betalingen</th></tr>
+<tr id="contantRow"><td>Contant</td><td class="money" id="totalContant">€0,00</td></tr>
+<tr id="pinRow"><td>Pin betaling</td><td class="money" id="totalPin">€0,00</td></tr>
+<tr id="onlineRow"><td>Online betaling</td><td class="money" id="totalOnline">€0,00</td></tr>
+<tr id="creditRow"><td>Op rekening</td><td class="money" id="totalCredit">€0,00</td></tr>
+<tr class="emph"><td>Totaal ontvangen</td><td class="mone" id="totalReceived">€0,00</td></tr>
+<tr class="warn" id="diffRow" style="display:none;"><td>Verschil / openstaand</td><td class="mone" id="totalDiff">€0,00</td></tr>
+
 
   <script>
+
+
+
+
+
     let currentQuery = { type: 'today', params: '' };
 
     function formatCurrency(value) {
@@ -107,7 +156,9 @@
       // 初始化统计数据
       let total = 0, pin = 0, online = 0, contant = 0, credit = 0, unknown = 0;
       let cancelled = 0, cancelledCount = 0;
-      let tipTotal = 0;
+      let tipTotal = 0, discountTotal = 0;
+      let deliveryFeeTotal = 0, deliveryCount = 0;
+      let orderCount = 0;
       let btw9Total = 0, btw21Total = 0;
       // 显示或隐藏订单表格
       if (data.length) {
@@ -163,6 +214,11 @@
         } else {
           total += tot;
           tipTotal += fooi;
+          discountTotal += Number(order.discountAmount ?? order.korting ?? 0);
+          const delFee = Number(order.delivery_fee ?? order.bezorgkosten ?? 0);
+          deliveryFeeTotal += delFee;
+          if (isDelivery) deliveryCount++;
+          orderCount++;
           btw9Total += Number(order.btw_9 || 0);
           btw21Total += Number(order.btw_21 || 0);
           const norm = normalizePaymentMethod(order.payment_method);
@@ -201,21 +257,25 @@
         tbody.appendChild(tr);
       });
 
-      // 显示 omzet overzicht
       document.getElementById('totals').style.display = data.length ? '' : 'none';
-      document.getElementById('totalOmzet').textContent = formatCurrency(total);
-      document.getElementById('btw9Amount').textContent = formatCurrency(btw9Total);
-      document.getElementById('btw21Amount').textContent = formatCurrency(btw21Total);
-      document.getElementById('btw21Row').style.display = btw21Total > 0 ? '' : 'none';
-      document.getElementById('btwTotalAmount').textContent = formatCurrency(btw9Total + btw21Total);
-      document.getElementById('totalPin').textContent = formatCurrency(pin);
-      document.getElementById('totalOnline').textContent = formatCurrency(online);
-      document.getElementById('totalContant').textContent = formatCurrency(contant);
-      document.getElementById('totalCredit').textContent = formatCurrency(credit);
+document.getElementById('totalOmzet').textContent   = formatCurrency(total);
+document.getElementById('btw9Amount').textContent   = formatCurrency(btw9Total);
+document.getElementById('btw21Amount').textContent  = formatCurrency(btw21Total);
+// ⬇️ 统一控制 BTW 行显示（9%/21% 的有则显，无则隐；BTW Totaal 永远隐藏）
+updateBTWDisplay(btw9Total, btw21Total);
 
-      const cancelledDisplay = `${cancelledCount} / ${formatCurrency(cancelled)}`;
-      document.getElementById('totalCancelled').textContent = cancelledDisplay;
+document.getElementById('totalPin').textContent     = formatCurrency(pin);
+document.getElementById('totalOrders').textContent  = orderCount;
+document.getElementById('avgOrder').textContent     = formatCurrency(orderCount ? total / orderCount : 0);
+document.getElementById('totalOnline').textContent  = formatCurrency(online);
+document.getElementById('totalContant').textContent = formatCurrency(contant);
+document.getElementById('totalCredit').textContent  = formatCurrency(credit);
+document.getElementById('totalDiscount').textContent = formatCurrency(discountTotal);
+document.getElementById('totalTip').textContent      = formatCurrency(tipTotal);
+document.getElementById('totalDelivery').textContent = `${formatCurrency(deliveryFeeTotal)} / ${deliveryCount}`;
 
+const cancelledDisplay = `${cancelledCount} / ${formatCurrency(cancelled)}`;
+document.getElementById('totalCancelled').textContent = cancelledDisplay;
       // 若您在HTML中添加了 unknown 行，也可以更新它：
       const unknownEl = document.getElementById('totalUnknown');
       if (unknownEl) unknownEl.textContent = formatCurrency(unknown);
@@ -254,13 +314,122 @@
     function downloadPDF() {
       window.open(`/admin/orders/download/pdf?${currentQuery.params}`, "_blank");
     }
+    function updateBTWDisplay(btw9, btw21) {
+  const btw9Row = document.getElementById('btw9Amount')?.parentElement;   // <tr> of BTW 9%
+  const btw21Row = document.getElementById('btw21Row');                   // <tr id="btw21Row">
+  const btwTotalRow = document.getElementById('btwTotalAmount')?.parentElement; // BTW Totaal row
+
+  // 永远隐藏 BTW Totaal
+  if (btwTotalRow) btwTotalRow.style.display = 'none';
+  
+  
+  // 根据数值显示/隐藏
+  const show9  = Number(btw9)  > 0;
+  const show21 = Number(btw21) > 0;
+
+  if (btw9Row)  btw9Row.style.display  = show9  ? '' : 'none';
+  if (btw21Row) btw21Row.style.display = show21 ? '' : 'none';
+}
 
     document.addEventListener('DOMContentLoaded', fetchOrders);
     document.getElementById('dateBtn').addEventListener('click', fetchByDate);
     document.getElementById('rangeBtn').addEventListener('click', fetchByRange);
     document.getElementById('excelBtn').addEventListener('click', downloadExcel);
     document.getElementById('pdfBtn').addEventListener('click', downloadPDF);
+
+
+
+    
   </script>
+
+  <script>
+const fmtEUR = n => (n==null ? '€0,00' : n.toLocaleString('nl-NL',{style:'currency',currency:'EUR'}));
+const setTxt  = (id, v) => document.getElementById(id).textContent = v;
+const showRow = id => document.getElementById(id).style.display = 'table-row';
+const hideRow = id => document.getElementById(id).style.display = 'none';
+
+/**
+ * 传入一个数据对象 d：
+ * d.totalOmzet  含税总额
+ * d.contant / d.pin / d.online / d.credit  各支付方式
+ * 可选：d.cancelledAmount（取消总额）、d.refundAmount（退款）、d.pendingOnline（待入账的在线支付）、
+ *      d.rounding (四舍五入调整，正负皆可)、d.discount (折扣)、d.tip (小费)
+ */
+function validateTotals(d){
+  const omzet = +(d.totalOmzet||0);
+  const received = +(d.contant||0) + +(d.pin||0) + +(d.online||0) + +(d.credit||0);
+
+  setTxt('totalReceived', fmtEUR(received));
+
+  const diff = +(omzet - received);
+  const eps  = 0.02; // 允许的“找零/四舍五入”误差阈值（2欧分）
+
+  if (Math.abs(diff) <= eps) {
+    hideRow('diffRow'); hideRow('diffReasonRow');
+    return;
+  }
+
+  setTxt('totalDiff', fmtEUR(diff));
+  showRow('diffRow');
+
+  // —— 智能原因推断 —— //
+  const reasons = [];
+
+  // 1) 未结清的“Op rekening”
+  if ((d.credit||0) > 0 && diff > eps) {
+    reasons.push('存在未结清的“Op rekening”（赊账未收款）。');
+  }
+
+  // 2) 在线支付挂起/延迟入账
+  if ((d.pendingOnline||0) > 0 && diff > eps) {
+    reasons.push('有待入账的 Online betaling（支付通道尚未回调）。');
+  }
+
+  // 3) 取消/退款导致差额
+  if ((d.cancelledAmount||0) > 0 || (d.refundAmount||0) > 0) {
+    reasons.push('有取消/退款记录，可能未同步到收款统计。');
+  }
+
+  // 4) 四舍五入或抹零差异
+  if (Math.abs(d.rounding||0) > 0) {
+    reasons.push('存在四舍五入/抹零调整（rounding）。');
+  } else if (Math.abs(diff) < 0.10) {
+    reasons.push('可能是小额四舍五入差异，请核对单笔金额和税额计算。');
+  }
+
+  // 5) 折扣/小费未一致计入
+  if ((d.discount||0) !== 0) {
+    reasons.push('折扣已影响 Omzet，请确认是否同步影响到收款端。');
+  }
+  if ((d.tip||0) !== 0) {
+    reasons.push('小费(Tip)计入差异，请确认是否计入 Omzet 或单独入账。');
+  }
+
+  // 6) 税率分配或时间跨日
+  if ((d.btw9||0) > 0 || (d.btw21||0) > 0) {
+    reasons.push('核对 BTW 9%/21% 的分配与含税计算是否与收款侧一致。');
+  }
+  reasons.push('如有跨日结算或手工改价，请核对订单时间和对账批次。');
+
+  document.getElementById('diffReason').textContent = '可能原因：' + reasons.join(' ');
+  showRow('diffReasonRow');
+}
+
+// —— 示例调用 ——
+// validateTotals({
+//   totalOmzet: 70.40,
+//   contant: 70.40,
+//   pin: 0, online: 0, credit: 0,
+//   // 下面这些是可选项，不需要就不传
+//   cancelledAmount: 0,
+//   refundAmount: 0,
+//   pendingOnline: 0,
+//   rounding: 0,
+//   discount: 3.00,
+//   tip: 0,
+//   btw9: 6.34, btw21: 0
+// });
+</script>
 
 </body>
 </html>
