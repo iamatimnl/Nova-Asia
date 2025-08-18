@@ -27,6 +27,7 @@
     }
     .completed { background-color: #c8e6c9; }
     .cancelled { background-color: #e0e0e0; }
+    .money { text-align:right; font-weight:700; color:#0b63b6; }
   </style>
 </head>
 <body>
@@ -74,6 +75,7 @@
     <label>Omzet totaal (incl.): <input type="number" id="tbOmzetInput" step="0.01"></label>
     <label>BTW 9%: <input type="number" id="tbBtw9Input" step="0.01"></label>
     <label>BTW 21%: <input type="number" id="tbBtw21Input" step="0.01"></label>
+    <label>Aantal bestellingen: <input type="number" id="tbOrdersInput"></label>
     <button id="tbSaveBtn">Opslaan</button>
   </div>
 
@@ -83,22 +85,21 @@
       <tr><td>BTW 9%</td><td id="tbBtw9">€0,00</td></tr>
       <tr><td>BTW 21%</td><td id="tbBtw21">€0,00</td></tr>
       <tr><td>Omzet totaal (incl.)</td><td id="tbOmzet">€0,00</td></tr>
+      <tr><td>Aantal bestellingen</td><td id="tbOrders">0</td></tr>
     </table>
   </div>
 
   <div id="totals" style="display:none;">
   <h2>Omzet Overzicht</h2>
   <table>
-    <tr><td>Totale omzet</td><td id="totalOmzet">€0,00</td></tr>
+    <tr><td>Totale omzet</td><td class="money" id="totalOmzet">€0,00</td></tr>
 
     <!-- 给 9%/21% 行加 tr 的 id，方便 JS 控制显示 -->
-    <tr id="btw9Row"><td>BTW 9%</td><td id="btw9Amount">€0,00</td></tr>
-    <tr id="btw21Row"><td>BTW 21%</td><td id="btw21Amount">€0,00</td></tr>
+    <tr id="btw9Row"><td>BTW 9%</td><td class="money" id="btw9Amount">€0,00</td></tr>
+    <tr id="btw21Row"><td>BTW 21%</td><td class="money" id="btw21Amount">€0,00</td></tr>
 
     <!-- BTW Totaal 保留但 JS 会永远隐藏；也可以直接删掉这行 -->
-    <tr id="btwTotalRow"><td>BTW Totaal</td><td id="btwTotalAmount">€0,00</td></tr>
-
-    <tr><td>Pin betaling</td><td id="totalPin">€0,00</td></tr>
+    <tr id="btwTotalRow"><td>BTW Totaal</td><td class="money" id="btwTotalAmount">€0,00</td></tr>
 
     <!-- 新增：订单数量 -->
     <tr><td>Aantal Bestellingen</td><td id="totalOrders">0</td></tr>
@@ -111,11 +112,13 @@
     <tr><td>Totale fooi</td><td id="totalTip">€0,00</td></tr>
     <tr><td>Bezorgkosten (bedrag / aantal)</td><td id="totalDelivery">€0,00 / 0</td></tr>
 
-    <tr><td>Online betaling</td><td id="totalOnline">€0,00</td></tr>
-    <tr><td>Contant</td><td id="totalContant">€0,00</td></tr>
-    <tr><td>Op rekening</td><td id="totalCredit">€0,00</td></tr>
+    <tr><td>Online betaling</td><td class="money" id="totalOnline">€0,00</td></tr>
+    <tr><td>Pin betaling</td><td class="money" id="totalPin">€0,00</td></tr>
+    <tr><td>Contant</td><td class="money" id="totalContant">€0,00</td></tr>
+    <tr><td>Op rekening</td><td class="money" id="totalCredit">€0,00</td></tr>
+    <tr><td>Thuisbezorgd totaal</td><td class="money" id="tbOverzichtTotal">€0,00</td></tr>
   </table>
-</div>
+ </div>
 
 
   <script>
@@ -264,7 +267,7 @@ document.getElementById('totalCancelled').textContent = cancelledDisplay;
       // 若您在HTML中添加了 unknown 行，也可以更新它：
       const unknownEl = document.getElementById('totalUnknown');
       if (unknownEl) unknownEl.textContent = formatCurrency(unknown);
-      applyThuisbezorgdTotals(mode, total, btw9Total, btw21Total);
+      applyThuisbezorgdTotals(mode, total, btw9Total, btw21Total, orderCount);
     })
     .catch(() => { alert('Fout bij het ophalen van gegevens.'); });
 }
@@ -300,7 +303,7 @@ document.getElementById('totalCancelled').textContent = cancelledDisplay;
     function downloadPDF() {
       window.open(`/admin/orders/download/pdf?${currentQuery.params}`, "_blank");
     }
-    function applyThuisbezorgdTotals(mode, baseTotal, baseBtw9, baseBtw21) {
+    function applyThuisbezorgdTotals(mode, baseTotal, baseBtw9, baseBtw21, baseOrders) {
       const url = new URL('/admin/thuisbezorgd', window.location.origin);
       const params = new URLSearchParams(currentQuery.params);
       if (mode === 'today') {
@@ -320,12 +323,14 @@ document.getElementById('totalCancelled').textContent = cancelledDisplay;
           document.getElementById('tbBtw9').textContent = formatCurrency(tb.btw9);
           document.getElementById('tbBtw21').textContent = formatCurrency(tb.btw21);
           document.getElementById('tbOmzet').textContent = formatCurrency(tb.totaal);
+          document.getElementById('tbOrders').textContent = tb.orders || 0;
 
           if (mode !== 'range') {
             document.getElementById('tbInput').style.display = '';
             document.getElementById('tbOmzetInput').value = tb.totaal || '';
             document.getElementById('tbBtw9Input').value = tb.btw9 || '';
             document.getElementById('tbBtw21Input').value = tb.btw21 || '';
+            document.getElementById('tbOrdersInput').value = tb.orders || '';
           } else {
             document.getElementById('tbInput').style.display = 'none';
           }
@@ -333,9 +338,13 @@ document.getElementById('totalCancelled').textContent = cancelledDisplay;
           baseTotal += Number(tb.totaal || 0);
           baseBtw9 += Number(tb.btw9 || 0);
           baseBtw21 += Number(tb.btw21 || 0);
+          baseOrders += Number(tb.orders || 0);
           document.getElementById('totalOmzet').textContent = formatCurrency(baseTotal);
           document.getElementById('btw9Amount').textContent = formatCurrency(baseBtw9);
           document.getElementById('btw21Amount').textContent = formatCurrency(baseBtw21);
+          document.getElementById('totalOrders').textContent = baseOrders;
+          document.getElementById('avgOrder').textContent = formatCurrency(baseOrders ? baseTotal / baseOrders : 0);
+          document.getElementById('tbOverzichtTotal').textContent = formatCurrency(tb.totaal);
           updateBTWDisplay(baseBtw9, baseBtw21);
         });
     }
@@ -356,7 +365,8 @@ document.getElementById('totalCancelled').textContent = cancelledDisplay;
         date: date,
         totaal: document.getElementById('tbOmzetInput').value,
         btw9: document.getElementById('tbBtw9Input').value,
-        btw21: document.getElementById('tbBtw21Input').value
+        btw21: document.getElementById('tbBtw21Input').value,
+        orders: document.getElementById('tbOrdersInput').value
       };
 
       fetch('/admin/thuisbezorgd', {
