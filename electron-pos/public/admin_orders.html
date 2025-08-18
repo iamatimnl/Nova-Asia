@@ -138,6 +138,7 @@
       <div><label>Items: <textarea id="editItems"></textarea></label></div>
       <div><label>Betaalwijze: <input type="text" id="editPayment"></label></div>
       <div><label>Totaal: <input type="number" step="0.01" id="editTotaal"></label></div>
+      <div><label>Bezorgkosten: <input type="number" step="0.01" id="editBezorgkosten"></label></div>
       <div><label>Fooi: <input type="number" step="0.01" id="editFooi"></label></div>
       <menu>
         <button type="reset" id="editCancel">Annuleer</button>
@@ -516,6 +517,7 @@ document.getElementById('totalCancelled').textContent = cancelledDisplay;
       document.getElementById('editItems').value = itemsStr;
       document.getElementById('editPayment').value = currentEditData.payment_method || '';
       document.getElementById('editTotaal').value = currentEditData.totaal != null ? currentEditData.totaal : '';
+      document.getElementById('editBezorgkosten').value = currentEditData.bezorgkosten != null ? currentEditData.bezorgkosten : (currentEditData.delivery_fee || '');
       document.getElementById('editFooi').value = currentEditData.fooi != null ? currentEditData.fooi : (currentEditData.tip || '0');
       editDialog.showModal();
     }
@@ -537,6 +539,7 @@ document.getElementById('totalCancelled').textContent = cancelledDisplay;
         items: parseItemsString(document.getElementById('editItems').value, currentEditData.items || {}),
         payment_method: document.getElementById('editPayment').value,
         totaal: parseFloat(document.getElementById('editTotaal').value) || 0,
+        bezorgkosten: parseFloat(document.getElementById('editBezorgkosten').value) || 0,
         fooi: parseFloat(document.getElementById('editFooi').value) || 0,
         order_type: currentEditData.order_type,
         bron: currentEditData.bron

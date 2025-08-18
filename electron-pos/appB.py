@@ -1172,15 +1172,17 @@ def update_order_status(order_id: int):
     db.session.commit()
     return jsonify({'success': True, 'is_completed': order.is_completed, 'is_cancelled': order.is_cancelled})
 
-@app.route('/api/orders/<int:order_id>', methods=['PUT'])
+@app.route('/api/orders/<int:order_id>', methods=['PUT', 'PATCH'])
 @login_required
 def edit_order(order_id: int):
     order = Order.query.get_or_404(order_id)
     data = request.get_json() or {}
+    if 'delivery_fee' in data and 'bezorgkosten' not in data:
+        data['bezorgkosten'] = data['delivery_fee']
     allowed = [
         'customer_name', 'phone', 'email', 'street', 'house_number', 'postcode',
         'city', 'pickup_time', 'delivery_time', 'order_type', 'items',
-        'payment_method', 'totaal', 'fooi', 'opmerking'
+        'payment_method', 'totaal', 'fooi', 'opmerking', 'bezorgkosten'
     ]
     for f in allowed:
         if f not in data:
@@ -1191,7 +1193,7 @@ def edit_order(order_id: int):
                 order.items = json.dumps(val)
             else:
                 order.items = val
-        elif f in ('totaal', 'fooi'):
+        elif f in ('totaal', 'fooi', 'bezorgkosten'):
             try:
                 setattr(order, f, float(val))
             except (TypeError, ValueError):
