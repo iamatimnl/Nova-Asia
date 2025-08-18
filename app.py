@@ -1225,7 +1225,7 @@ def edit_order(order_id: int):
     allowed = [
         'customer_name', 'phone', 'email', 'street', 'house_number', 'postcode',
         'city', 'pickup_time', 'delivery_time', 'order_type', 'items',
-        'payment_method', 'totaal', 'fooi', 'bron'
+        'payment_method', 'totaal', 'fooi', 'bron', 'opmerking'
     ]
     for f in allowed:
         if f not in data:
