@@ -2160,8 +2160,10 @@ function updateCart() {
     const name = v.displayName || k;
     return sum + (/heineken/i.test(name) ? v.price * v.qty : 0);
   },0);
-  const btw9 = (subtotal + packagingTotal + delivery - discount - heinekenTotal) * 0.09;
-  const btw21 = heinekenTotal * 0.21;
+  const rate9 = 0.09;
+  const rate21 = 0.21;
+  const btw9 = (subtotal + packagingTotal + delivery - discount - heinekenTotal) * rate9 / (1 + rate9);
+  const btw21 = heinekenTotal * rate21 / (1 + rate21);
   const btw = btw9 + btw21;
 
   const fmt = n => `€${n.toFixed(2).replace('.', ',')}`;
@@ -2728,8 +2730,10 @@ async function submitOrder() {
     const name = v.displayName || k;
     return sum + (/heineken/i.test(name) ? v.price * v.qty : 0);
   },0);
-  const btw9 = (subtotal + packagingTotal + deliveryCost - discount - heinekenTotal) * 0.09;
-  const btw21 = heinekenTotal * 0.21;
+  const rate9 = 0.09;
+  const rate21 = 0.21;
+  const btw9 = (subtotal + packagingTotal + deliveryCost - discount - heinekenTotal) * rate9 / (1 + rate9);
+  const btw21 = heinekenTotal * rate21 / (1 + rate21);
   const btw = btw9 + btw21;
   const totalGross = totalBeforeBtw; // ← 含税总额（真正应收）
 
