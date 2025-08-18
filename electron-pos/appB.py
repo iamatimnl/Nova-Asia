@@ -623,6 +623,22 @@ class Order(db.Model):
             "is_cancelled": self.is_cancelled
         }
 
+class Thuisbezorgd(db.Model):
+    __tablename__ = 'thuisbezorgd'
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Date, unique=True, nullable=False)
+    total_incl = db.Column(db.Float, default=0.0)
+    btw_9 = db.Column(db.Float, default=0.0)
+    btw_21 = db.Column(db.Float, default=0.0)
+
+    def to_dict(self):
+        return {
+            "date": self.date.isoformat(),
+            "totaal": self.total_incl or 0.0,
+            "btw9": self.btw_9 or 0.0,
+            "btw21": self.btw_21 or 0.0,
+        }
+
 class Setting(db.Model):
     __tablename__ = 'settings'
     key = db.Column(db.String(50), primary_key=True)
@@ -1851,6 +1867,56 @@ def admin_orders():
         })
 
     return render_template("admin_orders.html", order_data=order_data)
+
+
+@app.route('/admin/thuisbezorgd', methods=['GET', 'POST'])
+@login_required
+def thuisbezorgd_api():
+    if request.method == 'POST':
+        data = request.get_json() or {}
+        date_str = data.get('date')
+        if not date_str:
+            return jsonify({'error': 'date required'}), 400
+        try:
+            qdate = datetime.strptime(date_str, '%Y-%m-%d').date()
+        except Exception:
+            return jsonify({'error': 'invalid date'}), 400
+        record = Thuisbezorgd.query.filter_by(date=qdate).first()
+        if not record:
+            record = Thuisbezorgd(date=qdate)
+        record.total_incl = float(data.get('totaal') or data.get('total_incl') or 0)
+        record.btw_9 = float(data.get('btw9') or data.get('btw_9') or 0)
+        record.btw_21 = float(data.get('btw21') or data.get('btw_21') or 0)
+        db.session.add(record)
+        db.session.commit()
+        return jsonify({'status': 'ok'})
+
+    date_str = request.args.get('date')
+    start_str = request.args.get('start')
+    end_str = request.args.get('end')
+    if date_str:
+        try:
+            qdate = datetime.strptime(date_str, '%Y-%m-%d').date()
+        except Exception:
+            return jsonify({'btw9': 0, 'btw21': 0, 'totaal': 0})
+        record = Thuisbezorgd.query.filter_by(date=qdate).first()
+        if record:
+            return jsonify(record.to_dict())
+        return jsonify({'date': date_str, 'btw9': 0, 'btw21': 0, 'totaal': 0})
+    if start_str and end_str:
+        try:
+            s = datetime.strptime(start_str, '%Y-%m-%d').date()
+            e = datetime.strptime(end_str, '%Y-%m-%d').date()
+        except Exception:
+            return jsonify({'btw9': 0, 'btw21': 0, 'totaal': 0})
+        records = Thuisbezorgd.query.filter(Thuisbezorgd.date >= s, Thuisbezorgd.date <= e).all()
+        totals = {
+            'btw9': sum(r.btw_9 or 0 for r in records),
+            'btw21': sum(r.btw_21 or 0 for r in records),
+            'totaal': sum(r.total_incl or 0 for r in records)
+        }
+        return jsonify(totals)
+    return jsonify({'btw9': 0, 'btw21': 0, 'totaal': 0})
 
 
 @app.route('/admin/review-list')
