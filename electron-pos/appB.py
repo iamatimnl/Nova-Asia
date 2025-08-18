@@ -332,11 +332,14 @@ def download_overview_pdf():
     start = request.args.get('start')
     end = request.args.get('end')
     tb_totals = {"totaal": 0, "btw9": 0, "btw21": 0, "orders": 0}
+    period_start = None
+    period_end = None
 
     if date:
         query = Order.query.filter(func.date(Order.created_at) == date)
         try:
             qdate = datetime.strptime(date, '%Y-%m-%d').date()
+            period_start = period_end = qdate
             tb_rec = Thuisbezorgd.query.filter_by(date=qdate).first()
             if tb_rec:
                 tb_totals = tb_rec.to_dict()
@@ -350,6 +353,8 @@ def download_overview_pdf():
         try:
             s = datetime.strptime(start, '%Y-%m-%d').date()
             e = datetime.strptime(end, '%Y-%m-%d').date()
+            period_start = s
+            period_end = e
             records = Thuisbezorgd.query.filter(
                 Thuisbezorgd.date >= s, Thuisbezorgd.date <= e).all()
             if records:
@@ -363,6 +368,7 @@ def download_overview_pdf():
             pass
     else:
         today = datetime.now(NL_TZ).date()
+        period_start = period_end = today
         start_local = datetime.combine(today, datetime.min.time(), tzinfo=NL_TZ)
         start = start_local.astimezone(UTC).replace(tzinfo=None)
         query = Order.query.filter(Order.created_at >= start)
@@ -374,7 +380,10 @@ def download_overview_pdf():
         query = query.filter(Order.is_cancelled == False)
 
     orders = query.order_by(Order.created_at.asc()).all()
-    output = build_overview_pdf(orders, tb_totals)
+    period_str = None
+    if period_start and period_end:
+        period_str = f"{period_start.strftime('%d/%m/%Y')} – {period_end.strftime('%d/%m/%Y')}"
+    output = build_overview_pdf(orders, tb_totals, period_str)
     return send_file(
         output,
         mimetype='application/pdf',
@@ -544,7 +553,7 @@ def orders_to_dicts(orders):
     return result
 
 
-def build_overview_pdf(orders, tb=None):
+def build_overview_pdf(orders, tb=None, period=None):
     tb = tb or {"totaal": 0, "btw9": 0, "btw21": 0, "orders": 0}
     order_dicts = orders_to_dicts(orders)
 
@@ -601,7 +610,23 @@ def build_overview_pdf(orders, tb=None):
         ('GRID', (0, 0), (-1, -1), 1, colors.black),
         ('ALIGN', (1, 1), (-1, -1), 'RIGHT')
     ]))
-    doc.build([table])
+
+    styles = getSampleStyleSheet()
+    elements = []
+    elements.append(Paragraph("Nova Asia – Omzet Overzicht", styles['Title']))
+    elements.append(Spacer(1, 12))
+    elements.append(Paragraph("Nova Asia", styles['Normal']))
+    elements.append(Paragraph("Almkerkplein 4, 2134CN Hoofddorp", styles['Normal']))
+    elements.append(Paragraph("KvK: 97092339", styles['Normal']))
+    elements.append(Paragraph("BTW: NL86790695901", styles['Normal']))
+    elements.append(Spacer(1, 12))
+    if period:
+        elements.append(Paragraph(f"Periode: {period}", styles['Normal']))
+    generated_on = datetime.now(NL_TZ).strftime('%d/%m/%Y %H:%M')
+    elements.append(Paragraph(f"Gegenereerd op: {generated_on}", styles['Normal']))
+    elements.append(Spacer(1, 12))
+    elements.append(table)
+    doc.build(elements)
     buffer.seek(0)
     return buffer
 
