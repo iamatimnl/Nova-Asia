@@ -331,25 +331,50 @@ def download_overview_pdf():
     date = request.args.get('date')
     start = request.args.get('start')
     end = request.args.get('end')
+    tb_totals = {"totaal": 0, "btw9": 0, "btw21": 0, "orders": 0}
 
     if date:
         query = Order.query.filter(func.date(Order.created_at) == date)
+        try:
+            qdate = datetime.strptime(date, '%Y-%m-%d').date()
+            tb_rec = Thuisbezorgd.query.filter_by(date=qdate).first()
+            if tb_rec:
+                tb_totals = tb_rec.to_dict()
+        except Exception:
+            pass
     elif start and end:
         query = Order.query.filter(
             func.date(Order.created_at) >= start,
             func.date(Order.created_at) <= end
         )
+        try:
+            s = datetime.strptime(start, '%Y-%m-%d').date()
+            e = datetime.strptime(end, '%Y-%m-%d').date()
+            records = Thuisbezorgd.query.filter(
+                Thuisbezorgd.date >= s, Thuisbezorgd.date <= e).all()
+            if records:
+                tb_totals = {
+                    'totaal': sum(r.total_incl or 0 for r in records),
+                    'btw9': sum(r.btw_9 or 0 for r in records),
+                    'btw21': sum(r.btw_21 or 0 for r in records),
+                    'orders': sum(r.order_count or 0 for r in records)
+                }
+        except Exception:
+            pass
     else:
         today = datetime.now(NL_TZ).date()
         start_local = datetime.combine(today, datetime.min.time(), tzinfo=NL_TZ)
         start = start_local.astimezone(UTC).replace(tzinfo=None)
         query = Order.query.filter(Order.created_at >= start)
+        tb_rec = Thuisbezorgd.query.filter_by(date=today).first()
+        if tb_rec:
+            tb_totals = tb_rec.to_dict()
 
     if not include_cancelled:
         query = query.filter(Order.is_cancelled == False)
 
     orders = query.order_by(Order.created_at.asc()).all()
-    output = build_overview_pdf(orders)
+    output = build_overview_pdf(orders, tb_totals)
     return send_file(
         output,
         mimetype='application/pdf',
@@ -519,21 +544,54 @@ def orders_to_dicts(orders):
     return result
 
 
-def build_overview_pdf(orders):
+def build_overview_pdf(orders, tb=None):
+    tb = tb or {"totaal": 0, "btw9": 0, "btw21": 0, "orders": 0}
     order_dicts = orders_to_dicts(orders)
 
-    total = sum(float(o['totaal']) for o in order_dicts if not o['is_cancelled'])
-    pin = sum(float(o['totaal']) for o in order_dicts if 'pin' in (o['payment_method'] or '').lower() and not o['is_cancelled'])
-    online = sum(float(o['totaal']) for o in order_dicts if 'online' in (o['payment_method'] or '').lower() and not o['is_cancelled'])
-    contant = sum(float(o['totaal']) for o in order_dicts if 'contant' in (o['payment_method'] or '').lower() and not o['is_cancelled'])
-    credit = sum(float(o['totaal']) for o in order_dicts if 'rekening' in (o['payment_method'] or '').lower() and not o['is_cancelled'])
+    non_cancelled = [o for o in order_dicts if not o['is_cancelled']]
+
+    total = sum(float(o['totaal']) for o in non_cancelled)
+    pin = sum(float(o['totaal']) for o in non_cancelled if 'pin' in (o['payment_method'] or '').lower())
+    online = sum(float(o['totaal']) for o in non_cancelled if 'online' in (o['payment_method'] or '').lower())
+    contant = sum(float(o['totaal']) for o in non_cancelled if 'contant' in (o['payment_method'] or '').lower())
+    credit = sum(float(o['totaal']) for o in non_cancelled if 'rekening' in (o['payment_method'] or '').lower())
+
+    btw9 = sum(float(o.get('btw_9', 0)) for o in non_cancelled)
+    btw21 = sum(float(o.get('btw_21', 0)) for o in non_cancelled)
+
+    total_discount = sum(float(o.get('korting', 0)) for o in non_cancelled)
+    total_tip = sum(float(o.get('fooi', 0)) for o in non_cancelled)
+
+    delivery_fee_total = sum(float(o.get('bezorgkosten') or 0) for o in non_cancelled)
+    delivery_count = sum(1 for o in non_cancelled if float(o.get('bezorgkosten') or 0) > 0)
+
+    cancelled_count = sum(1 for o in order_dicts if o['is_cancelled'])
+    cancelled_amount = sum(float(o['totaal']) for o in order_dicts if o['is_cancelled'])
+
+    total_combined = total + float(tb.get('totaal') or 0)
+    btw9_combined = btw9 + float(tb.get('btw9') or tb.get('btw_9') or 0)
+    btw21_combined = btw21 + float(tb.get('btw21') or tb.get('btw_21') or 0)
+    orders_combined = len(non_cancelled) + int(tb.get('orders') or 0)
+    avg_order = total_combined / orders_combined if orders_combined else 0
+
+    def fmt(v):
+        return f"€{v:.2f}".replace('.', ',')
 
     data = [["Omschrijving", "Bedrag"],
-            ["Totale omzet", f"€{total:.2f}"],
-            ["Pin betaling", f"€{pin:.2f}"],
-            ["Online betaling", f"€{online:.2f}"],
-            ["Contant", f"€{contant:.2f}"],
-            ["Op rekening", f"€{credit:.2f}"]]
+            ["Totale omzet", fmt(total_combined)],
+            ["BTW 9%", fmt(btw9_combined)],
+            ["BTW 21%", fmt(btw21_combined)],
+            ["Aantal Bestellingen", str(orders_combined)],
+            ["Gemiddelde Bestelwaarde", fmt(avg_order)],
+            ["Geannuleerd (aantal / bedrag)", f"{cancelled_count} / {fmt(cancelled_amount)}"],
+            ["Totale korting", fmt(total_discount)],
+            ["Totale fooi", fmt(total_tip)],
+            ["Bezorgkosten (bedrag / aantal)", f"{fmt(delivery_fee_total)} / {delivery_count}"],
+            ["Online betaling", fmt(online)],
+            ["Pin betaling", fmt(pin)],
+            ["Contant", fmt(contant)],
+            ["Op rekening", fmt(credit)],
+            ["Thuisbezorgd totaal", fmt(float(tb.get('totaal') or 0))]]
 
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=A4)
