@@ -435,19 +435,6 @@ def orders_to_dicts(orders):
 
         # Recalculate BTW if not stored
         if o.btw_total is None:
-            heineken_total = sum(
-                float(item.get("price", 0)) * int(item.get("qty", 0))
-                for name, item in (o.items_dict or {}).items()
-                if "heineken" in str(name).lower()
-            )
-
-            if o.btw_21 is None:
-                o.btw_21 = round(heineken_total * 0.21, 2)
-
-            if o.btw_9 is None:
-                base_total = subtotal - heineken_total + verpakkings + delivery
-                o.btw_9 = round(base_total * 0.09, 2)
-
             o.btw_total = (o.btw_9 or 0) + (o.btw_21 or 0)
 
         btw_total = o.btw_total or 0
@@ -1003,17 +990,8 @@ def api_orders():
             order.btw_9 = order.btw_9 or 0.0
             order.btw_21 = order.btw_21 or 0.0
 
-        if not (order.btw_9 or order.btw_21):
-            heineken_total = sum(
-                float(item.get("price", 0)) * int(item.get("qty", 0))
-                for name, item in items.items()
-                if "heineken" in name.lower()
-            )
-            order.btw_21 = round(heineken_total * 0.21, 2)
-            base_total = subtotal - heineken_total + order.verpakkingskosten + order.bezorgkosten
-            order.btw_9 = round(base_total * 0.09, 2)
-
-        order.btw_total = order.btw_total or (order.btw_9 or 0) + (order.btw_21 or 0)
+        if order.btw_total is None:
+            order.btw_total = (order.btw_9 or 0) + (order.btw_21 or 0)
 
         # 3. 处理折扣码（本次使用）
         if order.discountCode and str(order.discountCode).upper() == "KASSA":
