@@ -69,6 +69,23 @@
     </table>
   </div>
 
+  <div id="tbInput" style="margin-top:20px;">
+    <h2>Thuisbezorgd invoer</h2>
+    <label>Omzet totaal (incl.): <input type="number" id="tbOmzetInput" step="0.01"></label>
+    <label>BTW 9%: <input type="number" id="tbBtw9Input" step="0.01"></label>
+    <label>BTW 21%: <input type="number" id="tbBtw21Input" step="0.01"></label>
+    <button id="tbSaveBtn">Opslaan</button>
+  </div>
+
+  <div id="tbDisplay" style="display:none; margin-top:20px;">
+    <h2>Thuisbezorgd</h2>
+    <table>
+      <tr><td>BTW 9%</td><td id="tbBtw9">€0,00</td></tr>
+      <tr><td>BTW 21%</td><td id="tbBtw21">€0,00</td></tr>
+      <tr><td>Omzet totaal (incl.)</td><td id="tbOmzet">€0,00</td></tr>
+    </table>
+  </div>
+
   <div id="totals" style="display:none;">
   <h2>Omzet Overzicht</h2>
   <table>
@@ -247,6 +264,7 @@ document.getElementById('totalCancelled').textContent = cancelledDisplay;
       // 若您在HTML中添加了 unknown 行，也可以更新它：
       const unknownEl = document.getElementById('totalUnknown');
       if (unknownEl) unknownEl.textContent = formatCurrency(unknown);
+      applyThuisbezorgdTotals(mode, total, btw9Total, btw21Total);
     })
     .catch(() => { alert('Fout bij het ophalen van gegevens.'); });
 }
@@ -282,6 +300,80 @@ document.getElementById('totalCancelled').textContent = cancelledDisplay;
     function downloadPDF() {
       window.open(`/admin/orders/download/pdf?${currentQuery.params}`, "_blank");
     }
+    function applyThuisbezorgdTotals(mode, baseTotal, baseBtw9, baseBtw21) {
+      const url = new URL('/admin/thuisbezorgd', window.location.origin);
+      const params = new URLSearchParams(currentQuery.params);
+      if (mode === 'today') {
+        const now = new Date();
+        url.searchParams.set('date', now.toISOString().split('T')[0]);
+      } else if (mode === 'date') {
+        url.searchParams.set('date', params.get('date'));
+      } else if (mode === 'range') {
+        url.searchParams.set('start', params.get('start'));
+        url.searchParams.set('end', params.get('end'));
+      }
+
+      fetch(url)
+        .then(r => r.json())
+        .then(tb => {
+          document.getElementById('tbDisplay').style.display = '';
+          document.getElementById('tbBtw9').textContent = formatCurrency(tb.btw9);
+          document.getElementById('tbBtw21').textContent = formatCurrency(tb.btw21);
+          document.getElementById('tbOmzet').textContent = formatCurrency(tb.totaal);
+
+          if (mode !== 'range') {
+            document.getElementById('tbInput').style.display = '';
+            document.getElementById('tbOmzetInput').value = tb.totaal || '';
+            document.getElementById('tbBtw9Input').value = tb.btw9 || '';
+            document.getElementById('tbBtw21Input').value = tb.btw21 || '';
+          } else {
+            document.getElementById('tbInput').style.display = 'none';
+          }
+
+          baseTotal += Number(tb.totaal || 0);
+          baseBtw9 += Number(tb.btw9 || 0);
+          baseBtw21 += Number(tb.btw21 || 0);
+          document.getElementById('totalOmzet').textContent = formatCurrency(baseTotal);
+          document.getElementById('btw9Amount').textContent = formatCurrency(baseBtw9);
+          document.getElementById('btw21Amount').textContent = formatCurrency(baseBtw21);
+          updateBTWDisplay(baseBtw9, baseBtw21);
+        });
+    }
+
+    function saveThuisbezorgd() {
+      const params = new URLSearchParams(currentQuery.params);
+      let date;
+      if (currentQuery.type === 'today') {
+        const now = new Date();
+        date = now.toISOString().split('T')[0];
+      } else if (currentQuery.type === 'date') {
+        date = params.get('date');
+      } else {
+        return alert('Selecteer een datum om op te slaan.');
+      }
+
+      const payload = {
+        date: date,
+        totaal: document.getElementById('tbOmzetInput').value,
+        btw9: document.getElementById('tbBtw9Input').value,
+        btw21: document.getElementById('tbBtw21Input').value
+      };
+
+      fetch('/admin/thuisbezorgd', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+        .then(r => r.json())
+        .then(() => reloadCurrent())
+        .catch(() => alert('Opslaan mislukt'));
+    }
+
+    function reloadCurrent() {
+      if (currentQuery.type === 'today') fetchOrders();
+      else if (currentQuery.type === 'date') fetchByDate();
+      else if (currentQuery.type === 'range') fetchByRange();
+    }
     function updateBTWDisplay(btw9, btw21) {
   const btw9Row = document.getElementById('btw9Amount')?.parentElement;   // <tr> of BTW 9%
   const btw21Row = document.getElementById('btw21Row');                   // <tr id="btw21Row">
@@ -300,11 +392,12 @@ document.getElementById('totalCancelled').textContent = cancelledDisplay;
 }
 
     document.addEventListener('DOMContentLoaded', fetchOrders);
-    document.getElementById('dateBtn').addEventListener('click', fetchByDate);
-    document.getElementById('rangeBtn').addEventListener('click', fetchByRange);
-    document.getElementById('excelBtn').addEventListener('click', downloadExcel);
-    document.getElementById('pdfBtn').addEventListener('click', downloadPDF);
-  </script>
+      document.getElementById('dateBtn').addEventListener('click', fetchByDate);
+      document.getElementById('rangeBtn').addEventListener('click', fetchByRange);
+      document.getElementById('excelBtn').addEventListener('click', downloadExcel);
+      document.getElementById('pdfBtn').addEventListener('click', downloadPDF);
+      document.getElementById('tbSaveBtn').addEventListener('click', saveThuisbezorgd);
+    </script>
 
 </body>
 </html>
