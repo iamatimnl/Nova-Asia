@@ -323,6 +323,39 @@ def download_excel():
         as_attachment=True,
         download_name='bestellingen.xlsx'
     )
+
+@app.route("/admin/orders/download/overview-pdf")
+@login_required
+def download_overview_pdf():
+    include_cancelled = request.args.get('include_cancelled') == '1'
+    date = request.args.get('date')
+    start = request.args.get('start')
+    end = request.args.get('end')
+
+    if date:
+        query = Order.query.filter(func.date(Order.created_at) == date)
+    elif start and end:
+        query = Order.query.filter(
+            func.date(Order.created_at) >= start,
+            func.date(Order.created_at) <= end
+        )
+    else:
+        today = datetime.now(NL_TZ).date()
+        start_local = datetime.combine(today, datetime.min.time(), tzinfo=NL_TZ)
+        start = start_local.astimezone(UTC).replace(tzinfo=None)
+        query = Order.query.filter(Order.created_at >= start)
+
+    if not include_cancelled:
+        query = query.filter(Order.is_cancelled == False)
+
+    orders = query.order_by(Order.created_at.asc()).all()
+    output = build_overview_pdf(orders)
+    return send_file(
+        output,
+        mimetype='application/pdf',
+        as_attachment=True,
+        download_name='omzet_overzicht.pdf'
+    )
 def generate_excel_by_date(date, include_cancelled=False):
     query = Order.query.filter(func.date(Order.created_at) == date)
     if not include_cancelled:
@@ -484,6 +517,35 @@ def orders_to_dicts(orders):
             "is_cancelled": o.is_cancelled
         })
     return result
+
+
+def build_overview_pdf(orders):
+    order_dicts = orders_to_dicts(orders)
+
+    total = sum(float(o['totaal']) for o in order_dicts if not o['is_cancelled'])
+    pin = sum(float(o['totaal']) for o in order_dicts if 'pin' in (o['payment_method'] or '').lower() and not o['is_cancelled'])
+    online = sum(float(o['totaal']) for o in order_dicts if 'online' in (o['payment_method'] or '').lower() and not o['is_cancelled'])
+    contant = sum(float(o['totaal']) for o in order_dicts if 'contant' in (o['payment_method'] or '').lower() and not o['is_cancelled'])
+    credit = sum(float(o['totaal']) for o in order_dicts if 'rekening' in (o['payment_method'] or '').lower() and not o['is_cancelled'])
+
+    data = [["Omschrijving", "Bedrag"],
+            ["Totale omzet", f"€{total:.2f}"],
+            ["Pin betaling", f"€{pin:.2f}"],
+            ["Online betaling", f"€{online:.2f}"],
+            ["Contant", f"€{contant:.2f}"],
+            ["Op rekening", f"€{credit:.2f}"]]
+
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    table = Table(data, repeatRows=1)
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('ALIGN', (1, 1), (-1, -1), 'RIGHT')
+    ]))
+    doc.build([table])
+    buffer.seek(0)
+    return buffer
 
 
 def get_bubble_options_dict():

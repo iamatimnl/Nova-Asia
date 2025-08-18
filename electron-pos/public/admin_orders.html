@@ -42,6 +42,7 @@
   <div class="download-buttons">
     <button id="excelBtn">📥 Download Excel</button>
     <button id="pdfBtn">📄 Download PDF</button>
+    <button id="overviewPdfBtn">🧾 Download Overzicht</button>
   </div>
 
   <div id="ordersContainer">
@@ -334,6 +335,10 @@ document.getElementById('totalCancelled').textContent = cancelledDisplay;
     function downloadPDF() {
       window.open(`/admin/orders/download/pdf?${currentQuery.params}`, "_blank");
     }
+
+    function downloadOverviewPDF() {
+      window.open(`/admin/orders/download/overview-pdf?${currentQuery.params}`, "_blank");
+    }
     function applyThuisbezorgdTotals(mode, baseTotal, baseBtw9, baseBtw21, baseOrders) {
       const url = new URL('/admin/thuisbezorgd', window.location.origin);
       const params = new URLSearchParams(currentQuery.params);
@@ -560,6 +565,7 @@ document.getElementById('totalCancelled').textContent = cancelledDisplay;
       document.getElementById('rangeBtn').addEventListener('click', fetchByRange);
       document.getElementById('excelBtn').addEventListener('click', downloadExcel);
       document.getElementById('pdfBtn').addEventListener('click', downloadPDF);
+      document.getElementById('overviewPdfBtn').addEventListener('click', downloadOverviewPDF);
       document.getElementById('tbSaveBtn').addEventListener('click', saveThuisbezorgd);
       setupEditDialog();
     });
