@@ -4977,8 +4977,8 @@ function updatePriceBreakdown(subtotal, packaging, heineken = currentHeineken) {
     d21 = discount * (bucket21 / baseExclTip);
     d9 = discount * (bucket9 / baseExclTip);
   }
-  const btw21 = Math.max(bucket21 - d21, 0) * 0.21;
-  const btw9 = Math.max(bucket9 - d9, 0) * 0.09;
+  const btw21 = Math.max(bucket21 - d21, 0) * 0.21 / 1.21;
+  const btw9 = Math.max(bucket9 - d9, 0) * 0.09 / 1.09;
   const btw = btw9 + btw21;
   const baseTotal = baseExclTip - discount;
   finalTotal = baseTotal + tip;
@@ -6074,8 +6074,8 @@ function checkout() {
     d9 = discount * (bucket9 / baseExclTip);
   }
 
-  const btw21 = Math.max(bucket21 - d21, 0) * 0.21;
-  const btw9 = Math.max(bucket9 - d9, 0) * 0.09;
+  const btw21 = Math.max(bucket21 - d21, 0) * 0.21 / 1.21;
+  const btw9 = Math.max(bucket9 - d9, 0) * 0.09 / 1.09;
   const btw = btw9 + btw21;
 
   const total = baseExclTip - discount + tip; // 含税总额
