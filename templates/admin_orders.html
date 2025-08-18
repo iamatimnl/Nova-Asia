@@ -83,6 +83,8 @@
           <th>Email</th>
           <th>Items</th>
           <th>Opmerking</th>
+          <th>Ordernummer</th>
+          <th>Bezorgkosten (€)</th>
           <th>Fooi (€)</th>
           <th>Totaal (€)</th>
           <th>Adres</th>
@@ -208,6 +210,8 @@
           tot = parseFloat(tot.replace(/[^\d,.-]/g, '').replace(',', '.'));
         }
 
+        const delFee = Number(order.delivery_fee ?? order.bezorgkosten ?? 0);
+
         if (order.is_cancelled) {
           cancelled += tot || 0;
           cancelledCount++;
@@ -215,7 +219,6 @@
           total += tot;
           tipTotal += fooi;
           discountTotal += Number(order.discountAmount ?? order.korting ?? 0);
-          const delFee = Number(order.delivery_fee ?? order.bezorgkosten ?? 0);
           deliveryFeeTotal += delFee;
           if (isDelivery) deliveryCount++;
           orderCount++;
@@ -240,6 +243,8 @@
           <td>${order.email || '-'}</td>
           <td><ul>${items}</ul></td>
           <td>${order.opmerking || order.remark || '-'}</td>
+          <td>${order.order_number || ''}</td>
+          <td>${isDelivery ? formatCurrency(delFee) : '-'}</td>
           <td>${formatCurrency(fooi)}</td>
           <td>${formatCurrency(tot)}</td>
           <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
