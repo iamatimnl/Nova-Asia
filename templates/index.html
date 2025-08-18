@@ -2689,7 +2689,8 @@ body.portrait-mode .cart-badge {
   <select id="tipSelect" style="width: 85px; border-radius: 6px;"></select>
 </div>
 
-      <div class="price-row"><span>BTW:</span> <span id="btwDisplay">€0,00</span></div>
+      <div class="price-row" id="btw9Row" style="display:none;"><span>BTW 9%:</span> <span id="btw9Display">€0,00</span></div>
+      <div class="price-row" id="btw21Row" style="display:none;"><span>BTW 21%:</span> <span id="btw21Display">€0,00</span></div>
       <div class="price-row total-row"><span>Totaal:</span> <span id="totalDisplay">€0,00</span></div>
       <div class="btw-note">Alle prijzen zijn inclusief BTW</div>
     </div>
@@ -5088,16 +5089,29 @@ function updatePriceBreakdown(subtotal, packaging, heineken = currentHeineken) {
   const tip = parseFloat(document.getElementById('tipSelect').value || '0');
   const orderType = document.querySelector('input[name="orderType"]:checked').value;
   const deliveryFee = orderType === 'bezorgen' ? DELIVERY_FEE : 0;
-  const baseTotal = subtotal + packaging + deliveryFee - currentDiscount;
+  const baseExclTip = subtotal + packaging + deliveryFee;
+  const discount = currentDiscount;
+  const bucket21 = heineken;
+  const bucket9 = Math.max(baseExclTip - bucket21, 0);
+  let d21 = 0, d9 = 0;
+  if (baseExclTip > 0) {
+    d21 = discount * (bucket21 / baseExclTip);
+    d9 = discount * (bucket9 / baseExclTip);
+  }
+  const btw21 = Math.max(bucket21 - d21, 0) * 0.21;
+  const btw9 = Math.max(bucket9 - d9, 0) * 0.09;
+  const btw = btw9 + btw21;
+  const baseTotal = baseExclTip - discount;
   finalTotal = baseTotal + tip;
-  let btw = baseTotal * 0.09;
-  btw += heineken * 0.12;
   document.getElementById('subtotalDisplay').textContent = formatEuro(subtotal);
   document.getElementById('packagingDisplay').textContent = formatEuro(packaging);
   document.getElementById('deliveryDisplay').textContent = formatEuro(deliveryFee);
   document.getElementById('discountDisplay').textContent = `- ${formatEuro(currentDiscount)}`;
   document.getElementById('discountRow').style.display = currentDiscount > 0 ? 'flex' : 'none';
-  document.getElementById('btwDisplay').textContent = formatEuro(btw);
+  document.getElementById('btw9Display').textContent = formatEuro(btw9);
+  document.getElementById('btw21Display').textContent = formatEuro(btw21);
+  document.getElementById('btw9Row').style.display = btw9 > 0 ? 'flex' : 'none';
+  document.getElementById('btw21Row').style.display = btw21 > 0 ? 'flex' : 'none';
   document.getElementById('totalDisplay').textContent = formatEuro(finalTotal);
 }
 
@@ -6255,17 +6269,18 @@ function checkout() {
     packaging: packagingFee.toFixed(2),
     delivery: deliveryFee.toFixed(2),
     discount_amount: discount.toFixed(2),
-    btw: btw.toFixed(2),
-    btw_split: { '9': btw9.toFixed(2), '21': btw21.toFixed(2) },
-    btw_9: btw9.toFixed(2),
-    btw_21: btw21.toFixed(2),
     total: totalPrice
   };
+  if (btw9 > 0) summary.btw_9 = btw9.toFixed(2);
+  if (btw21 > 0) summary.btw_21 = btw21.toFixed(2);
+  if (btw9 > 0 || btw21 > 0) {
+    summary.btw = btw.toFixed(2);
+    summary.btw_split = {};
+    if (btw9 > 0) summary.btw_split['9'] = btw9.toFixed(2);
+    if (btw21 > 0) summary.btw_split['21'] = btw21.toFixed(2);
+  }
 
-  fetch('https://flask-order-api.onrender.com/submit_order', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
+  const payload = {
       // ✅ 关键：声明来源 index，让后端走 index 分支并采用前端 BTW
       source: 'index',
       orderType,
@@ -6288,15 +6303,26 @@ function checkout() {
       subtotal: subtotal.toFixed(2),
       packaging_fee: packagingFee.toFixed(2),
       delivery_fee: deliveryFee.toFixed(2),
-      btw: btw.toFixed(2),
-      btw_split: { '9': btw9.toFixed(2), '21': btw21.toFixed(2) },
       // totaal = total（含税）——和后端一致口径
       totaal: totalPrice,
       discountAmount: discount.toFixed(2),
       discountCode,
       message,
       summary
-    })
+  };
+  if (btw9 > 0) payload.btw_9 = btw9.toFixed(2);
+  if (btw21 > 0) payload.btw_21 = btw21.toFixed(2);
+  if (btw9 > 0 || btw21 > 0) {
+      payload.btw = btw.toFixed(2);
+      payload.btw_split = {};
+      if (btw9 > 0) payload.btw_split['9'] = btw9.toFixed(2);
+      if (btw21 > 0) payload.btw_split['21'] = btw21.toFixed(2);
+  }
+
+  fetch('https://flask-order-api.onrender.com/submit_order', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
   })
     .then(res => res.json())
     .then(data => {
