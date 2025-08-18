@@ -1270,7 +1270,8 @@ function updateCart(){
 
   const total = subtotal + packagingTotal + delivery - discount;
   const btwBase = delivery ? total - delivery : total;
-  const btw = btwBase * 0.09;
+  const btwRate = 0.09;
+  const btw = (btwBase * btwRate) / (1 + btwRate);
 
   const fmt=n=>`€${n.toFixed(2).replace('.',',')}`;
   document.getElementById('summarySubtotal').textContent=fmt(subtotal);
@@ -1690,7 +1691,8 @@ function submitOrder() {
   }
   const totalBeforeBtw = subtotal + packagingTotal + deliveryCost - discount;
   const btwBase = delivery ? totalBeforeBtw - deliveryCost : totalBeforeBtw;
-  const btw = btwBase * 0.09;
+  const btwRate = 0.09;
+  const btw = (btwBase * btwRate) / (1 + btwRate);
   const total = totalBeforeBtw;
 
   const summary = {
