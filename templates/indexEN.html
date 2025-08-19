@@ -2629,6 +2629,7 @@ body.portrait-mode .cart-badge {
     <div class="price-details">
       <div class="price-row"><span>Subtotaal:</span> <span id="subtotalDisplay">€0,00</span></div>
       <div class="price-row"><span>Verpakkingskosten:</span> <span id="packagingDisplay">€0,00</span></div>
+      <div class="price-row" id="statiegeldRow" style="display:none;"><span>Statiegeld:</span> <span id="statiegeldDisplay">€0,00</span></div>
       <div class="price-row" id="deliveryRow"><span>Bezorgkosten:</span> <span id="deliveryDisplay">€2,50</span></div>
       <div class="spacer"></div>
       <div class="spacer"></div>
@@ -4471,6 +4472,7 @@ let currentXBowlName = '';
 let currentPackaging = 0;
 let currentSubtotal = 0;
 let currentHeineken = 0;
+let currentStatiegeld = 0;
 let finalTotal = 0;
 let currentDiscount = 0;
 let bubbleSetControls;
@@ -4961,9 +4963,10 @@ function formatEuro(val) {
   return `€${val.toFixed(2).replace('.', ',')}`;
 }
 
-function updatePriceBreakdown(subtotal, packaging, heineken = currentHeineken) {
+function updatePriceBreakdown(subtotal, packaging, statiegeld = 0, heineken = currentHeineken) {
   currentSubtotal = subtotal;
   currentPackaging = packaging;
+  currentStatiegeld = statiegeld;
   currentHeineken = heineken;
   const tip = parseFloat(document.getElementById('tipSelect').value || '0');
   const orderType = document.querySelector('input[name="orderType"]:checked').value;
@@ -4981,9 +4984,11 @@ function updatePriceBreakdown(subtotal, packaging, heineken = currentHeineken) {
   const btw9 = Math.max(bucket9 - d9, 0) * 0.09 / 1.09;
   const btw = btw9 + btw21;
   const baseTotal = baseExclTip - discount;
-  finalTotal = baseTotal + tip;
+  finalTotal = baseTotal + tip + statiegeld;
   document.getElementById('subtotalDisplay').textContent = formatEuro(subtotal);
   document.getElementById('packagingDisplay').textContent = formatEuro(packaging);
+  document.getElementById('statiegeldDisplay').textContent = formatEuro(statiegeld);
+  document.getElementById('statiegeldRow').style.display = statiegeld > 0 ? 'flex' : 'none';
   document.getElementById('deliveryDisplay').textContent = formatEuro(deliveryFee);
   document.getElementById('discountDisplay').textContent = `- ${formatEuro(currentDiscount)}`;
   document.getElementById('discountRow').style.display = currentDiscount > 0 ? 'flex' : 'none';
@@ -5000,7 +5005,7 @@ function applyDiscount() {
   const code = document.getElementById('discountCode').value.trim();
   if (!code) {
     currentDiscount = 0;
-    updatePriceBreakdown(currentSubtotal, currentPackaging);
+    updatePriceBreakdown(currentSubtotal, currentPackaging, currentStatiegeld);
     return;
   }
 
@@ -5022,11 +5027,11 @@ function applyDiscount() {
       currentDiscount = 0;
       alert('Ongeldige kortingscode');
     }
-    updatePriceBreakdown(currentSubtotal, currentPackaging);
+    updatePriceBreakdown(currentSubtotal, currentPackaging, currentStatiegeld);
   })
   .catch(() => {
     currentDiscount = 0;
-    updatePriceBreakdown(currentSubtotal, currentPackaging);
+    updatePriceBreakdown(currentSubtotal, currentPackaging, currentStatiegeld);
   });
 }
 
@@ -5182,15 +5187,17 @@ function updatePokebowlSauces(id, name) {
 function setPokebowlQty(id, name) {
   const sel = document.getElementById(id);
   const qty = parseInt(sel.value || 0);
-  const pack = parseFloat(sel.closest('.menu-item').dataset.packaging || DEFAULT_PACKAGING_FEE);
-  const price = parseFloat(sel.closest('.menu-item').dataset.price || 0);
+  const el = sel.closest('.menu-item');
+  const pack = parseFloat(el.dataset.packaging || 0);
+  const deposit = parseFloat(el.dataset.statiegeld || 0);
+  const price = parseFloat(el.dataset.price || 0);
   const container = document.getElementById(id + 'Sauces');
   const prefs = [];
   for (let i = 1; i <= qty; i++) {
     const s = container.querySelector(`select[data-index="${i}"]`);
     prefs.push(s ? s.value : 'Geen saus');
   }
-  setQty(name, price, qty, pack, prefs);
+  setQty(name, price, qty, pack, prefs, deposit);
 }
 
 function getXBowlSelections(){
@@ -5505,9 +5512,10 @@ function changeRamenQty(code, delta) {
   if (!base || !smaak) return;
   const name = item.dataset.name;
   const price = parseFloat(item.dataset.price);
-  const pack = parseFloat(item.dataset.packaging || DEFAULT_PACKAGING_FEE);
+  const pack = parseFloat(item.dataset.packaging || 0);
+  const deposit = parseFloat(item.dataset.statiegeld || 0);
   const fullName = `${name} - ${base} - ${smaak}`;
-  setQty(fullName, price, val, pack);
+  setQty(fullName, price, val, pack, null, deposit);
   updateRamenControls(code);
 }
 
@@ -5597,7 +5605,7 @@ function createSelect(current, onChange) {
   return select;
 }
 
-function setQty(name, price, qty, packaging = DEFAULT_PACKAGING_FEE, prefs = null) {
+function setQty(name, price, qty, packaging = DEFAULT_PACKAGING_FEE, prefs = null, statiegeld = 0) {
   if (isItemSoldOut(name)) {
     showFeedback('Uitverkocht!', true);
     return;
@@ -5608,7 +5616,7 @@ function setQty(name, price, qty, packaging = DEFAULT_PACKAGING_FEE, prefs = nul
   if (isNaN(qty) || qty <= 0) {
     delete cart[name];
   } else {
-    cart[name] = { price, qty, packaging };
+    cart[name] = { price, qty, packaging, statiegeld };
     if (prefs) cart[name].prefs = prefs;
     else if (cart[name] && cart[name].prefs) delete cart[name].prefs;
   }
@@ -5705,7 +5713,7 @@ function updateCart() {
     cartContainer.classList.remove('scrollable');
   }
 
-  updatePriceBreakdown(total, packagingTotal, heinekenTotal);
+  updatePriceBreakdown(total, packagingTotal, statiegeldTotal, heinekenTotal);
 
   const totalQty = Object.values(cart).reduce((s, it) => s + (isNaN(it.qty) ? 0 : it.qty), 0) +
     Object.keys(extras).reduce((s, id) => s + parseInt(document.getElementById(id).value || 0), 0);
@@ -5738,7 +5746,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const parent = sel.closest('.menu-item');
     const name = parent.dataset.name;
     const price = parseFloat(parent.dataset.price);
-    const pack = parseFloat(parent.dataset.packaging || DEFAULT_PACKAGING_FEE);
+    const pack = parseFloat(parent.dataset.packaging || 0);
+    const deposit = parseFloat(parent.dataset.statiegeld || 0);
     if (name === 'Bento Sushi Omakase') {
       sel.addEventListener('change', () => changeOmakaseQty(0));
     } else if (name === 'Dragon Roll Omakase') {
@@ -5748,7 +5757,7 @@ document.addEventListener('DOMContentLoaded', () => {
       updatePokebowlSauces(sel.id, name);
     } else {
       sel.addEventListener('change', () => {
-        setQty(name, price, parseInt(sel.value), pack);
+        setQty(name, price, parseInt(sel.value), pack, null, deposit);
       });
     }
   });
@@ -5761,7 +5770,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (val < 20) val++;
       sel.value = val;
       const parent = sel.closest('.menu-item');
-      const pack = parseFloat(parent.dataset.packaging || DEFAULT_PACKAGING_FEE);
+      const pack = parseFloat(parent.dataset.packaging || 0);
+      const deposit = parseFloat(parent.dataset.statiegeld || 0);
       if (parent.dataset.name === 'Bento Sushi Omakase') {
         changeOmakaseQty(0);
       } else if (parent.dataset.name === 'Dragon Roll Omakase') {
@@ -5769,7 +5779,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } else if (POKEBOWL_IDS.includes(sel.id)) {
         updatePokebowlSauces(sel.id, parent.dataset.name);
       } else {
-        setQty(parent.dataset.name, parseFloat(parent.dataset.price), val, pack);
+        setQty(parent.dataset.name, parseFloat(parent.dataset.price), val, pack, null, deposit);
       }
     });
   });
@@ -5782,7 +5792,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (val > 0) val--;
       sel.value = val;
       const parent = sel.closest('.menu-item');
-      const pack = parseFloat(parent.dataset.packaging || DEFAULT_PACKAGING_FEE);
+      const pack = parseFloat(parent.dataset.packaging || 0);
+      const deposit = parseFloat(parent.dataset.statiegeld || 0);
       if (parent.dataset.name === 'Bento Sushi Omakase') {
         changeOmakaseQty(0);
       } else if (parent.dataset.name === 'Dragon Roll Omakase') {
@@ -5790,7 +5801,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } else if (POKEBOWL_IDS.includes(sel.id)) {
         updatePokebowlSauces(sel.id, parent.dataset.name);
       } else {
-        setQty(parent.dataset.name, parseFloat(parent.dataset.price), val, pack);
+        setQty(parent.dataset.name, parseFloat(parent.dataset.price), val, pack, null, deposit);
       }
     });
   });
@@ -5815,7 +5826,7 @@ for (let i = 0; i <= 20; i++) {
 }
 
   tipSel.value = 0;
-  tipSel.addEventListener('change', () => updatePriceBreakdown(currentSubtotal, currentPackaging));
+  tipSel.addEventListener('change', () => updatePriceBreakdown(currentSubtotal, currentPackaging, currentStatiegeld));
 
   
   const validateBtn = document.getElementById('validateDiscountBtn');
@@ -6059,6 +6070,7 @@ function checkout() {
   const tip = parseFloat(document.getElementById('tipSelect').value) || 0;
   const subtotal = Number(currentSubtotal) || 0;
   const packagingFee = Object.values(cart).reduce((s, it) => s + (Number(it.packaging) || 0) * (Number(it.qty) || 0), 0);
+  const statiegeldFee = Object.values(cart).reduce((s, it) => s + (Number(it.statiegeld) || 0) * (Number(it.qty) || 0), 0);
   const deliveryFee = orderType === 'bezorgen' ? 2.50 : 0;
   const heinekenTotal = Number(currentHeineken) || 0;
   const discount = Number(currentDiscount) || 0;
@@ -6078,7 +6090,7 @@ function checkout() {
   const btw9 = Math.max(bucket9 - d9, 0) * 0.09 / 1.09;
   const btw = btw9 + btw21;
 
-  const total = baseExclTip - discount + tip; // 含税总额
+  const total = baseExclTip - discount + tip + statiegeldFee; // 含税总额
   const totalPrice = !isNaN(total) ? total.toFixed(2) : "0.00";
 
   const orderNumber = generateOrderNumber();
@@ -6086,10 +6098,11 @@ function checkout() {
   const discountCode = document.getElementById('discountCode').value.trim();
   const deliveryLine = deliveryFee > 0 ? `\nBezorgkosten: €${deliveryFee.toFixed(2)}` : '';
   const packagingLine = packagingFee > 0 ? `\nVerpakkingskosten: €${packagingFee.toFixed(2)}` : '';
+  const statiegeldLine = statiegeldFee > 0 ? `\nStatiegeld: €${statiegeldFee.toFixed(2)}` : '';
   const tipLine = tip > 0 ? `\nFooi: €${tip.toFixed(2)}` : '';
   const discountLine = `\nKorting: -€${discount.toFixed(2)} (Code: ${discountCode || 'geen'})`;
 
-  const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}${deliveryLine}${packagingLine}${tipLine}${discountLine}\nTotaal: €${totalPrice}`;
+  const message = `📦 Nieuwe bestelling bij *Nova Asia*:\n\n${orderSummary}\n${customerDetails}${deliveryLine}${packagingLine}${statiegeldLine}${tipLine}${discountLine}\nTotaal: €${totalPrice}`;
 
   const itemsToSend = { ...cart };
   Object.keys(extras).forEach(id => {
@@ -6150,6 +6163,7 @@ function checkout() {
     discount_amount: discount.toFixed(2),
     total: totalPrice
   };
+  if (statiegeldFee > 0) summary.statiegeld = statiegeldFee.toFixed(2);
   if (btw9 > 0) summary.btw_9 = btw9.toFixed(2);
   if (btw21 > 0) summary.btw_21 = btw21.toFixed(2);
   if (btw9 > 0 || btw21 > 0) {
@@ -6189,6 +6203,7 @@ function checkout() {
       message,
       summary
   };
+  if (statiegeldFee > 0) payload.statiegeld = statiegeldFee.toFixed(2);
   if (btw9 > 0) payload.btw_9 = btw9.toFixed(2);
   if (btw21 > 0) payload.btw_21 = btw21.toFixed(2);
   if (btw9 > 0 || btw21 > 0) {
@@ -6435,7 +6450,7 @@ function checkout() {
       clearIfClosed('delivery_time', deliveryClosedSlots);
       updateCartPaymentOptions();
     }
-    updatePriceBreakdown(currentSubtotal, currentPackaging);
+    updatePriceBreakdown(currentSubtotal, currentPackaging, currentStatiegeld);
     storeOpen = afhalen.checked ? pickupAvailable : deliveryAvailable;
     
     // 同步下拉菜单和图标，保持双向联动
