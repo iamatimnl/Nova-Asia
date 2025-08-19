@@ -93,6 +93,7 @@ th:last-child {
        <th>Bezorgkosten</th>
        <th>Adres</th>
        <th>Betaalwijze</th>
+       <th>Statiegeld</th>
        <th>Fooi</th>
        <th>Acties</th>
       </tr>
@@ -138,6 +139,7 @@ th:last-child {
           {% else %}-{% endif %}
         </td>
         <td>{{ order.payment_method }}</td>
+        <td>€{{ '%.2f' % (order.statiegeld or 0) }}</td>
         <td>€{{ '%.2f' % (order.fooi or order.tip or 0) }}</td>
         <td>
           <button onclick="toggleComplete(this)"
@@ -252,6 +254,9 @@ th:last-child {
     const totaal = prompt('Totaal', data.totaal != null ? data.totaal : '');
     if(totaal === null) return;
 
+    const statiegeld = prompt('Statiegeld', data.statiegeld != null ? data.statiegeld : '0');
+    if(statiegeld === null) return;
+
     const fooi = prompt('Fooi', data.fooi != null ? data.fooi : (data.tip || '0'));
     if(fooi === null) return;
 
@@ -265,6 +270,7 @@ th:last-child {
         items: parseItemsString(newItemsInput, data.items || {}),
         payment_method: payment,
         totaal: parseFloat(totaal) || 0,
+        statiegeld: parseFloat(statiegeld) || 0,
         fooi: parseFloat(fooi) || 0,
         bron: data.bron
       })

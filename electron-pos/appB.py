@@ -201,7 +201,7 @@ def order_to_dict(order):
         float(i.get("price", 0)) * int(i.get("qty", 0))
         for i in items.values()
     )
-    delivery_calc = order.totaal + (order.discountAmount or 0) - subtotal - order.verpakkingskosten - (order.fooi or 0)
+    delivery_calc = order.totaal + (order.discountAmount or 0) - subtotal - order.verpakkingskosten - (order.fooi or 0) - (order.statiegeld or 0)
     delivery_calc = round(delivery_calc, 2)
     delivery = order.bezorgkosten if order.bezorgkosten not in [None, 0] else max(delivery_calc, 0)
 
@@ -231,6 +231,7 @@ def order_to_dict(order):
         "delivery_fee": delivery,
         "fooi": order.fooi,
         "tip": order.fooi or 0,
+        "statiegeld": order.statiegeld or 0.0,
         "discount_code": order.discount_code,
         "discount_amount": order.discount_amount,
         "opmerking": order.opmerking,
@@ -441,7 +442,7 @@ def build_excel(orders):
 
         currency_cols = [
             'total', 'totaal', 'verpakkingskosten', 'bezorgkosten',
-            'btw_9', 'btw_21', 'btw_total', 'fooi', 'korting'
+            'btw_9', 'btw_21', 'btw_total', 'fooi', 'statiegeld', 'korting'
         ]
         for col in currency_cols:
             if col in df.columns:
@@ -487,7 +488,8 @@ def orders_to_dicts(orders):
             float(i.get("price", 0)) * int(i.get("qty", 0))
             for i in o.items_dict.values()
         )
-        delivery_calc = totaal + (o.discountAmount or 0) - subtotal - o.verpakkingskosten - (o.fooi or 0)
+        statiegeld = getattr(o, 'statiegeld', 0) or 0
+        delivery_calc = totaal + (o.discountAmount or 0) - subtotal - o.verpakkingskosten - (o.fooi or 0) - statiegeld
         delivery_calc = round(delivery_calc, 2)
         delivery = o.bezorgkosten if o.bezorgkosten not in [None, 0] else max(delivery_calc, 0)
         o.bezorgkosten = delivery
@@ -531,6 +533,7 @@ def orders_to_dicts(orders):
             "btw_total": o.btw_total or 0,
             "fooi": o.fooi or 0,
             "tip": o.fooi or 0,
+            "statiegeld": statiegeld,
             "order_number": o.order_number,
             "korting": discount_val,
             "discountAmount": discount_val,
@@ -560,6 +563,7 @@ def build_overview_pdf(orders, tb=None, period=None):
 
     total_discount = sum(float(o.get('korting', 0)) for o in non_cancelled)
     total_tip = sum(float(o.get('fooi', 0)) for o in non_cancelled)
+    total_statiegeld = sum(float(o.get('statiegeld', 0)) for o in non_cancelled)
 
     delivery_fee_total = sum(float(o.get('bezorgkosten') or 0) for o in non_cancelled)
     delivery_count = sum(1 for o in non_cancelled if float(o.get('bezorgkosten') or 0) > 0)
@@ -585,6 +589,7 @@ def build_overview_pdf(orders, tb=None, period=None):
             ["Geannuleerd (aantal / bedrag)", f"{cancelled_count} / {fmt(cancelled_amount)}"],
             ["Totale korting", fmt(total_discount)],
             ["Totale fooi", fmt(total_tip)],
+            ["Totale statiegeld", fmt(total_statiegeld)],
             ["Bezorgkosten (bedrag / aantal)", f"{fmt(delivery_fee_total)} / {delivery_count}"],
             ["Online betaling", fmt(online)],
             ["Pin betaling", fmt(pin)],
@@ -710,6 +715,7 @@ class Order(db.Model):
     totaal = db.Column(db.Float)
     verpakkingskosten = db.Column(db.Float, default=0.0)
     fooi = db.Column(db.Float, default=0.0)
+    statiegeld = db.Column(db.Float, default=0.0)
     bezorgkosten = db.Column(db.Float, default=0.0)
     discount_code = db.Column(db.Text)
     discount_amount = db.Column(db.Float)
@@ -746,6 +752,7 @@ class Order(db.Model):
             "verpakkingskosten": self.verpakkingskosten,
             "bezorgkosten": self.bezorgkosten,
             "fooi": self.fooi,
+            "statiegeld": self.statiegeld,
             "discount_code": self.discount_code,
             "discount_amount": self.discount_amount,
             "discountCode": self.discountCode,
@@ -1082,6 +1089,7 @@ def api_orders():
             items=json.dumps(data.get("items", {})),
             order_number=order_number,
             fooi=float(data.get("tip") or data.get("fooi") or 0),
+            statiegeld=float(data.get("statiegeld") or 0),
             discount_code=data.get("discount_code"),
             discount_amount=float(data.get("discount_amount") or 0),
             discountCode=data.get("discountCode"),
@@ -1309,7 +1317,7 @@ def edit_order(order_id: int):
     allowed = [
         'customer_name', 'phone', 'email', 'street', 'house_number', 'postcode',
         'city', 'pickup_time', 'delivery_time', 'order_type', 'items',
-        'payment_method', 'totaal', 'fooi', 'opmerking', 'bezorgkosten'
+        'payment_method', 'totaal', 'fooi', 'statiegeld', 'opmerking', 'bezorgkosten'
     ]
     for f in allowed:
         if f not in data:
@@ -1320,7 +1328,7 @@ def edit_order(order_id: int):
                 order.items = json.dumps(val)
             else:
                 order.items = val
-        elif f in ('totaal', 'fooi', 'bezorgkosten'):
+        elif f in ('totaal', 'fooi', 'statiegeld', 'bezorgkosten'):
             try:
                 setattr(order, f, float(val))
             except (TypeError, ValueError):
@@ -2095,9 +2103,10 @@ def pos_orders_today():
 
         verp = o.verpakkingskosten or 0.0
         fooi = o.fooi or 0.0
+        statiegeld = getattr(o, 'statiegeld', 0.0) or 0.0
 
         # 仅用于显示的配送费估算（不改写 o.bezorgkosten）
-        delivery_calc = round(totaal - subtotal - verp - fooi + (this_amt or 0.0), 2)
+        delivery_calc = round(totaal - subtotal - verp - fooi - statiegeld + (this_amt or 0.0), 2)
         delivery = o.bezorgkosten if o.bezorgkosten not in [None, 0] else max(delivery_calc, 0.0)
 
         btw_total = o.btw_total
@@ -2147,6 +2156,7 @@ def pos_orders_today():
             "btw_total": btw_total or 0.0,
             "fooi": fooi,
             "tip": fooi,
+            "statiegeld": statiegeld,
 
             # ★ 本次使用（camelCase）——只读 discountCode/discountAmount
             "discountCode": this_code or "",
