@@ -778,6 +778,7 @@ class Thuisbezorgd(db.Model):
     btw_9 = db.Column(db.Float, default=0.0)
     btw_21 = db.Column(db.Float, default=0.0)
     order_count = db.Column(db.Integer, default=0)
+    statiegeld = db.Column(db.Float, default=0.0)
 
     def to_dict(self):
         return {
@@ -786,6 +787,7 @@ class Thuisbezorgd(db.Model):
             "btw9": self.btw_9 or 0.0,
             "btw21": self.btw_21 or 0.0,
             "orders": self.order_count or 0,
+            "statiegeld": self.statiegeld or 0.0,
         }
 
 class Setting(db.Model):
@@ -2032,6 +2034,7 @@ def thuisbezorgd_api():
         record.btw_9 = float(data.get('btw9') or data.get('btw_9') or 0)
         record.btw_21 = float(data.get('btw21') or data.get('btw_21') or 0)
         record.order_count = int(data.get('orders') or data.get('order_count') or 0)
+        record.statiegeld = float(data.get('statiegeld') or data.get('deposit') or 0)
         db.session.add(record)
         db.session.commit()
         return jsonify({'status': 'ok'})
@@ -2043,26 +2046,27 @@ def thuisbezorgd_api():
         try:
             qdate = datetime.strptime(date_str, '%Y-%m-%d').date()
         except Exception:
-            return jsonify({'btw9': 0, 'btw21': 0, 'totaal': 0, 'orders': 0})
+            return jsonify({'btw9': 0, 'btw21': 0, 'totaal': 0, 'orders': 0, 'statiegeld': 0})
         record = Thuisbezorgd.query.filter_by(date=qdate).first()
         if record:
             return jsonify(record.to_dict())
-        return jsonify({'date': date_str, 'btw9': 0, 'btw21': 0, 'totaal': 0, 'orders': 0})
+        return jsonify({'date': date_str, 'btw9': 0, 'btw21': 0, 'totaal': 0, 'orders': 0, 'statiegeld': 0})
     if start_str and end_str:
         try:
             s = datetime.strptime(start_str, '%Y-%m-%d').date()
             e = datetime.strptime(end_str, '%Y-%m-%d').date()
         except Exception:
-            return jsonify({'btw9': 0, 'btw21': 0, 'totaal': 0, 'orders': 0})
+            return jsonify({'btw9': 0, 'btw21': 0, 'totaal': 0, 'orders': 0, 'statiegeld': 0})
         records = Thuisbezorgd.query.filter(Thuisbezorgd.date >= s, Thuisbezorgd.date <= e).all()
         totals = {
             'btw9': sum(r.btw_9 or 0 for r in records),
             'btw21': sum(r.btw_21 or 0 for r in records),
             'totaal': sum(r.total_incl or 0 for r in records),
-            'orders': sum(r.order_count or 0 for r in records)
+            'orders': sum(r.order_count or 0 for r in records),
+            'statiegeld': sum(r.statiegeld or 0 for r in records)
         }
         return jsonify(totals)
-    return jsonify({'btw9': 0, 'btw21': 0, 'totaal': 0, 'orders': 0})
+    return jsonify({'btw9': 0, 'btw21': 0, 'totaal': 0, 'orders': 0, 'statiegeld': 0})
 
 
 @app.route('/admin/review-list')

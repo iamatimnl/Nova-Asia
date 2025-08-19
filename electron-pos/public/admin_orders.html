@@ -80,6 +80,7 @@
     <label>BTW 9%: <input type="number" id="tbBtw9Input" step="0.01"></label>
     <label>BTW 21%: <input type="number" id="tbBtw21Input" step="0.01"></label>
     <label>Aantal bestellingen: <input type="number" id="tbOrdersInput"></label>
+    <label>Statiegeld: <input type="number" id="tbStatieInput" step="0.01"></label>
     <button id="tbSaveBtn">Opslaan</button>
   </div>
 
@@ -90,6 +91,7 @@
       <tr><td>BTW 21%</td><td id="tbBtw21">€0,00</td></tr>
       <tr><td>Omzet totaal (incl.)</td><td id="tbOmzet">€0,00</td></tr>
       <tr><td>Aantal bestellingen</td><td id="tbOrders">0</td></tr>
+      <tr><td>Statiegeld</td><td id="tbStatie">€0,00</td></tr>
     </table>
   </div>
 
@@ -308,7 +310,7 @@ document.getElementById('totalCancelled').textContent = cancelledDisplay;
       // 若您在HTML中添加了 unknown 行，也可以更新它：
       const unknownEl = document.getElementById('totalUnknown');
       if (unknownEl) unknownEl.textContent = formatCurrency(unknown);
-      applyThuisbezorgdTotals(mode, total, btw9Total, btw21Total, orderCount);
+      applyThuisbezorgdTotals(mode, total, btw9Total, btw21Total, orderCount, depositTotal);
     })
     .catch(() => { alert('Fout bij het ophalen van gegevens.'); });
 }
@@ -348,7 +350,7 @@ document.getElementById('totalCancelled').textContent = cancelledDisplay;
     function downloadOverviewPDF() {
       window.open(`/admin/orders/download/overview-pdf?${currentQuery.params}`, "_blank");
     }
-    function applyThuisbezorgdTotals(mode, baseTotal, baseBtw9, baseBtw21, baseOrders) {
+    function applyThuisbezorgdTotals(mode, baseTotal, baseBtw9, baseBtw21, baseOrders, baseDeposit) {
       const url = new URL('/admin/thuisbezorgd', window.location.origin);
       const params = new URLSearchParams(currentQuery.params);
       if (mode === 'today') {
@@ -369,6 +371,7 @@ document.getElementById('totalCancelled').textContent = cancelledDisplay;
           document.getElementById('tbBtw21').textContent = formatCurrency(tb.btw21);
           document.getElementById('tbOmzet').textContent = formatCurrency(tb.totaal);
           document.getElementById('tbOrders').textContent = tb.orders || 0;
+          document.getElementById('tbStatie').textContent = formatCurrency(tb.statiegeld);
 
           if (mode !== 'range') {
             document.getElementById('tbInput').style.display = '';
@@ -376,6 +379,7 @@ document.getElementById('totalCancelled').textContent = cancelledDisplay;
             document.getElementById('tbBtw9Input').value = tb.btw9 || '';
             document.getElementById('tbBtw21Input').value = tb.btw21 || '';
             document.getElementById('tbOrdersInput').value = tb.orders || '';
+            document.getElementById('tbStatieInput').value = tb.statiegeld || '';
           } else {
             document.getElementById('tbInput').style.display = 'none';
           }
@@ -384,12 +388,15 @@ document.getElementById('totalCancelled').textContent = cancelledDisplay;
           baseBtw9 += Number(tb.btw9 || 0);
           baseBtw21 += Number(tb.btw21 || 0);
           baseOrders += Number(tb.orders || 0);
+          baseDeposit += Number(tb.statiegeld || 0);
           document.getElementById('totalOmzet').textContent = formatCurrency(baseTotal);
           document.getElementById('btw9Amount').textContent = formatCurrency(baseBtw9);
           document.getElementById('btw21Amount').textContent = formatCurrency(baseBtw21);
           document.getElementById('totalOrders').textContent = baseOrders;
           document.getElementById('avgOrder').textContent = formatCurrency(baseOrders ? baseTotal / baseOrders : 0);
           document.getElementById('tbOverzichtTotal').textContent = formatCurrency(tb.totaal);
+          document.getElementById('totalDeposit').textContent = formatCurrency(baseDeposit);
+          document.getElementById('depositRow').style.display = baseDeposit > 0 ? '' : 'none';
           updateBTWDisplay(baseBtw9, baseBtw21);
         });
     }
@@ -411,7 +418,8 @@ document.getElementById('totalCancelled').textContent = cancelledDisplay;
         totaal: document.getElementById('tbOmzetInput').value,
         btw9: document.getElementById('tbBtw9Input').value,
         btw21: document.getElementById('tbBtw21Input').value,
-        orders: document.getElementById('tbOrdersInput').value
+        orders: document.getElementById('tbOrdersInput').value,
+        statiegeld: document.getElementById('tbStatieInput').value
       };
 
       fetch('/admin/thuisbezorgd', {
