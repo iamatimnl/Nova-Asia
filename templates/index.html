@@ -7,20 +7,58 @@
 <title>Nova Asia Ordering</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Quicksand:wght@400;700&family=Noto+Sans:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
 <!-- 网页标签图标 -->
-<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/assets/Logo.png">
-<link rel="apple-touch-icon" sizes="1024x1024" href="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/assets/Logo.png">
-<link rel="icon" type="image/png" sizes="192x192" href="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/assets/Logo.png">
+<!-- Favicon (桌面浏览器标签) -->
+<link rel="icon" type="image/png" sizes="32x32" href="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/assets/logo-32.png">
 
+<!-- iOS 主屏幕图标 -->
+<link rel="apple-touch-icon" sizes="180x180" href="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/assets/logo-180.png">
 
+<!-- Android / PWA 图标 -->
+<link rel="icon" type="image/png" sizes="192x192" href="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/assets/logo-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/assets/logo-512.png">
 
-<!-- iOS 设置 -->
+<!-- PWA manifest -->
+<link rel="manifest" href="/manifest.json">
+
+<!-- 状态栏/主题色 -->
+<meta name="theme-color" content="#f2e9d8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Nova Asia">
-
-<!-- Android 设置 -->
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#f2e9d8">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Restaurant",
+  "name": "Nova Asia",
+  "url": "https://www.novaasia.nl/",
+  "image": "https://www.novaasia.nl/assets/logo-512.png",
+  "telephone": "+31-6-22599566",
+  "servesCuisine": ["Asian", "Japanese", "Street Food", "Bubble Tea"],
+  "priceRange": "€20",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Almkerkplein 4",
+    "addressLocality": "Hoofddorp",
+    "postalCode": "2134CN",
+    "addressCountry": "NL"
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+      "opens": "12:00",
+      "closes": "20:30"
+    }
+  ],
+  "acceptsReservations": "True",
+  "menu": "https://www.novaasia.nl",
+  "sameAs": [
+    "https://www.facebook.com/—",
+    "https://www.instagram.com/—"
+  ]
+}
+</script>
 
 
 
