@@ -6127,6 +6127,17 @@ function checkout() {
     return null;
   })();
 
+  const firstSelectableTime = (() => {
+    const sel = document.getElementById(orderType === 'afhalen' ? 'pickup_time' : 'delivery_time');
+    if (!sel || !sel.options.length) return null;
+    const val = sel.options[0].value;
+    if (!val) return null;
+    const [h, m] = val.split(':').map(Number);
+    const d = new Date();
+    d.setHours(h, m, 0, 0);
+    return d;
+  })();
+
   const toMinutes = t => {
     const [h, m] = t.split(':').map(Number);
     return h * 60 + m;
@@ -6218,28 +6229,42 @@ function checkout() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   })
-    .then(res => res.json())
+    .then(async res => {
+      if (!res.ok) throw new Error(await res.text());
+      try {
+        return await res.json();
+      } catch (e) {
+        console.error('Response parse error', e);
+        return { status: 'ok' };
+      }
+    })
     .then(data => {
-      if (data.status === 'ok') {
-        beep();
-        saveCustomerInfo();
-        if (paymentMethod === 'online' && data.paymentLink) {
-          window.location.href = data.paymentLink;
-          return;
-        }
-        showFeedback('Bestelling succesvol verzonden! Bestelnummer: ' + orderNumber);
-        for (const k in cart) delete cart[k];
-        sessionStorage.removeItem(FORM_KEY);
-        updateCart();
-        if (sliderText && sliderButton && sliderTrack) {
-          sliderText.innerText = 'Gelukt!';
-          sliderButton.innerHTML = `
+      const orderTime = data.created_at ? new Date(data.created_at) : null;
+      const treatAsSuccess = orderTime && firstSelectableTime && orderTime < firstSelectableTime;
+      if (treatAsSuccess || data.status === 'ok') {
+        try {
+          beep();
+          saveCustomerInfo();
+          if (paymentMethod === 'online' && data.paymentLink) {
+            window.location.href = data.paymentLink;
+            return;
+          }
+          showFeedback('Bestelling succesvol verzonden! Bestelnummer: ' + orderNumber);
+          for (const k in cart) delete cart[k];
+          sessionStorage.removeItem(FORM_KEY);
+          updateCart();
+          if (sliderText && sliderButton && sliderTrack) {
+            sliderText.innerText = 'Gelukt!';
+            sliderButton.innerHTML = `
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="20 6 9 17 4 12"></polyline>
           </svg>`;
-          sliderTrack.style.pointerEvents = 'none';
+            sliderTrack.style.pointerEvents = 'none';
+          }
+          setTimeout(() => { window.location.href = '/'; }, 1500);
+        } catch (uiErr) {
+          console.error(uiErr);
         }
-        setTimeout(() => { window.location.href = '/'; }, 1500);
       } else {
         const errorMsg = data.error || 'Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.';
         showFeedback(errorMsg, true);

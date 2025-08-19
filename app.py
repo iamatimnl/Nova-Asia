@@ -1033,7 +1033,7 @@ def api_orders():
         print("✅ 接收到订单:", data)
 
         # 6. 返回响应
-        resp = {"status": "ok"}
+        resp = {"status": "ok", "created_at": order.created_at.isoformat() if order.created_at else None}
         if str(order.payment_method).lower() == "online":
             pay_url = os.getenv("TIKKIE_URL")
             if pay_url:
