@@ -329,6 +329,7 @@ function normalizeForPrint(order) {
   }
 
   const packagingRaw = pickMax(order.verpakkingskosten, order.packaging, order.package_fee, order.packaging_fee);
+  const statiegeldRaw= pickMax(order.statiegeld, order.deposit);
   const toeslagRaw   = pickMax(order.toeslag, order.surcharge, order.service_fee);
   const delivery     = pickMax(order.bezorgkosten, order.delivery_cost, order.delivery_fee);
   const tip          = pickMax(order.fooi, order.tip);
@@ -353,13 +354,14 @@ function normalizeForPrint(order) {
 
   // Verpakking + Toeslag 合并
   const packaging = Number(packagingRaw) + Number(toeslagRaw);
+  const statiegeld = Number(statiegeldRaw);
 
   // 直接采用 payload 的 BTW/Total（如有）
   const vatFromPayload   = toNumOrNull(order.btw_total ?? order.vat_total ?? order.btw ?? order.vat);
   const totalFromPayload = toNumOrNull(order.totaal ?? order.total);
 
   // 兜底 total（仅在 payload 没给时使用）
-  const fallbackTotal = Number(subtotal) + Number(packaging) + Number(delivery) + Number(tip)
+  const fallbackTotal = Number(subtotal) + Number(packaging) + Number(statiegeld) + Number(delivery) + Number(tip)
     - Number(discount_used_amount != null ? discount_used_amount : discountFallback);
 
   // ===== 返回标准化结构（只做字段映射，不做增值税换算）=====
@@ -391,6 +393,7 @@ function normalizeForPrint(order) {
     items,
     subtotal,
     packaging,                                 // Verpakking + Toeslag
+    statiegeld,
     discount: (discount_used_amount != null ? discount_used_amount : discountFallback),
     delivery_fee: delivery,
     tip,
@@ -673,6 +676,7 @@ col2('Subtotaal',   `EUR ${to2(order.subtotal)}`);
 }
 
 col2('Verpakking Toeslag', `EUR ${to2(order.packaging)}`);
+col2('Statiegeld',         `EUR ${to2(order.statiegeld)}`);
 col2('Bezorgkosten',       `EUR ${to2(order.delivery_fee)}`);
 col2('Fooi',               `EUR ${to2(order.tip)}`);
 

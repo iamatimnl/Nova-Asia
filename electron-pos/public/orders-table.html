@@ -3422,6 +3422,7 @@ function addRow(order, highlight = false) {
   const subtotal      = window.toNum(order.subtotal ?? 0);
   const totaal        = window.toNum(order.totaal ?? order.total ?? 0);
   const packaging_fee = window.toNum(order.packaging_fee ?? 0);
+  const statiegeld    = window.toNum(order.statiegeld ?? 0);
   const delivery_fee  = window.toNum(order.delivery_fee ?? order.bezorgkosten ?? 0);
   const tip           = window.toNum(order.tip ?? 0);
   const btw_9  = window.toNum(order.btw_9  ?? 0);
@@ -3516,6 +3517,7 @@ if (nextAmtNum !== 0) {
 
     ${subtotal      > 0 ? `<div><strong>Subtotal:</strong> €${fmt2(subtotal)}</div>` : ''}
     ${packaging_fee > 0 ? `<div><strong>Verpakkingskosten:</strong> €${fmt2(packaging_fee)}</div>` : ''}
+    ${statiegeld    > 0 ? `<div><strong>Statiegeld:</strong> €${fmt2(statiegeld)}</div>` : ''}
     ${delivery_fee  > 0 ? `<div><strong>Bezorgkosten:</strong> €${fmt2(delivery_fee)}</div>` : ''}
     ${btw_9         > 0 ? `<div><strong>BTW 9%:</strong> €${fmt2(btw_9)}</div>` : ''}
     ${btw_21        > 0 ? `<div><strong>BTW 21%:</strong> €${fmt2(btw_21)}</div>` : ''}
