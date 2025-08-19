@@ -63,6 +63,7 @@
           <th>Ordernummer</th>
           <th>Bezorgkosten (€)</th>
           <th>Fooi (€)</th>
+          <th>Statiegeld (€)</th>
           <th>Totaal (€)</th>
           <th>Adres</th>
           <th>Betaling</th>
@@ -113,6 +114,7 @@
 
     <tr><td>Totale korting</td><td id="totalDiscount">€0,00</td></tr>
     <tr><td>Totale fooi</td><td id="totalTip">€0,00</td></tr>
+    <tr id="depositRow" style="display:none;"><td>Totale statiegeld</td><td id="totalDeposit">€0,00</td></tr>
     <tr><td>Bezorgkosten (bedrag / aantal)</td><td id="totalDelivery">€0,00 / 0</td></tr>
 
     <tr><td>Online betaling</td><td class="money" id="totalOnline">€0,00</td></tr>
@@ -141,6 +143,7 @@
       <div><label>Totaal: <input type="number" step="0.01" id="editTotaal"></label></div>
       <div><label>Bezorgkosten: <input type="number" step="0.01" id="editBezorgkosten"></label></div>
       <div><label>Fooi: <input type="number" step="0.01" id="editFooi"></label></div>
+      <div><label>Statiegeld: <input type="number" step="0.01" id="editStatiegeld"></label></div>
       <menu>
         <button type="reset" id="editCancel">Annuleer</button>
         <button type="submit">Opslaan</button>
@@ -173,7 +176,7 @@
       // 初始化统计数据
       let total = 0, pin = 0, online = 0, contant = 0, credit = 0, unknown = 0;
       let cancelled = 0, cancelledCount = 0;
-      let tipTotal = 0, discountTotal = 0;
+      let tipTotal = 0, depositTotal = 0, discountTotal = 0;
       let deliveryFeeTotal = 0, deliveryCount = 0;
       let orderCount = 0;
       let btw9Total = 0, btw21Total = 0;
@@ -219,6 +222,8 @@
 
         let fooi = parseFloat(order.fooi ?? order.tip ?? 0);
         if (isNaN(fooi)) fooi = 0;
+        let statiegeld = parseFloat(order.statiegeld ?? order.deposit ?? 0);
+        if (isNaN(statiegeld)) statiegeld = 0;
 
         let tot = order.totaal ?? order.total ?? 0;
         if (typeof tot === 'string') {
@@ -233,6 +238,7 @@
         } else {
           total += tot;
           tipTotal += fooi;
+          depositTotal += statiegeld;
           discountTotal += Number(order.discountAmount ?? order.korting ?? 0);
           deliveryFeeTotal += delFee;
           if (isDelivery) deliveryCount++;
@@ -261,6 +267,7 @@
           <td>${order.order_number || ''}</td>
           <td>${isDelivery ? formatCurrency(delFee) : '-'}</td>
           <td>${formatCurrency(fooi)}</td>
+          <td>${formatCurrency(statiegeld)}</td>
           <td>${formatCurrency(tot)}</td>
           <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
           <td>${order.payment_method || ''}</td>
@@ -292,6 +299,8 @@ document.getElementById('totalContant').textContent = formatCurrency(contant);
 document.getElementById('totalCredit').textContent  = formatCurrency(credit);
 document.getElementById('totalDiscount').textContent = formatCurrency(discountTotal);
 document.getElementById('totalTip').textContent      = formatCurrency(tipTotal);
+document.getElementById('totalDeposit').textContent  = formatCurrency(depositTotal);
+document.getElementById('depositRow').style.display  = depositTotal > 0 ? '' : 'none';
 document.getElementById('totalDelivery').textContent = `${formatCurrency(deliveryFeeTotal)} / ${deliveryCount}`;
 
 const cancelledDisplay = `${cancelledCount} / ${formatCurrency(cancelled)}`;
@@ -524,6 +533,7 @@ document.getElementById('totalCancelled').textContent = cancelledDisplay;
       document.getElementById('editTotaal').value = currentEditData.totaal != null ? currentEditData.totaal : '';
       document.getElementById('editBezorgkosten').value = currentEditData.bezorgkosten != null ? currentEditData.bezorgkosten : (currentEditData.delivery_fee || '');
       document.getElementById('editFooi').value = currentEditData.fooi != null ? currentEditData.fooi : (currentEditData.tip || '0');
+      document.getElementById('editStatiegeld').value = currentEditData.statiegeld != null ? currentEditData.statiegeld : (currentEditData.deposit || '0');
       editDialog.showModal();
     }
 
@@ -546,6 +556,7 @@ document.getElementById('totalCancelled').textContent = cancelledDisplay;
         totaal: parseFloat(document.getElementById('editTotaal').value) || 0,
         bezorgkosten: parseFloat(document.getElementById('editBezorgkosten').value) || 0,
         fooi: parseFloat(document.getElementById('editFooi').value) || 0,
+        statiegeld: parseFloat(document.getElementById('editStatiegeld').value) || 0,
         order_type: currentEditData.order_type,
         bron: currentEditData.bron
       };

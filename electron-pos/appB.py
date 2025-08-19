@@ -157,6 +157,8 @@ def generate_excel_today(include_cancelled: bool = False):
             "Email": o.email,
             "Adres": f"{o.street} {o.house_number}, {o.postcode} {o.city}",
             "Betaalwijze": o.payment_method,
+            "Fooi": o.fooi or 0,
+            "Statiegeld": o.statiegeld or 0,
             "Totaal": o.totaal or 0,
             "Items": summary,
             "Status": status,
@@ -170,9 +172,10 @@ def generate_excel_today(include_cancelled: bool = False):
         worksheet = writer.sheets["Bestellingen"]
         currency_fmt = workbook.add_format({"num_format": "€ #,##0.00"})
         text_fmt = workbook.add_format({"num_format": "@"})
-        if "Totaal" in df.columns:
-            col_idx = df.columns.get_loc("Totaal")
-            worksheet.set_column(col_idx, col_idx, None, currency_fmt)
+        for col in ["Fooi", "Statiegeld", "Totaal"]:
+            if col in df.columns:
+                col_idx = df.columns.get_loc(col)
+                worksheet.set_column(col_idx, col_idx, None, currency_fmt)
         if "Telefoon" in df.columns:
             col_idx = df.columns.get_loc("Telefoon")
             worksheet.set_column(col_idx, col_idx, None, text_fmt)
@@ -259,7 +262,7 @@ def generate_pdf_today(include_cancelled: bool = False):
     doc = SimpleDocTemplate(buffer, pagesize=A4)
     elements = []
 
-    data = [["Datum", "Tijd", "Naam", "Totaal", "Items", "Status"]]
+    data = [["Datum", "Tijd", "Naam", "Fooi", "Statiegeld", "Totaal", "Items", "Status"]]
     for o in orders:
         try:
             items = json.loads(o.items or "{}")
@@ -272,6 +275,8 @@ def generate_pdf_today(include_cancelled: bool = False):
             to_nl(o.created_at).strftime("%Y-%m-%d"),
             to_nl(o.created_at).strftime("%H:%M"),
             o.customer_name,
+            f"€{(o.fooi or 0):.2f}",
+            f"€{(o.statiegeld or 0):.2f}",
             f"€{o.totaal:.2f}",
             summary,
             status
