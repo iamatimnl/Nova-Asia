@@ -22,7 +22,7 @@ const WRITABLE_COLUMNS = new Set([
   'order_type','pickup_time','delivery_time','payment_method',
   'postcode','house_number','street','city',
   'opmerking','items',
-  'subtotal','total','packaging_fee','delivery_fee','tip',
+  'subtotal','total','packaging_fee','statiegeld','delivery_fee','tip',
   'btw_9','btw_21','btw_total',
   'discount_amount','discount_code','discountAmount','discountCode',
   'is_completed','is_cancelled',
@@ -86,6 +86,7 @@ db.exec(`
     subtotal REAL,
     total REAL,
     packaging_fee REAL,
+    statiegeld REAL,
     delivery_fee REAL,
     tip REAL,
     btw_9 REAL,
@@ -112,6 +113,7 @@ function ensureColumn(table, column, type) {
   }
 }
 ensureColumn('orders', 'bron', 'TEXT');
+ensureColumn('orders', 'statiegeld', 'REAL');
 ensureColumn('orders', 'discount_amount', 'REAL');
 ensureColumn('orders', 'discount_code', 'TEXT');
 ensureColumn('orders', 'discountAmount', 'REAL');
@@ -156,6 +158,7 @@ function toRow(oInput) {
   const subtotal      = toNum(pick(o,'summary.subtotal','subtotal'));
   const total         = toNum(pick(o,'summary.total','totaal','total'));
   const packaging_fee = toNum(pick(o,'summary.packaging_fee','verpakkingskosten','packaging_fee'));
+  const statiegeld    = toNum(pick(o,'summary.statiegeld','statiegeld'));
   const delivery_fee  = toNum(pick(o,'summary.delivery_fee','bezorgkosten','delivery_fee'));
   const tip           = toNum(pick(o,'summary.tip','fooi','tip'));
   const discount_amount = toNum(pick(o,'discount_amount'));
@@ -194,7 +197,7 @@ function toRow(oInput) {
     postcode, house_number, street, city,
     opmerking, items,
 
-    subtotal, total, packaging_fee, delivery_fee, tip,
+    subtotal, total, packaging_fee, statiegeld, delivery_fee, tip,
     discount_code, discount_amount,   // snake_case
     discountCode,  discountAmount,    // camelCase
 
@@ -210,14 +213,14 @@ const upsertSQL = `
 INSERT INTO orders (
   order_id, order_number, order_type, customer_name, phone, email,
   pickup_time, delivery_time, payment_method, postcode, house_number, street, city, opmerking,
-  items, subtotal, total, packaging_fee, delivery_fee, tip, btw_9, btw_21, btw_total, bron,
+  items, subtotal, total, packaging_fee, statiegeld, delivery_fee, tip, btw_9, btw_21, btw_total, bron,
   discount_code, discount_amount,
   discountCode, discountAmount,
   data
 ) VALUES (
   @order_id, @order_number, @order_type, @customer_name, @phone, @email,
   @pickup_time, @delivery_time, @payment_method, @postcode, @house_number, @street, @city, @opmerking,
-  @items, @subtotal, @total, @packaging_fee, @delivery_fee, @tip, @btw_9, @btw_21, @btw_total, @bron,
+  @items, @subtotal, @total, @packaging_fee, @statiegeld, @delivery_fee, @tip, @btw_9, @btw_21, @btw_total, @bron,
   @discount_code, @discount_amount,
   @discountCode, @discountAmount,
   @data
@@ -239,6 +242,7 @@ ON CONFLICT(order_number) DO UPDATE SET
   subtotal=excluded.subtotal,
   total=excluded.total,
   packaging_fee=excluded.packaging_fee,
+  statiegeld=excluded.statiegeld,
   delivery_fee=excluded.delivery_fee,
   tip=excluded.tip,
   btw_9=excluded.btw_9,
@@ -310,6 +314,7 @@ function sanitizePatch(patch = {}) {
       case 'subtotal':
       case 'total':
       case 'packaging_fee':
+      case 'statiegeld':
       case 'delivery_fee':
       case 'tip':
       case 'btw_9':
