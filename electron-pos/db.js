@@ -25,7 +25,7 @@ const WRITABLE_COLUMNS = new Set([
   'subtotal','total','packaging_fee','statiegeld','delivery_fee','tip',
   'btw_9','btw_21','btw_total',
   'discount_amount','discount_code','discountAmount','discountCode',
-  'is_completed','is_cancelled',
+  'is_completed','is_cancelled','is_confirmed',
   'bron',
   // 如确需支持修改 data / created_at，可在确认风险后加入：
   // 'data', 'created_at'
@@ -98,6 +98,7 @@ db.exec(`
     discountCode TEXT,
     is_completed INTEGER DEFAULT 0,
     is_cancelled INTEGER DEFAULT 0,
+    is_confirmed INTEGER DEFAULT 0,
     bron TEXT
   );
   CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at DESC);
@@ -118,6 +119,7 @@ ensureColumn('orders', 'discount_amount', 'REAL');
 ensureColumn('orders', 'discount_code', 'TEXT');
 ensureColumn('orders', 'discountAmount', 'REAL');
 ensureColumn('orders', 'discountCode', 'TEXT');
+ensureColumn('orders', 'is_confirmed', 'INTEGER');
 
 
 /* ===================== 字段映射（含 bron 约束） ===================== */

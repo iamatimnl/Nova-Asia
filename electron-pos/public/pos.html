@@ -2920,6 +2920,10 @@ async function submitOrder() {
     }
   }
 
+  // 确保提交与广播使用最终支付方式
+  payload.paymentMethod = paymentMethod;
+  payload.payment_method = paymentMethod;
+
 
   // ✅ 提交到后端（改为 await 写法，逻辑等价）
   try {
@@ -4119,23 +4123,6 @@ function showNextOrderModal() {
   console.log("✅ 弹窗已显示！");
 }
 
-document.getElementById('modal-confirm').addEventListener('click', () => {
-  console.log("✅ 用户点击了 Bevestigen");
-
-  if (window.api?.printReceipt && currentOrder) {
-    const orderText = JSON.stringify(currentOrder);
-    window.api.printReceipt(orderText);
-    console.log("🖨️ 当前订单已发送打印请求:", currentOrder.order_number);
-  } else {
-    console.warn("⚠️ window.api.printReceipt 不可用 或 currentOrder 为空");
-  }
-
-  document.getElementById('order-modal').style.display = 'none';
-  isModalActive = false;
-  showNextOrderModal();
-});
-
-
 window.printThisOrder = async function(btn) {
   try {
     const raw = btn.getAttribute('data-order');
@@ -4187,19 +4174,61 @@ function updateZSMBadge(order) {
 
 
 document.getElementById('modal-confirm').addEventListener('click', async () => {
+  if (!currentOrder) return;
+
+  console.log("✅ 用户点击了 Bevestigen");
   const tijdslotOrigineel = currentOrder.pickup_time || currentOrder.delivery_time || '';
   const gekozenTijd = document.getElementById('modal-time').value || tijdslotOrigineel;
 
-  if (window.api?.stopDing) { 
-  window.api.stopDing(); 
-}
+  if (window.api?.stopDing) {
+    window.api.stopDing();
+  }
 
+  // 打印小票
+  if (window.api?.printReceipt) {
+    try {
+      window.api.printReceipt(JSON.stringify(currentOrder));
+      console.log("🖨️ 当前订单已发送打印请求:", currentOrder.order_number);
+    } catch (e) {
+      console.warn('打印失败', e);
+    }
+  }
 
+  // 标记确认并入库
+  try {
+    currentOrder.is_confirmed = 1;
+    await window.pos?.updateOrderByNumber?.(currentOrder.order_number, { is_confirmed: 1 });
+  } catch (err) {
+    console.warn('本地确认标记失败', err);
+  }
 
-  // ⏱️ 时间未更改，跳过发送邮件
-  if (gekozenTijd === tijdslotOrigineel) {
-    console.log("⏳ 时间未更改，无需发送邮件。");
-  } else {
+  // 通知服务器/广播
+  try {
+    socket.emit('order_confirmed', {
+      order_number: currentOrder.order_number,
+      is_confirmed: true,
+      payment_method: currentOrder.payment_method
+    });
+  } catch (err) {
+    console.warn('socket.emit order_confirmed failed', err);
+  }
+
+  try {
+    await fetch('https://flask-order-api.onrender.com/api/order_confirmed', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        order_number: currentOrder.order_number,
+        tijdslot: gekozenTijd,
+        is_confirmed: true
+      })
+    });
+  } catch (err) {
+    console.warn('确认状态发送失败', err);
+  }
+
+  // ⏱️ 如果时间更改则发送通知邮件
+  if (gekozenTijd !== tijdslotOrigineel) {
     try {
       const response = await fetch('https://flask-order-api.onrender.com/api/order_time_changed', {
         method: 'POST',
@@ -4212,22 +4241,17 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
           tijdslot: gekozenTijd
         })
       });
-
-      if (!response.ok) {
-        throw new Error(`服务器返回错误: ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error(`服务器返回错误: ${response.status}`);
       const msg = await response.text();
       console.log("📧 邮件响应:", msg);
     } catch (err) {
       console.warn("❌ 邮件发送失败", err);
     }
+  } else {
+    console.log("⏳ 时间未更改，无需发送邮件。");
   }
 
-  // ✅ 打印（可选是否放前面）
-  // printOrder(currentOrder, gekozenTijd);
-
-  // ✅ 关闭弹窗并处理下一个订单
+  // 关闭弹窗并处理下一单
   document.getElementById('order-modal').style.display = 'none';
   isModalActive = false;
   currentOrder = null;
