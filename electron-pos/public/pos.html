@@ -1238,6 +1238,36 @@ dialog::backdrop {
 /* 辅助文字也统一白色 */
 #wissel-modal-pos .muted{ color:#fff; opacity:.8; font-size:16px; }
 
+/* ===== Pin-betaling dialoog (#pin-modal-pos) ===== */
+#pin-modal-pos{
+  --ios-label:#fff;
+  --ios-card:#1c1c1e;
+  --ios-sep:rgba(255,255,255,.18);
+  font-size:18px;
+  border:0; padding:0; background:transparent;
+}
+#pin-modal-pos:not([open]){ display:none !important; pointer-events:none !important; }
+#pin-modal-pos::backdrop{ background:rgba(0,0,0,.45); backdrop-filter:blur(6px); }
+#pin-modal-pos .card{
+  background:var(--ios-card);
+  color:#fff;
+  width:360px;
+  max-width:92%;
+  padding:20px;
+  border-radius:16px;
+  box-shadow:0 12px 30px rgba(0,0,0,.18);
+  border:1px solid var(--ios-sep);
+  text-align:center;
+}
+#pin-modal-pos h3{ margin:0 0 8px; font-size:22px; font-weight:700; }
+#pin-modal-pos .actions{ display:flex; flex-direction:column; gap:12px; margin-top:16px; }
+#pin-modal-pos .btn{
+  padding:12px; border:0; border-radius:12px; font-weight:700; cursor:pointer;
+}
+#pin-modal-pos .btn-primary{ background:linear-gradient(180deg,#0a84ff,#0066d6); color:#fff; }
+#pin-modal-pos .btn-secondary{ background:transparent; color:#fff; border:1px solid var(--ios-sep); }
+#pin-modal-pos .btn-secondary:hover{ background:rgba(255,255,255,.06); }
+
 /* 列表里的“Wissel”触发按钮：也可稍微放大一点 */
 .btn-wissel{
   appearance:none;
@@ -1630,6 +1660,19 @@ dialog::backdrop {
     <div class="actions">
       <button id="pos-wissel-close" class="btn btn-secondary">Sluiten</button>
       <button id="pos-wissel-ok" class="btn btn-primary">Bevestigen</button>
+      <button id="cash-to-pin" class="btn btn-secondary">Overschakelen naar Pin</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="pin-modal-pos">
+  <div class="card">
+    <h3>Pin Betaling</h3>
+    <p>Te betalen: <strong id="pin-due">€0,00</strong></p>
+    <div class="actions">
+      <button id="pin-send" class="btn btn-primary">Versturen naar PAX A35</button>
+      <button id="pin-later" class="btn btn-secondary">Later betalen</button>
+      <button id="pin-to-cash" class="btn btn-secondary">Overschakelen naar Contant (wisselen)</button>
     </div>
   </div>
 </dialog>
@@ -2588,6 +2631,7 @@ function openWisselAwaitPOS(total) {
     const closeBtn = document.getElementById('pos-wissel-close');
     const okBtn    = document.getElementById('pos-wissel-ok');
     const quickBox = dlg.querySelector('.quick');
+    const pinBtn   = document.getElementById('cash-to-pin');
 
     // 提示行
     let hintEl = document.getElementById('pos-wissel-hint');
@@ -2670,6 +2714,7 @@ function openWisselAwaitPOS(total) {
       okBtn?.removeEventListener('click', onOk);
       quickBox?.removeEventListener('click', onQuick);
       window.removeEventListener('keydown', onKey);
+      pinBtn?.removeEventListener('click', onPin);
     }
 
     const onQuick = (e) => {
@@ -2681,12 +2726,15 @@ function openWisselAwaitPOS(total) {
       recompute();
     };
     
+    function onPin(){ cleanup(); try{ dlg.close(); }catch{} resolve('pin'); }
+
     paid.addEventListener('input', recompute);
     dlg.addEventListener('click', onBackdrop);
     exactBtn?.addEventListener('click', onExact);
     closeBtn?.addEventListener('click', onOk);
     okBtn?.addEventListener('click', onOk);
     quickBox?.addEventListener('click', onQuick);
+    pinBtn?.addEventListener('click', onPin);
     window.addEventListener('keydown', onKey);
 
     dlg.showModal();
@@ -2694,6 +2742,40 @@ function openWisselAwaitPOS(total) {
   });
 }
 
+
+function openPinModal(total) {
+  return new Promise((resolve) => {
+    const dlg = document.getElementById('pin-modal-pos');
+    if (!dlg) return resolve('later');
+    const due = r05POS(parseEuro(total));
+    const dueEl = document.getElementById('pin-due');
+    const sendBtn = document.getElementById('pin-send');
+    const laterBtn = document.getElementById('pin-later');
+    const cashBtn = document.getElementById('pin-to-cash');
+
+    dueEl.textContent = euroFmtPOS.format(due);
+
+    function cleanup(result) {
+      sendBtn.removeEventListener('click', onSend);
+      laterBtn.removeEventListener('click', onLater);
+      cashBtn.removeEventListener('click', onCash);
+      dlg.close();
+      resolve(result);
+    }
+    function onSend() {
+      console.log('TODO: send to PAX A35');
+      cleanup('send');
+    }
+    function onLater() { cleanup('later'); }
+    function onCash() { cleanup('cash'); }
+
+    sendBtn.addEventListener('click', onSend);
+    laterBtn.addEventListener('click', onLater);
+    cashBtn.addEventListener('click', onCash);
+
+    dlg.showModal();
+  });
+}
 
 async function submitOrder() {
   const name = document.getElementById('custName').value.trim() || 'Guest';
@@ -2778,7 +2860,7 @@ async function submitOrder() {
   const pickupVal = !delivery && isZsm ? getAsapTime() : pickupSel;
   const deliveryVal = delivery && isZsm ? getAsapTime() : deliverySel;
 
-  const paymentMethod = delivery
+  let paymentMethod = delivery
       ? document.getElementById('deliveryPayment').value
       : document.getElementById('pickupPayment').value;
 
@@ -2819,18 +2901,37 @@ async function submitOrder() {
     payload.discountAmount = parseFloat(discount.toFixed(2));
   }
 
-  /* ⬇️⬇️ 就在这里：现金→先弹找零；关闭后继续提交 */
-  // 现金：父页先弹自己的 modal，关掉后再提交
-if (isCashMethod(paymentMethod)) {
+  /* ⬇️⬇️ 就在这里：现金↔️PIN 可互相切换；最终根据 paymentMethod 决定流程 */
   const due = Number(payload.totaal) || parseEuro(payload.totaal) || 0; // 含税应收
-  const res = await openWisselAwaitPOS(due);
-  if (!res) {
-    // 用户取消时若不想提交，可直接 return;
-    // return;
-  } else {
-    payload._wissel = res; // { paid, change, due } 可用于打印/入库
+  let wisselData = null;
+  while (true) {
+    if (paymentMethod === 'pin') {
+      const r = await openPinModal(due);
+      if (r === 'cash') {
+        paymentMethod = 'cash';
+        payload.paymentMethod = 'cash';
+        if (delivery) document.getElementById('deliveryPayment').value = 'cash';
+        else document.getElementById('pickupPayment').value = 'cash';
+        continue;
+      }
+      break; // pin 支付：无找零数据
+    }
+
+    if (isCashMethod(paymentMethod)) {
+      const r = await openWisselAwaitPOS(due);
+      if (r === 'pin') {
+        paymentMethod = 'pin';
+        payload.paymentMethod = 'pin';
+        if (delivery) document.getElementById('deliveryPayment').value = 'pin';
+        else document.getElementById('pickupPayment').value = 'pin';
+        continue;
+      }
+      if (r) wisselData = r; // { paid, change, due }
+      break;
+    }
+    break;
   }
-}
+  if (wisselData) payload._wissel = wisselData;
 
 
   // ✅ 提交到后端（改为 await 写法，逻辑等价）
