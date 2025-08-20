@@ -2901,24 +2901,35 @@ async function submitOrder() {
     const due = Number(payload.totaal) || parseEuro(payload.totaal) || 0;
     const res = await openPinModal(due);
     if (res === 'cash') {
-      paymentMethod = 'cash';
-      payload.paymentMethod = 'cash';
+      // 用户在 PIN 模态框中切换为现金
       if (delivery) document.getElementById('deliveryPayment').value = 'cash';
       else document.getElementById('pickupPayment').value = 'cash';
     }
   }
 
+  // 重新读取最终选择
+  paymentMethod = delivery
+      ? document.getElementById('deliveryPayment').value
+      : document.getElementById('pickupPayment').value;
+
   // 现金：父页先弹自己的 modal，关掉后再提交
   if (isCashMethod(paymentMethod)) {
     const due = Number(payload.totaal) || parseEuro(payload.totaal) || 0; // 含税应收
     const res = await openWisselAwaitPOS(due);
-    if (!res) {
-      // 用户取消时若不想提交，可直接 return;
-      // return;
-    } else {
+    if (res === 'pin') {
+      // 在现金找零对话框中改为 PIN
+      paymentMethod = 'pin';
+      if (delivery) document.getElementById('deliveryPayment').value = 'pin';
+      else document.getElementById('pickupPayment').value = 'pin';
+    } else if (res) {
       payload._wissel = res; // { paid, change, due } 可用于打印/入库
     }
   }
+
+  // 最终确认的支付方式
+  paymentMethod = delivery
+      ? document.getElementById('deliveryPayment').value
+      : document.getElementById('pickupPayment').value;
 
   // 确保提交与广播使用最终支付方式
   payload.paymentMethod = paymentMethod;
