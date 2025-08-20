@@ -1659,6 +1659,7 @@ dialog::backdrop {
     <div id="pos-wissel-denoms" class="muted"></div>
     <div class="actions">
       <button id="pos-wissel-close" class="btn btn-secondary">Sluiten</button>
+      <button id="pos-wissel-pin" class="btn btn-secondary">Overschakelen naar PIN</button>
       <button id="pos-wissel-ok" class="btn btn-primary">Bevestigen</button>
     </div>
   </div>
@@ -2628,6 +2629,7 @@ function openWisselAwaitPOS(total) {
     const denomsEl = document.getElementById('pos-wissel-denoms');
     const exactBtn = document.getElementById('pos-wissel-exact');
     const closeBtn = document.getElementById('pos-wissel-close');
+    const pinBtn   = document.getElementById('pos-wissel-pin');
     const okBtn    = document.getElementById('pos-wissel-ok');
     const quickBox = dlg.querySelector('.quick');
 
@@ -2698,6 +2700,11 @@ function openWisselAwaitPOS(total) {
       const underpaidBy = diff > 0 ? diff : 0;
       resolve(ok ? { paid: p, change: c, due, status, underpaidBy } : null);
     };
+    const onPin = () => {
+      cleanup();
+      try { dlg.close(); } catch {}
+      resolve('pin');
+    };
 
     const onBackdrop = e => { if (e.target === dlg) finish(false); }; // 点击空白仍视为取消
     const onExact    = () => { paid.value = due.toFixed(2); recompute(); };
@@ -2711,6 +2718,7 @@ function openWisselAwaitPOS(total) {
       closeBtn?.removeEventListener('click', onOk);
       okBtn?.removeEventListener('click', onOk);
       quickBox?.removeEventListener('click', onQuick);
+      pinBtn?.removeEventListener('click', onPin);
       window.removeEventListener('keydown', onKey);
     }
 
@@ -2729,6 +2737,7 @@ function openWisselAwaitPOS(total) {
     closeBtn?.addEventListener('click', onOk);
     okBtn?.addEventListener('click', onOk);
     quickBox?.addEventListener('click', onQuick);
+    pinBtn?.addEventListener('click', onPin);
     window.addEventListener('keydown', onKey);
 
     dlg.showModal();
@@ -2769,6 +2778,55 @@ function openPinModal(total) {
 
     dlg.showModal();
   });
+}
+
+async function openCheckout(btn) {
+  const wrapper = btn.closest('.order-card-wrapper');
+  const card = wrapper ? wrapper.querySelector('.order-card') : null;
+  if (!card) return;
+
+  let order = {};
+  try { order = JSON.parse(card.dataset.order || '{}'); } catch {}
+  const id = order.id || card.dataset.id || btn.dataset.orderId;
+  const due = Number(btn.dataset.total || order.totaal || order.total || 0);
+  let method = String(order.payment_method || '').toLowerCase();
+
+  while (true) {
+    if (isCashMethod(method)) {
+      const res = await openWisselAwaitPOS(due);
+      if (res === 'pin') { method = 'pin'; continue; }
+      if (!res) return;
+      break;
+    } else {
+      const res = await openPinModal(due);
+      if (res === 'cash') { method = 'cash'; continue; }
+      if (res === 'later' || res === null) return;
+      break;
+    }
+  }
+
+  const finalMethod = method;
+  order.payment_method = finalMethod;
+  card.dataset.order = JSON.stringify(order);
+  const pmEl = card.querySelector('.payment-method');
+  if (pmEl) pmEl.textContent = finalMethod;
+
+  if (id) {
+    try {
+      await fetch(`/api/orders/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ payment_method: finalMethod })
+      });
+    } catch (err) {
+      console.error('update payment_method failed', err);
+    }
+    try {
+      await window.pos?.updateOrderById?.(id, { payment_method: finalMethod });
+    } catch (err) {
+      console.warn('local update failed', err);
+    }
+  }
 }
 
 async function submitOrder() {
@@ -3638,7 +3696,7 @@ if (nextAmtNum !== 0) {
     <div><strong>Naam:</strong> ${order.customer_name || ''}</div>
     <div><strong>Telefoon:</strong> ${order.phone || ''}</div>
     ${order.email ? `<div><strong>Email:</strong> <a href="mailto:${order.email}">${order.email}</a></div>` : ''}
-    ${order.payment_method ? `<div><strong>Betaalwijze:</strong> ${order.payment_method}</div>` : ''}
+    <div><strong>Betaalwijze:</strong> <span class="payment-method">${order.payment_method || ''}</span></div>
     ${order.bron ? `<div><strong>Bron:</strong> ${order.bron}</div>` : ''}
     <div><strong>Items:</strong><ul>${items}</ul></div>
     ${order.opmerking ? `<div><strong>Opmerking:</strong> ${order.opmerking}</div>` : ''}
@@ -3687,10 +3745,7 @@ if (nextAmtNum !== 0) {
   <!-- ✅ 安全打印：把编码后的 JSON 放在 data-order 上 -->
   <button class="btn-print" onclick="printThisOrder(this)" data-order="${encodedOrder}">🖨️ Print</button>
 
-  ${['cash','contant'].includes(String(order.payment_method || '').toLowerCase()) 
-  ? `<button class="btn-wissel grey-bg" data-order-id="${order.id || ''}" data-total="${totaal}" onclick="openWissel(this)">Wissel</button>` 
-  : ''
-}
+  <button class="btn-afrekenen grey-bg" data-order-id="${order.id || ''}" data-total="${totaal}" onclick="openCheckout(this)">Afrekenen</button>
 
 
   <button class="btn-annuleer" onclick="toggleCancel(this)"
