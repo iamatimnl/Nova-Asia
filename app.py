@@ -69,6 +69,9 @@ with app.app_context():
         if "is_cancelled" not in cols:
             with db.engine.begin() as conn:
                 conn.execute(text("ALTER TABLE orders ADD COLUMN is_cancelled BOOLEAN DEFAULT FALSE"))
+        if "status" not in cols:
+            with db.engine.begin() as conn:
+                conn.execute(text("ALTER TABLE orders ADD COLUMN status VARCHAR(20) DEFAULT 'pending'"))
         if "tijdslot_display" not in cols:
             with db.engine.begin() as conn:
                 conn.execute(text("ALTER TABLE orders ADD COLUMN tijdslot_display TEXT"))
@@ -473,6 +476,7 @@ def orders_to_dicts(orders):
             "fooi": fooi,
             "statiegeld": statiegeld,
             "order_number": o.order_number,
+            "status": o.status,
             "korting": discount,
             "is_completed": o.is_completed,
             "is_cancelled": o.is_cancelled
@@ -581,6 +585,7 @@ class Order(db.Model):
     btw_total = db.Column(db.Float, default=0.0)
     is_completed = db.Column(db.Boolean, default=False)
     is_cancelled = db.Column(db.Boolean, default=False)
+    status = db.Column(db.String(20), default='pending')
 
 # ✅ 添加的位置
     def to_dict(self):
@@ -617,7 +622,8 @@ class Order(db.Model):
             "btw_21": self.btw_21 or 0.0,
             "btw_total": self.btw_total or (self.btw_9 or 0.0) + (self.btw_21 or 0.0),
             "is_completed": self.is_completed,
-            "is_cancelled": self.is_cancelled
+            "is_cancelled": self.is_cancelled,
+            "status": self.status
         }
 
 class Thuisbezorgd(db.Model):
@@ -860,8 +866,9 @@ def pos():
             city=data.get("city"),
             opmerking=data.get("opmerking") or data.get("remark"),
             items=json.dumps(data.get("items", {})),
-            order_number=order_number
-        )   
+            order_number=order_number,
+            status=data.get("status") or "pending"
+        )
         db.session.add(order)
         db.session.commit()
 
@@ -971,7 +978,8 @@ def api_orders():
                 or summary_data.get("discount_amount")
                 or summary_data.get("discountAmount")
                 or 0
-            )
+            ),
+            status=data.get("status") or "pending"
         )
 
         # 2. 计算 subtotal / totaal
@@ -1200,8 +1208,10 @@ def update_order_status(order_id: int):
         order.is_completed = bool(data['is_completed'])
     if 'is_cancelled' in data:
         order.is_cancelled = bool(data['is_cancelled'])
+    if 'status' in data:
+        order.status = data['status']
     db.session.commit()
-    return jsonify({'success': True, 'is_completed': order.is_completed, 'is_cancelled': order.is_cancelled})
+    return jsonify({'success': True, 'is_completed': order.is_completed, 'is_cancelled': order.is_cancelled, 'status': order.status})
 
 @app.route('/api/orders/<int:order_id>', methods=['PUT', 'PATCH'])
 @login_required
@@ -1213,7 +1223,7 @@ def edit_order(order_id: int):
     allowed = [
         'customer_name', 'phone', 'email', 'street', 'house_number', 'postcode',
         'city', 'pickup_time', 'delivery_time', 'order_type', 'items',
-        'payment_method', 'totaal', 'fooi', 'statiegeld', 'bron', 'opmerking', 'bezorgkosten'
+        'payment_method', 'totaal', 'fooi', 'statiegeld', 'bron', 'opmerking', 'bezorgkosten', 'status'
     ]
     for f in allowed:
         if f not in data:
