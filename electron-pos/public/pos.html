@@ -3212,6 +3212,7 @@ function formatCurrency(value){
       try { order = JSON.parse(card.dataset.order || '{}'); } catch {}
       if (String(order.order_number) === String(order_number)) {
         order.payment_method = payment_method;
+        if (payment_status) order.status = payment_status;
         card.dataset.order = JSON.stringify(order);
         const pmEl = card.querySelector('.payment-method');
         if (pmEl) {
@@ -3221,6 +3222,8 @@ function formatCurrency(value){
           else if (payment_status === 'canceled') txt += ' (geannuleerd)';
           pmEl.textContent = txt;
         }
+        const statusEl = card.querySelector('.order-status');
+        if (statusEl && payment_status) statusEl.textContent = payment_status;
         if (order.id) {
           try { window.pos?.updateOrderById?.(order.id, { payment_method }); } catch {}
         }
@@ -3523,6 +3526,11 @@ async function fetchOrders() {
     const data = await res.json();
     if (!Array.isArray(data)) throw new Error('响应不是数组');
 
+    // 先确保每个订单都有 status 字段
+    data.forEach(o => {
+      if (!o.status) o.status = o.payment_status || 'pending';
+    });
+
     // 1) 渲染 UI
     const container = document.querySelector('.orders-cards');
     if (container) {
@@ -3700,6 +3708,8 @@ if (nextAmtNum !== 0) {
   // —— 时间显示（优先 tijdslot_display；ZSM 则显示 ZSM）
   const tijdslotRaw = order.tijdslot_display || (isDelivery ? order.delivery_time : order.pickup_time);
   const tijdslot = order.is_zsm ? 'ZSM' : (tijdslotRaw || '').trim();
+  const status = order.status || 'pending';
+  order.status = status;
 
   // —— 组装 DOM
   const wrapper = document.createElement('div');
@@ -3736,6 +3746,7 @@ if (nextAmtNum !== 0) {
     <div><strong>Telefoon:</strong> ${order.phone || ''}</div>
     ${order.email ? `<div><strong>Email:</strong> <a href="mailto:${order.email}">${order.email}</a></div>` : ''}
     <div><strong>Betaalwijze:</strong> <span class="payment-method">${order.payment_method || ''}</span></div>
+    <div><strong>Status:</strong> <span class="order-status">${status}</span></div>
     ${order.bron ? `<div><strong>Bron:</strong> ${order.bron}</div>` : ''}
     <div><strong>Items:</strong><ul>${items}</ul></div>
     ${order.opmerking ? `<div><strong>Opmerking:</strong> ${order.opmerking}</div>` : ''}
@@ -3829,6 +3840,8 @@ function extractOrderFromCard(card){
   // 状态
   o.is_completed = card.classList.contains('completed');
   o.is_cancelled = card.classList.contains('cancelled');
+  const statusEl = card.querySelector('.order-status');
+  if (statusEl) o.status = statusEl.textContent.trim();
 
   // 类型：看有没有 .type-bezorging / .type-afhalen
   const typeEl = card.querySelector('.type-bezorging, .type-afhalen');
@@ -4112,6 +4125,8 @@ function toUIOrder(o) {
     discountAmount,
     discount_code: nextDiscountCode,
     discount_amount: nextDiscountAmount,
+
+    status: src.status || src.payment_status || 'pending',
 
     tijdslot,                    // 原始显示
     pickup_time: uiPickup,       // 自取弹窗显示这个
