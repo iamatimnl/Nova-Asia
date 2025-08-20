@@ -244,6 +244,7 @@ def order_to_dict(order):
         "btw_9": order.btw_9 or 0.0,
         "btw_21": order.btw_21 or 0.0,
         "btw_total": order.btw_total or ((order.btw_9 or 0.0) + (order.btw_21 or 0.0)),
+        "status": order.status,   # 👈 加上这个
     }
 
 def generate_pdf_today(include_cancelled: bool = False):
