@@ -2746,7 +2746,7 @@ function openWisselAwaitPOS(total) {
 }
 
 
-function openPinModal(total) {
+function openPinModal(total, orderNumber) {
   return new Promise((resolve) => {
     const dlg = document.getElementById('pin-modal-pos');
     if (!dlg) return resolve('later');
@@ -2765,9 +2765,23 @@ function openPinModal(total) {
       dlg.close();
       resolve(result);
     }
-    function onSend() {
-      console.log('TODO: send to PAX A35');
-      cleanup('send');
+    async function onSend() {
+      sendBtn.disabled = true;
+      try {
+        const r = await fetch('/api/create_mollie_pin_payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ order_number: orderNumber, amount: due })
+        });
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        await r.json().catch(()=>{});
+        showToast('wordt verwerkt!');
+        cleanup('send');
+      } catch (err) {
+        console.error('PIN payment failed', err);
+        showToast('PIN betaling mislukt');
+        sendBtn.disabled = false;
+      }
     }
     function onLater() { cleanup('later'); }
     function onCash() { cleanup('cash'); }
@@ -2798,7 +2812,7 @@ async function openCheckout(btn) {
       if (!res) return;
       break;
     } else {
-      const res = await openPinModal(due);
+      const res = await openPinModal(due, order.order_number || id);
       if (res === 'cash') { method = 'cash'; continue; }
       if (res === 'later' || res === null) return;
       break;
@@ -2957,7 +2971,7 @@ async function submitOrder() {
   // 先处理 PIN 对话框
   if (paymentMethod === 'pin') {
     const due = Number(payload.totaal) || parseEuro(payload.totaal) || 0;
-    const res = await openPinModal(due);
+    const res = await openPinModal(due, orderNumber);
     if (res === 'cash') {
       // 用户在 PIN 模态框中切换为现金
       if (delivery) document.getElementById('deliveryPayment').value = 'cash';
@@ -3190,6 +3204,31 @@ function formatCurrency(value){
   });
   socket.on('crispy_price_update', data => {
     applyCrispyPrices(data);
+  });
+  socket.on('payment_update', data => {
+    const { order_number, payment_status, payment_method } = data || {};
+    document.querySelectorAll('.order-card').forEach(card => {
+      let order = {};
+      try { order = JSON.parse(card.dataset.order || '{}'); } catch {}
+      if (String(order.order_number) === String(order_number)) {
+        order.payment_method = payment_method;
+        card.dataset.order = JSON.stringify(order);
+        const pmEl = card.querySelector('.payment-method');
+        if (pmEl) {
+          let txt = payment_method;
+          if (payment_status === 'paid') txt += ' (betaald)';
+          else if (payment_status === 'failed') txt += ' (mislukt)';
+          else if (payment_status === 'canceled') txt += ' (geannuleerd)';
+          pmEl.textContent = txt;
+        }
+        if (order.id) {
+          try { window.pos?.updateOrderById?.(order.id, { payment_method }); } catch {}
+        }
+        if (payment_status === 'paid') showToast(`Order ${order_number} PIN betaling geslaagd`);
+        else if (payment_status === 'failed') showToast(`Order ${order_number} PIN betaling mislukt`);
+        else if (payment_status === 'canceled') showToast(`Order ${order_number} PIN betaling geannuleerd`);
+      }
+    });
   });
 
   let pollTimer;
