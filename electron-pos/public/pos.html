@@ -308,87 +308,139 @@
   position: sticky;
   top: 0;
   width: 100%;
-  background-color: transparant;
+  background-color: transparent; /* 修正拼写 */
   z-index: 1000;
   display: flex;
   margin-right: 65px;
   justify-content: flex-end;
-  gap: 10px;
-  padding: 10px 16px 10px 10px;
+ 
 }
 
 #closeToday {
-  background-color: transparent;
+  background: linear-gradient(180deg, #0a84ff, #0066d6);
   color: white;
   border: none;
-  width: 32px;
   height: 32px;
-  font-size: 26px;
-  line-height: 1;
-  padding: 0;
-  margin-right: 13px;
+  padding: 0 8px;
+  padding: 0 16px;
+  font-size: 14px;
+  line-height: 32px;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  margin-right: 12px;
   display: flex;
+  margin-left: 0px;
   align-items: center;
   justify-content: center;
-
+  /* 不要给按钮设置 margin-right 等外边距 */
 }
 
-#closeToday:hover {
-  background-color: #e81123; /* 微软关闭红 */
-  color: white;
-}
-
-
-
-/* 地图按钮 - 蓝色风格 */
 #toggle-map-btn {
-  background-color: transparent;  /* 修正拼写 */
+  background: linear-gradient(180deg, #0a84ff, #0066d6);
+  color: white;
   border: none;
-  padding: 8px 0; /* 调整上下边距让图标居中 */
-  width: 25px;
-  height: 25px;
+  margin-right: 0px;
+  padding: 0 16px;
+  height: 32px;
+  margin-left: 0px;
+  font-size: 14px;
+  line-height: 33px;
   cursor: pointer;
-  margin-right: 6px;
-  transition: background-color 0.2s ease;
-  font-size: 27px; /* 控制 emoji 大小 */
-  line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  /* 不要给按钮设置 margin-right 等外边距 */
 }
 
-#toggle-map-btn:hover {
-  transform: scale(1.2);
-}
 #admin-orders-btn {
-  background-color: transparent;  /* 修正拼写 */
+  background: linear-gradient(180deg, #0a84ff, #0066d6);
+  color: white;
   border: none;
-  top:15px;
-  padding: 8px 0; /* 调整上下边距让图标居中 */
-  width: 28px;
-  height: 24px;
+  height: 32px;
+  padding: 0 16px;
+  margin-right: 0px;
+  font-size: 14px;
+  line-height: 32px;
+  margin-left: 0px;
   cursor: pointer;
-  margin-right: 8px;
-  transition: background-color 0.2s ease;
-  font-size: 28px; /* 控制 emoji 大小 */
-  line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  /* 不要给按钮设置 margin-right 等外边距 */
 }
 
-#admin-orders-btn:hover {
-  transform: scale(1.2);
+/* 你的 navbar 容器 */
+.orders-header{
+  display:flex;
+  align-items:center;
+  color: transparent  !important; /* 隐藏文字 */
+  margin-right: 0px;
+  padding:3px 9px;
 }
 
+/* 使用你现有的 .btn-wissel 外观，下面只是补充一点间距与圆角一致性 */
+.orders-header > button{
+  border-radius:0px;
+  line-height:1;
+  margin-right:0px;
+}
+
+/* 统一补充更顺滑的过渡 */
+#closeToday, #toggle-map-btn, #admin-orders-btn{
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.08s ease;
+}
+
+/* 1) 关闭/退出：悬停红色（微软关闭红系） */
+#closeToday:hover{
+  background: linear-gradient(180deg, #ff4557, #e81123);
+  color:#fff;
+}
+#closeToday:active{
+  background: linear-gradient(180deg, #d50f1f, #b20c18);
+  transform: translateY(0.5px);
+}
+
+/* 2) 地图按钮：悬停更亮的蓝青，轻微内阴影强调 */
+#toggle-map-btn:hover{
+  background: linear-gradient(180deg, #1db9ff, #0a84ff);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
+  color:#fff;
+}
+#toggle-map-btn:active{
+  background: linear-gradient(180deg, #0a84ff, #095ec5);
+  transform: translateY(0.5px);
+}
+
+/* 3) 订单按钮：悬停加深蓝色层次 */
+#admin-orders-btn:hover{
+  background: linear-gradient(180deg, #1db9ff, #0a84ff);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
+  color:#fff;
+}
+#admin-orders-btn:active{
+  background: linear-gradient(180deg, #0860c0, #0750a3);
+  transform: translateY(0.5px);
+}
+
+/* 可选：键盘可达性高亮 */
+#closeToday:focus-visible,
+#toggle-map-btn:focus-visible,
+#admin-orders-btn:focus-visible{
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+
+#orders-header > button + button:active{
+  background: linear-gradient(180deg, #0860c0, #0750a3);
+  transform: translateY(0.5px);
+}
 
 .orders-panel {
   flex: 1;
   overflow-y: auto;
   padding: 20px 10px 20px;
 }
+
 
 
 
@@ -1283,6 +1335,17 @@ dialog::backdrop {
   outline:none; box-shadow:0 0 0 2px #fff, 0 0 0 4px #0a84ff;
 }
 
+.btn-afrekenen{
+  appearance:none;
+  background: linear-gradient(180deg, #0a84ff, #0066d6);
+  color:#fff; border:none; border-radius:14px;
+  padding:9px 16px; font-size:15px; font-weight:700; cursor:pointer;
+  box-shadow:0 1px 0 rgba(0,0,0,.10), 0 4px 10px rgba(10,132,255,0.25);
+  transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+}
+.btn-afrekenen:hover{ filter:brightness(1.55); }
+.btn-afrekenen:active{ transform:translateY(1px); box-shadow: inset 0 1px 2px rgba(0,0,0,.25); }
+
 /* 提示颜色 & 禁用态 & 抖动 */
 #wissel-modal-pos .hint{ margin-top:6px; font-size:14px; }
 #wissel-modal-pos .hint.error{ color:#ff453a; } /* iOS Red */
@@ -1326,19 +1389,7 @@ dialog::backdrop {
   line-height: 1.35;
 }
 /* 你的 navbar 容器 */
-.orders-header{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  padding:6px 10px;
-}
 
-/* 使用你现有的 .btn-wissel 外观，下面只是补充一点间距与圆角一致性 */
-.orders-header > button{
-  border-radius:12px;
-  line-height:1;
-  margin-right:10px;
-}
 
 /* 给切换按钮一个轻微的“激活”提示（可选） */
 #sort-toggle[data-mode="arrival"]{
@@ -2967,37 +3018,32 @@ async function submitOrder() {
     payload.discountAmount = parseFloat(discount.toFixed(2));
   }
 
-  /* ⬇️⬇️ 就在这里：现金→先弹找零；关闭后继续提交 */
-  // 先处理 PIN 对话框
-  if (paymentMethod === 'pin') {
-    const due = Number(payload.totaal) || parseEuro(payload.totaal) || 0;
-    const res = await openPinModal(due, orderNumber);
-    if (res === 'cash') {
-      // 用户在 PIN 模态框中切换为现金
-      if (delivery) document.getElementById('deliveryPayment').value = 'cash';
-      else document.getElementById('pickupPayment').value = 'cash';
+  /* ⬇️⬇️ 在提交前统一处理支付方式弹窗，允许在现金与 PIN 之间切换 */
+  const due = Number(payload.totaal) || parseEuro(payload.totaal) || 0; // 含税应收
+  while (true) {
+    if (paymentMethod === 'pin') {
+      const res = await openPinModal(due, orderNumber);
+      if (res === 'cash') {
+        // 用户在 PIN 模态框中切换为现金
+        paymentMethod = 'cash';
+        if (delivery) document.getElementById('deliveryPayment').value = 'cash';
+        else document.getElementById('pickupPayment').value = 'cash';
+        continue;
+      }
+    } else if (isCashMethod(paymentMethod)) {
+      const res = await openWisselAwaitPOS(due);
+      if (res === 'pin') {
+        // 在现金找零对话框中改为 PIN
+        paymentMethod = 'pin';
+        if (delivery) document.getElementById('deliveryPayment').value = 'pin';
+        else document.getElementById('pickupPayment').value = 'pin';
+        continue;
+      } else if (res) {
+        payload._wissel = res; // { paid, change, due } 可用于打印/入库
+      }
     }
+    break;
   }
-
-  // 重新读取最终选择
-  paymentMethod = delivery
-      ? document.getElementById('deliveryPayment').value
-      : document.getElementById('pickupPayment').value;
-
-  // 现金：父页先弹自己的 modal，关掉后再提交
-  if (isCashMethod(paymentMethod)) {
-    const due = Number(payload.totaal) || parseEuro(payload.totaal) || 0; // 含税应收
-    const res = await openWisselAwaitPOS(due);
-    if (res === 'pin') {
-      // 在现金找零对话框中改为 PIN
-      paymentMethod = 'pin';
-      if (delivery) document.getElementById('deliveryPayment').value = 'pin';
-      else document.getElementById('pickupPayment').value = 'pin';
-    } else if (res) {
-      payload._wissel = res; // { paid, change, due } 可用于打印/入库
-    }
-  }
-
   // 最终确认的支付方式
   paymentMethod = delivery
       ? document.getElementById('deliveryPayment').value
@@ -3701,6 +3747,17 @@ if (nextAmtNum !== 0) {
       ${codeLine}
     </div>`;
 }
+  const pm = String(order.payment_method || order.betaalwijze || '')
+  .toLowerCase()
+  .trim();
+
+// 仅当未取消/未完成，且原状态为空或为“未支付类”时，才自动标记为已支付
+if (!order.is_cancelled && !order.is_completed) {
+  const isUnpaidish = !order.status || /^(pending|unpaid|open)$/i.test(String(order.status));
+  if (isUnpaidish && (pm === 'online betaald' || (pm.includes('online') && pm.includes('betaald')))) {
+    order.status = 'paid';
+  }
+}
 
 
 
@@ -3795,7 +3852,7 @@ if (nextAmtNum !== 0) {
   <!-- ✅ 安全打印：把编码后的 JSON 放在 data-order 上 -->
   <button class="btn-print" onclick="printThisOrder(this)" data-order="${encodedOrder}">🖨️ Print</button>
 
-  <button class="btn-afrekenen grey-bg" data-order-id="${order.id || ''}" data-total="${totaal}" onclick="openCheckout(this)">Afrekenen</button>
+  <button class="btn-afrekenen" data-order-id="${order.id || ''}" data-total="${totaal}" onclick="openCheckout(this)">Afrekenen</button>
 
 
   <button class="btn-annuleer" onclick="toggleCancel(this)"
