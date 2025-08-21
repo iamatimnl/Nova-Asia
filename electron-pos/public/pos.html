@@ -3020,6 +3020,7 @@ async function submitOrder() {
 
   /* ⬇️⬇️ 在提交前统一处理支付方式弹窗，允许在现金与 PIN 之间切换 */
   const due = Number(payload.totaal) || parseEuro(payload.totaal) || 0; // 含税应收
+  let paidViaModal = false;
   while (true) {
     if (paymentMethod === 'pin') {
       const res = await openPinModal(due, orderNumber);
@@ -3029,6 +3030,9 @@ async function submitOrder() {
         if (delivery) document.getElementById('deliveryPayment').value = 'cash';
         else document.getElementById('pickupPayment').value = 'cash';
         continue;
+      } else if (res === 'send') {
+        // 终端返回支付成功
+        paidViaModal = true;
       }
     } else if (isCashMethod(paymentMethod)) {
       const res = await openWisselAwaitPOS(due);
@@ -3040,9 +3044,15 @@ async function submitOrder() {
         continue;
       } else if (res) {
         payload._wissel = res; // { paid, change, due } 可用于打印/入库
+        // 用户点击 Bevestigen，现金支付成功
+        paidViaModal = true;
       }
     }
     break;
+  }
+  if (paidViaModal) {
+    payload.status = 'paid';
+    payload.payment_status = 'paid';
   }
   // 最终确认的支付方式
   paymentMethod = delivery
