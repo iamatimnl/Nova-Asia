@@ -2481,6 +2481,48 @@ body.portrait-mode .cart-badge {
   }
 }
 
+
+.logo-heading {
+  text-align: center;
+}
+
+.logo-wrapper {
+  display: flex;
+  flex-direction: column; /* 上下排列 */
+  align-items: center;    /* 居中 */
+}
+
+/* 默认：手机端 */
+.logo-desktop {
+  max-height: 50px;  
+  height: auto;
+  width: auto;
+}
+
+/* 桌面端 */
+@media (min-width: 900px) {
+  .logo-desktop {
+    max-height: 80px;
+  }
+}
+
+/* 默认：小屏幕 (手机) */
+.site-title {
+  color: #000;
+  font-size: 2rem;   /* 手机标题小一点 */
+  margin-top: 0.5rem;
+  font-family: "Kosugi Maru", sans-serif; /* 推荐现代日式 */
+  font-weight: 800;
+}
+
+/* 桌面端 (>=900px) */
+@media (min-width: 900px) {
+  .site-title {
+    font-size: 3.8rem;  /* 桌面端更大 */
+  }
+}
+
+
 </style>
 
 
@@ -2533,11 +2575,13 @@ body.portrait-mode .cart-badge {
 </nav>
 </div>
 <h1 class="logo-heading">
-  <img src="static/images/Logo.png" 
-       alt="Nova Asia bento bezorgen Hoofddorp" 
-       class="logo-desktop" />
-  <span class="site-title">Nova Asia · Hoofddorp</span>
+  <div class="logo-wrapper">
+    <img src="static/images/Logo1.png"   
+         class="logo-desktop" />
+    <span class="site-title">Nova Asia · Hoofddorp</span>
+  </div>
 </h1>
+
 
 <section id="delivery-options">
 <div class="delivery-options">
