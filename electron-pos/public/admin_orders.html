@@ -67,6 +67,7 @@
           <th>Totaal (€)</th>
           <th>Adres</th>
           <th>Betaling</th>
+          <th>Status</th>
           <th>Actie</th>
         </tr>
       </thead>
@@ -142,6 +143,7 @@
       <div><label>Bezorgtijd: <input type="text" id="editDelivery"></label></div>
       <div><label>Items: <textarea id="editItems"></textarea></label></div>
       <div><label>Betaalwijze: <input type="text" id="editPayment"></label></div>
+      <div><label>Status: <input type="text" id="editStatus"></label></div>
       <div><label>Totaal: <input type="number" step="0.01" id="editTotaal"></label></div>
       <div><label>Bezorgkosten: <input type="number" step="0.01" id="editBezorgkosten"></label></div>
       <div><label>Fooi: <input type="number" step="0.01" id="editFooi"></label></div>
@@ -273,6 +275,7 @@
           <td>${formatCurrency(tot)}</td>
           <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
           <td>${order.payment_method || ''}</td>
+          <td>${order.status || ''}</td>
           <td><button onclick="toggleComplete(this)"
             data-number="${order.order_number}"
             data-name="${order.customer_name || ''}"
@@ -538,6 +541,7 @@ document.getElementById('totalCancelled').textContent = cancelledDisplay;
       const itemsStr = Object.entries(currentEditData.items || {}).map(([n,i])=>`${n}=${i.qty}`).join(', ');
       document.getElementById('editItems').value = itemsStr;
       document.getElementById('editPayment').value = currentEditData.payment_method || '';
+      document.getElementById('editStatus').value = currentEditData.status || '';
       document.getElementById('editTotaal').value = currentEditData.totaal != null ? currentEditData.totaal : '';
       document.getElementById('editBezorgkosten').value = currentEditData.bezorgkosten != null ? currentEditData.bezorgkosten : (currentEditData.delivery_fee || '');
       document.getElementById('editFooi').value = currentEditData.fooi != null ? currentEditData.fooi : (currentEditData.tip || '0');
@@ -561,6 +565,7 @@ document.getElementById('totalCancelled').textContent = cancelledDisplay;
         delivery_time: document.getElementById('editDelivery').value,
         items: parseItemsString(document.getElementById('editItems').value, currentEditData.items || {}),
         payment_method: document.getElementById('editPayment').value,
+        status: document.getElementById('editStatus').value,
         totaal: parseFloat(document.getElementById('editTotaal').value) || 0,
         bezorgkosten: parseFloat(document.getElementById('editBezorgkosten').value) || 0,
         fooi: parseFloat(document.getElementById('editFooi').value) || 0,
