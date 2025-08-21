@@ -2855,12 +2855,14 @@ async function openCheckout(btn) {
   const id = order.id || card.dataset.id || btn.dataset.orderId;
   const due = Number(btn.dataset.total || order.totaal || order.total || 0);
   let method = String(order.payment_method || '').toLowerCase();
+  let cashRes = null;
 
   while (true) {
     if (isCashMethod(method)) {
       const res = await openWisselAwaitPOS(due);
       if (res === 'pin') { method = 'pin'; continue; }
       if (!res) return;
+      cashRes = res;
       break;
     } else {
       const res = await openPinModal(due, order.order_number || id);
@@ -2872,22 +2874,29 @@ async function openCheckout(btn) {
 
   const finalMethod = method;
   order.payment_method = finalMethod;
+  if (finalMethod === 'cash' && cashRes) {
+    order.status = 'paid';
+  }
   card.dataset.order = JSON.stringify(order);
   const pmEl = card.querySelector('.payment-method');
   if (pmEl) pmEl.textContent = finalMethod;
+  const statusEl = card.querySelector('.order-status');
+  if (statusEl && order.status) statusEl.textContent = order.status;
 
   if (id) {
+    const patchData = { payment_method: finalMethod };
+    if (order.status === 'paid') patchData.status = 'paid';
     try {
       await fetch(`/api/orders/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ payment_method: finalMethod })
+        body: JSON.stringify(patchData)
       });
     } catch (err) {
       console.error('update payment_method failed', err);
     }
     try {
-      await window.pos?.updateOrderById?.(id, { payment_method: finalMethod });
+      await window.pos?.updateOrderById?.(id, patchData);
     } catch (err) {
       console.warn('local update failed', err);
     }
@@ -3281,7 +3290,9 @@ function formatCurrency(value){
         const statusEl = card.querySelector('.order-status');
         if (statusEl && payment_status) statusEl.textContent = payment_status;
         if (order.id) {
-          try { window.pos?.updateOrderById?.(order.id, { payment_method }); } catch {}
+          const patch = { payment_method };
+          if (payment_status) patch.status = payment_status;
+          try { window.pos?.updateOrderById?.(order.id, patch); } catch {}
         }
         if (payment_status === 'paid') showToast(`Order ${order_number} PIN betaling geslaagd`);
         else if (payment_status === 'failed') showToast(`Order ${order_number} PIN betaling mislukt`);
