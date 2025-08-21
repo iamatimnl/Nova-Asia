@@ -2265,27 +2265,6 @@ body.portrait-mode #cart-toggle {
 
 
 
-.logo-heading {
-  font-size: 2em;
-  display: flex;
-  align-items: center;
-  justify-content: center;  /* ✅ 水平居中 */
-  text-align: center;
-}
-
-.logo-desktop {
-  display: none;             /* 默认隐藏 */
-  height: 1.8em;             /* ✅ 稍大于文字（可调 1.5 ~ 2.0em） */
-  margin-right: 0.5em;
-  vertical-align: middle;
-}
-
-/* 在桌面端显示图片 */
-@media (min-width: 768px) {
-  .logo-desktop {
-    display: inline-block;
-  }
-}
 
 
 body.portrait-mode .menu-container {
@@ -2484,6 +2463,7 @@ body.portrait-mode .cart-badge {
 
 .logo-heading {
   text-align: center;
+  margin: 0;
 }
 
 .logo-wrapper {
@@ -2492,17 +2472,21 @@ body.portrait-mode .cart-badge {
   align-items: center;    /* 居中 */
 }
 
-/* 默认：手机端 */
 .logo-desktop {
-  max-height: 50px;  
+  max-height: 60px;   /* 默认手机端高度 */
   height: auto;
   width: auto;
 }
 
-/* 桌面端 */
+/* 桌面端 (>=900px) */
 @media (min-width: 900px) {
   .logo-desktop {
-    max-height: 80px;
+    max-height: 120px;   /* 桌面端大一点 */
+    margin-left: -20px;  /* 只在桌面端左移 */
+  }
+
+  .site-title {
+    font-size: 3.9rem;   /* 桌面端标题更大 */
   }
 }
 
@@ -2511,16 +2495,10 @@ body.portrait-mode .cart-badge {
   color: #000;
   font-size: 2rem;   /* 手机标题小一点 */
   margin-top: 0.5rem;
-  font-family: "Kosugi Maru", sans-serif; /* 推荐现代日式 */
+  font-family: "Kosugi Maru", sans-serif; 
   font-weight: 800;
 }
 
-/* 桌面端 (>=900px) */
-@media (min-width: 900px) {
-  .site-title {
-    font-size: 3.8rem;  /* 桌面端更大 */
-  }
-}
 
 
 </style>
