@@ -216,8 +216,10 @@
       // 渲染每一行订单
       data.forEach(order => {
         const tr = document.createElement('tr');
+        const status = order.status || order.payment_status || '';
+        const orderData = { ...order, status };
         tr.dataset.id = order.id;
-        tr.dataset.order = JSON.stringify(order);
+        tr.dataset.order = JSON.stringify(orderData);
         if (order.is_cancelled) tr.classList.add('cancelled');
         else if (order.is_completed) tr.classList.add('completed');
 
@@ -275,7 +277,7 @@
           <td>${formatCurrency(tot)}</td>
           <td>${isDelivery ? `${order.street} ${order.house_number} ${order.postcode} ${order.city}${order.maps_link ? ` <a href="${order.maps_link}" target="_blank">📍Maps</a>` : ''}` : '-'}</td>
           <td>${order.payment_method || ''}</td>
-          <td>${order.status || ''}</td>
+          <td>${status}</td>
           <td><button onclick="toggleComplete(this)"
             data-number="${order.order_number}"
             data-name="${order.customer_name || ''}"
@@ -541,7 +543,7 @@ document.getElementById('totalCancelled').textContent = cancelledDisplay;
       const itemsStr = Object.entries(currentEditData.items || {}).map(([n,i])=>`${n}=${i.qty}`).join(', ');
       document.getElementById('editItems').value = itemsStr;
       document.getElementById('editPayment').value = currentEditData.payment_method || '';
-      document.getElementById('editStatus').value = currentEditData.status || '';
+      document.getElementById('editStatus').value = currentEditData.status || currentEditData.payment_status || '';
       document.getElementById('editTotaal').value = currentEditData.totaal != null ? currentEditData.totaal : '';
       document.getElementById('editBezorgkosten').value = currentEditData.bezorgkosten != null ? currentEditData.bezorgkosten : (currentEditData.delivery_fee || '');
       document.getElementById('editFooi').value = currentEditData.fooi != null ? currentEditData.fooi : (currentEditData.tip || '0');
