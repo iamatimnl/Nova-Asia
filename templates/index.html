@@ -362,7 +362,7 @@
     padding: 6px 8px;
     width: calc(100% - 16px);
     justify-content: center;
-    background: rgba(29, 18, 3, 0.089);
+    background: rgba(255, 169, 48, 0.089);
     border-radius: 10px;
   }
 
@@ -2460,45 +2460,46 @@ body.portrait-mode .cart-badge {
   }
 }
 
-
 .logo-heading {
   text-align: center;
   margin: 0;
+  line-height: 1.2;
+  padding-top: 70px;  /* 往下推，避免被导航栏挡住 */
 }
+
 
 .logo-wrapper {
   display: flex;
-  flex-direction: column; /* 上下排列 */
-  align-items: center;    /* 居中 */
+  flex-direction: column;
+  align-items: center;
 }
 
 .logo-desktop {
-  max-height: 60px;   /* 默认手机端高度 */
-  height: auto;
-  width: auto;
+  display: block;       /* 避免行内元素多余空隙 */
+  margin-bottom: 0.3rem; /* 你想要的间距 */
 }
 
-/* 桌面端 (>=900px) */
-@media (min-width: 900px) {
-  .logo-desktop {
-    max-height: 120px;   /* 桌面端大一点 */
-    margin-left: -20px;  /* 只在桌面端左移 */
-  }
-
-  .site-title {
-    font-size: 3.9rem;   /* 桌面端标题更大 */
-  }
-}
 
 /* 默认：小屏幕 (手机) */
 .site-title {
   color: #000;
-  font-size: 2rem;   /* 手机标题小一点 */
+  font-size: 2rem;   /* 手机标题 */
   margin-top: 0.5rem;
   font-family: "Kosugi Maru", sans-serif; 
   font-weight: 800;
 }
 
+/* 桌面端 (>=900px) */
+@media (min-width: 900px) {
+  .logo-desktop {
+    max-height: 120px; 
+    margin-left: -20px;
+  }
+
+  .site-title {
+    font-size: 3.9rem; /* 桌面端标题 */
+  }
+}
 
 
 </style>
