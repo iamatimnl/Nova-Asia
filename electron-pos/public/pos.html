@@ -2872,22 +2872,26 @@ async function openCheckout(btn) {
 
   const finalMethod = method;
   order.payment_method = finalMethod;
+  // 支付完成后更新订单状态为 paid
+  order.status = 'paid';
   card.dataset.order = JSON.stringify(order);
   const pmEl = card.querySelector('.payment-method');
   if (pmEl) pmEl.textContent = finalMethod;
+  const statusEl = card.querySelector('.order-status');
+  if (statusEl) statusEl.textContent = order.status;
 
   if (id) {
     try {
       await fetch(`/api/orders/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ payment_method: finalMethod })
+        body: JSON.stringify({ payment_method: finalMethod, status: order.status })
       });
     } catch (err) {
       console.error('update payment_method failed', err);
     }
     try {
-      await window.pos?.updateOrderById?.(id, { payment_method: finalMethod });
+      await window.pos?.updateOrderById?.(id, { payment_method: finalMethod, status: order.status });
     } catch (err) {
       console.warn('local update failed', err);
     }
