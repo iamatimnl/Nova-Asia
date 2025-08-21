@@ -4291,7 +4291,6 @@ body.portrait-mode .cart-badge {
   <div class="menu-content">
     <h3>Homemade Kimchi Spitskool</h3>
     <p>€ 5.00</p>
-   <p>Gemarineerde spitskool, kimchi style</p>
 
     <p id="soldoutKimchiKool" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
@@ -4328,20 +4327,21 @@ body.portrait-mode .cart-badge {
 </div>
 </section>
 <section id="dessert">
-<h2>Dessert</h2>
-<p class="menu-note">Alle Mochi worden per portie van 2 stuks geserveerd</p>
+  <h2>Dessert</h2>
+  <p class="menu-note">Alle Mochi worden per portie van 2 stuks geserveerd</p>
 
-div class="menu-group">
-<!-- Mango -->
-<div class="menu-row menu-item" data-name="Mochi Mango" data-packaging="0.2" data-price="4">
-<div class="menu-img">
-<img alt="Mochi Mango" loading="lazy" src="{{ url_for('static', filename='images/mochi-mango.png') }}">
-</img></div>
-<div class="menu-content">
-  <h3>Mochi – Mango</h3>
-  <p>€ 4.00</p>
-  <p id="soldoutMochiMango" class="sold-out-msg hidden">Uitverkocht!</p>
-  <div class="qty-box">
+  <div class="menu-group">
+    <!-- Mango -->
+    <div class="menu-row menu-item" data-name="Mochi Mango" data-packaging="0.2" data-price="4.00">
+      <div class="menu-img">
+        <img alt="Mochi Mango" loading="lazy"
+             src="{{ url_for('static', filename='images/mochi-mango.png') }}">
+      </div>
+      <div class="menu-content">
+        <h3>Mochi – Mango</h3>
+        <p>€ 4.00</p>
+        <p id="soldoutMochiMango" class="sold-out-msg hidden">Uitverkocht!</p>
+        <div class="qty-box">
 
 <button class="qty-minus remove-button" data-target="mochiMangoCount" type="button">-</button>
 <select id="mochiMangoCount" name="mochiMangoCount"></select>
