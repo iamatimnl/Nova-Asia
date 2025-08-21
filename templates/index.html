@@ -357,12 +357,17 @@
     transform: translateX(-50%);
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 4px;
+    gap: 8px;
+    padding: 6px 8px;
     width: calc(100% - 16px);
     justify-content: center;
     background: rgba(29, 18, 3, 0.089);
-    border-radius: 8px;
+    border-radius: 10px;
+  }
+
+  .qty-box button,
+  .qty-box select {
+    font-size: 20px;
   }
 @media (min-width: 1268px) {
   .menu-item select {
@@ -376,6 +381,11 @@
     background: rgba(255, 255, 255, 0.7);
     box-sizing: border-box;
     color: var(--accent-color);
+  }
+
+  .qty-box button,
+  .qty-box select {
+    font-size: calc(1.8rem + 2px);
   }
 }
 
