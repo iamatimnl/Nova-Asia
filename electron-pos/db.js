@@ -19,7 +19,7 @@ const DEFAULT_BRON = 'pos'; // 当 REQUIRE_BRON=false 时生效
 const WRITABLE_COLUMNS = new Set([
   'order_id','order_number',
   'customer_name','phone','email',
-  'order_type','pickup_time','delivery_time','payment_method',
+  'order_type','pickup_time','delivery_time','payment_method','status',
   'postcode','house_number','street','city',
   'opmerking','items',
   'subtotal','total','packaging_fee','statiegeld','delivery_fee','tip',
@@ -77,6 +77,7 @@ db.exec(`
     pickup_time TEXT,
     delivery_time TEXT,
     payment_method TEXT,
+    status TEXT,
     postcode TEXT,
     house_number TEXT,
     street TEXT,
@@ -120,6 +121,7 @@ ensureColumn('orders', 'discount_code', 'TEXT');
 ensureColumn('orders', 'discountAmount', 'REAL');
 ensureColumn('orders', 'discountCode', 'TEXT');
 ensureColumn('orders', 'is_confirmed', 'INTEGER');
+ensureColumn('orders', 'status', 'TEXT');
 
 
 /* ===================== 字段映射（含 bron 约束） ===================== */
@@ -174,6 +176,7 @@ function toRow(oInput) {
   // 备注/支付/状态/来源
   const opmerking      = toStr(pick(o,'opmerking','notes','remark','comment') || '');
   const payment_method = toStr(pick(o,'payment_method','payment.method','paymentMethod') || '');
+  const status         = toStr(pick(o,'status','payment_status') || '');
   const is_completed   = Number(pick(o,'is_completed') ?? 0);
   const is_cancelled   = Number(pick(o,'is_cancelled') ?? 0);
 
@@ -195,7 +198,7 @@ function toRow(oInput) {
     order_number,
 
     customer_name, phone, email,
-    order_type, pickup_time, delivery_time, payment_method,
+    order_type, pickup_time, delivery_time, payment_method, status,
     postcode, house_number, street, city,
     opmerking, items,
 
@@ -214,14 +217,14 @@ function toRow(oInput) {
 const upsertSQL = `
 INSERT INTO orders (
   order_id, order_number, order_type, customer_name, phone, email,
-  pickup_time, delivery_time, payment_method, postcode, house_number, street, city, opmerking,
+  pickup_time, delivery_time, payment_method, status, postcode, house_number, street, city, opmerking,
   items, subtotal, total, packaging_fee, statiegeld, delivery_fee, tip, btw_9, btw_21, btw_total, bron,
   discount_code, discount_amount,
   discountCode, discountAmount,
   data
 ) VALUES (
   @order_id, @order_number, @order_type, @customer_name, @phone, @email,
-  @pickup_time, @delivery_time, @payment_method, @postcode, @house_number, @street, @city, @opmerking,
+  @pickup_time, @delivery_time, @payment_method, @status, @postcode, @house_number, @street, @city, @opmerking,
   @items, @subtotal, @total, @packaging_fee, @statiegeld, @delivery_fee, @tip, @btw_9, @btw_21, @btw_total, @bron,
   @discount_code, @discount_amount,
   @discountCode, @discountAmount,
@@ -235,6 +238,7 @@ ON CONFLICT(order_number) DO UPDATE SET
   pickup_time=excluded.pickup_time,
   delivery_time=excluded.delivery_time,
   payment_method=excluded.payment_method,
+  status=excluded.status,
   postcode=excluded.postcode,
   house_number=excluded.house_number,
   street=excluded.street,
