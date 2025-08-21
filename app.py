@@ -30,6 +30,9 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Table, TableStyle
 from reportlab.lib import colors
+from flask import send_from_directory, current_app
+
+
 
 
 
@@ -293,6 +296,8 @@ def generate_pdf_today(include_cancelled: bool = False):
     doc.build(elements)
     buffer.seek(0)
     return buffer
+
+
 
 @app.route("/admin/orders/download/pdf")
 @login_required
