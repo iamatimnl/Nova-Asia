@@ -297,7 +297,13 @@ def generate_pdf_today(include_cancelled: bool = False):
     buffer.seek(0)
     return buffer
 
-
+@app.route('/manifest.json')
+def manifest():
+    return send_from_directory(
+        directory=f"{current_app.root_path}/templates",
+        path="manifest.json",
+        mimetype="application/manifest+json"
+    )
 
 @app.route("/admin/orders/download/pdf")
 @login_required
