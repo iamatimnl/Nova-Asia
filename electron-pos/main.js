@@ -154,7 +154,7 @@ function listRecent(limit = 50) {
   return listRecentStmt.all(Number(limit));
 }
 
-const { saveOrder } = require('./db');
+const { saveOrder, getOrderByNumber: dbGetOrderByNumber, getOrderById: dbGetOrderById } = require('./db');
 
 ipcMain.removeHandler('db:save-order');
 ipcMain.handle('db:save-order', (_e, payload) => {
@@ -223,13 +223,13 @@ module.exports = {
 
 
 
-// —— 打印：从本地数据库读取订单
+// —— 打印：根据订单号/ID 从数据库读取订单
 ipcMain.handle('print-receipt', async (_evt, payload) => {
   try {
     const { id, number } = parsePrintIdentifier(payload);
-    const row = id != null ? getOrderById(id) : getOrderByNumber(number);
+    const row = id != null ? dbGetOrderById(id) : dbGetOrderByNumber(number);
     if (!row) throw new Error('NOT_FOUND');
-    const raw = JSON.parse(row.data || '{}');
+    const raw = { ...JSON.parse(row.data || '{}'), btw_9: row.btw_9, btw_21: row.btw_21 };
     const order = normalizeForPrint(raw);
     const err  = validateOrder(order);
     if (err) throw new Error(err);
@@ -271,17 +271,7 @@ function validateOrder(o) {
   return null;
 }
 
-// ========= BTW 提取：完全使用现有订单字段（不做换算）=========
-function deriveBtwSplitFromPayload(order) {
-  const num = (v) => (v == null || v === '' || isNaN(Number(v)) ? null : Number(v));
-  const b9  = num(order.btw_9  ?? order.btw9  ?? order.vat_9  ?? order.vat9);
-  const b21 = num(order.btw_21 ?? order.btw21 ?? order.vat_21 ?? order.vat21);
-  if (b9 != null || b21 != null) {
-    return { '9': Number(b9 || 0), '21': Number(b21 || 0) };
-  }
-  return undefined;
-}
-
+// ========= 订单标准化：仅映射字段，不重新计算 =========
 function normalizeForPrint(order) {
   // —— 小工具（函数内自包含，避免依赖外部）——
   const toStr = v => (v == null ? '' : String(v));
@@ -290,14 +280,9 @@ function normalizeForPrint(order) {
     const nums = vals.map(toNumOrNull).filter(v => v != null);
     return nums.length ? Math.max(...nums) : 0;
   };
-  // 从 payload 里直接提取 btw_9/btw_21（不换算）
-  const deriveBtwSplitFromPayload = (src) => {
-    const num = (v) => (v == null || v === '' || isNaN(Number(v)) ? null : Number(v));
-    const b9  = num(src.btw_9  ?? src.btw9  ?? src.vat_9  ?? src.vat9);
-    const b21 = num(src.btw_21 ?? src.btw21 ?? src.vat_21 ?? src.vat21);
-    if (b9 != null || b21 != null) return { '9': Number(b9 || 0), '21': Number(b21 || 0) };
-    return undefined;
-  };
+  // BTW 数值：仅使用传入字段，不做重新计算
+  const btw9Val  = toNumOrNull(order.btw_9  ?? order.btw9  ?? order.vat_9  ?? order.vat9)  || 0;
+  const btw21Val = toNumOrNull(order.btw_21 ?? order.btw21 ?? order.vat_21 ?? order.vat21) || 0;
 
   // ===== 订单类型 / ZSM / 时间槽 =====
   const typeRaw = toStr(order.order_type || order.type || '').toLowerCase();
@@ -413,8 +398,10 @@ function normalizeForPrint(order) {
     discount_earned_amount,
     discount_earned_code,
 
-    // BTW 分桶：优先用 payload 的 btw_9/btw_21（不计算）
-    btw_split: order.btw_split || deriveBtwSplitFromPayload(order),
+    // BTW：直接使用数据库字段
+    btw_9: btw9Val,
+    btw_21: btw21Val,
+    btw_split: { '9': btw9Val, '21': btw21Val },
 
     // 地图二维码（优先 google_maps_link）
     qr_url: order.google_maps_link || order.maps_link || order.qr_url || undefined
@@ -500,8 +487,15 @@ async function printQRRobust(printer, raw, content, cfg = {}) {
 
   // ========== helpers ==========
   const sleep = (ms) => new Promise(r => setTimeout(r, ms));
-  const money = n => Number(n || 0).toFixed(2);
-  const moneyStr = (n, sign = '') => `${sign}EUR ${money(n)}`;
+  const euro = v => {
+    const n = Number(v) || 0;
+    const sign = n < 0 ? '-' : '';
+    return sign + '€' + Math.abs(n).toFixed(2).replace('.', ',');
+  };
+  const norm = v => {
+    const n = Number(v);
+    return isNaN(n) || Math.abs(n) < 0.005 ? 0 : n;
+  };
   const line = (ch='-') => printer.text(ch.repeat(WIDTH));
 
   const wrap = (text, width) => {
@@ -523,17 +517,11 @@ async function printQRRobust(printer, raw, content, cfg = {}) {
     printer.text(L + ' '.repeat(spaces) + R);
   };
 
-  const printIfValue = (label, value, sign='') => {
-    if (value == null) return;
-    if (Number(value) === 0) return;
-    col2(label, moneyStr(value, sign));
-  };
-
-  // —— 数量在前 ——  {qty}x {name} .... EUR xx.xx
+  // —— 数量在前 ——  {qty}x {name} .... €xx,xx
   const printItem = (name, qty, total, opts = []) => {
     const q = Number.isFinite(Number(qty)) ? Number(qty) : 1;
     const qtyStr = `${q}x `;
-    const right  = moneyStr(total);
+    const right  = euro(total);
     const nameWidth = Math.max(1, WIDTH - RIGHT - qtyStr.length);
     const lines = wrap(String(name || '-'), nameWidth);
 
@@ -653,10 +641,8 @@ line('-'); // 进入商品区
           }
           line('-');
 
-          const to2 = v => Number(v ?? 0).toFixed(2);
-
 // 固定显示 7 行
-col2('Subtotaal',   `EUR ${to2(order.subtotal)}`);
+col2('Subtotaal',   euro(order.subtotal));
 // —— 折扣（本次使用）——
 {
   const usedAmt = Number(
@@ -671,7 +657,7 @@ col2('Subtotaal',   `EUR ${to2(order.subtotal)}`);
   ).trim();
 
   if (usedAmt > 0) {
-    const right = `-EUR ${to2(usedAmt)}`;
+    const right = euro(-usedAmt);
     if (usedCode.toUpperCase() === 'KASSA') {
       col2('Kassa korting', right);
     } else if (usedCode) {
@@ -682,24 +668,20 @@ col2('Subtotaal',   `EUR ${to2(order.subtotal)}`);
   }
 }
 
-col2('Verpakking Toeslag', `EUR ${to2(order.packaging)}`);
-col2('Statiegeld',         `EUR ${to2(order.statiegeld)}`);
-col2('Bezorgkosten',       `EUR ${to2(order.delivery_fee)}`);
-col2('Fooi',               `EUR ${to2(order.tip)}`);
+col2('Verpakking Toeslag', euro(order.packaging));
+col2('Statiegeld',         euro(order.statiegeld));
+col2('Bezorgkosten',       euro(order.delivery_fee));
+col2('Fooi',               euro(order.tip));
 
-// —— BTW：仅展示一个，优先 21% → 9% → totaal ——
-if (CONFIG.SHOW_BTW_SPLIT && order.btw_split) {
-  const btw21 = Number(order.btw_split?.['21'] || 0);
-  const btw9  = Number(order.btw_split?.['9']  || 0);
-  if (btw21 > 0) {
-    col2('BTW (21%)', `EUR ${to2(btw21)}`);
-  } else if (btw9 > 0) {
-    col2('BTW (9%)', `EUR ${to2(btw9)}`);
-  } else {
-    col2('BTW', `EUR ${to2(order.vat)}`);
-  }
+// —— BTW：9% 先于 21%，均以数据库字段为准 ——
+if (CONFIG.SHOW_BTW_SPLIT) {
+  const btw9  = norm(order.btw_9);
+  const btw21 = norm(order.btw_21);
+  if (btw9 !== 0)  col2('BTW (9%)',  euro(btw9));
+  if (btw21 !== 0) col2('BTW (21%)', euro(btw21));
+  if (btw9 === 0 && btw21 === 0) col2('BTW', euro(order.vat));
 } else {
-  col2('BTW', `EUR ${to2(order.vat)}`);
+  col2('BTW', euro(order.vat));
 }
 
 
@@ -707,7 +689,7 @@ if (CONFIG.SHOW_BTW_SPLIT && order.btw_split) {
 if (order.total != null) {
   line('-');
   printer.align('lt').style('B').size(1, 1);
-  col2('', `EUR ${to2(order.total)}`);
+  col2('', euro(order.total));
   printer.size(0, 0).style('NORMAL');
 }
 
@@ -722,7 +704,7 @@ if (order.total != null) {
   if (earnedAmt > 0 || earnedCode) {
     line('-');
     const label = earnedCode ? `Volgende korting (Code: ${earnedCode})` : 'Volgende korting';
-    col2(label, `EUR ${to2(earnedAmt)}`);
+    col2(label, euro(earnedAmt));
     line('-');
   }
 }
