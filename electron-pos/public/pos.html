@@ -1721,7 +1721,7 @@ dialog::backdrop {
     <h3>Pin Betaling</h3>
     <p>Te betalen: <strong id="pin-due">€0,00</strong></p>
     <div class="actions">
-      <button id="pin-send" class="btn btn-primary">Versturen naar PAX A35</button>
+      <button id="pin-send" class="btn btn-primary">Pinnen</button>
       <button id="pin-later" class="btn btn-secondary">Later betalen</button>
       <button id="pin-to-cash" class="btn btn-secondary">Overschakelen naar Contant (wisselen)</button>
     </div>
@@ -2795,16 +2795,21 @@ function openWisselAwaitPOS(total) {
     paid.focus({ preventScroll:true });
   });
 }
+// 用你在 Render 上的后端地址
+const API_BASE = 'https://flask-order-api.onrender.com';
+
+
 
 
 function openPinModal(total, orderNumber) {
   return new Promise((resolve) => {
     const dlg = document.getElementById('pin-modal-pos');
     if (!dlg) return resolve('later');
-    const due = r05POS(parseEuro(total));
-    const dueEl = document.getElementById('pin-due');
+
+    const due = r05POS(parseEuro(total)); // 你现有的取整逻辑
+    const dueEl   = document.getElementById('pin-due');
     const sendBtn = document.getElementById('pin-send');
-    const laterBtn = document.getElementById('pin-later');
+    const laterBtn= document.getElementById('pin-later');
     const cashBtn = document.getElementById('pin-to-cash');
 
     dueEl.textContent = euroFmtPOS.format(due);
@@ -2816,17 +2821,36 @@ function openPinModal(total, orderNumber) {
       dlg.close();
       resolve(result);
     }
+
     async function onSend() {
       sendBtn.disabled = true;
+
+      const amountStr = Number(due).toFixed(2); // ✅ 两位小数字符串
+      if (Number(amountStr) <= 0) {
+        showToast('Bedrag is 0, kan niet betalen');
+        sendBtn.disabled = false;
+        return;
+      }
+
       try {
-        const r = await fetch('/api/create_mollie_pin_payment', {
+        const r = await fetch(`${API_BASE}/api/create_mollie_pin_payment`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ order_number: orderNumber, amount: due })
+          body: JSON.stringify({ order_number: orderNumber, amount: amountStr })
         });
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        await r.json().catch(()=>{});
-        showToast('wordt verwerkt!');
+
+        let data = {};
+        try { data = await r.json(); } catch {}
+
+        if (!r.ok || data.ok === false) {
+          const msg = (data && (data.error || (data.details && (data.details.detail || data.details.msg)))) || `HTTP ${r.status}`;
+          showToast('PIN betaling mislukt: ' + msg);
+          console.error('PIN payment failed', data || r.status);
+          sendBtn.disabled = false;
+          return;
+        }
+
+        showToast('Naar terminal gestuurd…'); // 发送成功
         cleanup('send');
       } catch (err) {
         console.error('PIN payment failed', err);
@@ -2834,8 +2858,9 @@ function openPinModal(total, orderNumber) {
         sendBtn.disabled = false;
       }
     }
+
     function onLater() { cleanup('later'); }
-    function onCash() { cleanup('cash'); }
+    function onCash()  { cleanup('cash');  }
 
     sendBtn.addEventListener('click', onSend);
     laterBtn.addEventListener('click', onLater);
@@ -2844,6 +2869,7 @@ function openPinModal(total, orderNumber) {
     dlg.showModal();
   });
 }
+
 
 async function openCheckout(btn) {
   const wrapper = btn.closest('.order-card-wrapper');
@@ -3265,34 +3291,81 @@ function formatCurrency(value){
   socket.on('crispy_price_update', data => {
     applyCrispyPrices(data);
   });
-  socket.on('payment_update', data => {
-    const { order_number, payment_status, payment_method } = data || {};
-    document.querySelectorAll('.order-card').forEach(card => {
-      let order = {};
-      try { order = JSON.parse(card.dataset.order || '{}'); } catch {}
-      if (String(order.order_number) === String(order_number)) {
-        order.payment_method = payment_method;
-        if (payment_status) order.status = payment_status;
-        card.dataset.order = JSON.stringify(order);
-        const pmEl = card.querySelector('.payment-method');
-        if (pmEl) {
-          let txt = payment_method;
-          if (payment_status === 'paid') txt += ' (betaald)';
-          else if (payment_status === 'failed') txt += ' (mislukt)';
-          else if (payment_status === 'canceled') txt += ' (geannuleerd)';
-          pmEl.textContent = txt;
-        }
-        const statusEl = card.querySelector('.order-status');
-        if (statusEl && payment_status) statusEl.textContent = payment_status;
-        if (order.id) {
-          try { window.pos?.updateOrderById?.(order.id, { payment_method }); } catch {}
-        }
-        if (payment_status === 'paid') showToast(`Order ${order_number} PIN betaling geslaagd`);
-        else if (payment_status === 'failed') showToast(`Order ${order_number} PIN betaling mislukt`);
-        else if (payment_status === 'canceled') showToast(`Order ${order_number} PIN betaling geannuleerd`);
-      }
-    });
+
+  
+  // 可选：去重集合，避免重复事件反复更新/弹 toast
+const _seenPaymentEvents = new Set();
+
+function handlePaymentUpdate(data) {
+  if (!data) return;
+  const order_number   = String(data.order_number ?? '');
+  const payment_status = (data.payment_status || '').toLowerCase(); // paid/failed/canceled/pending/...
+  const payment_method = data.payment_method || 'pin';
+
+  if (!order_number) return;
+
+  // 去重：同一订单 + 同一状态只处理一次
+  const dedupeKey = `${order_number}:${payment_status}`;
+  if (_seenPaymentEvents.has(dedupeKey)) return;
+  _seenPaymentEvents.add(dedupeKey);
+
+  // 遍历所有订单卡
+  document.querySelectorAll('.order-card').forEach(card => {
+    // 读取卡片里的订单对象（你现有结构是 data-order 的 JSON）
+    let cardOrder = {};
+    try { cardOrder = JSON.parse(card.dataset.order || '{}'); } catch {}
+
+    // 兼容：如果 data-order 里没有订单号，尝试 data-order-number
+    const cardOrderNo = String(
+      cardOrder.order_number ??
+      card.dataset.orderNumber ??
+      ''
+    );
+
+    if (cardOrderNo !== order_number) return;
+
+    // 写回订单对象
+    cardOrder.payment_method = payment_method;
+    if (payment_status) cardOrder.status = payment_status;
+    card.dataset.order = JSON.stringify(cardOrder);
+
+    // 支付方式文案
+    const pmEl = card.querySelector('.payment-method');
+    if (pmEl) {
+      let txt = payment_method || '';
+      if (payment_status === 'paid')      txt += ' (betaald)';
+      else if (payment_status === 'failed')   txt += ' (mislukt)';
+      else if (payment_status === 'canceled') txt += ' (geannuleerd)';
+      else if (payment_status === 'pending')  txt += ' (in behandeling)';
+      pmEl.textContent = txt.trim();
+    }
+
+    // 订单状态展示 + class 切换
+    const statusEl = card.querySelector('.order-status');
+    if (statusEl && payment_status) {
+      statusEl.textContent = payment_status;
+      statusEl.classList.remove('paid', 'failed', 'canceled', 'pending', 'open', 'expired');
+      statusEl.classList.add(payment_status);
+    }
+
+    // （可选）桥接到你现有的 POS 更新方法
+    if (cardOrder.id) {
+      try { window.pos?.updateOrderById?.(cardOrder.id, { payment_method }); } catch {}
+    }
+
+    // 结果提示
+    if      (payment_status === 'paid')      showToast(`Order ${order_number} PIN betaling geslaagd`);
+    else if (payment_status === 'failed')    showToast(`Order ${order_number} PIN betaling mislukt`);
+    else if (payment_status === 'canceled')  showToast(`Order ${order_number} PIN betaling geannuleerd`);
+    else if (payment_status === 'pending')   showToast(`Order ${order_number} PIN betaling in behandeling`);
   });
+}
+
+// 事件监听（不改后端前提下，双监听最稳）
+socket.on('payment_status', handlePaymentUpdate);
+socket.on('payment_update', handlePaymentUpdate);
+
+
 
   let pollTimer;
   const baseTitle = document.title;
@@ -3850,6 +3923,7 @@ if (!order.is_cancelled && !order.is_completed) {
 
     ${volgendeHtml}
   `;
+  const encodedOrder = encodeURIComponent(JSON.stringify(order));
   const actions = document.createElement('div');
   actions.className = 'card-actions';
   actions.innerHTML = `
@@ -3862,7 +3936,8 @@ if (!order.is_cancelled && !order.is_completed) {
     Klaar
   </button>
 
-  <button class="btn-print" onclick="printThisOrder(this)" data-number="${order.order_number}">🖨️ Print</button>
+  <!-- ✅ 安全打印：把编码后的 JSON 放在 data-order 上 -->
+  <button class="btn-print" onclick="printThisOrder(this)" data-order="${encodedOrder}">🖨️ Print</button>
 
   <button class="btn-afrekenen" data-order-id="${order.id || ''}" data-total="${totaal}" onclick="openCheckout(this)">Afrekenen</button>
 
@@ -4217,7 +4292,6 @@ socket.on('new_order', async (order) => {
     const uiOrder = toUIOrder(order);      // ✅ 用它给 UI
     // 入库专用对象（结构化、稳定）
     const norm    = normalizeOrder(order); // ✅ 用它写 DB
-    uiOrder.__norm = norm;                 // 保存以便确认时写入
 
     if (!norm.order_number) {
       console.warn('❌ 无有效 order_number:', order);
@@ -4227,7 +4301,6 @@ socket.on('new_order', async (order) => {
       console.log('↩️ 已处理过，跳过:', norm.order_number);
       return;
     }
-    processed.add(norm.order_number);
 
     // 1) 播声音
     try { window.api?.playDing?.(); } catch {}
@@ -4249,6 +4322,21 @@ socket.on('new_order', async (order) => {
       showNextOrderModal();
     } else {
       console.log('⏳ 弹窗已激活，等待当前处理完成...');
+    }
+
+    // 4) 本地 SQLite 落库 —— 用 norm（结构化入库）
+    if (!window.pos?.saveOrder) {
+      console.warn('⚠️ window.pos.saveOrder 不存在，检查 preload.js 是否正确暴露');
+      return;
+    }
+    console.log('[R->IPC] will save', norm.order_number);
+    const res = await window.pos.saveOrder(norm);
+    console.log('[R->IPC] done', res);
+    if (res?.ok) {
+      processed.add(norm.order_number);
+      console.log('💾 已保存到本地 SQLite:', norm.order_number);
+    } else {
+      console.warn('⚠️ 保存失败，未加入去重集:', norm.order_number, res);
     }
 
   } catch (e) {
@@ -4299,23 +4387,25 @@ function showNextOrderModal() {
   console.log("✅ 弹窗已显示！");
 }
 
-async function printOrderByNumber(orderNumber) {
+window.printThisOrder = async function(btn) {
   try {
-    if (!orderNumber) throw new Error('缺少订单号');
-    if (!window.api?.printReceipt) throw new Error('打印接口不可用');
-    const res = await window.api.printReceipt(orderNumber);
-    if (res && res.ok === false) throw new Error(res.error || '未知错误');
-    console.log('🖨️ 打印订单：', orderNumber);
+    const raw = btn.getAttribute('data-order');
+    if (!raw) { alert('❌ 缺少 data-order'); return; }
+
+    // 解码 + 还原订单对象
+    const order = JSON.parse(decodeURIComponent(raw));
+
+    // 走你已有的打印通道（preload 暴露的）
+    if (window.api?.printReceipt) {
+      window.api.printReceipt(JSON.stringify(order));
+      console.log('🖨️ 打印订单：', order.order_number || '(未知订单号)');
+    } else {
+      alert('打印接口不可用：window.api.printReceipt 未暴露');
+    }
   } catch (e) {
     console.error('❌ 打印失败：', e);
     alert('打印失败：' + (e?.message || e));
   }
-}
-window.printOrderByNumber = printOrderByNumber;
-window.printThisOrder = function(btn) {
-  const no = btn.getAttribute('data-number');
-  if (!no) { alert('❌ 缺少 data-number'); return; }
-  printOrderByNumber(no);
 };
 
 
@@ -4358,33 +4448,23 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
     window.api.stopDing();
   }
 
-  // 标记确认并写入数据库
-  try {
-    currentOrder.is_confirmed = 1;
-    if (currentOrder.__norm) {
-      // 更新选择的时间
-      if (currentOrder.order_type === 'bezorgen') {
-        currentOrder.__norm.delivery_time = gekozenTijd;
-      } else {
-        currentOrder.__norm.pickup_time = gekozenTijd;
-      }
-      currentOrder.__norm.is_confirmed = 1;
-      try {
-        const dataObj = JSON.parse(currentOrder.__norm.data || '{}');
-        dataObj.pickup_time = currentOrder.__norm.pickup_time;
-        dataObj.delivery_time = currentOrder.__norm.delivery_time;
-        dataObj.tijdslot = gekozenTijd;
-        dataObj.is_confirmed = 1;
-        currentOrder.__norm.data = JSON.stringify(dataObj);
-      } catch {}
-      await window.pos?.saveOrder?.(currentOrder.__norm);
+  // 打印小票
+  if (window.api?.printReceipt) {
+    try {
+      window.api.printReceipt(JSON.stringify(currentOrder));
+      console.log("🖨️ 当前订单已发送打印请求:", currentOrder.order_number);
+    } catch (e) {
+      console.warn('打印失败', e);
     }
-  } catch (err) {
-    console.warn('本地保存失败', err);
   }
 
-  // 打印小票
-  await printOrderByNumber(currentOrder.order_number);
+  // 标记确认并入库
+  try {
+    currentOrder.is_confirmed = 1;
+    await window.pos?.updateOrderByNumber?.(currentOrder.order_number, { is_confirmed: 1 });
+  } catch (err) {
+    console.warn('本地确认标记失败', err);
+  }
 
   // 通知服务器/广播
   try {
