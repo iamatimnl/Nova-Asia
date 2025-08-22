@@ -2558,7 +2558,7 @@ async function fetchAddress() {
   const num = document.getElementById('houseNumber').value.trim();
   if (!pc || !num) return;
 
-  const url = `https://flask-order-api.onrender.com/api/postcode?postcode=${encodeURIComponent(pc)}&number=${encodeURIComponent(num)}`;
+  const url = `${API_BASE}/api/postcode?postcode=${encodeURIComponent(pc)}&number=${encodeURIComponent(num)}`;
   try {
     const res = await fetch(url);
     if (res.ok) {
@@ -2908,7 +2908,7 @@ async function openCheckout(btn) {
 
   if (id) {
     try {
-      await fetch(`/api/orders/${id}`, {
+      await fetch(`${API_BASE}/api/orders/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ payment_method: finalMethod, status: order.status })
@@ -3096,7 +3096,7 @@ async function submitOrder() {
 
   // ✅ 提交到后端（改为 await 写法，逻辑等价）
   try {
-    const r = await fetch('https://flask-order-api.onrender.com/submit_order', {
+    const r = await fetch(`${API_BASE}/submit_order`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -3177,8 +3177,7 @@ function formatCurrency(value){
   
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script>
-  const socketUrl = (typeof process !== 'undefined' && process.env && process.env.SOCKET_URL) ? process.env.SOCKET_URL : 'https://flask-order-api.onrender.com';
-  const socket = io(socketUrl, { transports: ['websocket'] });
+  const socket = io(API_BASE, { transports: ['websocket'] });
 
   function applyMenuPrices(items){
     const map={};
@@ -3244,7 +3243,7 @@ function formatCurrency(value){
   }
 
   function fetchBubbleOptions(){
-    fetch('/api/bubble_options').then(r=>r.json()).then(data=>{
+    fetch(`${API_BASE}/api/bubble_options`).then(r=>r.json()).then(data=>{
       bubbleOptions=data;
       populateBubbleSelectors();
       updateMilkTeaDisplay();
@@ -3253,7 +3252,7 @@ function formatCurrency(value){
   }
 
   function fetchXbentoOptions(){
-    fetch('/api/xbento_options').then(r=>r.json()).then(data=>{
+    fetch(`${API_BASE}/api/xbento_options`).then(r=>r.json()).then(data=>{
       xbentoOptions=data;
       populateXbentoSelectors();
       updateXbentoDisplay();
@@ -3261,11 +3260,11 @@ function formatCurrency(value){
     });
   }
   async function loadMenu(){
-    const r=await fetch('/api/menu');
+    const r=await fetch(`${API_BASE}/api/menu`);
     if(r.ok){ const d=await r.json(); applyMenuPrices(d); }
   }
   loadMenu();
-  fetch('/api/settings').then(r=>r.json()).then(s=>{
+  fetch(`${API_BASE}/api/settings`).then(r=>r.json()).then(s=>{
     if(s.milktea_price){ milkTeaPrice=parseFloat(s.milktea_price); updateMilkTeaDisplay(); }
     applyCrispyPrices(s);
   });
@@ -3326,7 +3325,11 @@ function handlePaymentUpdate(data) {
 
     // 写回订单对象
     cardOrder.payment_method = payment_method;
-    if (payment_status) cardOrder.status = payment_status;
+    if (payment_status === 'paid') {
+      cardOrder.status = 'paid';
+    } else if (payment_status === 'pending') {
+      cardOrder.status = 'pending';
+    }
     card.dataset.order = JSON.stringify(cardOrder);
 
     // 支付方式文案
@@ -3340,12 +3343,18 @@ function handlePaymentUpdate(data) {
       pmEl.textContent = txt.trim();
     }
 
-    // 订单状态展示 + class 切换
+    // 订单状态展示 + class 切换（仅支付成功时更新）
     const statusEl = card.querySelector('.order-status');
-    if (statusEl && payment_status) {
-      statusEl.textContent = payment_status;
-      statusEl.classList.remove('paid', 'failed', 'canceled', 'pending', 'open', 'expired');
-      statusEl.classList.add(payment_status);
+    if (statusEl) {
+      if (payment_status === 'paid') {
+        statusEl.textContent = 'paid';
+        statusEl.classList.remove('paid', 'failed', 'canceled', 'pending', 'open', 'expired');
+        statusEl.classList.add('paid');
+      } else if (payment_status === 'pending') {
+        statusEl.textContent = 'pending';
+        statusEl.classList.remove('paid', 'failed', 'canceled', 'pending', 'open', 'expired');
+        statusEl.classList.add('pending');
+      }
     }
 
     // （可选）桥接到你现有的 POS 更新方法
@@ -3379,7 +3388,7 @@ socket.on('payment_update', handlePaymentUpdate);
     return tbody ? tbody.children.length : 0;
   }
   function updateTodayBadge(){
-    fetch('/pos/orders_today?json=1')
+    fetch(`${API_BASE}/pos/orders_today?json=1`)
       .then(r => r.json())
       .then(data => {
         const count = Array.isArray(data) ? data.length : getOrderCount();
@@ -3459,7 +3468,7 @@ function orderComplete(btn) {
 }
 
 
-  fetch('https://flask-order-api.onrender.com/api/order_complete', {
+  fetch(`${API_BASE}/api/order_complete`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
@@ -3478,7 +3487,7 @@ function toggleComplete(btn) {
   const id = btn.dataset.id || row.dataset.id;
   const done = !row.classList.contains('completed');
 
-  fetch(`/api/orders/${id}/status`, {
+  fetch(`${API_BASE}/api/orders/${id}/status`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ is_completed: done })
@@ -3501,7 +3510,7 @@ if (container) reorderCards(container);
 
 let deliveryPersons = [];
 
-fetch('/static/delivery_persons.json')
+fetch(`${API_BASE}/static/delivery_persons.json`)
   .then(res => res.json())
   .then(data => {
     deliveryPersons = data;
@@ -3571,7 +3580,7 @@ function confirmDeliveryPerson() {
     delivery_chat_id: person.chat_id
   };
 
-  fetch('https://flask-order-api.onrender.com/api/order_complete', {
+  fetch(`${API_BASE}/api/order_complete`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
@@ -3601,7 +3610,7 @@ function orderCancelNotify(btn) {
     order_type: btn.dataset.type
   };
 
-  fetch('https://flask-order-api.onrender.com/api/order_cancelled', {
+  fetch(`${API_BASE}/api/order_cancelled`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
@@ -3619,7 +3628,7 @@ function toggleCancel(btn) {
   const id = btn.dataset.id || row.dataset.id;
   const cancelled = !row.classList.contains('cancelled');
 
-  fetch(`/api/orders/${id}/status`, {
+  fetch(`${API_BASE}/api/orders/${id}/status`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ is_cancelled: cancelled })
@@ -3654,7 +3663,7 @@ function toggleCancel(btn) {
 
 async function fetchOrders() {
   try {
-    const res = await fetch('/pos/orders_today?json=1', { cache: 'no-store' });
+    const res = await fetch(`${API_BASE}/pos/orders_today?json=1`, { cache: 'no-store' });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     if (!Array.isArray(data)) throw new Error('响应不是数组');
@@ -4478,7 +4487,7 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
   }
 
   try {
-    await fetch('https://flask-order-api.onrender.com/api/order_confirmed', {
+    await fetch(`${API_BASE}/api/order_confirmed`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -4494,7 +4503,7 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
   // ⏱️ 如果时间更改则发送通知邮件
   if (gekozenTijd !== tijdslotOrigineel) {
     try {
-      const response = await fetch('https://flask-order-api.onrender.com/api/order_time_changed', {
+      const response = await fetch(`${API_BASE}/api/order_time_changed`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
