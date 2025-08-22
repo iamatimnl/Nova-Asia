@@ -223,12 +223,14 @@ module.exports = {
 
 
 
-// —— 打印
+// —— 打印：从本地数据库读取订单
 ipcMain.handle('print-receipt', async (_evt, payload) => {
   try {
-    const raw = parseIncomingPayload(payload);
-    if (!raw) throw new Error('Invalid order payload');
-    const order = normalizeForPrint(raw);  // 确保已定义/引入
+    const { id, number } = parsePrintIdentifier(payload);
+    const row = id != null ? getOrderById(id) : getOrderByNumber(number);
+    if (!row) throw new Error('NOT_FOUND');
+    const raw = JSON.parse(row.data || '{}');
+    const order = normalizeForPrint(raw);
     const err  = validateOrder(order);
     if (err) throw new Error(err);
     await doEscposPrint(order);
@@ -240,21 +242,26 @@ ipcMain.handle('print-receipt', async (_evt, payload) => {
 });
 
 
-// ========= Helpers: parse / normalize / validate =========
-function parseIncomingPayload(input) {
+function parsePrintIdentifier(input) {
+  if (input == null) throw new Error('Invalid payload');
+  if (typeof input === 'number') {
+    return { id: Number(input), number: null };
+  }
   if (typeof input === 'string') {
-    try { return JSON.parse(input); } catch (_) { return null; }
+    const str = input.trim();
+    try { return parsePrintIdentifier(JSON.parse(str)); }
+    catch { return { id: null, number: str }; }
   }
-  if (input && typeof input === 'object') {
-    if (input.order) return input.order;
-    return input;
+  if (typeof input === 'object') {
+    if (input.id != null)        return { id: Number(input.id),        number: null };
+    if (input.order_id != null)  return { id: Number(input.order_id),  number: null };
+    if (input.order_number != null) return { id: null, number: String(input.order_number) };
+    if (input.orderNumber != null)  return { id: null, number: String(input.orderNumber) };
   }
-  return null;
+  throw new Error('Invalid payload');
 }
 
-function detectZSMByOrderNumber(no) {
-  return /Z$/i.test(String(no || '').trim());
-}
+// ========= Helpers: normalize / validate =========
 
 
 
