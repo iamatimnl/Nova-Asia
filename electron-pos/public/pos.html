@@ -2806,7 +2806,7 @@ function openPinModal(total, orderNumber) {
     const dlg = document.getElementById('pin-modal-pos');
     if (!dlg) return resolve('later');
 
-    const due = r05POS(parseEuro(total)); // 你现有的取整逻辑
+    const due = r05POS(parseEuro(total));
     const dueEl   = document.getElementById('pin-due');
     const sendBtn = document.getElementById('pin-send');
     const laterBtn= document.getElementById('pin-later');
@@ -2814,7 +2814,12 @@ function openPinModal(total, orderNumber) {
 
     dueEl.textContent = euroFmtPOS.format(due);
 
+    // ✅ 每次打开都先解禁
+    sendBtn.disabled = false;
+
     function cleanup(result) {
+      // ✅ 成功/失败/取消，统一复位
+      sendBtn.disabled = false;
       sendBtn.removeEventListener('click', onSend);
       laterBtn.removeEventListener('click', onLater);
       cashBtn.removeEventListener('click', onCash);
@@ -2824,41 +2829,27 @@ function openPinModal(total, orderNumber) {
 
     async function onSend() {
       sendBtn.disabled = true;
-
-      const amountStr = Number(due).toFixed(2); // ✅ 两位小数字符串
-      if (Number(amountStr) <= 0) {
-        showToast('Bedrag is 0, kan niet betalen');
-        sendBtn.disabled = false;
-        return;
-      }
-
+      const amountStr = Number(due).toFixed(2);
       try {
         const r = await fetch(`${API_BASE}/api/create_mollie_pin_payment`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ order_number: orderNumber, amount: amountStr })
         });
-
-        let data = {};
-        try { data = await r.json(); } catch {}
-
+        let data = {}; try { data = await r.json(); } catch {}
         if (!r.ok || data.ok === false) {
-          const msg = (data && (data.error || (data.details && (data.details.detail || data.details.msg)))) || `HTTP ${r.status}`;
-          showToast('PIN betaling mislukt: ' + msg);
-          console.error('PIN payment failed', data || r.status);
+          showToast('PIN betaling mislukt' + (data?.error ? `: ${data.error}` : ''));
+          // ❗ 失败要解禁
           sendBtn.disabled = false;
           return;
         }
-
-        showToast('Naar terminal gestuurd…'); // 发送成功
-        cleanup('send');
-      } catch (err) {
-        console.error('PIN payment failed', err);
-        showToast('PIN betaling mislukt');
+        showToast('Naar terminal gestuurd…');
+        cleanup('send'); // cleanup 会复位
+      } catch (e) {
+        showToast('PIN netwerkfout');
         sendBtn.disabled = false;
       }
     }
-
     function onLater() { cleanup('later'); }
     function onCash()  { cleanup('cash');  }
 
@@ -2871,6 +2862,7 @@ function openPinModal(total, orderNumber) {
 }
 
 
+
 async function openCheckout(btn) {
   const wrapper = btn.closest('.order-card-wrapper');
   const card = wrapper ? wrapper.querySelector('.order-card') : null;
@@ -2878,44 +2870,56 @@ async function openCheckout(btn) {
 
   let order = {};
   try { order = JSON.parse(card.dataset.order || '{}'); } catch {}
-  const id = order.id || card.dataset.id || btn.dataset.orderId;
+  const id  = order.id || card.dataset.id || btn.dataset.orderId;
   const due = Number(btn.dataset.total || order.totaal || order.total || 0);
   let method = String(order.payment_method || '').toLowerCase();
 
   while (true) {
     if (isCashMethod(method)) {
+      // 现金流程：你的 openWisselAwaitPOS 决定是否成功
       const res = await openWisselAwaitPOS(due);
       if (res === 'pin') { method = 'pin'; continue; }
-      if (!res) return;
+      if (!res) return;               // 用户取消
+      // 现金支付本地可直接标记为 paid（取决于你的业务）
+      order.payment_method = 'cash';
+      order.status = 'paid';
       break;
     } else {
+      // PIN 流程：发送到 Render 后端→Mollie→终端
       const res = await openPinModal(due, order.order_number || id);
-      if (res === 'cash') { method = 'cash'; continue; }
-      if (res === 'later' || res === null) return;
+      if (res === 'cash')  { method = 'cash'; continue; }
+      if (res === 'later' || res == null) return; // 稍后/取消
+      // 发送成功（res === 'send'）：此时终端弹出，但还没结果 → 标记 pending
+      order.payment_method = 'pin';
+      order.status = 'pending';
       break;
     }
   }
 
-  const finalMethod = method;
-  order.payment_method = finalMethod;
-  // 支付完成后更新订单状态为 paid
-  order.status = 'paid';
+  // === 本地 UI 同步（发送成功后先显示 pending，等 socket 推回真正结果） ===
+  const finalMethod = order.payment_method;
   card.dataset.order = JSON.stringify(order);
+
   const pmEl = card.querySelector('.payment-method');
   if (pmEl) pmEl.textContent = finalMethod;
+
   const statusEl = card.querySelector('.order-status');
   if (statusEl) statusEl.textContent = order.status;
 
+  // 不要再 PATCH /api/create_mollie_pin_payment —— 这个端点只用于创建支付（POST）
+  // 如果你确实需要把 "pending" 先写回本地系统，调用你们自有的订单更新端点（示例）：
+  // try {
+  //   await fetch(`${API_BASE}/api/orders/${id}`, {
+  //     method: 'PATCH',
+  //     headers: { 'Content-Type': 'application/json' },
+  //     body: JSON.stringify({ payment_method: finalMethod, status: order.status })
+  //   });
+  // } catch (err) {
+  //   console.warn('order patch failed (optional)', err);
+  // }
+
+  // 仍保留本地更新（如果有）
   if (id) {
-    try {
-      await fetch(`${API_BASE}/api/orders/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ payment_method: finalMethod, status: order.status })
-      });
-    } catch (err) {
-      console.error('update payment_method failed', err);
-    }
     try {
       await window.pos?.updateOrderById?.(id, { payment_method: finalMethod, status: order.status });
     } catch (err) {
@@ -2923,6 +2927,7 @@ async function openCheckout(btn) {
     }
   }
 }
+
 
 async function submitOrder() {
   const name = document.getElementById('custName').value.trim() || 'Guest';
