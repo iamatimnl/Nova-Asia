@@ -2908,7 +2908,7 @@ async function openCheckout(btn) {
 
   if (id) {
     try {
-      await fetch(`/api/orders/${id}`, {
+      await fetch(`${API_BASE}/api/orders/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ payment_method: finalMethod, status: order.status })
