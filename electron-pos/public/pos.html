@@ -3850,7 +3850,6 @@ if (!order.is_cancelled && !order.is_completed) {
 
     ${volgendeHtml}
   `;
-  const encodedOrder = encodeURIComponent(JSON.stringify(order));
   const actions = document.createElement('div');
   actions.className = 'card-actions';
   actions.innerHTML = `
@@ -3863,8 +3862,7 @@ if (!order.is_cancelled && !order.is_completed) {
     Klaar
   </button>
 
-  <!-- ✅ 安全打印：把编码后的 JSON 放在 data-order 上 -->
-  <button class="btn-print" onclick="printThisOrder(this)" data-order="${encodedOrder}">🖨️ Print</button>
+  <button class="btn-print" onclick="printThisOrder(this)" data-number="${order.order_number}">🖨️ Print</button>
 
   <button class="btn-afrekenen" data-order-id="${order.id || ''}" data-total="${totaal}" onclick="openCheckout(this)">Afrekenen</button>
 
@@ -4219,6 +4217,7 @@ socket.on('new_order', async (order) => {
     const uiOrder = toUIOrder(order);      // ✅ 用它给 UI
     // 入库专用对象（结构化、稳定）
     const norm    = normalizeOrder(order); // ✅ 用它写 DB
+    uiOrder.__norm = norm;                 // 保存以便确认时写入
 
     if (!norm.order_number) {
       console.warn('❌ 无有效 order_number:', order);
@@ -4228,6 +4227,7 @@ socket.on('new_order', async (order) => {
       console.log('↩️ 已处理过，跳过:', norm.order_number);
       return;
     }
+    processed.add(norm.order_number);
 
     // 1) 播声音
     try { window.api?.playDing?.(); } catch {}
@@ -4249,21 +4249,6 @@ socket.on('new_order', async (order) => {
       showNextOrderModal();
     } else {
       console.log('⏳ 弹窗已激活，等待当前处理完成...');
-    }
-
-    // 4) 本地 SQLite 落库 —— 用 norm（结构化入库）
-    if (!window.pos?.saveOrder) {
-      console.warn('⚠️ window.pos.saveOrder 不存在，检查 preload.js 是否正确暴露');
-      return;
-    }
-    console.log('[R->IPC] will save', norm.order_number);
-    const res = await window.pos.saveOrder(norm);
-    console.log('[R->IPC] done', res);
-    if (res?.ok) {
-      processed.add(norm.order_number);
-      console.log('💾 已保存到本地 SQLite:', norm.order_number);
-    } else {
-      console.warn('⚠️ 保存失败，未加入去重集:', norm.order_number, res);
     }
 
   } catch (e) {
@@ -4314,25 +4299,23 @@ function showNextOrderModal() {
   console.log("✅ 弹窗已显示！");
 }
 
-window.printThisOrder = async function(btn) {
+async function printOrderByNumber(orderNumber) {
   try {
-    const raw = btn.getAttribute('data-order');
-    if (!raw) { alert('❌ 缺少 data-order'); return; }
-
-    // 解码 + 还原订单对象
-    const order = JSON.parse(decodeURIComponent(raw));
-
-    // 走你已有的打印通道（preload 暴露的）
-    if (window.api?.printReceipt) {
-      window.api.printReceipt(JSON.stringify(order));
-      console.log('🖨️ 打印订单：', order.order_number || '(未知订单号)');
-    } else {
-      alert('打印接口不可用：window.api.printReceipt 未暴露');
-    }
+    if (!orderNumber) throw new Error('缺少订单号');
+    if (!window.api?.printReceipt) throw new Error('打印接口不可用');
+    const res = await window.api.printReceipt(orderNumber);
+    if (res && res.ok === false) throw new Error(res.error || '未知错误');
+    console.log('🖨️ 打印订单：', orderNumber);
   } catch (e) {
     console.error('❌ 打印失败：', e);
     alert('打印失败：' + (e?.message || e));
   }
+}
+window.printOrderByNumber = printOrderByNumber;
+window.printThisOrder = function(btn) {
+  const no = btn.getAttribute('data-number');
+  if (!no) { alert('❌ 缺少 data-number'); return; }
+  printOrderByNumber(no);
 };
 
 
@@ -4375,23 +4358,33 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
     window.api.stopDing();
   }
 
-  // 打印小票
-  if (window.api?.printReceipt) {
-    try {
-      window.api.printReceipt(JSON.stringify(currentOrder));
-      console.log("🖨️ 当前订单已发送打印请求:", currentOrder.order_number);
-    } catch (e) {
-      console.warn('打印失败', e);
-    }
-  }
-
-  // 标记确认并入库
+  // 标记确认并写入数据库
   try {
     currentOrder.is_confirmed = 1;
-    await window.pos?.updateOrderByNumber?.(currentOrder.order_number, { is_confirmed: 1 });
+    if (currentOrder.__norm) {
+      // 更新选择的时间
+      if (currentOrder.order_type === 'bezorgen') {
+        currentOrder.__norm.delivery_time = gekozenTijd;
+      } else {
+        currentOrder.__norm.pickup_time = gekozenTijd;
+      }
+      currentOrder.__norm.is_confirmed = 1;
+      try {
+        const dataObj = JSON.parse(currentOrder.__norm.data || '{}');
+        dataObj.pickup_time = currentOrder.__norm.pickup_time;
+        dataObj.delivery_time = currentOrder.__norm.delivery_time;
+        dataObj.tijdslot = gekozenTijd;
+        dataObj.is_confirmed = 1;
+        currentOrder.__norm.data = JSON.stringify(dataObj);
+      } catch {}
+      await window.pos?.saveOrder?.(currentOrder.__norm);
+    }
   } catch (err) {
-    console.warn('本地确认标记失败', err);
+    console.warn('本地保存失败', err);
   }
+
+  // 打印小票
+  await printOrderByNumber(currentOrder.order_number);
 
   // 通知服务器/广播
   try {
