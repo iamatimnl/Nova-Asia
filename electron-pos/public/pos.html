@@ -4463,6 +4463,13 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
   const tijdslotOrigineel = currentOrder.pickup_time || currentOrder.delivery_time || '';
   const gekozenTijd = document.getElementById('modal-time').value || tijdslotOrigineel;
 
+  // 如果选择现金支付，直接标记为已支付
+  const paidByCash = isCashMethod(currentOrder.payment_method);
+  if (paidByCash) {
+    currentOrder.status = 'paid';
+    currentOrder.payment_status = 'paid';
+  }
+
   if (window.api?.stopDing) {
     window.api.stopDing();
   }
@@ -4480,7 +4487,12 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
   // 标记确认并入库
   try {
     currentOrder.is_confirmed = 1;
-    await window.pos?.updateOrderByNumber?.(currentOrder.order_number, { is_confirmed: 1 });
+    const patch = { is_confirmed: 1 };
+    if (paidByCash) {
+      patch.status = 'paid';
+      patch.payment_status = 'paid';
+    }
+    await window.pos?.updateOrderByNumber?.(currentOrder.order_number, patch);
   } catch (err) {
     console.warn('本地确认标记失败', err);
   }
@@ -4490,7 +4502,8 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
     socket.emit('order_confirmed', {
       order_number: currentOrder.order_number,
       is_confirmed: true,
-      payment_method: currentOrder.payment_method
+      payment_method: currentOrder.payment_method,
+      ...(paidByCash ? { status: 'paid', payment_status: 'paid' } : {})
     });
   } catch (err) {
     console.warn('socket.emit order_confirmed failed', err);
@@ -4503,7 +4516,8 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
       body: JSON.stringify({
         order_number: currentOrder.order_number,
         tijdslot: gekozenTijd,
-        is_confirmed: true
+        is_confirmed: true,
+        ...(paidByCash ? { status: 'paid', payment_status: 'paid' } : {})
       })
     });
   } catch (err) {
