@@ -2801,7 +2801,7 @@ const API_BASE = 'https://flask-order-api.onrender.com';
 
 
 
-function openPinModal(total, orderNumber) {
+function openPinModal(total, orderId) {
   return new Promise((resolve) => {
     const dlg = document.getElementById('pin-modal-pos');
     if (!dlg) return resolve('later');
@@ -2814,17 +2814,32 @@ function openPinModal(total, orderNumber) {
 
     dueEl.textContent = euroFmtPOS.format(due);
 
-    // ✅ 每次打开都先解禁
+    // 每次打开都先解禁
     sendBtn.disabled = false;
 
     function cleanup(result) {
-      // ✅ 成功/失败/取消，统一复位
       sendBtn.disabled = false;
       sendBtn.removeEventListener('click', onSend);
       laterBtn.removeEventListener('click', onLater);
       cashBtn.removeEventListener('click', onCash);
+      socket.off('payment_status', onStatus);
       dlg.close();
       resolve(result);
+    }
+
+    function onStatus(data) {
+      const oid = String(data?.order_id || '');
+      const st  = String(data?.status || '').toLowerCase();
+      if (oid !== String(orderId)) return;
+      if (st === 'paid') {
+        alert('PIN betaling geslaagd');
+        handlePaymentUpdate({ order_id: oid, status: 'paid' });
+        cleanup('paid');
+      } else if (st === 'failed' || st === 'canceled') {
+        alert('PIN betaling mislukt');
+        handlePaymentUpdate({ order_id: oid, status: st, error: data?.error });
+        sendBtn.disabled = false; // 解锁，允许重试或切换现金
+      }
     }
 
     async function onSend() {
@@ -2834,24 +2849,24 @@ function openPinModal(total, orderNumber) {
         const r = await fetch(`${API_BASE}/api/create_mollie_pin_payment`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ order_number: orderNumber, amount: amountStr })
+          body: JSON.stringify({ order_number: orderId, amount: amountStr })
         });
         let data = {}; try { data = await r.json(); } catch {}
         if (!r.ok || data.ok === false) {
           showToast('PIN betaling mislukt' + (data?.error ? `: ${data.error}` : ''));
-          // ❗ 失败要解禁
           sendBtn.disabled = false;
           return;
         }
+        handlePaymentUpdate({ order_id: orderId, status: 'pending' });
         showToast('Naar terminal gestuurd…');
-        cleanup('send'); // cleanup 会复位
+        socket.on('payment_status', onStatus);
       } catch (e) {
         showToast('PIN netwerkfout');
         sendBtn.disabled = false;
       }
     }
     function onLater() { cleanup('later'); }
-    function onCash()  { cleanup('cash');  }
+    function onCash()  { cleanup('cash'); }
 
     sendBtn.addEventListener('click', onSend);
     laterBtn.addEventListener('click', onLater);
@@ -2886,17 +2901,17 @@ async function openCheckout(btn) {
       break;
     } else {
       // PIN 流程：发送到 Render 后端→Mollie→终端
-      const res = await openPinModal(due, order.order_number || id);
+      const res = await openPinModal(due, id);
       if (res === 'cash')  { method = 'cash'; continue; }
       if (res === 'later' || res == null) return; // 稍后/取消
-      // 发送成功（res === 'send'）：此时终端弹出，但还没结果 → 标记 pending
+      // 支付成功
       order.payment_method = 'pin';
-      order.status = 'pending';
+      order.status = 'paid';
       break;
     }
   }
 
-  // === 本地 UI 同步（发送成功后先显示 pending，等 socket 推回真正结果） ===
+  // === 本地 UI 同步 ===
   const finalMethod = order.payment_method;
   card.dataset.order = JSON.stringify(order);
 
@@ -3065,8 +3080,8 @@ async function submitOrder() {
         if (delivery) document.getElementById('deliveryPayment').value = 'cash';
         else document.getElementById('pickupPayment').value = 'cash';
         continue;
-      } else if (res === 'send') {
-        // 终端返回支付成功
+      } else if (res === 'paid') {
+        // PIN 支付成功
         paidViaModal = true;
       }
     } else if (isCashMethod(paymentMethod)) {
@@ -3182,8 +3197,7 @@ function formatCurrency(value){
   
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script>
-  const socketUrl = (typeof process !== 'undefined' && process.env && process.env.SOCKET_URL) ? process.env.SOCKET_URL : 'https://flask-order-api.onrender.com';
-  const socket = io(socketUrl, { transports: ['websocket'] });
+  const socket = io(API_BASE, { transports: ['websocket'] });
 
   function applyMenuPrices(items){
     const map={};
@@ -3303,14 +3317,14 @@ const _seenPaymentEvents = new Set();
 
 function handlePaymentUpdate(data) {
   if (!data) return;
-  const order_number   = String(data.order_number ?? '');
-  const payment_status = (data.payment_status || '').toLowerCase(); // paid/failed/canceled/pending/...
+  const order_id       = String(data.order_id ?? '');
+  const payment_status = (data.status || '').toLowerCase(); // paid/failed/canceled/pending
   const payment_method = data.payment_method || 'pin';
 
-  if (!order_number) return;
+  if (!order_id) return;
 
   // 去重：同一订单 + 同一状态只处理一次
-  const dedupeKey = `${order_number}:${payment_status}`;
+  const dedupeKey = `${order_id}:${payment_status}`;
   if (_seenPaymentEvents.has(dedupeKey)) return;
   _seenPaymentEvents.add(dedupeKey);
 
@@ -3320,14 +3334,15 @@ function handlePaymentUpdate(data) {
     let cardOrder = {};
     try { cardOrder = JSON.parse(card.dataset.order || '{}'); } catch {}
 
-    // 兼容：如果 data-order 里没有订单号，尝试 data-order-number
-    const cardOrderNo = String(
-      cardOrder.order_number ??
+    // 尝试多种字段匹配 order_id
+    const cardOrderId = String(
+      cardOrder.id ??
+      card.dataset.id ??
       card.dataset.orderNumber ??
       ''
     );
 
-    if (cardOrderNo !== order_number) return;
+    if (cardOrderId !== order_id) return;
 
     // 写回订单对象
     cardOrder.payment_method = payment_method;
@@ -3359,16 +3374,15 @@ function handlePaymentUpdate(data) {
     }
 
     // 结果提示
-    if      (payment_status === 'paid')      showToast(`Order ${order_number} PIN betaling geslaagd`);
-    else if (payment_status === 'failed')    showToast(`Order ${order_number} PIN betaling mislukt`);
-    else if (payment_status === 'canceled')  showToast(`Order ${order_number} PIN betaling geannuleerd`);
-    else if (payment_status === 'pending')   showToast(`Order ${order_number} PIN betaling in behandeling`);
+    if      (payment_status === 'paid')      showToast(`Order ${order_id} PIN betaling geslaagd`);
+    else if (payment_status === 'failed')    showToast(`Order ${order_id} PIN betaling mislukt`);
+    else if (payment_status === 'canceled')  showToast(`Order ${order_id} PIN betaling geannuleerd`);
+    else if (payment_status === 'pending')   showToast(`Order ${order_id} PIN betaling in behandeling`);
   });
 }
 
-// 事件监听（不改后端前提下，双监听最稳）
+// 事件监听
 socket.on('payment_status', handlePaymentUpdate);
-socket.on('payment_update', handlePaymentUpdate);
 
 
 
