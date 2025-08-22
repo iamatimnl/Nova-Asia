@@ -1,106 +1,118 @@
 <!DOCTYPE html>
-
 <html lang="nl">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0" name="viewport"/>
-<meta name="description" content="Nova Asia in Hoofddorp serveert bento boxen en teppanyaki gerechten. Ook sushi, pokébowls, ramen en Aziatische streetfood."/>
-<title>Nova Asia | Bento & Teppanyaki in Hoofddorp</title>
-<link rel="canonical" href="https://www.novaasia.nl/"/>
-<meta property="og:type" content="website"/>
-<meta property="og:title" content="Nova Asia | Bento & Teppanyaki in Hoofddorp"/>
-<meta property="og:description" content="Nova Asia in Hoofddorp serveert bento boxen en teppanyaki gerechten. Ook sushi, pokébowls, ramen en Aziatische streetfood."/>
-<meta property="og:url" content="https://www.novaasia.nl/"/>
-<meta property="og:site_name" content="Nova Asia"/>
-<meta property="og:image" content="https://www.novaasia.nl/assets/logo-512.png"/>
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:title" content="Nova Asia | Bento & Teppanyaki in Hoofddorp"/>
-<meta name="twitter:description" content="Nova Asia in Hoofddorp serveert bento boxen en teppanyaki gerechten. Ook sushi, pokébowls, ramen en Aziatische streetfood."/>
-<meta name="twitter:image" content="https://www.novaasia.nl/assets/logo-512.png"/>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Quicksand:wght@400;700&family=Noto+Sans:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-<!-- 网页标签图标 -->
-<!-- Favicon (桌面浏览器标签) -->
-<!-- Favicon 基础图标 -->
-<link rel="icon" type="image/png" sizes="180x180"
-      href="{{ url_for('static', filename='icons/icon-180.png') }}">
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
 
-<!-- iOS 桌面图标（可与上面复用同一文件） -->
-<link rel="apple-touch-icon" sizes="180x180"
-      href="{{ url_for('static', filename='icons/icon-180.png') }}">
+  <!-- 唯一的 Meta 描述（来自你原来的 <p>） -->
+  <meta name="description" content="Bij Nova Asia in Hoofddorp proef je authentieke bento boxen en teppanyaki gerechten. We serveren ook verse sushi, kleurrijke pokébowls, hartverwarmende ramen en andere Aziatische streetfood favorieten. Zoek je Bento Hoofddorp, Teppanyaki Hoofddorp, Pokébowls Hoofddorp, Ramen Hoofddorp of Sushi Hoofddorp? Bestel online of kom langs."/>
 
-<!-- 可选：32/16 像素小图标（浏览器标签页用） -->
-<link rel="icon" type="image/png" sizes="32x32"
-      href="{{ url_for('static', filename='icons/icon-32.png') }}">
-<link rel="icon" type="image/png" sizes="16x16"
-      href="{{ url_for('static', filename='icons/icon-16.png') }}">
+  <!-- 标题 -->
+  <title>Nova Asia | Bento & Teppanyaki in Hoofddorp</title>
 
-<!-- PWA manifest -->
-<link rel="manifest" href="/manifest.json">
+  <!-- Canonical：统一主URL -->
+  <link rel="canonical" href="https://www.novaasia.nl/"/>
 
-<!-- 状态栏/主题色 -->
-<meta name="theme-color" content="#f2e9d8">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Nova Asia">
-<meta name="mobile-web-app-capable" content="yes">
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "url": "https://www.novaasia.nl/",
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": "https://www.novaasia.nl/search?q={search_term_string}",
-    "query-input": "required name=search_term_string"
-  }
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "Nova Asia",
-  "url": "https://www.novaasia.nl/",
-  "logo": "https://www.novaasia.nl/assets/logo-512.png",
-  "sameAs": [
-    "https://www.facebook.com/novaasia.nl",
-    "https://www.instagram.com/novaasia.nl"
-  ]
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Restaurant",
-  "name": "Nova Asia",
-  "url": "https://www.novaasia.nl/",
-  "image": "https://www.novaasia.nl/assets/logo-512.png",
-  "telephone": "+31622599566",
-  "servesCuisine": ["Asian", "Japanese", "Street Food", "Bubble Tea"],
-  "priceRange": "€20",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "Almkerkplein 4",
-    "addressLocality": "Hoofddorp",
-    "postalCode": "2134CN",
-    "addressCountry": "NL"
-  },
-  "openingHoursSpecification": [
-    {
-      "@type": "OpeningHoursSpecification",
-      "dayOfWeek": ["Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
-      "opens": "12:00",
-      "closes": "20:30"
+  <!-- 字体 -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Quicksand:wght@400;700&family=Noto+Sans:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website"/>
+  <meta property="og:title" content="Nova Asia | Bento & Teppanyaki in Hoofddorp"/>
+  <meta property="og:description" content="Bij Nova Asia in Hoofddorp proef je authentieke bento boxen, teppanyaki, sushi, pokébowls, ramen en streetfood. Bestel online of kom langs."/>
+  <meta property="og:url" content="https://www.novaasia.nl/"/>
+  <meta property="og:site_name" content="Nova Asia"/>
+  <meta property="og:image" content="https://www.novaasia.nl/assets/logo-512.png"/>
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="Nova Asia | Bento & Teppanyaki in Hoofddorp"/>
+  <meta name="twitter:description" content="Bij Nova Asia in Hoofddorp proef je authentieke bento boxen en teppanyaki gerechten. Ook sushi, pokébowls, ramen en Aziatische streetfood."/>
+  <meta name="twitter:image" content="https://www.novaasia.nl/assets/logo-512.png"/>
+
+  <!-- 控制摘要长度，避免 Google 抓取页脚/杂乱文本 -->
+  <meta name="robots" content="max-snippet:160, max-image-preview:large"/>
+  <meta name="googlebot" content="max-snippet:160"/>
+
+  <!-- 网页图标 -->
+  <link rel="icon" type="image/png" sizes="180x180" href="{{ url_for('static', filename='icons/icon-180.png') }}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='icons/icon-180.png') }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='icons/icon-32.png') }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='icons/icon-16.png') }}">
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- 状态栏/主题色 -->
+  <meta name="theme-color" content="#f2e9d8">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Nova Asia">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <!-- JSON-LD: WebSite -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "url": "https://www.novaasia.nl/",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://www.novaasia.nl/search?q={search_term_string}",
+      "query-input": "required name=search_term_string"
     }
-  ],
-  "acceptsReservations": "True",
-  "menu": "https://www.novaasia.nl",
-  "sameAs": [
-    "https://www.facebook.com/novaasia.nl",
-    "https://www.instagram.com/novaasia.nl"
-  ]
-}
-</script>
+  }
+  </script>
+
+  <!-- JSON-LD: Organization -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Nova Asia",
+    "url": "https://www.novaasia.nl/",
+    "logo": "https://www.novaasia.nl/assets/logo-512.png",
+    "sameAs": [
+      "https://www.facebook.com/novaasia.nl",
+      "https://www.instagram.com/novaasia.nl"
+    ]
+  }
+  </script>
+
+  <!-- JSON-LD: Restaurant -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Restaurant",
+    "name": "Nova Asia",
+    "url": "https://www.novaasia.nl/",
+    "image": "https://www.novaasia.nl/assets/logo-512.png",
+    "description": "Bij Nova Asia in Hoofddorp proef je authentieke bento boxen en teppanyaki gerechten. We serveren ook verse sushi, kleurrijke pokébowls, hartverwarmende ramen en andere Aziatische streetfood favorieten. Zoek je Bento Hoofddorp, Teppanyaki Hoofddorp, Pokébowls Hoofddorp, Ramen Hoofddorp of Sushi Hoofddorp? Bestel online of kom langs.",
+    "telephone": "+31622599566",
+    "servesCuisine": ["Asian", "Japanese", "Street Food", "Bubble Tea"],
+    "priceRange": "€€",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Almkerkplein 4",
+      "addressLocality": "Hoofddorp",
+      "postalCode": "2134CN",
+      "addressCountry": "NL"
+    },
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+        "opens": "12:00",
+        "closes": "20:30"
+      }
+    ],
+    "acceptsReservations": "True",
+    "menu": "https://www.novaasia.nl",
+    "sameAs": [
+      "https://www.facebook.com/novaasia.nl",
+      "https://www.instagram.com/novaasia.nl"
+    ]
+  }
+  </script>
+</head>
 
 
 
@@ -2600,11 +2612,11 @@ body.portrait-mode .cart-badge {
 </div>
 <h1 class="logo-heading">
   <div class="logo-wrapper">
-    <img src="static/images/Logo1.png"   
-         class="logo-desktop" />
+    <img src="static/images/Logo1.png" alt="Nova Asia bento bezorgen Hoofddorp" class="logo-desktop" />
     <span class="site-title">Nova Asia · Hoofddorp</span>
   </div>
 </h1>
+<p>Bij Nova Asia in Hoofddorp proef je authentieke bento boxen en teppanyaki gerechten. We serveren ook verse sushi, kleurrijke pokébowls, hartverwarmende ramen en andere Aziatische streetfood favorieten. Zoek je Bento Hoofddorp, Teppanyaki Hoofddorp, Pokébowls Hoofddorp, Ramen Hoofddorp of Sushi Hoofddorp? Bestel online of kom langs.</p>
 
 
 <section id="delivery-options">
@@ -7936,14 +7948,6 @@ document.addEventListener('click', e => {
   <div class="footer-title">Overig</div>
 
   <!-- 简介段落 -->
-  <p>
-    Bij Nova Asia in Hoofddorp proef je authentieke <strong>bento boxen</strong> en <strong>teppanyaki gerechten</strong>. 
-    We serveren ook verse <strong>sushi</strong>, kleurrijke <strong>pokébowls</strong>, 
-    hartverwarmende <strong>ramen</strong> en andere Aziatische streetfood favorieten. 
-    Zoek je <em>Bento Hoofddorp</em>, <em>Teppanyaki Hoofddorp</em>, 
-    <em>Pokébowls Hoofddorp</em>, <em>Ramen Hoofddorp</em> of <em>Sushi Hoofddorp</em>? 
-    Bestel online of kom langs.
-  </p>
 
   <!-- 链接区 -->
   <nav class="footer-links">
