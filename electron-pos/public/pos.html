@@ -2834,17 +2834,19 @@ function openPinModal(total, orderId) {
     }
 
     function onStatus(data) {
-      const oid = String(data?.order_id || '');
-      const st  = String(data?.status || '').toLowerCase();
+      const oid = String(data?.payment_ordernumber || data?.order_id || '');
+      const st  = String(data?.payment_status || data?.status || '').toLowerCase();
       if (oid !== String(orderId)) return;
-      if (st === 'approved') {
-        handlePaymentUpdate({ order_id: oid, status: 'paid' });
+      if (st === 'paid') {
+        handlePaymentUpdate({ payment_ordernumber: oid, payment_status: 'paid', payment_id: data?.payment_id });
         cleanup('paid');
-      } else if (st === 'declined' || st === 'canceled' || st === 'timeout') {
-        handlePaymentUpdate({ order_id: oid, status: 'unfinished', error: st });
+      } else if (['failed','canceled','expired'].includes(st)) {
+        handlePaymentUpdate({ payment_ordernumber: oid, payment_status: 'unfinished', payment_id: data?.payment_id, error: st });
         statusEl.textContent = `PIN ${st}. Probeer opnieuw of kies een andere methode.`;
         sendBtn.disabled = false;
         socket.off('payment_status', onStatus);
+      } else {
+        handlePaymentUpdate({ payment_ordernumber: oid, payment_status: st, payment_id: data?.payment_id });
       }
     }
 
@@ -2856,7 +2858,7 @@ function openPinModal(total, orderId) {
         const r = await fetch(`${API_BASE}/api/create_mollie_pin_payment`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ order_number: orderId, amount: amountStr })
+          body: JSON.stringify({ payment_ordernumber: orderId, amount: amountStr })
         });
         let data = {}; try { data = await r.json(); } catch {}
         if (!r.ok || data.ok === false) {
@@ -2865,7 +2867,10 @@ function openPinModal(total, orderId) {
           statusEl.textContent = '';
           return;
         }
-          handlePaymentUpdate({ order_id: orderId, status: 'awaiting_pin_result' });
+          const pid = data.payment_id || data.id;
+          const card = document.querySelector(`.order-card[data-order-number="${orderId}"]`);
+          if (card && pid) card.dataset.paymentId = pid;
+          handlePaymentUpdate({ payment_ordernumber: orderId, payment_status: 'awaiting_pin_result', payment_id: pid });
           showToast('Naar terminal gestuurd…');
           window.api?.beep?.();
           socket.on('payment_status', onStatus);
@@ -3232,10 +3237,11 @@ function formatCurrency(value){
     const key = p.payment_ordernumber || p.payment_id;
     if (!key) return;
 
-    const card = document.querySelector(`[data-order="${key}"]`)
-             || (p.payment_id && document.querySelector(`[data-payment="${p.payment_id}"]`));
+    const card = document.querySelector(`.order-card[data-order-number="${key}"]`)
+             || (p.payment_id && document.querySelector(`.order-card[data-payment-id="${p.payment_id}"]`));
     if (card) {
       card.dataset.paymentStatus = p.payment_status;
+      if (p.payment_id) card.dataset.paymentId = p.payment_id;
       const badge = card.querySelector('.payment-badge');
       if (badge) badge.textContent = p.payment_status.toUpperCase();
     } else {
@@ -3372,13 +3378,16 @@ async function handlePaymentUpdate(data) {
   const order_id       = String(order_id_raw || '');
   let payment_status   = String((data.payment_status ?? data.status ?? '')).toLowerCase();
   const payment_method = data.payment_method || 'pin';
+  const payment_id     = data.payment_id;
 
   // 统一状态别名
   if (payment_status === 'approved') {
     payment_status = 'paid';
-  } else if (['declined','canceled','timeout'].includes(payment_status)) {
+  } else if (['declined','canceled','timeout','failed','expired'].includes(payment_status)) {
     data.error = payment_status;
     payment_status = 'unfinished';
+  } else if (['pending','open'].includes(payment_status)) {
+    payment_status = 'awaiting_pin_result';
   }
 
   if (!order_id) return;
@@ -3425,6 +3434,10 @@ async function handlePaymentUpdate(data) {
     // ✅ 建议：只写 payment_status，不覆盖业务 status
     cardOrder.payment_method = payment_method;
     if (payment_status) cardOrder.payment_status = payment_status;
+    if (payment_id) {
+      cardOrder.payment_id = payment_id;
+      card.dataset.paymentId = payment_id;
+    }
     card.dataset.order = JSON.stringify(cardOrder);
 
     // 文案
@@ -3947,8 +3960,9 @@ if (!order.is_cancelled && !order.is_completed) {
   // —— 时间显示（优先 tijdslot_display；ZSM 则显示 ZSM）
   const tijdslotRaw = order.tijdslot_display || (isDelivery ? order.delivery_time : order.pickup_time);
   const tijdslot = order.is_zsm ? 'ZSM' : (tijdslotRaw || '').trim();
-  const status = order.status || 'pending';
-  order.status = status;
+  const status = order.payment_status || order.status || 'pending';
+  order.status = order.status || status;
+  order.payment_status = order.payment_status || status;
 
   // —— 组装 DOM
   const wrapper = document.createElement('div');
@@ -3957,6 +3971,8 @@ if (!order.is_cancelled && !order.is_completed) {
   const card = document.createElement('div');
   card.className = 'order-card';
   if (order.id) card.dataset.id = order.id;
+  if (order.order_number) card.dataset.orderNumber = order.order_number;
+  if (order.payment_id) card.dataset.paymentId = order.payment_id;
   card.dataset.order = JSON.stringify(order);
   if (order.is_cancelled) card.classList.add('cancelled');
   else if (order.is_completed) card.classList.add('completed');
