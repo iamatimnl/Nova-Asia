@@ -3200,21 +3200,65 @@ function formatCurrency(value){
   
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script>
-  const socket = io(API_BASE, { transports: ['websocket'] });
+  // 全局单例：只初始化一次
+  (function () {
+    const BASE =
+      (typeof API_BASE !== 'undefined' && API_BASE) 
+        ? API_BASE 
+        : 'https://flask-order-api.onrender.com';
 
-  function applyMenuPrices(items){
-    const map={};
-    items.forEach(i=>{map[i.name]=i.price;});
-    document.querySelectorAll('.menu-item').forEach(el=>{
-      const name=el.dataset.name;
-      if(name&&map[name]!==undefined){
-        const p=parseFloat(map[name]);
-        el.dataset.price=p;
-        const pe=el.querySelector('p');
-        if(pe) pe.textContent=`€${p.toFixed(2)}`;
+    if (!window.__socket) {
+      window.__socket = io(BASE, { transports: ['websocket'] });
+      window.__socket.on('connect', () =>
+        console.log('✅ Socket verbonden:', window.__socket.id)
+      );
+      window.__socket.on('connect_error', (e) =>
+        console.warn('socket connect_error:', e?.message || e)
+      );
+    }
+
+    // 提供一个安全的 getter
+    window.getSocket = () => window.__socket;
+  })();
+</script>
+
+<!-- 任意页面/任意脚本里这样用，不再重复定义 const socket -->
+<script>
+  const socket = getSocket();
+
+  // 监听支付事件
+  socket.on('payment_status', (p) => {
+    console.log('📩 payment_status:', p);
+    const key = p.payment_ordernumber || p.payment_id;
+    if (!key) return;
+
+    const card = document.querySelector(`[data-order="${key}"]`)
+             || (p.payment_id && document.querySelector(`[data-payment="${p.payment_id}"]`));
+    if (card) {
+      card.dataset.paymentStatus = p.payment_status;
+      const badge = card.querySelector('.payment-badge');
+      if (badge) badge.textContent = p.payment_status.toUpperCase();
+    } else {
+      console.warn('未找到订单卡片，可能 metadata 缺失', p);
+    }
+  });
+
+  // 你的其它函数照常存在，不受影响
+  function applyMenuPrices(items) {
+    const map = {};
+    items.forEach(i => { map[i.name] = i.price; });
+    document.querySelectorAll('.menu-item').forEach(el => {
+      const name = el.dataset.name;
+      if (name && map[name] !== undefined) {
+        const p = Number(map[name]) || 0;
+        el.dataset.price = p;
+        const pe = el.querySelector('p');
+        if (pe) pe.textContent = `€${p.toFixed(2)}`;
       }
     });
   }
+
+
 
   function populateBubbleSelectors(){
     const baseSel=document.getElementById('bubbleType');
@@ -3322,93 +3366,98 @@ const pendingPinOrders = {};
 
 async function handlePaymentUpdate(data) {
   if (!data) return;
-  const order_id       = String(data.order_id ?? '');
-  let payment_status = (data.status || '').toLowerCase(); // raw status
+
+  // ✅ 兼容新老字段：优先用 payment_ordernumber / payment_status
+  const order_id_raw   = data.payment_ordernumber ?? data.order_id ?? '';
+  const order_id       = String(order_id_raw || '');
+  let payment_status   = String((data.payment_status ?? data.status ?? '')).toLowerCase();
+  const payment_method = data.payment_method || 'pin';
+
+  // 统一状态别名
   if (payment_status === 'approved') {
     payment_status = 'paid';
-  } else if (payment_status === 'declined' || payment_status === 'canceled' || payment_status === 'timeout') {
+  } else if (['declined','canceled','timeout'].includes(payment_status)) {
     data.error = payment_status;
     payment_status = 'unfinished';
   }
-  const payment_method = data.payment_method || 'pin';
 
   if (!order_id) return;
 
-  // 去重：同一订单 + 同一状态只处理一次
+  // 去重：同一订单 + 同一状态，只处理一次（通常只对 paid 做去重就够）
   if (payment_status === 'paid') {
     const dedupeKey = `${order_id}:${payment_status}`;
     if (_seenPaymentEvents.has(dedupeKey)) return;
     _seenPaymentEvents.add(dedupeKey);
   }
 
+  // 命中“待回传”缓存
   const pending = pendingPinOrders[order_id];
   if (pending) {
     if (payment_status === 'paid') {
-      pending.payload.status = 'paid';
+      // ✅ 不覆盖业务流 status，写入 payment_status 更安全
+      pending.payload.payment_status = 'paid';
       await finalizeOrder(pending.payload);
       delete pendingPinOrders[order_id];
       showToast(`Order ${order_id} PIN betaling geslaagd`);
     } else if (payment_status === 'unfinished') {
-      pending.payload.status = 'unfinished';
+      pending.payload.payment_status = 'unfinished';
       showToast(`Order ${order_id} PIN betaling ${data.error || 'mislukt'}`);
     } else if (payment_status === 'awaiting_pin_result') {
-      pending.payload.status = 'awaiting_pin_result';
+      pending.payload.payment_status = 'awaiting_pin_result';
       showToast(`Order ${order_id} PIN betaling in behandeling`);
     }
   }
 
-  // 遍历所有订单卡
+  // 遍历订单卡片并更新 UI
   document.querySelectorAll('.order-card').forEach(card => {
-    // 读取卡片里的订单对象（你现有结构是 data-order 的 JSON）
     let cardOrder = {};
     try { cardOrder = JSON.parse(card.dataset.order || '{}'); } catch {}
 
-    // 尝试多种字段匹配 order_id
+    // 多来源取订单号（保持原有容错）
     const cardOrderId = String(
       cardOrder.id ??
       card.dataset.id ??
       card.dataset.orderNumber ??
       ''
     );
-
     if (cardOrderId !== order_id) return;
 
-    // 写回订单对象
+    // ✅ 建议：只写 payment_status，不覆盖业务 status
     cardOrder.payment_method = payment_method;
-    if (payment_status) cardOrder.status = payment_status;
+    if (payment_status) cardOrder.payment_status = payment_status;
     card.dataset.order = JSON.stringify(cardOrder);
 
-    // 支付方式文案
+    // 文案
     const pmEl = card.querySelector('.payment-method');
     if (pmEl) {
       let txt = payment_method || '';
-      if (payment_status === 'paid')             txt += ' (betaald)';
-      else if (payment_status === 'unfinished')  txt += ` (${data.error || 'mislukt'})`;
-      else if (payment_status === 'awaiting_pin_result') txt += ' (in behandeling)';
+      if (payment_status === 'paid')                    txt += ' (betaald)';
+      else if (payment_status === 'unfinished')         txt += ` (${data.error || 'mislukt'})`;
+      else if (payment_status === 'awaiting_pin_result')txt += ' (in behandeling)';
       pmEl.textContent = txt.trim();
     }
 
-    // 订单状态展示 + class 切换
+    // 状态徽章/样式（若你已有业务 status 样式，可保留；这里根据支付状态更新）
     const statusEl = card.querySelector('.order-status');
     if (statusEl && payment_status) {
       statusEl.textContent = payment_status;
-      statusEl.classList.remove('paid', 'unfinished', 'awaiting_pin_result', 'open', 'expired');
+      statusEl.classList.remove('paid','unfinished','awaiting_pin_result','open','expired');
       statusEl.classList.add(payment_status);
     }
 
-    // （可选）桥接到你现有的 POS 更新方法
+    // 桥接到现有 POS 更新函数（可选）
     if (cardOrder.id) {
-      try { window.pos?.updateOrderById?.(cardOrder.id, { payment_method }); } catch {}
+      try { window.pos?.updateOrderById?.(cardOrder.id, { payment_method, payment_status }); } catch {}
     }
 
-    // 结果提示
+    // Toast
     if      (payment_status === 'paid')             showToast(`Order ${order_id} PIN betaling geslaagd`);
-    else if (payment_status === 'unfinished')      showToast(`Order ${order_id} PIN betaling ${data.error || 'mislukt'}`);
+    else if (payment_status === 'unfinished')       showToast(`Order ${order_id} PIN betaling ${data.error || 'mislukt'}`);
     else if (payment_status === 'awaiting_pin_result') showToast(`Order ${order_id} PIN betaling in behandeling`);
   });
 }
 
-// 事件监听
+// 事件监听保持不变
 socket.on('payment_status', handlePaymentUpdate);
 
 
@@ -4908,6 +4957,7 @@ document.addEventListener('click', (e) => {
   window.addEventListener('beforeunload', () => socket.disconnect());
   window.addEventListener('focus', () => { newOrderCount = 0; hasNewOrder = false; updateTabTitle(); updateTodayBadge(); });
 </script>
+
 
 
 
