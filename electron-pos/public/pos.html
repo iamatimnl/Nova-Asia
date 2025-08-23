@@ -2865,9 +2865,10 @@ function openPinModal(total, orderId) {
           statusEl.textContent = '';
           return;
         }
-        handlePaymentUpdate({ order_id: orderId, status: 'awaiting_pin_result' });
-        showToast('Naar terminal gestuurd…');
-        socket.on('payment_status', onStatus);
+          handlePaymentUpdate({ order_id: orderId, status: 'awaiting_pin_result' });
+          showToast('Naar terminal gestuurd…');
+          window.api?.beep?.();
+          socket.on('payment_status', onStatus);
       } catch (e) {
         showToast('PIN netwerkfout');
         sendBtn.disabled = false;
