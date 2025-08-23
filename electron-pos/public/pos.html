@@ -3850,7 +3850,7 @@ async function fetchOrders() {
 
     // 先确保每个订单都有 status 字段
     data.forEach(o => {
-      if (!o.status) o.status = o.payment_status || 'pending';
+      o.status = o.status || o.payment_status || 'pending';
     });
 
     // 1) 渲染 UI
@@ -4041,7 +4041,7 @@ if (!order.is_cancelled && !order.is_completed) {
   // —— 时间显示（优先 tijdslot_display；ZSM 则显示 ZSM）
   const tijdslotRaw = order.tijdslot_display || (isDelivery ? order.delivery_time : order.pickup_time);
   const tijdslot = order.is_zsm ? 'ZSM' : (tijdslotRaw || '').trim();
-  const status = order.payment_status || order.status || 'pending';
+  const status = order.status || order.payment_status || 'pending';
   order.status = order.status || status;
   order.payment_status = order.payment_status || status;
 
