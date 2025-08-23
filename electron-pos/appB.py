@@ -1326,9 +1326,10 @@ def update_order_status(order_id: int):
 
 
 @app.route('/api/orders/update_status', methods=['POST'])
+@app.route('/api/orders/update', methods=['POST'])
 def webhook_update_order_status():
     """Update order status without authentication, used by payment webhooks."""
-    data = request.get_json() or {}
+    data = request.get_json(silent=True) or request.form.to_dict() or {}
     order_number = data.get('order_number') or data.get('orderNumber')
     status = data.get('status')
     if not order_number or status is None:
@@ -2106,6 +2107,8 @@ def pos_orders_today():
     start_local = datetime.combine(today, datetime.min.time(), tzinfo=NL_TZ)
     start = start_local.astimezone(UTC).replace(tzinfo=None)
 
+    # Refresh session to ensure latest payment status is fetched
+    db.session.expire_all()
     orders = (Order.query
               .filter(Order.created_at >= start)
               .order_by(Order.created_at.desc())
