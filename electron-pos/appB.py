@@ -2186,6 +2186,7 @@ def pos_orders_today():
             "discount_amount": float(next_amt) if next_amt is not None else None,
 
             "korting": float(this_amt or 0.0),  # 兼容旧模板的“korting=本次”
+            "status": o.status,
             "is_completed": o.is_completed,
             "is_cancelled": o.is_cancelled
         })
@@ -2280,7 +2281,6 @@ socketio = SocketIO(app)
 
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000, debug=True)
-
 
 
 
