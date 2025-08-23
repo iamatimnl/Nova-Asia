@@ -2906,12 +2906,18 @@ async function openCheckout(btn) {
 
   while (true) {
     if (isCashMethod(method)) {
-      // 现金流程：你的 openWisselAwaitPOS 决定是否成功
+      // 现金流程：先保持 pending，待确认后再标记为 paid
+      order.payment_method = 'cash';
+      order.status = 'pending';
+      order.payment_status = 'pending';
+      const statusEl = card.querySelector('.order-status');
+      if (statusEl) statusEl.textContent = order.status;
+
       const res = await openWisselAwaitPOS(due);
       if (res && res.method === 'pin') { method = 'pin'; due = res.remaining; continue; }
       if (!res) return;               // 用户取消
-      order.payment_method = 'cash';
       order.status = 'paid';
+      order.payment_status = 'paid';
       break;
     } else {
       // PIN 流程：发送到 Render 后端→Mollie→终端
@@ -2921,6 +2927,7 @@ async function openCheckout(btn) {
       // 支付成功
       order.payment_method = 'pin';
       order.status = 'paid';
+      order.payment_status = 'paid';
       break;
     }
   }
@@ -2950,7 +2957,7 @@ async function openCheckout(btn) {
   // 仍保留本地更新（如果有）
   if (id) {
     try {
-      await window.pos?.updateOrderById?.(id, { payment_method: finalMethod, status: order.status });
+      await window.pos?.updateOrderById?.(id, { payment_method: finalMethod, status: order.status, payment_status: order.payment_status });
     } catch (err) {
       console.warn('local update failed', err);
     }
@@ -3123,12 +3130,15 @@ async function submitOrder() {
       return; // 成功由回调处理
     }
     if (isCashMethod(method)) {
+      payload.status = 'pending';
+      payload.payment_status = 'pending';
       const w = await openWisselAwaitPOS(due);
       if (!w) return;
       if (w.method === 'pin') { method = 'pin'; due = w.remaining; continue; }
       payload._wissel = w;
       payload._paid = true;
       payload.status = 'paid';
+      payload.payment_status = 'paid';
       payload.payment_method = method;
       payload.paymentMethod = method;
       await finalizeOrder(payload);
@@ -4236,6 +4246,9 @@ const processed = new Set();
 
 function normalizeOrder(o = {}) {
   const toNum = v => (v === null || v === undefined || v === '') ? null : Number(v);
+  const method = String(o.payment_method || '').toLowerCase();
+  const cash   = method === 'cash' || method === 'contant';
+  const status = cash ? 'pending' : (o.status || o.payment_status || 'pending');
 
   return {
     // —— 这些与库里一一对应 ——
@@ -4267,6 +4280,8 @@ function normalizeOrder(o = {}) {
     btw_9:           toNum(o.btw_9),
     btw_21:          toNum(o.btw_21),
     btw_total:       toNum(o.btw_total ?? o.btw),
+    status:          status,
+    payment_status:  status,
 
     // ✅ 下次优惠（库里就这一套列名）
     discountAmount:  toNum(o.discountAmount ?? null),
@@ -4357,6 +4372,12 @@ function toUIOrder(o) {
   }
 
   // 4) 地址：送餐单通常会有这些；自取可能为空
+  const method = String(src.payment_method || '').toLowerCase();
+  let status = src.status || src.payment_status || 'pending';
+  if (method === 'cash' || method === 'contant') {
+    status = 'pending';
+  }
+
   return {
     order_number: src.order_number || src.orderNumber || '',
     customer_name: src.customer?.name ?? src.customer_name ?? '',
@@ -4381,7 +4402,7 @@ function toUIOrder(o) {
     discount_code: nextDiscountCode,
     discount_amount: nextDiscountAmount,
 
-    status: src.status || src.payment_status || 'pending',
+    status: status,
 
     tijdslot,                    // 原始显示
     pickup_time: uiPickup,       // 自取弹窗显示这个
