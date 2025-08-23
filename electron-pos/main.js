@@ -1,5 +1,5 @@
 // main.js
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 const fs = require('fs');
@@ -75,6 +75,9 @@ ipcMain.on('play-ding', async () => {
 });
 
 ipcMain.on('stop-ding', () => { stopDing = true; });
+
+// 单次系统提示音
+ipcMain.on('beep', () => { shell.beep(); });
 
 // （可选）主进程通知渲染端登录成功
 // mainWindow.webContents.send('login-success', { at: Date.now() });

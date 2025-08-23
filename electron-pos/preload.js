@@ -9,8 +9,9 @@ contextBridge.exposeInMainWorld('api', {
   getGoogleMapsKey: () => ipcRenderer.invoke('get-google-maps-key'),
 
   // 让“主进程”处理或转发到渲染端
-  playDing: () => ipcRenderer.send('play-ding'),
-  stopDing:  () => ipcRenderer.send('stop-ding'),
+    playDing: () => ipcRenderer.send('play-ding'),
+    stopDing:  () => ipcRenderer.send('stop-ding'),
+    beep: () => ipcRenderer.send('beep'),
 
   // 打印（invoke/handle）
   printReceipt: (text) => ipcRenderer.invoke('print-receipt', text),
