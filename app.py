@@ -885,7 +885,7 @@ def pos():
         db.session.commit()
 
 
-        resp = {"success": True}
+        resp = {"success": True, "status": order.status}
         if str(order.payment_method).lower() == "online":
             url = os.getenv("TIKKIE_URL")
             if url:
@@ -1224,6 +1224,22 @@ def update_order_status(order_id: int):
         order.status = data['status']
     db.session.commit()
     return jsonify({'success': True, 'is_completed': order.is_completed, 'is_cancelled': order.is_cancelled, 'status': order.status})
+
+
+@app.route('/api/orders/update_status', methods=['POST'])
+def webhook_update_order_status():
+    """Update order status via external webhook (e.g. Mollie)."""
+    data = request.get_json() or {}
+    order_number = data.get('order_number') or data.get('orderNumber')
+    status = data.get('status')
+    if not order_number or status is None:
+        return jsonify({'success': False, 'error': 'order_number and status required'}), 400
+    order = Order.query.filter_by(order_number=order_number).first()
+    if not order:
+        return jsonify({'success': False, 'error': 'order not found'}), 404
+    order.status = status
+    db.session.commit()
+    return jsonify({'success': True, 'status': order.status})
 
 @app.route('/api/orders/<int:order_id>', methods=['PUT', 'PATCH'])
 @login_required
