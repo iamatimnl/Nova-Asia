@@ -2842,7 +2842,7 @@ function openPinModal(total, orderId) {
         const r = await fetch(`${API_BASE}/api/create_mollie_pin_payment`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ payment_ordernumber: orderId, amount: amountStr })
+          body: JSON.stringify({ order_number: orderId, amount: amountStr }) // ← 用 order_number
         });
         let data = {}; try { data = await r.json(); } catch {}
         if (!r.ok || data.ok === false) {
@@ -2890,6 +2890,12 @@ async function openCheckout(btn) {
   let order = {};
   try { order = JSON.parse(card.dataset.order || '{}'); } catch {}
   const id  = order.id || card.dataset.id || btn.dataset.orderId;
+  const businessNo =
+    order.order_number ||
+    card.dataset.order ||  
+    card.dataset.orderNumber ||
+    null;
+
   let due = Number(btn.dataset.total || order.totaal || order.total || 0);
   let method = String(order.payment_method || '').toLowerCase();
 
@@ -2934,7 +2940,7 @@ async function openCheckout(btn) {
       order.status         = 'awaiting_pin_result';
       order.payment_status = 'pending';
 
-      const res = await openPinModal(due, id);
+      const res = await openPinModal(due, businessNo || id);
 
       if (res === 'cash') {
         method = 'cash';
@@ -3125,77 +3131,98 @@ async function submitOrder() {
     payload.discountAmount = parseFloat(discount.toFixed(2));
   }
 
-  /* 支付处理：支持在现金与 PIN 间切换 */
-  let due = Number(payload.totaal) || parseEuro(payload.totaal) || 0;
-  let method = paymentMethod;
-  while (true) {
-    if (method === 'pin') {
-  payload.payment_method = 'pin';
-  payload.paymentMethod = 'pin';
-  payload.status = 'awaiting_pin_result';
-  pendingPinOrders[orderNumber] = { payload, due };
+ /* 支付处理：支持在现金、PIN、oprekening 间切换 */
+let due = Number(payload.totaal) || parseEuro(payload.totaal) || 0;
+let method = String(paymentMethod || '').toLowerCase();
 
-  const res = await openPinModal(due, orderNumber);
-
-  if (res === 'cash') {
-    delete pendingPinOrders[orderNumber];
-    method = 'cash';
-    continue;
+while (true) {
+  // === 1) OPREKENING：直接入库为 pending ===
+  if (method === 'oprekening') {
+    payload.payment_method = 'oprekening';
+    payload.paymentMethod  = 'oprekening';
+    payload.status         = 'pending';
+    payload.payment_status = 'pending';
+    console.log('[POS] OPREKENING → pending 入库:', payload.order_number);
+    await finalizeOrder(payload);
+    return;
   }
 
-  if ((res && res.later) || res == null) {
-    // ⬅️ Later betalen / 关闭窗口 → 入库 pending
-    delete pendingPinOrders[orderNumber];
-    payload.status = 'pending';
-    payload.payment_status = 'pending';
+  // === 2) PIN：送终端；later=入库pending；成功由 webhook 回调 ===
+  if (method === 'pin') {
     payload.payment_method = 'pin';
     payload.paymentMethod  = 'pin';
-    console.log("[POS] PIN later betalen → pending 入库:", payload.order_number);
+    payload.status         = 'awaiting_pin_result';
+    payload.payment_status = 'pending';
+    pendingPinOrders[orderNumber] = { payload, due };
+
+    const res = await openPinModal(due, orderNumber);
+
+    if (res === 'cash') {
+      delete pendingPinOrders[orderNumber];
+      method = 'cash';
+      continue; // 进入现金分支
+    }
+
+    if ((res && res.later) || res == null) {
+      delete pendingPinOrders[orderNumber];
+      payload.status         = 'pending';
+      payload.payment_status = 'pending';
+      console.log('[POS] PIN later → pending 入库:', payload.order_number);
+      await finalizeOrder(payload);
+      return;
+    }
+
+    // 成功与失败都由 onStatus/webhook 驱动 UI 更新
+    return;
+  }
+
+  // === 3) CASH：Bevestigen=paid；Sluiten=pending 入库 ===
+  if (isCashMethod(method)) {
+    payload.payment_method = 'cash';
+    payload.paymentMethod  = 'cash';
+    payload.status         = 'pending';
+    payload.payment_status = 'pending';
+    console.log('[POS] 新现金订单(待确认):', payload.order_number);
+
+    const w = await openWisselAwaitPOS(due);
+    if (!w) { // 真异常也先入库 pending
+      await finalizeOrder(payload);
+      return;
+    }
+
+    if (w.method === 'pin') { // 弹窗中切换到 PIN
+      method = 'pin';
+      due = w.remaining;
+      continue;
+    }
+
+    if (w.confirmed !== true) {
+      console.log('[POS] 现金未确认，pending 入库:', payload.order_number);
+      await finalizeOrder(payload);
+      return;
+    }
+
+    // 收银员确认现金已收
+    payload._wissel        = w;
+    payload._paid          = true;
+    payload.status         = 'paid';
+    payload.payment_status = 'paid';
+    console.log('[POS] 现金已确认 paid:', payload.order_number);
     await finalizeOrder(payload);
     return;
   }
 
-  return; // 成功交给 webhook 回调处理
-}
-    if (isCashMethod(method)) {
-  payload.status = 'pending';
-  payload.payment_status = 'pending';
-  console.log("[POS] 新现金订单(待确认):", payload.order_number, "status =", payload.status, "payment_status =", payload.payment_status);
-
-  const w = await openWisselAwaitPOS(due);
-  if (!w) {
-    // 异常退出 → 保持 pending 入库
-    await finalizeOrder(payload);
-    return;
-  }
-
-  if (w.method === 'pin') { 
-    method = 'pin'; 
-    due = w.remaining; 
-    continue; 
-  }
-
-  if (w.confirmed !== true) {
-    // ✅ Sluiten → 保持 pending 入库
-    console.log("[POS] 现金订单未确认，保持 pending:", payload.order_number);
-    await finalizeOrder(payload);
-    return;
-  }
-
-  // ✅ Bevestigen → 才变 paid
-  payload._wissel = w;
-  payload._paid = true;
-  payload.status = 'paid';
-  payload.payment_status = 'paid';
+  // === 兜底：未知方式，按 pending 入库，避免误记 paid ===
+  console.warn('[POS] 未识别支付方式，按 pending 入库:', method);
   payload.payment_method = method;
-  payload.paymentMethod = method;
-  console.log("[POS] 收银员确认现金已支付:", payload.order_number, "status =", payload.status, "payment_status =", payload.payment_status);
-
+  payload.paymentMethod  = method;
+  payload.status         = 'pending';
+  payload.payment_status = 'pending';
   await finalizeOrder(payload);
   return;
 }
 
-}}
+}
 
 
 
