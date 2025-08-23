@@ -1720,6 +1720,7 @@ dialog::backdrop {
   <div class="card">
     <h3>Pin Betaling</h3>
     <p>Te betalen: <strong id="pin-due">€0,00</strong></p>
+    <p id="pin-status" class="muted"></p>
     <div class="actions">
       <button id="pin-send" class="btn btn-primary">Pinnen</button>
       <button id="pin-later" class="btn btn-secondary">Later betalen</button>
@@ -2752,9 +2753,11 @@ function openWisselAwaitPOS(total) {
       resolve(ok ? { paid: p, change: c, due, status, underpaidBy } : null);
     };
     const onPin = () => {
+      const p = r05POS(parseEuro(paid.value));
+      const remaining = Math.max(0, r05POS(due - p));
       cleanup();
       try { dlg.close(); } catch {}
-      resolve('pin');
+      resolve({ method: 'pin', remaining });
     };
 
     const onBackdrop = e => { if (e.target === dlg) finish(false); }; // 点击空白仍视为取消
@@ -2807,12 +2810,14 @@ function openPinModal(total, orderId) {
     if (!dlg) return resolve('later');
 
     const due = r05POS(parseEuro(total));
-    const dueEl   = document.getElementById('pin-due');
-    const sendBtn = document.getElementById('pin-send');
-    const laterBtn= document.getElementById('pin-later');
-    const cashBtn = document.getElementById('pin-to-cash');
+    const dueEl    = document.getElementById('pin-due');
+    const statusEl = document.getElementById('pin-status');
+    const sendBtn  = document.getElementById('pin-send');
+    const laterBtn = document.getElementById('pin-later');
+    const cashBtn  = document.getElementById('pin-to-cash');
 
     dueEl.textContent = euroFmtPOS.format(due);
+    statusEl.textContent = '';
 
     // 每次打开都先解禁
     sendBtn.disabled = false;
@@ -2823,6 +2828,7 @@ function openPinModal(total, orderId) {
       laterBtn.removeEventListener('click', onLater);
       cashBtn.removeEventListener('click', onCash);
       socket.off('payment_status', onStatus);
+      statusEl.textContent = '';
       dlg.close();
       resolve(result);
     }
@@ -2831,19 +2837,20 @@ function openPinModal(total, orderId) {
       const oid = String(data?.order_id || '');
       const st  = String(data?.status || '').toLowerCase();
       if (oid !== String(orderId)) return;
-      if (st === 'paid') {
-        alert('PIN betaling geslaagd');
+      if (st === 'approved') {
         handlePaymentUpdate({ order_id: oid, status: 'paid' });
         cleanup('paid');
-      } else if (st === 'failed' || st === 'canceled') {
-        alert('PIN betaling mislukt');
-        handlePaymentUpdate({ order_id: oid, status: st, error: data?.error });
-        sendBtn.disabled = false; // 解锁，允许重试或切换现金
+      } else if (st === 'declined' || st === 'canceled' || st === 'timeout') {
+        handlePaymentUpdate({ order_id: oid, status: 'unfinished', error: st });
+        statusEl.textContent = `PIN ${st}. Probeer opnieuw of kies een andere methode.`;
+        sendBtn.disabled = false;
+        socket.off('payment_status', onStatus);
       }
     }
 
     async function onSend() {
       sendBtn.disabled = true;
+      statusEl.textContent = 'Waiting for PIN result… (cancel/retry available)';
       const amountStr = Number(due).toFixed(2);
       try {
         const r = await fetch(`${API_BASE}/api/create_mollie_pin_payment`, {
@@ -2855,14 +2862,16 @@ function openPinModal(total, orderId) {
         if (!r.ok || data.ok === false) {
           showToast('PIN betaling mislukt' + (data?.error ? `: ${data.error}` : ''));
           sendBtn.disabled = false;
+          statusEl.textContent = '';
           return;
         }
-        handlePaymentUpdate({ order_id: orderId, status: 'pending' });
+        handlePaymentUpdate({ order_id: orderId, status: 'awaiting_pin_result' });
         showToast('Naar terminal gestuurd…');
         socket.on('payment_status', onStatus);
       } catch (e) {
         showToast('PIN netwerkfout');
         sendBtn.disabled = false;
+        statusEl.textContent = '';
       }
     }
     function onLater() { cleanup('later'); }
@@ -2886,16 +2895,15 @@ async function openCheckout(btn) {
   let order = {};
   try { order = JSON.parse(card.dataset.order || '{}'); } catch {}
   const id  = order.id || card.dataset.id || btn.dataset.orderId;
-  const due = Number(btn.dataset.total || order.totaal || order.total || 0);
+  let due = Number(btn.dataset.total || order.totaal || order.total || 0);
   let method = String(order.payment_method || '').toLowerCase();
 
   while (true) {
     if (isCashMethod(method)) {
       // 现金流程：你的 openWisselAwaitPOS 决定是否成功
       const res = await openWisselAwaitPOS(due);
-      if (res === 'pin') { method = 'pin'; continue; }
+      if (res && res.method === 'pin') { method = 'pin'; due = res.remaining; continue; }
       if (!res) return;               // 用户取消
-      // 现金支付本地可直接标记为 paid（取决于你的业务）
       order.payment_method = 'cash';
       order.status = 'paid';
       break;
@@ -3087,51 +3095,46 @@ async function submitOrder() {
     payload.discountAmount = parseFloat(discount.toFixed(2));
   }
 
-  /* ⬇️⬇️ 支付方式处理：PIN 需等待终端回传 */
-  const due = Number(payload.totaal) || parseEuro(payload.totaal) || 0; // 含税应收
-  if (paymentMethod === 'pin') {
-    // 记为待支付，挂起提交流程
-    payload.payment_method = 'pin';
-    payload.paymentMethod = 'pin';
-    payload.status = 'pending_payment';
-    pendingPinOrders[orderNumber] = { payload, due };
-    const res = await openPinModal(due, orderNumber);
-    if (res === 'cash') {
-      // 用户在 PIN 弹窗中改为现金
-      delete pendingPinOrders[orderNumber];
-      paymentMethod = 'cash';
-      payload.payment_method = 'cash';
-      payload.paymentMethod = 'cash';
+  /* 支付处理：支持在现金与 PIN 间切换 */
+  let due = Number(payload.totaal) || parseEuro(payload.totaal) || 0;
+  let method = paymentMethod;
+  while (true) {
+    if (method === 'pin') {
+      payload.payment_method = 'pin';
+      payload.paymentMethod = 'pin';
+      payload.status = 'awaiting_pin_result';
+      pendingPinOrders[orderNumber] = { payload, due };
+      const res = await openPinModal(due, orderNumber);
+      if (res === 'cash') {
+        delete pendingPinOrders[orderNumber];
+        method = 'cash';
+        continue;
+      }
+      if (res === 'later' || res == null) {
+        delete pendingPinOrders[orderNumber];
+        return;
+      }
+      return; // 成功由回调处理
+    }
+    if (isCashMethod(method)) {
       const w = await openWisselAwaitPOS(due);
       if (!w) return;
+      if (w.method === 'pin') { method = 'pin'; due = w.remaining; continue; }
       payload._wissel = w;
+      payload._paid = true;
       payload.status = 'paid';
+      payload.payment_method = method;
+      payload.paymentMethod = method;
       await finalizeOrder(payload);
-    } else if (res === 'later' || res == null) {
-      // 用户取消或稍后付款
-      delete pendingPinOrders[orderNumber];
+      return;
     }
-    // 'paid' 回传由 handlePaymentUpdate 最终处理
-    return;
-  }
-
-  if (isCashMethod(paymentMethod)) {
-    const w = await openWisselAwaitPOS(due);
-    if (!w) return;
-    payload._wissel = w;
-    payload._paid = true;
+    // 其它方式直接提交
+    payload.paymentMethod = method;
+    payload.payment_method = method;
     payload.status = 'paid';
-    payload.payment_method = paymentMethod;
-    payload.paymentMethod = paymentMethod;
     await finalizeOrder(payload);
     return;
   }
-
-  // 其它方式直接提交
-  payload.paymentMethod = paymentMethod;
-  payload.payment_method = paymentMethod;
-  payload.status = 'paid';
-  await finalizeOrder(payload);
 }
 
 
@@ -3319,15 +3322,23 @@ const pendingPinOrders = {};
 async function handlePaymentUpdate(data) {
   if (!data) return;
   const order_id       = String(data.order_id ?? '');
-  const payment_status = (data.status || '').toLowerCase(); // paid/failed/canceled/pending
+  let payment_status = (data.status || '').toLowerCase(); // raw status
+  if (payment_status === 'approved') {
+    payment_status = 'paid';
+  } else if (payment_status === 'declined' || payment_status === 'canceled' || payment_status === 'timeout') {
+    data.error = payment_status;
+    payment_status = 'unfinished';
+  }
   const payment_method = data.payment_method || 'pin';
 
   if (!order_id) return;
 
   // 去重：同一订单 + 同一状态只处理一次
-  const dedupeKey = `${order_id}:${payment_status}`;
-  if (_seenPaymentEvents.has(dedupeKey)) return;
-  _seenPaymentEvents.add(dedupeKey);
+  if (payment_status === 'paid') {
+    const dedupeKey = `${order_id}:${payment_status}`;
+    if (_seenPaymentEvents.has(dedupeKey)) return;
+    _seenPaymentEvents.add(dedupeKey);
+  }
 
   const pending = pendingPinOrders[order_id];
   if (pending) {
@@ -3336,11 +3347,11 @@ async function handlePaymentUpdate(data) {
       await finalizeOrder(pending.payload);
       delete pendingPinOrders[order_id];
       showToast(`Order ${order_id} PIN betaling geslaagd`);
-    } else if (payment_status === 'failed' || payment_status === 'canceled') {
-      pending.payload.status = payment_status;
-      showToast(`Order ${order_id} PIN betaling ${payment_status === 'failed' ? 'mislukt' : 'geannuleerd'}`);
-    } else if (payment_status === 'pending') {
-      pending.payload.status = 'pending_payment';
+    } else if (payment_status === 'unfinished') {
+      pending.payload.status = 'unfinished';
+      showToast(`Order ${order_id} PIN betaling ${data.error || 'mislukt'}`);
+    } else if (payment_status === 'awaiting_pin_result') {
+      pending.payload.status = 'awaiting_pin_result';
       showToast(`Order ${order_id} PIN betaling in behandeling`);
     }
   }
@@ -3370,10 +3381,9 @@ async function handlePaymentUpdate(data) {
     const pmEl = card.querySelector('.payment-method');
     if (pmEl) {
       let txt = payment_method || '';
-      if (payment_status === 'paid')      txt += ' (betaald)';
-      else if (payment_status === 'failed')   txt += ' (mislukt)';
-      else if (payment_status === 'canceled') txt += ' (geannuleerd)';
-      else if (payment_status === 'pending')  txt += ' (in behandeling)';
+      if (payment_status === 'paid')             txt += ' (betaald)';
+      else if (payment_status === 'unfinished')  txt += ` (${data.error || 'mislukt'})`;
+      else if (payment_status === 'awaiting_pin_result') txt += ' (in behandeling)';
       pmEl.textContent = txt.trim();
     }
 
@@ -3381,7 +3391,7 @@ async function handlePaymentUpdate(data) {
     const statusEl = card.querySelector('.order-status');
     if (statusEl && payment_status) {
       statusEl.textContent = payment_status;
-      statusEl.classList.remove('paid', 'failed', 'canceled', 'pending', 'open', 'expired');
+      statusEl.classList.remove('paid', 'unfinished', 'awaiting_pin_result', 'open', 'expired');
       statusEl.classList.add(payment_status);
     }
 
@@ -3391,10 +3401,9 @@ async function handlePaymentUpdate(data) {
     }
 
     // 结果提示
-    if      (payment_status === 'paid')      showToast(`Order ${order_id} PIN betaling geslaagd`);
-    else if (payment_status === 'failed')    showToast(`Order ${order_id} PIN betaling mislukt`);
-    else if (payment_status === 'canceled')  showToast(`Order ${order_id} PIN betaling geannuleerd`);
-    else if (payment_status === 'pending')   showToast(`Order ${order_id} PIN betaling in behandeling`);
+    if      (payment_status === 'paid')             showToast(`Order ${order_id} PIN betaling geslaagd`);
+    else if (payment_status === 'unfinished')      showToast(`Order ${order_id} PIN betaling ${data.error || 'mislukt'}`);
+    else if (payment_status === 'awaiting_pin_result') showToast(`Order ${order_id} PIN betaling in behandeling`);
   });
 }
 
@@ -3876,7 +3885,7 @@ if (nextAmtNum !== 0) {
 
 // 仅当未取消/未完成，且原状态为空或为“未支付类”时，才自动标记为已支付
 if (!order.is_cancelled && !order.is_completed) {
-  const isUnpaidish = !order.status || /^(pending|unpaid|open)$/i.test(String(order.status));
+  const isUnpaidish = !order.status || /^(pending|unpaid|open|awaiting_pin_result)$/i.test(String(order.status));
   if (isUnpaidish && (pm === 'online betaald' || (pm.includes('online') && pm.includes('betaald')))) {
     order.status = 'paid';
   }
