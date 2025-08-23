@@ -3101,8 +3101,8 @@ async function submitOrder() {
     break;
   }
   if (paidViaModal) {
-    payload.status = 'paid';
-    payload.payment_status = 'paid';
+    // 记录已在支付弹窗中完成付款，待确认后再更新状态
+    payload._paid = true;
   }
   // 最终确认的支付方式
   paymentMethod = delivery
