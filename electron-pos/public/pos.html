@@ -2943,6 +2943,25 @@ async function openCheckout(btn) {
   }
 }
 
+async function finalizeOrder(payload) {
+  try {
+    const r = await fetch('https://flask-order-api.onrender.com/submit_order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const res = await r.json();
+    if (res.success || res.status === 'ok') {
+      showToast('Bestelling succesvol verzonden! Bestelnummer: ' + payload.order_number);
+      clearForm();
+      fetchOrders();
+    } else {
+      showToast('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.');
+    }
+  } catch (err) {
+    showToast('Verzendfout – server niet bereikbaar.');
+  }
+}
 
 async function submitOrder() {
   const name = document.getElementById('custName').value.trim() || 'Guest';
@@ -3068,71 +3087,51 @@ async function submitOrder() {
     payload.discountAmount = parseFloat(discount.toFixed(2));
   }
 
-  /* ⬇️⬇️ 在提交前统一处理支付方式弹窗，允许在现金与 PIN 之间切换 */
+  /* ⬇️⬇️ 支付方式处理：PIN 需等待终端回传 */
   const due = Number(payload.totaal) || parseEuro(payload.totaal) || 0; // 含税应收
-  let paidViaModal = false;
-  while (true) {
-    if (paymentMethod === 'pin') {
-      const res = await openPinModal(due, orderNumber);
-      if (res === 'cash') {
-        // 用户在 PIN 模态框中切换为现金
-        paymentMethod = 'cash';
-        if (delivery) document.getElementById('deliveryPayment').value = 'cash';
-        else document.getElementById('pickupPayment').value = 'cash';
-        continue;
-      } else if (res === 'paid') {
-        // PIN 支付成功
-        paidViaModal = true;
-      }
-    } else if (isCashMethod(paymentMethod)) {
-      const res = await openWisselAwaitPOS(due);
-      if (res === 'pin') {
-        // 在现金找零对话框中改为 PIN
-        paymentMethod = 'pin';
-        if (delivery) document.getElementById('deliveryPayment').value = 'pin';
-        else document.getElementById('pickupPayment').value = 'pin';
-        continue;
-      } else if (res) {
-        payload._wissel = res; // { paid, change, due } 可用于打印/入库
-        // 用户点击 Bevestigen，现金支付成功
-        paidViaModal = true;
-      }
+  if (paymentMethod === 'pin') {
+    // 记为待支付，挂起提交流程
+    payload.payment_method = 'pin';
+    payload.paymentMethod = 'pin';
+    payload.status = 'pending_payment';
+    pendingPinOrders[orderNumber] = { payload, due };
+    const res = await openPinModal(due, orderNumber);
+    if (res === 'cash') {
+      // 用户在 PIN 弹窗中改为现金
+      delete pendingPinOrders[orderNumber];
+      paymentMethod = 'cash';
+      payload.payment_method = 'cash';
+      payload.paymentMethod = 'cash';
+      const w = await openWisselAwaitPOS(due);
+      if (!w) return;
+      payload._wissel = w;
+      payload.status = 'paid';
+      await finalizeOrder(payload);
+    } else if (res === 'later' || res == null) {
+      // 用户取消或稍后付款
+      delete pendingPinOrders[orderNumber];
     }
-    break;
+    // 'paid' 回传由 handlePaymentUpdate 最终处理
+    return;
   }
-  if (paidViaModal) {
-    // 记录已在支付弹窗中完成付款，待确认后再更新状态
-    payload._paid = true;
-  }
-  // 最终确认的支付方式
-  paymentMethod = delivery
-      ? document.getElementById('deliveryPayment').value
-      : document.getElementById('pickupPayment').value;
 
-  // 确保提交与广播使用最终支付方式
+  if (isCashMethod(paymentMethod)) {
+    const w = await openWisselAwaitPOS(due);
+    if (!w) return;
+    payload._wissel = w;
+    payload._paid = true;
+    payload.status = 'paid';
+    payload.payment_method = paymentMethod;
+    payload.paymentMethod = paymentMethod;
+    await finalizeOrder(payload);
+    return;
+  }
+
+  // 其它方式直接提交
   payload.paymentMethod = paymentMethod;
   payload.payment_method = paymentMethod;
-
-
-  // ✅ 提交到后端（改为 await 写法，逻辑等价）
-  try {
-    const r = await fetch('https://flask-order-api.onrender.com/submit_order', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    const res = await r.json();
-
-    if (res.success || res.status === 'ok') {
-      showToast('Bestelling succesvol verzonden! Bestelnummer: ' + orderNumber);
-      clearForm();
-      fetchOrders();
-    } else {
-      showToast('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.');
-    }
-  } catch (err) {
-    showToast('Verzendfout – server niet bereikbaar.');
-  }
+  payload.status = 'paid';
+  await finalizeOrder(payload);
 }
 
 
@@ -3314,8 +3313,10 @@ function formatCurrency(value){
   
   // 可选：去重集合，避免重复事件反复更新/弹 toast
 const _seenPaymentEvents = new Set();
+// 待回传的 PIN 订单缓存：{ order_id: { payload, due } }
+const pendingPinOrders = {};
 
-function handlePaymentUpdate(data) {
+async function handlePaymentUpdate(data) {
   if (!data) return;
   const order_id       = String(data.order_id ?? '');
   const payment_status = (data.status || '').toLowerCase(); // paid/failed/canceled/pending
@@ -3327,6 +3328,22 @@ function handlePaymentUpdate(data) {
   const dedupeKey = `${order_id}:${payment_status}`;
   if (_seenPaymentEvents.has(dedupeKey)) return;
   _seenPaymentEvents.add(dedupeKey);
+
+  const pending = pendingPinOrders[order_id];
+  if (pending) {
+    if (payment_status === 'paid') {
+      pending.payload.status = 'paid';
+      await finalizeOrder(pending.payload);
+      delete pendingPinOrders[order_id];
+      showToast(`Order ${order_id} PIN betaling geslaagd`);
+    } else if (payment_status === 'failed' || payment_status === 'canceled') {
+      pending.payload.status = payment_status;
+      showToast(`Order ${order_id} PIN betaling ${payment_status === 'failed' ? 'mislukt' : 'geannuleerd'}`);
+    } else if (payment_status === 'pending') {
+      pending.payload.status = 'pending_payment';
+      showToast(`Order ${order_id} PIN betaling in behandeling`);
+    }
+  }
 
   // 遍历所有订单卡
   document.querySelectorAll('.order-card').forEach(card => {
