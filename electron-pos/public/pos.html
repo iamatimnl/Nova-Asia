@@ -2895,63 +2895,91 @@ async function openCheckout(btn) {
 
   while (true) {
     if (isCashMethod(method)) {
-      // 现金流程：先保持 pending，待确认后再标记为 paid
-      order.payment_method = 'cash';
-      order.status = 'pending';
-      order.payment_status = 'pending';
+      // === 现金流程 ===
+      order.payment_method  = 'cash';
+      order.status          = 'pending';
+      order.payment_status  = 'pending';
+
+      // UI 先显示 pending
       const statusEl = card.querySelector('.order-status');
       if (statusEl) statusEl.textContent = order.status;
 
+      // 打开现金弹窗
       const res = await openWisselAwaitPOS(due);
-      if (res && res.method === 'pin') { method = 'pin'; due = res.remaining; continue; }
-      if (!res) return;               // 用户取消
-      order.status = 'paid';
-      order.payment_status = 'paid';
+
+      if (res && res.method === 'pin') { 
+        method = 'pin'; 
+        due = res.remaining; 
+        continue; 
+      }
+      if (!res) {
+        console.log("[POS] 现金订单取消/关闭:", id);
+        return; // 不入库，不改 paid
+      }
+
+      if (res.confirmed) {
+        order.status         = 'paid';
+        order.payment_status = 'paid';
+        console.log("[POS] 收银员确认现金已支付:", id);
+      } else {
+        order.status         = 'pending';
+        order.payment_status = 'pending';
+        console.log("[POS] 现金订单入库 pending (Sluiten):", id);
+      }
       break;
+
     } else {
-      // PIN 流程：发送到 Render 后端→Mollie→终端
-      const res = await openPinModal(due, id);
-      if (res === 'cash')  { method = 'cash'; continue; }
-      if (res === 'later' || res == null) return; // 稍后/取消
-      // 支付成功
+      // === PIN 流程 ===
       order.payment_method = 'pin';
-      order.status = 'paid';
-      order.payment_status = 'paid';
+      order.status         = 'awaiting_pin_result';
+      order.payment_status = 'pending';
+
+      const res = await openPinModal(due, id);
+
+      if (res === 'cash') {
+        method = 'cash';
+        continue;
+      }
+
+      if ((res && res.later) || res == null) {
+        order.status         = 'pending';
+        order.payment_status = 'pending';
+        console.log("[POS] PIN later betalen → pending 入库:", id);
+        break;
+      }
+
+      if (res === 'paid') {
+        order.status         = 'paid';
+        order.payment_status = 'paid';
+        console.log("[POS] PIN 已支付:", id);
+      }
       break;
     }
   }
 
   // === 本地 UI 同步 ===
-  const finalMethod = order.payment_method;
   card.dataset.order = JSON.stringify(order);
 
   const pmEl = card.querySelector('.payment-method');
-  if (pmEl) pmEl.textContent = finalMethod;
+  if (pmEl) pmEl.textContent = order.payment_method;
 
   const statusEl = card.querySelector('.order-status');
   if (statusEl) statusEl.textContent = order.status;
 
-  // 不要再 PATCH /api/create_mollie_pin_payment —— 这个端点只用于创建支付（POST）
-  // 如果你确实需要把 "pending" 先写回本地系统，调用你们自有的订单更新端点（示例）：
-  // try {
-  //   await fetch(`${API_BASE}/api/orders/${id}`, {
-  //     method: 'PATCH',
-  //     headers: { 'Content-Type': 'application/json' },
-  //     body: JSON.stringify({ payment_method: finalMethod, status: order.status })
-  //   });
-  // } catch (err) {
-  //   console.warn('order patch failed (optional)', err);
-  // }
-
-  // 仍保留本地更新（如果有）
+  // === 可选：推送到本地存储/后端 ===
   if (id) {
     try {
-      await window.pos?.updateOrderById?.(id, { payment_method: finalMethod, status: order.status, payment_status: order.payment_status });
+      await window.pos?.updateOrderById?.(id, { 
+        payment_method: order.payment_method, 
+        status: order.status, 
+        payment_status: order.payment_status 
+      });
     } catch (err) {
       console.warn('local update failed', err);
     }
   }
 }
+
 
 async function finalizeOrder(payload) {
   try {
