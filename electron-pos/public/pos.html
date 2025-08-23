@@ -2685,94 +2685,72 @@ function openWisselAwaitPOS(total) {
     const okBtn    = document.getElementById('pos-wissel-ok');
     const quickBox = dlg.querySelector('.quick');
 
-    // 提示行
-    let hintEl = document.getElementById('pos-wissel-hint');
-    if (!hintEl) {
-      hintEl = document.createElement('div');
-      hintEl.id = 'pos-wissel-hint';
-      hintEl.className = 'hint';
-      dlg.querySelector('.actions')?.insertAdjacentElement('beforebegin', hintEl);
-    }
-
     // 初始化
     dueEl.textContent = euroFmtPOS.format(due);
     paid.value = '';
     changeEl.textContent = euroFmtPOS.format(0);
     denomsEl.innerHTML = '';
-    hintEl.textContent = '';
-    // ✂️ 不再禁用确认按钮
-    // okBtn.disabled = true; okBtn.classList.add('is-disabled');
 
     const recompute = () => {
-  const p = r05POS(parseEuro(paid.value));
-  const diff = r05POS(due - p);          // >0 欠款；=0 正好；<0 需要找零
-  const c = diff < 0 ? r05POS(p - due) : 0;
+      const p = r05POS(parseEuro(paid.value));
+      const diff = r05POS(due - p);
+      const c = diff < 0 ? r05POS(p - due) : 0;
 
-  // 统一行：更改文本与状态色
-  changeEl.classList.remove('positive','negative','exact');
-
-  if (diff > 0) {
-    // 欠款（红色），不显示面额分解
-    changeEl.textContent = `Nog ${euroFmtPOS.format(diff)}`;
-    changeEl.classList.add('negative');
-    denomsEl.innerHTML = '';
-  } else if (Math.abs(diff) < 1e-9) {
-    // 正好（绿色），不显示面额分解
-    changeEl.textContent = 'Exact';
-    changeEl.classList.add('exact');
-    denomsEl.innerHTML = '';
-  } else {
-    // 需要找零（绿色），显示面额分解
-    changeEl.textContent = `Wisselgeld ${euroFmtPOS.format(c)}`;
-    changeEl.classList.add('positive');
-
-    const ds = [50,20,10,5,2,1,0.5,0.2,0.1,0.05];
-    let left = c, lines = [];
-    for (const d of ds) {
-      const cnt = Math.floor((left + 1e-8) / d);
-      if (cnt > 0) {
-        lines.push(`${cnt} × ${euroFmtPOS.format(d)}`);
-        left = r05POS(left - cnt * d);
+      changeEl.classList.remove('positive','negative','exact');
+      if (diff > 0) {
+        changeEl.textContent = `Nog ${euroFmtPOS.format(diff)}`;
+        changeEl.classList.add('negative');
+        denomsEl.innerHTML = '';
+      } else if (Math.abs(diff) < 1e-9) {
+        changeEl.textContent = 'Exact';
+        changeEl.classList.add('exact');
+        denomsEl.innerHTML = '';
+      } else {
+        changeEl.textContent = `Wisselgeld ${euroFmtPOS.format(c)}`;
+        changeEl.classList.add('positive');
       }
-    }
-    denomsEl.innerHTML = lines.join('<br>');
-  }
-};
+    };
 
-
-    const finish = (ok=true) => {
+    const finish = (confirmed) => {
       const p = r05POS(parseEuro(paid.value));
       const c = Math.max(0, r05POS(p - due));
       const diff = r05POS(due - p);
 
       cleanup();
       try { dlg.close(); } catch {}
-      // ✅ 总是允许确认，顺便把状态带回（可选字段，兼容你现有 {paid, change, due}）
-      const status = diff > 0 ? 'underpaid' : (Math.abs(diff) < 1e-9 ? 'exact' : 'change');
-      const underpaidBy = diff > 0 ? diff : 0;
-      resolve(ok ? { paid: p, change: c, due, status, underpaidBy } : null);
+
+      resolve({
+        confirmed,            // ⬅️ true=Bevestigen / false=Sluiten
+        method: 'cash',
+        paid: p,
+        change: c,
+        due,
+        status: diff > 0 ? 'underpaid' : (Math.abs(diff) < 1e-9 ? 'exact' : 'change'),
+        underpaidBy: diff > 0 ? diff : 0
+      });
     };
-    const onPin = () => {
-      const p = r05POS(parseEuro(paid.value));
-      const remaining = Math.max(0, r05POS(due - p));
+
+    const onBackdrop = e => { if (e.target === dlg) finish(false); };
+    const onExact    = () => { paid.value = due.toFixed(2); recompute(); };
+    const onOk       = () => finish(true);   // ⬅️ 确认键 → confirmed:true
+    const onClose    = () => finish(false);  // ⬅️ Sluiten → confirmed:false
+    const onKey      = (e) => {
+      if (e.key==='Escape') finish(false);   // ⬅️ Esc → confirmed:false
+    };
+    const onPin      = () => {
       cleanup();
       try { dlg.close(); } catch {}
-      resolve({ method: 'pin', remaining });
+      resolve({ method:'pin', remaining: Math.max(0, r05POS(due - parseEuro(paid.value))) });
     };
 
-    const onBackdrop = e => { if (e.target === dlg) finish(false); }; // 点击空白仍视为取消
-    const onExact    = () => { paid.value = due.toFixed(2); recompute(); };
-    const onKey      = (e) => { if (e.key==='Escape') finish(false); if (e.key==='Enter') finish(true); };
-    const onOk       = () => finish(true);
-
-    function cleanup(){
+    function cleanup() {
       paid.removeEventListener('input', recompute);
       dlg.removeEventListener('click', onBackdrop);
       exactBtn?.removeEventListener('click', onExact);
-      closeBtn?.removeEventListener('click', onOk);
+      closeBtn?.removeEventListener('click', onClose);
       okBtn?.removeEventListener('click', onOk);
-      quickBox?.removeEventListener('click', onQuick);
       pinBtn?.removeEventListener('click', onPin);
+      quickBox?.removeEventListener('click', onQuick);
       window.removeEventListener('keydown', onKey);
     }
 
@@ -2780,24 +2758,26 @@ function openWisselAwaitPOS(total) {
       const btn = e.target.closest('[data-add]');
       if (!btn) return;
       const inc = Number(btn.dataset.add) || 0;
-      const cur = parseEuro(paid.value);
-      paid.value = r05POS(cur + inc).toFixed(2);
+      paid.value = r05POS(parseEuro(paid.value) + inc).toFixed(2);
       recompute();
     };
-    
+
     paid.addEventListener('input', recompute);
     dlg.addEventListener('click', onBackdrop);
     exactBtn?.addEventListener('click', onExact);
-    closeBtn?.addEventListener('click', onOk);
+    closeBtn?.addEventListener('click', onClose);
     okBtn?.addEventListener('click', onOk);
-    quickBox?.addEventListener('click', onQuick);
     pinBtn?.addEventListener('click', onPin);
+    quickBox?.addEventListener('click', onQuick);
     window.addEventListener('keydown', onKey);
 
     dlg.showModal();
     paid.focus({ preventScroll:true });
   });
 }
+
+
+
 // 用你在 Render 上的后端地址
 const API_BASE = 'https://flask-order-api.onrender.com';
 
@@ -2807,7 +2787,7 @@ const API_BASE = 'https://flask-order-api.onrender.com';
 function openPinModal(total, orderId) {
   return new Promise((resolve) => {
     const dlg = document.getElementById('pin-modal-pos');
-    if (!dlg) return resolve('later');
+    if (!dlg) return resolve({ later: true });
 
     const due = r05POS(parseEuro(total));
     const dueEl    = document.getElementById('pin-due');
@@ -2829,8 +2809,12 @@ function openPinModal(total, orderId) {
       cashBtn.removeEventListener('click', onCash);
       socket.off('payment_status', onStatus);
       statusEl.textContent = '';
-      dlg.close();
+      try { dlg.close(); } catch {}
       resolve(result);
+    }
+
+    function finishLater() {
+      cleanup({ later: true });
     }
 
     function onStatus(data) {
@@ -2867,25 +2851,30 @@ function openPinModal(total, orderId) {
           statusEl.textContent = '';
           return;
         }
-          const pid = data.payment_id || data.id;
-          const card = document.querySelector(`.order-card[data-order-number="${orderId}"]`);
-          if (card && pid) card.dataset.paymentId = pid;
-          handlePaymentUpdate({ payment_ordernumber: orderId, payment_status: 'awaiting_pin_result', payment_id: pid });
-          showToast('Naar terminal gestuurd…');
-          window.api?.beep?.();
-          socket.on('payment_status', onStatus);
+        const pid = data.payment_id || data.id;
+        const card = document.querySelector(`.order-card[data-order-number="${orderId}"]`);
+        if (card && pid) card.dataset.paymentId = pid;
+        handlePaymentUpdate({ payment_ordernumber: orderId, payment_status: 'awaiting_pin_result', payment_id: pid });
+        showToast('Naar terminal gestuurd…');
+        window.api?.beep?.();
+        socket.on('payment_status', onStatus);
       } catch (e) {
         showToast('PIN netwerkfout');
         sendBtn.disabled = false;
         statusEl.textContent = '';
       }
     }
-    function onLater() { cleanup('later'); }
+
+    function onLater() { finishLater(); }
     function onCash()  { cleanup('cash'); }
 
     sendBtn.addEventListener('click', onSend);
     laterBtn.addEventListener('click', onLater);
     cashBtn.addEventListener('click', onCash);
+
+    // 关闭/ESC/点击背景 → 当成 later
+    dlg.addEventListener('cancel', (e) => { e.preventDefault(); finishLater(); });
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) finishLater(); });
 
     dlg.showModal();
   });
@@ -3113,45 +3102,72 @@ async function submitOrder() {
   let method = paymentMethod;
   while (true) {
     if (method === 'pin') {
-      payload.payment_method = 'pin';
-      payload.paymentMethod = 'pin';
-      payload.status = 'awaiting_pin_result';
-      pendingPinOrders[orderNumber] = { payload, due };
-      const res = await openPinModal(due, orderNumber);
-      if (res === 'cash') {
-        delete pendingPinOrders[orderNumber];
-        method = 'cash';
-        continue;
-      }
-      if (res === 'later' || res == null) {
-        delete pendingPinOrders[orderNumber];
-        return;
-      }
-      return; // 成功由回调处理
-    }
-    if (isCashMethod(method)) {
-      payload.status = 'pending';
-      payload.payment_status = 'pending';
-      const w = await openWisselAwaitPOS(due);
-      if (!w) return;
-      if (w.method === 'pin') { method = 'pin'; due = w.remaining; continue; }
-      payload._wissel = w;
-      payload._paid = true;
-      payload.status = 'paid';
-      payload.payment_status = 'paid';
-      payload.payment_method = method;
-      payload.paymentMethod = method;
-      await finalizeOrder(payload);
-      return;
-    }
-    // 其它方式直接提交
-    payload.paymentMethod = method;
-    payload.payment_method = method;
-    payload.status = 'paid';
+  payload.payment_method = 'pin';
+  payload.paymentMethod = 'pin';
+  payload.status = 'awaiting_pin_result';
+  pendingPinOrders[orderNumber] = { payload, due };
+
+  const res = await openPinModal(due, orderNumber);
+
+  if (res === 'cash') {
+    delete pendingPinOrders[orderNumber];
+    method = 'cash';
+    continue;
+  }
+
+  if ((res && res.later) || res == null) {
+    // ⬅️ Later betalen / 关闭窗口 → 入库 pending
+    delete pendingPinOrders[orderNumber];
+    payload.status = 'pending';
+    payload.payment_status = 'pending';
+    payload.payment_method = 'pin';
+    payload.paymentMethod  = 'pin';
+    console.log("[POS] PIN later betalen → pending 入库:", payload.order_number);
     await finalizeOrder(payload);
     return;
   }
+
+  return; // 成功交给 webhook 回调处理
 }
+    if (isCashMethod(method)) {
+  payload.status = 'pending';
+  payload.payment_status = 'pending';
+  console.log("[POS] 新现金订单(待确认):", payload.order_number, "status =", payload.status, "payment_status =", payload.payment_status);
+
+  const w = await openWisselAwaitPOS(due);
+  if (!w) {
+    // 异常退出 → 保持 pending 入库
+    await finalizeOrder(payload);
+    return;
+  }
+
+  if (w.method === 'pin') { 
+    method = 'pin'; 
+    due = w.remaining; 
+    continue; 
+  }
+
+  if (w.confirmed !== true) {
+    // ✅ Sluiten → 保持 pending 入库
+    console.log("[POS] 现金订单未确认，保持 pending:", payload.order_number);
+    await finalizeOrder(payload);
+    return;
+  }
+
+  // ✅ Bevestigen → 才变 paid
+  payload._wissel = w;
+  payload._paid = true;
+  payload.status = 'paid';
+  payload.payment_status = 'paid';
+  payload.payment_method = method;
+  payload.paymentMethod = method;
+  console.log("[POS] 收银员确认现金已支付:", payload.order_number, "status =", payload.status, "payment_status =", payload.payment_status);
+
+  await finalizeOrder(payload);
+  return;
+}
+
+}}
 
 
 
