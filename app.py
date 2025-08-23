@@ -1227,9 +1227,10 @@ def update_order_status(order_id: int):
 
 
 @app.route('/api/orders/update_status', methods=['POST'])
+@app.route('/api/orders/update', methods=['POST'])
 def webhook_update_order_status():
     """Update order status via external webhook (e.g. Mollie)."""
-    data = request.get_json() or {}
+    data = request.get_json(silent=True) or request.form.to_dict() or {}
     order_number = data.get('order_number') or data.get('orderNumber')
     status = data.get('status')
     if not order_number or status is None:
@@ -2063,7 +2064,12 @@ def pos_orders_today():
     start_local = datetime.combine(today, datetime.min.time(), tzinfo=NL_TZ)
     start = start_local.astimezone(UTC).replace(tzinfo=None)
 
-    orders = Order.query.filter(Order.created_at >= start).all()
+    # Ensure we fetch the latest order data, including updated payment status
+    db.session.expire_all()
+    orders = (Order.query
+              .filter(Order.created_at >= start)
+              .order_by(Order.created_at.desc())
+              .all())
     order_dicts = orders_to_dicts(orders)
 
     if request.args.get("json"):
