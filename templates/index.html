@@ -201,7 +201,33 @@
 
   border-radius: 26px;
 
- 
+  .custom-note-label {
+  display: block;
+  margin: 8px 0 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #444;
+}
+
+.custom-note {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 12px;
+  font-size: 14px;
+  line-height: 1.4;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #fafafa;
+  resize: vertical; /* 允许上下拖动调整高度 */
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.custom-note:focus {
+  outline: none;
+  border-color: #ff7f50; /* 选中时高亮色，可以换成你网站主色 */
+  box-shadow: 0 0 4px rgba(255, 127, 80, 0.3);
+  background-color: #fff;
+}
 
   overflow-x: auto;
   overflow-y: hidden;
@@ -3970,22 +3996,27 @@ body.portrait-mode .cart-badge {
 </div>
 </div>
 </div>
-<div class="menu-row menu-item" data-name="Chicken Roll Omakase" data-packaging="0.2" data-price="16">
-<div class="menu-img">
-<img alt="Chicken Roll Omakase" src="{{ url_for('static', filename='images/几卷.png') }}"/>
-</div>
-<div class="menu-content">
-<h3>Chicken Roll Omakase</h3>
-<p>€ 16,00</p>
-<p class="ingredients">9 stuks – Speciale Chickenrol verrassing, door de chef samengesteld</p>
-<p id="soldoutChickenRoll" class="sold-out-msg hidden">Uitverkocht!</p>
-<div class="qty-box">
+<div class="menu-row menu-item" data-name="The Next Roll" data-packaging="0.2" data-price="16">
+  <div class="menu-img">
+    <img alt="The Next Roll" src="{{ url_for('static', filename='images/几卷.png') }}"/>
+  </div>
+  <div class="menu-content">
+    <h3>The Next Roll</h3>
+    <p>€ 16,00</p>
+    <p class="ingredients">Custom-Made Freestyle — beschrijf je roll base en toppings naar wens</p>
 
-<button class="qty-minus remove-button" data-target="chickenRollCount" type="button">-</button>
-<select id="chickenRollCount" name="chickenRollCount"></select>
-<button class="qty-plus add-button" data-target="chickenRollCount" type="button">+</button>
-</div>
-</div>
+    <!-- 自由输入需求框 -->
+    <label for="nextRollNote" class="custom-note-label">Uw wens:</label>
+    <textarea id="nextRollNote" name="nextRollNote" class="custom-note" 
+              placeholder="Bijv. zalm basis, avocado + spicy mayo topping" rows="2"></textarea>
+
+    <p id="soldoutNextRoll" class="sold-out-msg hidden">Uitverkocht!</p>
+    <div class="qty-box">
+      <button class="qty-minus remove-button" data-target="nextRollCount" type="button">-</button>
+      <select id="nextRollCount" name="nextRollCount"></select>
+      <button class="qty-plus add-button" data-target="nextRollCount" type="button">+</button>
+    </div>
+  </div>
 </div>
 <div class="menu-row menu-item" data-name="Nigiri Box Omakase" data-packaging="0.2" data-price="10">
 <div class="menu-img">
