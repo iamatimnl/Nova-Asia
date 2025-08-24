@@ -412,9 +412,10 @@
 
 /* 3) 订单按钮：悬停加深蓝色层次 */
 #admin-orders-btn:hover{
-  background: linear-gradient(180deg, #1db9ff, #0a84ff);
+  background: linear-gradient(180deg, #1db9ff, #58a7f7);
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
   color:#fff;
+  
 }
 #admin-orders-btn:active{
   background: linear-gradient(180deg, #0860c0, #0750a3);
@@ -1109,7 +1110,7 @@ dialog::backdrop {
     0 4px 10px rgba(10,132,255,0.25);    /* 柔和外阴影 */
   transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
 }
-.btn-wissel:hover{ filter: brightness(1.05); }
+.btn-wissel:hover{ filter: brightness(1.55); }
 .btn-wissel:active{
   transform: translateY(1px);
   box-shadow:
@@ -1329,7 +1330,10 @@ dialog::backdrop {
   box-shadow:0 1px 0 rgba(0,0,0,.10), 0 4px 10px rgba(10,132,255,0.25);
   transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
 }
-.btn-wissel:hover{ filter:brightness(1.05); }
+.btn-wissel:hover {
+  background: linear-gradient(180deg, #4196ec, #3399ff) !important; /* 淡蓝渐变 */
+}
+
 .btn-wissel:active{ transform:translateY(1px); box-shadow: inset 0 1px 2px rgba(0,0,0,.25); }
 .btn-wissel:focus-visible{
   outline:none; box-shadow:0 0 0 2px #fff, 0 0 0 4px #0a84ff;
@@ -4406,7 +4410,7 @@ function resortAll(){
         btn.dataset.mode = 'service';
       } else {
         btn.textContent = '🕓';
-        btn.title = '来当顺序';
+        btn.title = '来单顺序';
         btn.dataset.mode = 'arrival';
       }
     };
