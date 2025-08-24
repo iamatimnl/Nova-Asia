@@ -1396,6 +1396,18 @@ dialog::backdrop {
   /* 到达顺序时稍微变亮一点，或加描边 */
   filter: brightness(1.05);
 }
+.order-status {
+  color: red;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+/* 对 paid 不区分大小写 */
+.order-status[class~="paid" i] {
+  color: green;
+}
+
+
 
 
 </style>
@@ -2907,8 +2919,8 @@ async function openCheckout(btn) {
       order.payment_status  = 'pending';
 
       // UI 先显示 pending
-      const statusEl = card.querySelector('.order-status');
-      if (statusEl) statusEl.textContent = order.status;
+      const statusEl0 = card.querySelector('.order-status');
+      if (statusEl0) statusEl0.textContent = order.status;
 
       // 打开现金弹窗
       const res = await openWisselAwaitPOS(due);
@@ -2963,19 +2975,56 @@ async function openCheckout(btn) {
     }
   }
 
-  // === 本地 UI 同步 ===
+  // NEW >>> 按 order_number 落库 + 写后读（不改你现有结构）
+  try {
+    const orderNumber =
+      order.order_number ||
+      card.dataset.orderNumber ||
+      card.dataset.order ||      // 兼容老字段（若是纯编号字符串）
+      btn.dataset.orderNumber ||
+      businessNo || null;
+
+    if (!orderNumber) {
+      console.error('缺少 order_number，无法持久化');
+      throw new Error('order_number missing');
+    }
+
+    // 仅把 status 发给 App B（你当前链路已通）
+    const res = await fetch('https://flask-order-api.onrender.com/api/order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ order_number: orderNumber, status: order.status })
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (data?.ok && data.order) {
+      // 写后读：以服务端返回覆盖本地
+      order = { ...order, ...data.order };
+    } else if (!res.ok) {
+      throw new Error(data?.message || `HTTP ${res.status}`);
+    }
+  } catch (err) {
+    console.error('保存到数据库失败：', err);
+    alert('保存到数据库失败：' + err.message);
+    // 可选：保守回退，避免“前端 paid、后端 pending”的错觉
+    // order.status = 'pending';
+    // order.payment_status = 'pending';
+  }
+  // NEW <<<
+
+  // === 本地 UI 同步（放在写库之后，以最终 order 为准） ===
   card.dataset.order = JSON.stringify(order);
 
   const pmEl = card.querySelector('.payment-method');
-  if (pmEl) pmEl.textContent = order.payment_method;
+  if (pmEl) pmEl.textContent = order.payment_method || '';
 
   const statusEl = card.querySelector('.order-status');
-  if (statusEl) statusEl.textContent = order.status;
+  if (statusEl) statusEl.textContent = order.status || '';
 
-  // === 可选：推送到本地存储/后端 ===
-  if (id) {
+  // === 可选：推送到本地存储/后端（保留为后备，不再静默吞错） ===
+  if (id && window.pos?.updateOrderById) {
     try {
-      await window.pos?.updateOrderById?.(id, { 
+      await window.pos.updateOrderById(id, { 
         payment_method: order.payment_method, 
         status: order.status, 
         payment_status: order.payment_status 
@@ -2985,6 +3034,12 @@ async function openCheckout(btn) {
     }
   }
 }
+
+
+
+
+
+
 
 
 async function finalizeOrder(payload) {
@@ -3006,6 +3061,70 @@ async function finalizeOrder(payload) {
     showToast('Verzendfout – server niet bereikbaar.');
   }
 }
+
+// 将最新支付状态写入后端并“写后读”同步到UI
+async function syncOrderStatus(orderNumber, status, options = {}) {
+  if (!orderNumber || !status) return;
+  const { card, payment_status, payment_method, payment_id } = options;
+
+  // 1) 写库（标准契约：type + patch）
+  const res = await fetch('https://flask-order-api.onrender.com/api/order', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      type: 'update',
+      order_number: orderNumber,
+      patch: {
+        status,                    // 业务状态：pending/paid/...
+        ...(payment_status ? { payment_status } : {}),
+        ...(payment_method ? { payment_method } : {}),
+        ...(payment_id ? { payment_id } : {}),
+      }
+    })
+  });
+
+  let data = null;
+  try { data = await res.json(); } catch {}
+  if (!res.ok || data?.ok === false) {
+    const msg = data?.message || `HTTP ${res.status}`;
+    console.error('[POS] 状态同步失败 →', orderNumber, msg);
+    alert('保存到数据库失败：' + msg);
+    return;
+  }
+
+  // 2) 写后读（以服务端返回为准）
+  const serverOrder = data?.order || {};
+  const merged = {
+    order_number: orderNumber,
+    status,
+    payment_status,
+    payment_method,
+    ...serverOrder,   // 服务端字段覆盖本地
+  };
+
+  // 3) 回填 UI（如果给了 card，则更新 data 与可见文本）
+  if (card) {
+    try {
+      // 更新 data-order JSON
+      const local = JSON.parse(card.dataset.order || '{}');
+      const finalOrder = { ...local, ...merged };
+      card.dataset.order = JSON.stringify(finalOrder);
+
+      // 可见文本
+      const statusEl = card.querySelector('.order-status');
+      if (statusEl) statusEl.textContent = finalOrder.status || '';
+
+      const pmEl = card.querySelector('.payment-method');
+      if (pmEl) pmEl.textContent = finalOrder.payment_method || finalOrder.paymentMethod || '';
+    } catch (e) {
+      console.warn('[POS] 回填UI时解析 data-order 失败：', e);
+    }
+  }
+
+  console.log('[POS] 状态同步成功 →', orderNumber, merged.status);
+}
+
+
 
 async function submitOrder() {
   const name = document.getElementById('custName').value.trim() || 'Guest';
@@ -4082,7 +4201,11 @@ if (!order.is_cancelled && !order.is_completed) {
     <div><strong>Telefoon:</strong> ${order.phone || ''}</div>
     ${order.email ? `<div><strong>Email:</strong> <a href="mailto:${order.email}">${order.email}</a></div>` : ''}
     <div><strong>Betaalwijze:</strong> <span class="payment-method">${order.payment_method || ''}</span></div>
-    <div><strong>Status:</strong> <span class="order-status">${status}</span></div>
+    <div>
+  <strong>Status:</strong>
+  <span class="order-status ${status}">${status}</span>
+</div>
+
     ${order.bron ? `<div><strong>Bron:</strong> ${order.bron}</div>` : ''}
     <div><strong>Items:</strong><ul>${items}</ul></div>
     ${order.opmerking ? `<div><strong>Opmerking:</strong> ${order.opmerking}</div>` : ''}
