@@ -3147,15 +3147,32 @@ while (true) {
     return;
   }
 
-  // === 2) PIN：入库 awaiting_pin_result 后推送至终端 ===
+  // === 2) PIN：送终端；later=入库pending；成功由 webhook 回调 ===
   if (method === 'pin') {
     payload.payment_method = 'pin';
     payload.paymentMethod  = 'pin';
-    payload.status         = 'awaiting_pin_result';
-    payload.payment_status = 'awaiting_pin_result';
-    console.log('[POS] PIN → awaiting_pin_result 入库:', payload.order_number);
-    await finalizeOrder(payload); // 先入库，不等待支付结果
-    openPinModal(due, orderNumber); // 仅推送到终端并监听状态
+    payload.status         = 'paid';
+    payload.payment_status = 'pending';
+    pendingPinOrders[orderNumber] = { payload, due };
+
+    const res = await openPinModal(due, orderNumber);
+
+    if (res === 'cash') {
+      delete pendingPinOrders[orderNumber];
+      method = 'cash';
+      continue; // 进入现金分支
+    }
+
+    if ((res && res.later) || res == null) {
+      delete pendingPinOrders[orderNumber];
+      payload.status         = 'pending';
+      payload.payment_status = 'pending';
+      console.log('[POS] PIN later → pending 入库:', payload.order_number);
+      await finalizeOrder(payload);
+      return;
+    }
+
+    // 成功与失败都由 onStatus/webhook 驱动 UI 更新
     return;
   }
 
@@ -3429,8 +3446,10 @@ function formatCurrency(value){
   });
 
   
-// 可选：去重集合，避免重复事件反复更新/弹 toast
+  // 可选：去重集合，避免重复事件反复更新/弹 toast
 const _seenPaymentEvents = new Set();
+// 待回传的 PIN 订单缓存：{ order_id: { payload, due } }
+const pendingPinOrders = {};
 
 async function handlePaymentUpdate(data) {
   if (!data) return;
@@ -3459,6 +3478,24 @@ async function handlePaymentUpdate(data) {
     const dedupeKey = `${order_id}:${payment_status}`;
     if (_seenPaymentEvents.has(dedupeKey)) return;
     _seenPaymentEvents.add(dedupeKey);
+  }
+
+  // 命中“待回传”缓存
+  const pending = pendingPinOrders[order_id];
+  if (pending) {
+    if (payment_status === 'paid') {
+      // ✅ 不覆盖业务流 status，写入 payment_status 更安全
+      pending.payload.payment_status = 'paid';
+      await finalizeOrder(pending.payload);
+      delete pendingPinOrders[order_id];
+      showToast(`Order ${order_id} PIN betaling geslaagd`);
+    } else if (payment_status === 'unfinished') {
+      pending.payload.payment_status = 'unfinished';
+      showToast(`Order ${order_id} PIN betaling ${data.error || 'mislukt'}`);
+    } else if (payment_status === 'awaiting_pin_result') {
+      pending.payload.payment_status = 'awaiting_pin_result';
+      showToast(`Order ${order_id} PIN betaling in behandeling`);
+    }
   }
 
   // 遍历订单卡片并更新 UI
