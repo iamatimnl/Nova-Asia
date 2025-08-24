@@ -41,6 +41,24 @@ from sqlalchemy import func
 import traceback
 from flask import Flask, send_from_directory, render_template
 
+STATUS_RANK = {
+    "open": 1,
+    "pending": 2,
+    "awaiting_pin_result": 2,
+    "paid": 5,
+    "refunded": 6,
+    "canceled": 7,
+    "failed": 7,
+    "expired": 7,
+}
+
+def _rank(s):
+    return STATUS_RANK.get((s or "").lower(), 0)
+
+def _prefer(existing, incoming):
+    """只前进：incoming 比 existing 强才更新（incoming 为空则保持 existing）"""
+    return existing if (not incoming or _rank(existing) >= _rank(incoming)) else incoming
+
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
 
@@ -63,6 +81,9 @@ with app.app_context():
     try:
         inspector = db.inspect(db.engine)
         cols = {c["name"] for c in inspector.get_columns("orders")}
+        if "payment_id" not in cols:
+            with db.engine.begin() as conn:
+                conn.execute(text("ALTER TABLE orders ADD COLUMN payment_id VARCHAR(100)"))
         if "opmerking" not in cols:
             with db.engine.begin() as conn:
                 conn.execute(text("ALTER TABLE orders ADD COLUMN opmerking TEXT"))
@@ -215,6 +236,7 @@ def order_to_dict(order):
     return {
         "id": order.id,
         "order_number": order.order_number,
+        "payment_id": order.payment_id,
         "order_type": order.order_type,
         "bron": order.bron,
         "customer_name": order.customer_name,
@@ -567,6 +589,7 @@ class Order(db.Model):
     __tablename__ = 'orders'
     id = db.Column(db.Integer, primary_key=True)
     order_number = db.Column(db.String(20))
+    payment_id = db.Column(db.String(100), unique=True)
     order_type = db.Column(db.String(20))
     bron = db.Column(db.String(20))
     customer_name = db.Column(db.String(100))
@@ -604,6 +627,7 @@ class Order(db.Model):
         return {
             "id": self.id,
             "order_number": self.order_number,
+            "payment_id": self.payment_id,
             "order_type": self.order_type,
             "bron": self.bron,
             "customer_name": self.customer_name,
@@ -963,36 +987,46 @@ def api_orders():
         # ===== 新时间判断逻辑结束 =====
 
         summary_data = data.get("summary") or {}
-        order = Order(
-            order_type=order_type,
-            bron=data.get("bron"),
-            customer_name=data.get("name") or data.get("customer_name"),
-            phone=data.get("phone"),
-            email=data.get("customerEmail") or data.get("email"),
-            pickup_time=data.get("pickup_time") or data.get("pickupTime"),
-            delivery_time=data.get("delivery_time") or data.get("deliveryTime"),
-            tijdslot_display=data.get("tijdslot_display"),
-            payment_method=data.get("paymentMethod") or data.get("payment_method"),
-            postcode=data.get("postcode"),
-            house_number=data.get("house_number"),
-            street=data.get("street"),
-            city=data.get("city"),
-            opmerking=data.get("opmerking") or data.get("remark"),
-            items=json.dumps(data.get("items", {})),
-            order_number=order_number,
-            fooi=float(data.get("tip") or data.get("fooi") or 0),
-            statiegeld=float(data.get("statiegeld") or 0),
-            discount_code=data.get("discount_code"),
-            discount_amount=float(data.get("discount_amount") or 0),
-            discountCode=data.get("discountCode"),
-            discountAmount=float(
-                data.get("discountAmount")
-                or summary_data.get("discount_amount")
-                or summary_data.get("discountAmount")
-                or 0
-            ),
-            status=data.get("status") or "pending"
+        payment_id = data.get("payment_id") or data.get("paymentId")
+
+        order = None
+        if payment_id:
+            order = Order.query.filter_by(payment_id=payment_id).first()
+        if not order and order_number:
+            order = Order.query.filter_by(order_number=order_number).first()
+        if not order:
+            order = Order(order_number=order_number, payment_id=payment_id)
+            db.session.add(order)
+
+        order.order_type = order_type
+        order.bron = data.get("bron")
+        order.customer_name = data.get("name") or data.get("customer_name")
+        order.phone = data.get("phone")
+        order.email = data.get("customerEmail") or data.get("email")
+        order.pickup_time = data.get("pickup_time") or data.get("pickupTime")
+        order.delivery_time = data.get("delivery_time") or data.get("deliveryTime")
+        order.tijdslot_display = data.get("tijdslot_display")
+        order.payment_method = data.get("paymentMethod") or data.get("payment_method")
+        order.postcode = data.get("postcode")
+        order.house_number = data.get("house_number")
+        order.street = data.get("street")
+        order.city = data.get("city")
+        order.opmerking = data.get("opmerking") or data.get("remark")
+        order.items = json.dumps(data.get("items", {}))
+        order.payment_id = payment_id or order.payment_id
+        order.fooi = float(data.get("tip") or data.get("fooi") or 0)
+        order.statiegeld = float(data.get("statiegeld") or 0)
+        order.discount_code = data.get("discount_code")
+        order.discount_amount = float(data.get("discount_amount") or 0)
+        order.discountCode = data.get("discountCode")
+        order.discountAmount = float(
+            data.get("discountAmount")
+            or summary_data.get("discount_amount")
+            or summary_data.get("discountAmount")
+            or 0
         )
+        incoming_status = data.get("status") or "pending"
+        order.status = _prefer(order.status, incoming_status)
 
         # 2. 计算 subtotal / totaal
         items = json.loads(order.items or "{}")
@@ -1232,21 +1266,31 @@ def webhook_update_order_status():
     """Update order status via external webhook (e.g. Mollie via AppB)."""
     data = request.get_json(silent=True) or request.form.to_dict() or {}
 
+    payment_id = data.get('payment_id') or data.get('paymentId')
     order_number = data.get('order_number') or data.get('orderNumber')
-    # ✅ 兼容 AppB/前端可能传来的 payment_status
     status = data.get('status') or data.get('payment_status')
 
-    if not order_number or status is None:
-        return jsonify({
-            'success': False,
-            'error': 'order_number and status/payment_status required'
-        }), 400
+    if not (payment_id or order_number):
+        return jsonify({'success': False, 'error': 'payment_id or order_number required'}), 400
 
-    order = Order.query.filter_by(order_number=order_number).first()
+    order = None
+    if payment_id:
+        order = Order.query.filter_by(payment_id=payment_id).first()
+    if not order and order_number:
+        order = Order.query.filter_by(order_number=order_number).first()
     if not order:
         return jsonify({'success': False, 'error': 'order not found'}), 404
 
-    order.status = status
+    for k, v in data.items():
+        if k == 'status':
+            continue
+        if hasattr(order, k):
+            if k == 'items' and isinstance(v, (dict, list)):
+                setattr(order, k, json.dumps(v))
+            else:
+                setattr(order, k, v)
+
+    order.status = _prefer(order.status, status)
     db.session.commit()
 
     return jsonify({'success': True, 'status': order.status}), 200
