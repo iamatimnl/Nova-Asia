@@ -12,7 +12,7 @@ require('./db');
 // 🖨️ ESC/POS（暂时做成日志桩，避免前端报错）
 const escpos = require('escpos');
 escpos.USB = require('escpos-usb');
-
+const beepPath = path.join(__dirname, 'assets', 'beep.wav');
 const dingPath = path.join(__dirname, 'assets', 'ding.wav');
 const flaskAppPath = path.join(__dirname, '..', 'app.py');
 const flaskAppDir = path.dirname(flaskAppPath);
@@ -55,7 +55,7 @@ function startFlaskServer() {
 
 // Google Maps Key（preload: invoke）
 ipcMain.handle('get-google-maps-key', () => {
-  return ''; // TODO: 生产别硬编码
+  return 'AIzaSyB0f6uWvs8PJkbaqkaWTLFcOI_WievM6mk'; // TODO: 生产别硬编码
 });
 
 
@@ -77,7 +77,13 @@ ipcMain.on('play-ding', async () => {
 ipcMain.on('stop-ding', () => { stopDing = true; });
 
 // 单次系统提示音
-ipcMain.on('beep', () => { shell.beep(); });
+ipcMain.on('beep', async () => {
+  try {
+    await wavPlayer.play({ path: beepPath });
+  } catch (err) {
+    console.error('播放 beep.wav 出错:', err);
+  }
+});
 
 // （可选）主进程通知渲染端登录成功
 // mainWindow.webContents.send('login-success', { at: Date.now() });
