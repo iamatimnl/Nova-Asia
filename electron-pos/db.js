@@ -26,7 +26,7 @@ const WRITABLE_COLUMNS = new Set([
   'btw_9','btw_21','btw_total',
   'discount_amount','discount_code','discountAmount','discountCode',
   'is_completed','is_cancelled','is_confirmed',
-  'bron',
+  'bron','status','payment_status',     
   // 如确需支持修改 data / created_at，可在确认风险后加入：
   // 'data', 'created_at'
 ]);
@@ -99,7 +99,9 @@ db.exec(`
     is_completed INTEGER DEFAULT 0,
     is_cancelled INTEGER DEFAULT 0,
     is_confirmed INTEGER DEFAULT 0,
-    bron TEXT
+    bron TEXT,
+    payment_status TEXT,
+    Status TEXT  
   );
   CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at DESC);
   CREATE INDEX IF NOT EXISTS idx_orders_order_id   ON orders(order_id);
@@ -120,6 +122,8 @@ ensureColumn('orders', 'discount_code', 'TEXT');
 ensureColumn('orders', 'discountAmount', 'REAL');
 ensureColumn('orders', 'discountCode', 'TEXT');
 ensureColumn('orders', 'is_confirmed', 'INTEGER');
+ensureColumn('orders', 'Status', 'TEXT');
+ensureColumn('orders', 'payment_status', 'TEXT');
 
 
 /* ===================== 字段映射（含 bron 约束） ===================== */
@@ -155,6 +159,7 @@ function toRow(oInput) {
   const tijdslot      = toStr(pick(o,'tijdslot','timeslot') || '');
   const pickup_time   = toStr(pick(o,'pickup_time')   || (order_type==='afhalen'  ? (tijdslot || '') : '') || '');
   const delivery_time = toStr(pick(o,'delivery_time') || (order_type==='bezorgen' ? (tijdslot || '') : '') || '');
+  
 
   // 金额/折扣/税
   const subtotal      = toNum(pick(o,'summary.subtotal','subtotal'));
@@ -176,6 +181,8 @@ function toRow(oInput) {
   const payment_method = toStr(pick(o,'payment_method','payment.method','paymentMethod') || '');
   const is_completed   = Number(pick(o,'is_completed') ?? 0);
   const is_cancelled   = Number(pick(o,'is_cancelled') ?? 0);
+  const status         = toStr(pick(o,'status','order_status') || '');
+  const payment_status = toStr(pick(o,'payment_status') || '');
 
   // bron：强制 or 默认
   let bron = toStr(pick(o,'bron','source') || '');
@@ -190,7 +197,7 @@ function toRow(oInput) {
     ? o.items
     : safeStringify(Array.isArray(o.items) ? o.items : (o.items || []));
 
-  return {
+    return {
     order_id:     toStr(pick(o,'id') || ''),
     order_number,
 
@@ -200,27 +207,32 @@ function toRow(oInput) {
     opmerking, items,
 
     subtotal, total, packaging_fee, statiegeld, delivery_fee, tip,
-    discount_code, discount_amount,   // snake_case
-    discountCode,  discountAmount,    // camelCase
+    discount_code, discount_amount,
+    discountCode,  discountAmount,
 
     btw_9, btw_21, btw_total,
     is_completed, is_cancelled,
+
+    // ✅ 新增
+    status, payment_status,
+
     bron,
     data: safeStringify(o)
   };
+
 }
 
 /* ===================== 预编译 SQL & 事务 ===================== */
 const upsertSQL = `
 INSERT INTO orders (
-  order_id, order_number, order_type, customer_name, phone, email,
+  order_id, order_number, order_type, customer_name, phone, email,status, payment_status,
   pickup_time, delivery_time, payment_method, postcode, house_number, street, city, opmerking,
   items, subtotal, total, packaging_fee, statiegeld, delivery_fee, tip, btw_9, btw_21, btw_total, bron,
   discount_code, discount_amount,
   discountCode, discountAmount,
   data
 ) VALUES (
-  @order_id, @order_number, @order_type, @customer_name, @phone, @email,
+  @order_id, @order_number, @order_type, @customer_name, @phone, @email,@status, @payment_status,
   @pickup_time, @delivery_time, @payment_method, @postcode, @house_number, @street, @city, @opmerking,
   @items, @subtotal, @total, @packaging_fee, @statiegeld, @delivery_fee, @tip, @btw_9, @btw_21, @btw_total, @bron,
   @discount_code, @discount_amount,
@@ -229,6 +241,8 @@ INSERT INTO orders (
 )
 ON CONFLICT(order_number) DO UPDATE SET
   order_type=excluded.order_type,
+  status=excluded.status,                -- 👈 新增
+  payment_status=excluded.payment_status,
   customer_name=excluded.customer_name,
   phone=excluded.phone,
   email=excluded.email,
@@ -239,7 +253,11 @@ ON CONFLICT(order_number) DO UPDATE SET
   house_number=excluded.house_number,
   street=excluded.street,
   city=excluded.city,
-  opmerking=excluded.opmerking,
+  opmerking = CASE
+  WHEN (orders.opmerking IS NULL OR TRIM(orders.opmerking)='') THEN excluded.opmerking
+  ELSE orders.opmerking
+  END,
+
   items=excluded.items,
   subtotal=excluded.subtotal,
   total=excluded.total,
@@ -337,6 +355,13 @@ function sanitizePatch(patch = {}) {
       default:
         out[k] = toStr(v);
         break;
+      case 'opmerking': {
+        const s = toStr(v);
+     if (s.trim() === '') continue; // 不更新空备注
+     out[k] = s;
+     break;
+     }
+
     }
   }
   return out;
@@ -344,9 +369,23 @@ function sanitizePatch(patch = {}) {
 function buildUpdateSQL(table, patchObj) {
   const keys = Object.keys(patchObj);
   if (keys.length === 0) return null;
-  const sets = keys.map(k => `${k}=@${k}`).join(', ');
+
+  const sets = keys.map(k => {
+    if (k === 'opmerking') {
+      // 只在新备注更长时才覆盖；空值不覆盖
+      return `opmerking = CASE
+        WHEN @opmerking IS NULL OR @opmerking = '' THEN opmerking
+        WHEN opmerking IS NULL OR opmerking = '' THEN @opmerking
+        WHEN LENGTH(@opmerking) >= LENGTH(opmerking) THEN @opmerking
+        ELSE opmerking
+      END`;
+    }
+    return `${k}=@${k}`;
+  }).join(', ');
+
   return `UPDATE ${table} SET ${sets} WHERE `;
 }
+
 function updateOrderById(id, patch = {}) {
   const rowId = Number(id);
   if (!rowId) throw new Error('invalid id');
