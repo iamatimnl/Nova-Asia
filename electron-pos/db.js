@@ -284,6 +284,11 @@ const listTodayStmt   = db.prepare(`
   WHERE date(created_at)=date('now','localtime')
   ORDER BY created_at DESC
 `);
+const listByDateStmt  = db.prepare(`
+  SELECT * FROM orders
+  WHERE date(created_at)=date(?)
+  ORDER BY created_at DESC
+`);
 
 const txUpsert = db.transaction((row) => upsertStmt.run(row));
 
@@ -297,6 +302,7 @@ function getOrderByNumber(no) { return getByNumberStmt.get(String(no || '')) || 
 function getOrderById(id)     { return getByIdStmt.get(Number(id)) || null; }
 function listRecent(limit=50) { return listRecentStmt.all(Number(limit)); }
 function getOrdersToday()     { return listTodayStmt.all(); }
+function getOrdersByDate(date){ return listByDateStmt.all(String(date)); }
 
 /* ===================== 批量 UPSERT（给 fetch 后同步用） ===================== */
 function upsertBatch(orders = []) {
@@ -475,6 +481,7 @@ handleOnce('db:update-order-by-number', (_e, no, patch) => {
 
 // 查询
 handleOnce('db:get-orders-today', () => { try { return getOrdersToday(); } catch (e) { console.error(e); return []; } });
+handleOnce('db:get-orders-by-date', (_e, date) => { try { return getOrdersByDate(date); } catch (e) { console.error(e); return []; } });
 handleOnce('db:get-order-by-number', (_e, no) => { try { return getOrderByNumber(no); } catch (e) { console.error(e); return null; } });
 handleOnce('db:get-order-by-id', (_e, id) => { try { return getOrderById(id); } catch (e) { console.error(e); return null; } });
 handleOnce('db:list-recent', (_e, limit=50) => { try { return listRecent(limit); } catch (e) { console.error(e); return []; } });
@@ -484,5 +491,5 @@ module.exports = {
   dbPath, db,
   saveOrder, upsertBatch,
   updateOrderById, updateOrderByNumber,
-  getOrderByNumber, getOrderById, listRecent, getOrdersToday
+  getOrderByNumber, getOrderById, listRecent, getOrdersToday, getOrdersByDate
 };
