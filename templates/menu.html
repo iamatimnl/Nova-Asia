@@ -794,7 +794,7 @@
   <div class="menu-section">
     <div class="menu-row menu-item" data-name="Teppanyaki Shrimp" data-price="18" data-packaging="0.2">
       <div class="menu-img">
-        <img src="{{ url_for('static', filename='images/REBI.png') }}" alt="Teppanyaki Shrimp" />
+        <img src="{{ url_for('static', filename='images/虾炒饭.png') }}" alt="Teppanyaki Shrimp" />
       </div>
       <div class="menu-content">
         <h3>Garnaal</h3>
@@ -810,7 +810,7 @@
     </div>
     <div class="menu-row menu-item" data-name="Teppanyaki Beef" data-price="18" data-packaging="0.2">
       <div class="menu-img">
-        <img src="{{ url_for('static', filename='images/RBEEF.png') }}" alt="Teppanyaki Beef" />
+        <img src="{{ url_for('static', filename='images/牛炒饭.png') }}" alt="Teppanyaki Beef" />
       </div>
       <div class="menu-content">
         <h3>Rundvlees</h3>
@@ -826,7 +826,7 @@
     </div>
     <div class="menu-row menu-item" data-name="Teppanyaki Chicken" data-price="18" data-packaging="0.2">
       <div class="menu-img">
-        <img src="{{ url_for('static', filename='images/RCHICKEN.png') }}" alt="Teppanyaki Chicken" />
+        <img src="{{ url_for('static', filename='images/鸡炒饭.png') }}" alt="Teppanyaki Chicken" />
       </div>
       <div class="menu-content">
         <h3>Kip</h3>
@@ -842,7 +842,7 @@
     </div>
     <div class="menu-row menu-item" data-name="Teppanyaki Char Siu" data-price="18" data-packaging="0.2">
       <div class="menu-img">
-        <img src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}" alt="Teppanyaki Char Siu" />
+        <img src="{{ url_for('static', filename='images/叉烧炒饭.png') }}" alt="Teppanyaki Char Siu" />
       </div>
       <div class="menu-content">
         <h3>Char Siu (BBQ-varkensvlees)</h3>
@@ -909,20 +909,29 @@
 </div>
 </div>
 </div>
-<div class="menu-row menu-item" data-name="Chicken Roll Omakase" data-packaging="0.2" data-price="16">
-<div class="menu-img">
-<img alt="Chicken Roll Omakase" src="{{ url_for('static', filename='images/几卷.png') }}"/>
-</div>
+
 <div class="menu-content">
-<h3>Chicken Roll Omakase</h3>
-<p>9 st verrassing samengesteld<br/>€ 16.00</p>
-<div class="qty-box">
-<label for="chickenRollCount">Aantal</label>
-<button class="qty-minus remove-button" data-target="chickenRollCount" type="button">-</button>
-<select id="chickenRollCount" name="chickenRollCount"></select>
-<button class="qty-plus add-button" data-target="chickenRollCount" type="button">+</button>
-</div>
-</div>
+<div class="menu-row menu-item" data-name="The Next Roll" data-packaging="0.2" data-price="16">
+  <div class="menu-img">
+    <img alt="The Next Roll" src="{{ url_for('static', filename='images/几卷.png') }}"/>
+  </div>
+  <div class="menu-content">
+    <h3>The Next Roll</h3>
+    <p>€ 16,00</p>
+    <p class="ingredients">Custom-Made Freestyle — beschrijf je roll base en toppings naar wens</p>
+
+    <!-- 自由输入需求框 -->
+    <label for="nextRollNote" class="custom-note-label">Uw wens:</label>
+    <textarea id="nextRollNote" name="nextRollNote" class="custom-note" 
+              placeholder="Bijv. zalm basis, avocado + spicy mayo topping" rows="2"></textarea>
+
+    <p id="soldoutNextRoll" class="sold-out-msg hidden">Uitverkocht!</p>
+    <div class="qty-box">
+      <button class="qty-minus remove-button" data-target="nextRollCount" type="button">-</button>
+      <select id="nextRollCount" name="nextRollCount"></select>
+      <button class="qty-plus add-button" data-target="nextRollCount" type="button">+</button>
+    </div>
+  </div>
 </div>
 <div class="menu-row menu-item" data-name="Nigiri Box Omakase" data-packaging="0.2" data-price="10">
 <div class="menu-img">
@@ -946,13 +955,13 @@
       Sashimi per 6 stuks
     </h2>
 
-<div class="menu-row menu-item" data-name="Salmon sashimi" data-packaging="0.2" data-price="9">
+<div class="menu-row menu-item" data-name="Salmon sashimi" data-packaging="0.2" data-price="10">
 <div class="menu-img">
 <img alt="Salmon sashimi" src="{{ url_for('static', filename='images/ss.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>Salmon sashimi</h3>
-<p>€ 9.00</p>
+<p>€ 10.00</p>
 <div class="qty-box">
 <label for="salmonSashimiQty">Aantal</label>
 <button class="qty-minus remove-button" data-target="salmonSashimiQty" type="button">-</button>
@@ -961,13 +970,13 @@
 </div>
 </div>
 </div>
- <div class="menu-row menu-item" data-name="Flamed salmon sashimi" data-packaging="0.2" data-price="10">
+ <div class="menu-row menu-item" data-name="Flamed salmon sashimi" data-packaging="0.2" data-price="11">
 <div class="menu-img">
 <img alt="Flamed salmon sashimi" src="{{ url_for('static', filename='images/fz.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>Flamed salmon sashimi</h3>
-<p>€ 10.00</p>
+<p>€ 11.00</p>
 <div class="qty-box">
 <label for="flamedsalmonSashimiQty">Aantal</label>
 <button class="qty-minus remove-button" data-target="flamedsalmonSashimiQty" type="button">-</button>
@@ -991,13 +1000,13 @@
 </div>
 </div>
 </div>
-<div class="menu-row menu-item" data-name="Salmon sashimi" data-packaging="0.2" data-price="10.5">
+<div class="menu-row menu-item" data-name="Salmon sashimi" data-packaging="0.2" data-price="11">
 <div class="menu-img">
 <img alt="Salmon sashimi" src="{{ url_for('static', filename='images/ft.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>Flamed tonijn sashimi</h3>
-<p>€ 10.50</p>
+<p>€ 11</p>
 <div class="qty-box">
 <label for="flamedtonijnSashimiQty">Aantal</label>
 <button class="qty-minus remove-button" data-target="flamedtonijnSashimiQty" type="button">-</button>
@@ -1007,13 +1016,13 @@
 </div>
 </div>
 
-<div class="menu-row menu-item" data-name="Beef sashimi" data-packaging="0.2" data-price="10">
+<div class="menu-row menu-item" data-name="Beef sashimi" data-packaging="0.2" data-price="12">
 <div class="menu-img">
 <img alt="Beef sashimi" src="{{ url_for('static', filename='images/suy.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>Beef sashimi</h3>
-<p>€ 10.00</p>
+<p>€ 12.00</p>
 <div class="qty-box">
 <label for="beefSashimiQty">Aantal</label>
 <button class="qty-minus remove-button" data-target="beefSashimiQty" type="button">-</button>
