@@ -1444,12 +1444,12 @@ dialog::backdrop {
 
       <!-- 固定导航栏 -->
       <div class="orders-header">
+        <button id="datePickerBtn" class="btn-wissel">📅</button>
+        <input type="date" id="orderDate" style="display:none" />
         <button id="sort-toggle" class="btn-wissel">🕓</button>
         <button id="admin-orders-btn">📙</button>
         <button id="toggle-map-btn">🗺️</button>
         <button id="closeToday">✕</button>
-        
-    
       </div>
      
       <!-- 可滚动订单列表 -->
@@ -2520,6 +2520,25 @@ document.addEventListener('DOMContentLoaded',()=>{
       if(e.target===cartPanel) cartPanel.classList.remove('open');
     });
   }
+  const datePicker=document.getElementById('orderDate');
+  const datePickerBtn=document.getElementById('datePickerBtn');
+  if(datePicker){
+    datePicker.value=todayDate;
+    if(datePickerBtn){
+      datePickerBtn.textContent=todayDate;
+      datePickerBtn.addEventListener('click',()=>{
+        if(datePicker.showPicker){
+          datePicker.showPicker();
+        }else{
+          datePicker.click();
+        }
+      });
+    }
+    datePicker.addEventListener('change',()=>{
+      if(datePickerBtn) datePickerBtn.textContent=datePicker.value;
+      refreshOrders();
+    });
+  }
   updateOmakasePrefs();
   updateDragonPrefs();
   updateCart();
@@ -2534,7 +2553,7 @@ function toggleToday(){
   const open = panel.classList.contains('visible');
   document.body.classList.toggle('today-open', open);
   if(open){
-    fetchOrders();
+    refreshOrders();
     newOrderCount = 0;
     hasNewOrder = false;
     updateTabTitle();
@@ -2548,7 +2567,7 @@ function showTodayOrders(){
   if(!panel.classList.contains('visible')){
     panel.classList.add('visible');
     document.body.classList.add('today-open');
-    fetchOrders();
+    refreshOrders();
   }
 }
 
@@ -3186,7 +3205,7 @@ async function finalizeOrder(payload) {
     if (res.success || res.status === 'ok') {
       showToast('Bestelling succesvol verzonden! Bestelnummer: ' + payload.order_number);
       clearForm();
-      fetchOrders();
+      refreshOrders();
     } else {
       showToast('Er is een fout opgetreden bij het verzenden van uw bestelling. Probeer het opnieuw.');
     }
@@ -3857,6 +3876,7 @@ socket.on('payment_status', handlePaymentUpdate);
   const baseTitle = document.title;
   let newOrderCount = 0; // unseen orders for title
   let hasNewOrder = false;
+  const todayDate = new Date().toISOString().slice(0,10);
   function updateTabTitle(){
     document.title = newOrderCount ? `${baseTitle} (${newOrderCount})` : baseTitle;
   }
@@ -4186,6 +4206,36 @@ async function fetchOrders() {
   } catch (err) {
     console.error('订单拉取失败:', err);
     // TODO: 你也可以在这里给 UI 一个 toast 提示
+  }
+}
+
+async function loadOrdersByDate(dateStr){
+  try{
+    const rows = await window.pos?.getOrdersByDate?.(dateStr);
+    const container = document.querySelector('.orders-cards');
+    if(container){
+      container.innerHTML='';
+      (rows||[]).forEach(r=>{
+        let o={};
+        try{ o=JSON.parse(r.data||'{}'); }catch{}
+        const merged={...o,...r};
+        delete merged.data;
+        addRow(merged);
+      });
+    }
+  }catch(err){
+    console.error('加载历史订单失败:',err);
+  }
+}
+
+async function refreshOrders(){
+  const picker=document.getElementById('orderDate');
+  const val=picker?.value;
+  if(val && val!==todayDate){
+    stopPolling();
+    await loadOrdersByDate(val);
+  }else{
+    startPolling();
   }
 }
 

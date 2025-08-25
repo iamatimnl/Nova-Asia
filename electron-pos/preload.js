@@ -61,6 +61,7 @@ contextBridge.exposeInMainWorld('electron', {
 
     // 查询
     getOrdersToday:      ()             => ipcRenderer.invoke('db:get-orders-today'),
+    getOrdersByDate:     (date)         => ipcRenderer.invoke('db:get-orders-by-date', String(date)),
     getOrderByNumber:    (no)           => ipcRenderer.invoke('db:get-order-by-number', String(no)),
     getOrderById:        (id)           => ipcRenderer.invoke('db:get-order-by-id', Number(id)),
     listRecent:          (limit = 50)   => ipcRenderer.invoke('db:list-recent', Number(limit)),
@@ -78,6 +79,7 @@ contextBridge.exposeInMainWorld('pos', {
 
   // 查询
   getOrdersToday:   ()            => ipcRenderer.invoke('db:get-orders-today'),
+  getOrdersByDate:  (date)        => ipcRenderer.invoke('db:get-orders-by-date', String(date)),
   getOrderByNumber: (no)          => ipcRenderer.invoke('db:get-order-by-number', String(no)),
   getOrderById:     (id)          => ipcRenderer.invoke('db:get-order-by-id', Number(id)),
   listRecent:       (limit = 50)  => ipcRenderer.invoke('db:list-recent', Number(limit)),
