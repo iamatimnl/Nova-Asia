@@ -7,14 +7,109 @@
 <meta name="description" content="Discover bento boxes and teppanyaki dishes at Nova Asia in Hoofddorp. Also sushi, pokébowls, ramen and Asian streetfood."/>
 <title>Nova Asia | Bento & Teppanyaki in Hoofddorp</title>
 
-<!-- iOS 设置 -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Nova Asia">
+  <!-- Canonical：统一主URL -->
+  <link rel="canonical" href="https://www.novaasia.nl/"/>
 
-<!-- Android 设置 -->
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#f2e9d8">
+  <!-- 字体 -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Quicksand:wght@400;700&family=Noto+Sans:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website"/>
+  <meta property="og:title" content="Nova Asia | Bento & Teppanyaki in Hoofddorp"/>
+  <meta property="og:description" content="Bij Nova Asia in Hoofddorp proef je authentieke bento boxen, teppanyaki, sushi, pokébowls, ramen en streetfood. Bestel online of kom langs."/>
+  <meta property="og:url" content="https://www.novaasia.nl/"/>
+  <meta property="og:site_name" content="Nova Asia"/>
+  <meta property="og:image" content="https://www.novaasia.nl/assets/logo-512.png"/>
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="Nova Asia | Bento & Teppanyaki in Hoofddorp"/>
+  <meta name="twitter:description" content="Bij Nova Asia in Hoofddorp proef je authentieke bento boxen en teppanyaki gerechten. Ook sushi, pokébowls, ramen en Aziatische streetfood."/>
+  <meta name="twitter:image" content="https://www.novaasia.nl/assets/logo-512.png"/>
+
+  <!-- 控制摘要长度，避免 Google 抓取页脚/杂乱文本 -->
+  <meta name="robots" content="max-snippet:160, max-image-preview:large"/>
+  <meta name="googlebot" content="max-snippet:160"/>
+
+  <!-- 网页图标 -->
+  <link rel="icon" type="image/png" sizes="180x180" href="{{ url_for('static', filename='icons/icon-180.png') }}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='icons/icon-180.png') }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='icons/icon-32.png') }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='icons/icon-16.png') }}">
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- 状态栏/主题色 -->
+  <meta name="theme-color" content="#f2e9d8">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Nova Asia">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <!-- JSON-LD: WebSite -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "url": "https://www.novaasia.nl/",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://www.novaasia.nl/search?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+
+  <!-- JSON-LD: Organization -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Nova Asia",
+    "url": "https://www.novaasia.nl/",
+    "logo": "https://www.novaasia.nl/assets/logo-512.png",
+    "sameAs": [
+      "https://www.facebook.com/novaasia.nl",
+      "https://www.instagram.com/novaasia.nl"
+    ]
+  }
+  </script>
+
+  <!-- JSON-LD: Restaurant -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Restaurant",
+    "name": "Nova Asia",
+    "url": "https://www.novaasia.nl/",
+    "image": "https://www.novaasia.nl/assets/logo-512.png",
+    "description": "Bij Nova Asia in Hoofddorp proef je authentieke bento boxen en teppanyaki gerechten. We serveren ook verse sushi, kleurrijke pokébowls, hartverwarmende ramen en andere Aziatische streetfood favorieten. Zoek je Bento Hoofddorp, Teppanyaki Hoofddorp, Pokébowls Hoofddorp, Ramen Hoofddorp of Sushi Hoofddorp? Bestel online of kom langs.",
+    "telephone": "+31622599566",
+    "servesCuisine": ["Asian", "Japanese", "Street Food", "Bubble Tea"],
+    "priceRange": "€€",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Almkerkplein 4",
+      "addressLocality": "Hoofddorp",
+      "postalCode": "2134CN",
+      "addressCountry": "NL"
+    },
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+        "opens": "12:00",
+        "closes": "20:30"
+      }
+    ],
+    "acceptsReservations": "True",
+    "menu": "https://www.novaasia.nl",
+    "sameAs": [
+      "https://www.facebook.com/novaasia.nl",
+      "https://www.instagram.com/novaasia.nl"
+    ]
+  }
+  </script>
+</head>
 
 
 
@@ -103,7 +198,33 @@
 
   border-radius: 26px;
 
- 
+  .custom-note-label {
+  display: block;
+  margin: 8px 0 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #444;
+}
+
+.custom-note {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 12px;
+  font-size: 14px;
+  line-height: 1.4;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #fafafa;
+  resize: vertical; /* 允许上下拖动调整高度 */
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.custom-note:focus {
+  outline: none;
+  border-color: #ff7f50; /* 选中时高亮色，可以换成你网站主色 */
+  box-shadow: 0 0 4px rgba(255, 127, 80, 0.3);
+  background-color: #fff;
+}
 
   overflow-x: auto;
   overflow-y: hidden;
@@ -313,12 +434,17 @@
     transform: translateX(-50%);
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 4px;
+    gap: 8px;
+    padding: 6px 8px;
     width: calc(100% - 16px);
     justify-content: center;
     background: rgba(29, 18, 3, 0.089);
-    border-radius: 8px;
+    border-radius: 10px;
+  }
+
+  .qty-box button,
+  .qty-box select {
+    font-size: 20px;
   }
 @media (min-width: 1268px) {
   .menu-item select {
@@ -332,6 +458,11 @@
     background: rgba(255, 255, 255, 0.7);
     box-sizing: border-box;
     color: var(--accent-color);
+  }
+
+  .qty-box button,
+  .qty-box select {
+    font-size: calc(1.8rem + 2px);
   }
 }
 
@@ -455,22 +586,23 @@
 }
 
 .new-set-msg {
-  font-size: 1rem;  /* 稍微加大，更友好 */
-  color: white;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.8);
+  color: #111;
   font-weight: 200;
   letter-spacing: 0.2px;
-  margin: 0;
+  margin: 0 0 2px 0;   /* 下方留 8px 间距 */
   line-height: 1;
 }
-
 
 @media (min-width: 768px) {
   .new-set-msg {
     font-size: 2.2rem !important;
-    color: white;
+    background: rgba(255, 255, 255, 0.8);
+    color: #111;
     font-weight: 600;
     letter-spacing: 0.8px;
-    margin: 0;
+    margin: 0 0 10px 0;  /* 桌面端间距更大 */
     line-height: 1.4;
   }
 }
@@ -774,10 +906,20 @@ body.portrait-mode .cart-section.mobile-visible .cart-summary #closeCartBtn {
 
 }
 
-  /* 移动端相关按钮桌面隐藏 */
-  #cart-toggle, #circle-x-btn, .slider-container {
-    display: none !important;
-  }
+  /* 默认隐藏（桌面端） */
+#cart-toggle, .slider-container {
+  display: none;
+}
+
+#circle-x-btn {
+  display: none;
+}
+
+/* 移动端 portrait-mode 下显示 */
+body.portrait-mode #circle-x-btn {
+  display: block !important;
+}
+
 }
 
 
@@ -1603,8 +1745,12 @@ body.portrait-mode .cart-extra-item select {
   align-items: center;
 }
 
-  #xBowlMains select, #xBowlToppings select { width: 100%; }
+  #xBowlMains select, #xBowlToppings select {
+    flex: 1;
+    min-width: 0;
+  }
   #xBowlMains button, #xBowlToppings button {
+    flex: 0 0 auto;
     width: 1.4rem;
     height: 1.4rem;
     font-size: 0.7rem;
@@ -1630,16 +1776,30 @@ body.portrait-mode .cart-extra-item select {
 
 #xBowlMains select,
 #xBowlToppings select {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   font-size: 0.8rem;
   padding: 4px;
 }
+
+#xBowlMains button,
+#xBowlToppings button {
+  flex: 0 0 auto;
+}
 @media (min-width: 768px) {
-  #xBowlBase,
-  #xBowlMains select,
-  #xBowlToppings select {
+  #xBowlBase {
     width: 280px !important;          /* 统一宽度 */
     max-width: 100% !important;
+    font-size: 1.3rem !important;
+    padding: 6px 10px !important;
+    border: 1px solid #aaa !important;
+    border-radius: 6px !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    box-sizing: border-box !important;
+  }
+
+  #xBowlMains select,
+  #xBowlToppings select {
     font-size: 1.3rem !important;
     padding: 6px 10px !important;
     border: 1px solid #aaa !important;
@@ -1666,8 +1826,8 @@ body.portrait-mode .cart-extra-item select {
 .menu-item[data-name="X-Bowl"] #xBowlToppings > div > button.xb-remove {
   border-radius: 4px !important;   /* 直角用 0 */
   background: rgba(255, 255, 255, 0.9) !important;
-  width: 2rem;
-  height: 2rem;
+  width: 2.2rem;
+  height: 2.2rem;
   padding: 0;
   line-height: 1;
 }
@@ -2147,7 +2307,12 @@ body.portrait-mode #cart-toggle {
   }
 }
 
-
+@media (max-width: 768px) {
+  .logo-heading {
+    font-size: 1.5rem; /* 比如调小点 */
+    white-space: nowrap; /* 强制不换行 */
+  }
+}
 
 @media (min-width: 768px) {
     .cart-title-icon {
@@ -2176,27 +2341,6 @@ body.portrait-mode #cart-toggle {
 
 
 
-.logo-heading {
-  font-size: 2em;
-  display: flex;
-  align-items: center;
-  justify-content: center;  /* ✅ 水平居中 */
-  text-align: center;
-}
-
-.logo-desktop {
-  display: none;             /* 默认隐藏 */
-  height: 1.8em;             /* ✅ 稍大于文字（可调 1.5 ~ 2.0em） */
-  margin-right: 0.5em;
-  vertical-align: middle;
-}
-
-/* 在桌面端显示图片 */
-@media (min-width: 768px) {
-  .logo-desktop {
-    display: inline-block;
-  }
-}
 
 
 body.portrait-mode .menu-container {
@@ -2392,6 +2536,52 @@ body.portrait-mode .cart-badge {
   }
 }
 
+
+.logo-heading {
+  text-align: center;
+}
+
+.logo-wrapper {
+  display: flex;
+  flex-direction: column; /* 上下排列 */
+  align-items: center;    /* 居中 */
+}
+
+.logo-desktop {
+  max-height: 60px;   /* 默认手机端高度 */
+  height: auto;
+  width: auto;
+  margin-left: -8px; 
+}
+
+/* 桌面端专属样式 */
+@media (min-width: 900px) {
+  .logo-desktop {
+    max-height: 150px;   /* 桌面端大一点 */
+    margin-left: -20px;  /* 只在桌面端左移 */
+  }
+}
+
+
+
+
+/* 默认：小屏幕 (手机) */
+.site-title {
+  color: #000;
+  font-size: 2rem;   /* 手机标题小一点 */
+  margin-top: 0rem;
+  font-family: "Kosugi Maru", sans-serif; /* 推荐现代日式 */
+  font-weight: 800;
+}
+
+/* 桌面端 (>=900px) */
+@media (min-width: 900px) {
+  .site-title {
+    font-size: 3.9rem;  /* 桌面端更大 */
+  }
+}
+
+
 </style>
 
 
@@ -2421,8 +2611,9 @@ body.portrait-mode .cart-badge {
 <a href="#dessert">Dessert</a>
 <a href="#drinks">Drinks</a>
 <a href="#bubble">Bubble Tea</a>
-<a href="#info">Info</a>
-<a href="#wapp">Wapp</a>
+<a href="#info">Allergenen</a>
+<a href="#over-ons">Over ons</a>
+
 
 
 
@@ -2432,15 +2623,17 @@ body.portrait-mode .cart-badge {
 <a href="#" class="home-btn" id="homeBtn" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">Home</a>
 <a href="/" class="review-link lang-switch">NED</a>
 
-
 <div class="indicator" id="indicator"></div>
 </nav>
 </div>
 <h1 class="logo-heading">
-  <img src="static/images/Logo.png" alt="Nova Asia bento bezorgen Hoofddorp" class="logo-desktop" />
-  Bento & Teppanyaki in Hoofddorp
+  <div class="logo-wrapper">
+    <img src="static/images/Logo1.png" alt="Nova Asia bento bezorgen Hoofddorp" class="logo-desktop" />
+    <span class="site-title">Nova Asia · Hoofddorp</span>
+  </div>
 </h1>
-<p>At Nova Asia in Hoofddorp you can enjoy authentic bento boxes and teppanyaki dishes. We also serve fresh sushi, colourful pokébowls, comforting ramen and other Asian streetfood favourites. Looking for Bento Hoofddorp, Teppanyaki Hoofddorp, Pokébowls Hoofddorp, Ramen Hoofddorp or Sushi Hoofddorp? Order online or drop by.</p>
+
+
 
 <section id="delivery-options">
 <div class="delivery-options">
@@ -2496,7 +2689,6 @@ body.portrait-mode .cart-badge {
 <select id="deliveryPayment">
 <option value="online" selected>Online betaling</option>
 <option value="contant">Contant</option>
-<option value="oprekening">Op rekening</option>
 </select>
 </div>
 </div>
@@ -2505,7 +2697,7 @@ body.portrait-mode .cart-badge {
 <div class="checkbox-group">
 <h2>Benodigdheden</h2>
 <p style="margin-top: -12px; font-size: 0.95rem; color: #6A994E; text-align: center;">
-    Geef aan wat u nodig heeft. Voorkom verspilling, denk aan het milieu. 🌱
+  Wilt u aangeven wat u nodig heeft? Zo voorkomen we samen verspilling.
 </p>
 <div class="supply-row">
     <img alt="Stokjes" class="supply-img photo" src="{{ url_for('static', filename='images/chopsticks.png') }}"/>
@@ -2586,7 +2778,6 @@ body.portrait-mode .cart-badge {
           <option value="online" selected>Online betaling</option>
           <option value="contant">Contant</option>
           <option value="pin">Pin</option>
-          <option value="oprekening">Op rekening</option>
         </select>
         <img
           id="cartIcon"
@@ -2610,16 +2801,14 @@ body.portrait-mode .cart-badge {
   <!-- 右侧: 结算区域 -->
   <div class="cart-summary pretty-gradient">
 
-   <button class="circle-x-btn" onclick="toggleMobileCart()" style="background: none; border: none; padding: 0; cursor: pointer;">
-  <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
-       viewBox="0 0 24 24"
-       fill="black" stroke="#f2e9d8" stroke-width="2"
-       stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="12" r="10" />
-    <line x1="15" y1="9" x2="9" y2="15" />
-    <line x1="9" y1="9" x2="15" y2="15" />
-  </svg>
+ <button class="circle-x-btn" onclick="toggleMobileCart()" 
+        style="background: none; border: none; padding: 0; cursor: pointer;">
+  <img src="/static/images/Back.svg" alt="Back" width="28" height="28" />
+  Terug
 </button>
+
+
+
 
 
 
@@ -2689,13 +2878,14 @@ body.portrait-mode .cart-badge {
       Crispy rice sandwich
     </h2>
 <!-- Zalm -->
-<div class="menu-row menu-item" data-name="Zalm crispy rice sandwich" data-packaging="0.2" data-price="7">
+<div class="menu-row menu-item" data-name="Zalm crispy rice sandwich" data-packaging="0.2" data-price="10">
 <div class="menu-img">
 <img alt="Zalm crispy rice sandwich" src="{{ url_for('static', filename='images/zalm.png') }}"/>
 </div>
 <div class="menu-content">
-<h3>Zalm crispy rice sandwich</h3>
-<p>€ 7.00</p>
+<h3>Zalm rice sandwich</h3>
+<p>€ 10.00</p>
+<p class="ingredients">Verse zalm, crispy sushirijst, komkommer, avocado</p>
 <p id="soldoutZalmCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 
@@ -2707,13 +2897,14 @@ body.portrait-mode .cart-badge {
 </div>
 
 <!-- Zalm -->
-<div class="menu-row menu-item" data-name="Spicytuna crispy rice sandwich" data-packaging="0.2" data-price="7">
+<div class="menu-row menu-item" data-name="Spicytuna crispy rice sandwich" data-packaging="0.2" data-price="10">
 <div class="menu-img">
 <img alt="Spicytuna crispy rice sandwich" src="{{ url_for('static', filename='images/zalm.png') }}"/>
 </div>
 <div class="menu-content">
-<h3>Spicytuna crispy rice sandwich</h3>
-<p>€ 7.00</p>
+<h3>Spicytuna rice sandwich</h3>
+<p>€ 10.00</p>
+<p class="ingredients">Verse spicy tuna, crispy sushirijst, komkommer, avocado</p>
 <p id="soldoutSpicytunaCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 
@@ -2726,13 +2917,14 @@ body.portrait-mode .cart-badge {
   
 <!-- Ebi -->
 <!-- Ebi Crispy Rice Sandwich -->
-<div class="menu-row menu-item" data-name="Ebi crispy rice sandwich" data-packaging="0.2" data-price="7">
+<div class="menu-row menu-item" data-name="Ebi crispy rice sandwich" data-packaging="0.2" data-price="10">
 <div class="menu-img">
 <img alt="Ebi Crispy Rice Sandwich" src="{{ url_for('static', filename='images/zalm.png') }}"/>
 </div>
 <div class="menu-content">
-<h3>Ebi crispy rice sandwich</h3>
-<p>€ 7.00</p>
+<h3>Ebi fry rice sandwich</h3>
+<p>€ 10.00</p>
+<p class="ingredients">Ebi fry, crispy sushirijst, komkommer, avocado</p>
 <p id="soldoutEbiCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 
@@ -2743,13 +2935,14 @@ body.portrait-mode .cart-badge {
 </div>
 </div>
 <!-- Beef Crispy Rice Sandwich -->
-<div class="menu-row menu-item" data-name="Beef crispy rice sandwich" data-packaging="0.2" data-price="7.5">
+<div class="menu-row menu-item" data-name="Beef crispy rice sandwich" data-packaging="0.2" data-price="10">
 <div class="menu-img">
 <img alt="Beef Crispy Rice Sandwich" src="{{ url_for('static', filename='images/zalm.png') }}"/>
 </div>
 <div class="menu-content">
-<h3>Beef crispy rice sandwich</h3>
-<p>€ 7.50</p>
+<h3>Beef rice sandwich</h3>
+<p>€ 10.00</p>
+<p class="ingredients">Terriyaki beef, crispy sushirijst, gebakken uitjes</p>
 <p id="soldoutBeefCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 
@@ -2760,13 +2953,14 @@ body.portrait-mode .cart-badge {
 </div>
 </div>
 <!-- California Crispy Rice Sandwich -->
-<div class="menu-row menu-item" data-name="California crispy rice sandwich" data-packaging="0.2" data-price="7.5">
+<div class="menu-row menu-item" data-name="California crispy rice sandwich" data-packaging="0.2" data-price="10">
 <div class="menu-img">
 <img alt="California Crispy Rice Sandwich" src="{{ url_for('static', filename='images/zalm.png') }}"/>
 </div>
 <div class="menu-content">
-<h3>California crispy rice sandwich</h3>
-<p>€ 7.50</p>
+<h3>California rice sandwich</h3>
+<p>€ 10.00</p>
+<p class="ingredients">Krabstick, crispy sushirijst, komkommer, avocado, masago</p>
 <p id="soldoutCaliforniaCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 
@@ -2777,13 +2971,14 @@ body.portrait-mode .cart-badge {
 </div>
 </div>
 <!-- Chicken Crispy Rice Sandwich -->
-<div class="menu-row menu-item" data-name="Chicken crispy rice sandwich" data-packaging="0.2" data-price="7">
+<div class="menu-row menu-item" data-name="Chicken crispy rice sandwich" data-packaging="0.2" data-price="10">
 <div class="menu-img">
 <img alt="Chicken Crispy Rice Sandwich" src="{{ url_for('static', filename='images/zalm.png') }}"/>
 </div>
 <div class="menu-content">
-<h3>Chicken crispy rice sandwich</h3>
-<p>€ 7.00</p>
+<h3>Chicken rice sandwich</h3>
+<p>€ 10.00</p>
+<p class="ingredients">Crispy chicken, crispy sushirijst, komkommer, avocado</p>
 <p id="soldoutChickenCrispyRiceSandwich" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 
@@ -2869,7 +3064,7 @@ body.portrait-mode .cart-badge {
 <img alt="Meatlover Bento Hoofddorp" src="{{ url_for('static', filename='images/Meatlove bento.png') }}"/>
 </div>
 <div class="menu-content">
-<h3>Korean Beef Bento</h3> 
+<h3>Meatlover Bento</h3> 
 <p>€ 25.00</p>
 <p class="ingredients">Gerilde Terriyaki Beef, Sushi-rijst, Kimchi-komkommer, Crispy chicken</p>
 <p id="soldoutMeatloverBento" class="sold-out-msg hidden">Uitverkocht!</p>
@@ -3092,7 +3287,7 @@ body.portrait-mode .cart-badge {
 </div>
 </div>
 </section>
-<!-- Pokebowl Section -->
+<!-- Ramen Section -->
 <section id="Ramen">
 <h2>Ramen</h2>
 <div class="menu-section">
@@ -3104,6 +3299,8 @@ body.portrait-mode .cart-badge {
     <div class="menu-content">
       <h3>Ebi Furai</h3>
       <p>€ 18.00</p>
+      <p class="ingredients">Noodle, Ebi fry, Naruto-maki, Menma, Lente ui, Shoyu tamago</p>
+
       <p id="soldoutEbiRamen" class="sold-out-msg hidden">Uitverkocht!</p>
       <div class="bubble-option">
         <select id="ebiBase">
@@ -3139,6 +3336,8 @@ body.portrait-mode .cart-badge {
     <div class="menu-content">
       <h3>Chicken</h3>
       <p>€ 18.00</p>
+      <p class="ingredients">Noodle, Crispy chicken, Naruto-maki, Menma, Lente ui, Shoyu tamago</p>
+
       <p id="soldoutChickenRamen" class="sold-out-msg hidden">Uitverkocht!</p>
       <div class="bubble-option">
         <select id="chickenBase">
@@ -3174,6 +3373,8 @@ body.portrait-mode .cart-badge {
     <div class="menu-content">
       <h3>Beef</h3>
       <p>€ 18.00</p>
+      <p class="ingredients">Noodle, Terriyaki beef, Naruto-maki, Menma, Lente ui, Shoyu tamago</p>
+
       <p id="soldoutBeefRamen" class="sold-out-msg hidden">Uitverkocht!</p>
       <div class="bubble-option">
         <select id="beefBase">
@@ -3209,6 +3410,9 @@ body.portrait-mode .cart-badge {
     <div class="menu-content">
       <h3>Ribeye</h3>
       <p>€ 18.00</p>
+      <p class="ingredients">Noodle, Ribeye, Naruto-maki, Menma, Lente ui, Shoyu tamago</p>
+
+      
       <p id="soldoutRibeyeRamen" class="sold-out-msg hidden">Uitverkocht!</p>
       <div class="bubble-option">
         <select id="ribeyeBase">
@@ -3244,6 +3448,8 @@ body.portrait-mode .cart-badge {
     <div class="menu-content">
       <h3>Cha siu (Geroosterd varkensvless)</h3>
       <p>€ 18.00</p>
+      <p class="ingredients">Noodle, Cha siu, Naruto-maki, Menma, Lente ui, Shoyu tamago</p>
+
       <p id="soldoutChasiuRamen" class="sold-out-msg hidden">Uitverkocht!</p>
       <div class="bubble-option">
         <select id="chasiuBase">
@@ -3279,6 +3485,8 @@ body.portrait-mode .cart-badge {
     <div class="menu-content">
       <h3>Vegetarisch</h3>
       <p>€ 18.00</p>
+      <p class="ingredients">Noodle, Tofu, Naruto-maki, Menma, Lente ui, Shoyu tamago</p>
+
       <p id="soldoutZhaiRamen" class="sold-out-msg hidden">Uitverkocht!</p>
       <div class="bubble-option">
         <select id="zhaiBase">
@@ -3318,6 +3526,9 @@ body.portrait-mode .cart-badge {
       <div class="menu-content">
         <h3>Zalm Bowl</h3>
         <p>€ 15.00</p>
+        <p class="ingredients">Verse Zalm, Sushi-rijst, Masago, Bonen, Avocado, Komkommer, Maïs, Zeewiersalade</p>
+
+
         <p id="soldoutZalmBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
  
@@ -3335,6 +3546,8 @@ body.portrait-mode .cart-badge {
       <div class="menu-content">
         <h3>Tuna Bowl</h3>
         <p>€ 15.00</p>
+        <p class="ingredients">Verse Tonijn, Sushi-rijst, Masago, Bonen, Avocado, Komkommer, Maïs, Zeewiersalade</p>
+
         <p id="soldoutTunaBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
        
@@ -3353,6 +3566,8 @@ body.portrait-mode .cart-badge {
       <div class="menu-content">
         <h3>Ebi Fry Bowl</h3>
         <p>€ 15.50</p>
+        <p class="ingredients">Ebi Fry, Sushi-rijst, Masago, Bonen, Avocado, Komkommer, Maïs, Zeewiersalade</p>
+
         <p id="soldoutEbiFryBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
         
@@ -3371,6 +3586,8 @@ body.portrait-mode .cart-badge {
       <div class="menu-content">
         <h3>Chicken Karaage Bowl</h3>
         <p>€ 15.50</p>
+        <p class="ingredients">Crispy Chicken, Sushi-rijst, Gebakken Uitjes, Bonen, Avocado, Komkommer, Maïs, Zeewiersalade</p>
+
         <p id="soldoutChickenKaraageBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
 
@@ -3389,6 +3606,8 @@ body.portrait-mode .cart-badge {
       <div class="menu-content">
         <h3>Spicy Chicken Bowl</h3>
         <p>€ 15.50</p>
+        <p class="ingredients">Spicy Chicken, Sushi-rijst, Gebakken Uitjes, Bonen, Avocado, Komkommer, Maïs, Zeewiersalade</p>
+
         <p id="soldoutSpicyChickenBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
          
@@ -3407,6 +3626,8 @@ body.portrait-mode .cart-badge {
       <div class="menu-content">
         <h3>Teriyaki Chicken Bowl</h3>
         <p>€ 15.50</p>
+        <p class="ingredients">Teriyaki Chicken, Sushi-rijst, Gebakken Uitjes, Bonen, Avocado, Komkommer, Maïs, Zeewiersalade</p>
+
         <p id="soldoutTeriyakiChickenBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
     
@@ -3425,6 +3646,8 @@ body.portrait-mode .cart-badge {
       <div class="menu-content">
         <h3>Teriyaki Beef Bowl</h3>
         <p>€ 15.50</p>
+        <p class="ingredients">Teriyaki Beef, Sushi-rijst, Gebakken Uitjes, Bonen, Avocado, Komkommer, Maïs, Zeewiersalade</p>
+
         <p id="soldoutTeriyakiBeefBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
         
@@ -3443,6 +3666,8 @@ body.portrait-mode .cart-badge {
       <div class="menu-content">
         <h3>California Bowl</h3>
         <p>€ 14.00</p>
+        <p class="ingredients">Krabstick, Sushi-rijst, Masago, Bonen, Avocado, Komkommer, Maïs, Zeewiersalade</p>
+
         <p id="soldoutCaliforniaBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
     
@@ -3463,6 +3688,8 @@ body.portrait-mode .cart-badge {
       <div class="menu-content">
         <h3>Unagi Bowl (Gerilde paling)</h3>
         <p>€ 16.00</p>
+        <p class="ingredients">Grilde Paling, Sushi-rijst, Masago, Bonen, Avocado, Komkommer, Maïs, Zeewiersalade</p>
+
         <p id="soldoutVegaBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
    
@@ -3481,6 +3708,8 @@ body.portrait-mode .cart-badge {
       <div class="menu-content">
         <h3>Vega Bowl (Vegetarisch)</h3>
         <p>€ 13.00</p>
+        <p class="ingredients">Tamago, Sushi-rijst, Tofu, Gebakken Uitjes, Bonen, Avocado, Komkommer, Maïs, Zeewiersalade</p>
+
         <p id="soldoutVegaBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
 
@@ -3499,6 +3728,9 @@ body.portrait-mode .cart-badge {
       <div class="menu-content">
         <h3>Meatlover Bowl</h3>
         <p>€ 17.00</p>
+        <p class="ingredients">Teriyaki Beef, Crispy Chicken, Teriyaki Chicken, Spicy Chicken, Sushi-rijst, Gebakken Uitjes</p>
+
+        
         <p id="soldoutMeatloverBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
        
@@ -3517,6 +3749,8 @@ body.portrait-mode .cart-badge {
       <div class="menu-content">
         <h3>Rainbowl</h3>
         <p>€ 17.00</p>
+        <p class="ingredients">Zalm, Tonijn, Krabstick, Sushi-rijst, Masago, Avocado</p>
+
         <p id="soldoutRainbowBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
    
@@ -3535,6 +3769,7 @@ body.portrait-mode .cart-badge {
       <div class="menu-content">
         <h3>Spicy Tuna Bowl</h3>
         <p>€ 15.50</p>
+        <p class="ingredients">Spicy tuna, Sushi-rijst, Masago, Bonen, Avocado, Komkommer, Maïs, Zeewiersalade</p>
         <p id="soldoutSpicyTunaBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
          
@@ -3553,6 +3788,7 @@ body.portrait-mode .cart-badge {
       <div class="menu-content">
         <h3>Flamed Zalm Bowl</h3>
         <p>€ 16.00</p>
+        <p class="ingredients">Flamed zalm, Sushi-rijst, Masago, Bonen, Avocado, Komkommer, Maïs, Zeewiersalade</p>
         <p id="soldoutFlamedZalmBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
 
@@ -3571,6 +3807,7 @@ body.portrait-mode .cart-badge {
       <div class="menu-content">
         <h3>Flamed Tuna Bowl</h3>
         <p>€ 16.00</p>
+        <p class="ingredients">Flamed tuna, Sushi-rijst, Masago, Bonen, Avocado, Komkommer, Maïs, Zeewiersalade</p>
         <p id="soldoutFlamedTunaBowl" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
     
@@ -3621,11 +3858,13 @@ body.portrait-mode .cart-badge {
   <div class="menu-section">
     <div class="menu-row menu-item" data-name="Teppanyaki Shrimp" data-price="18" data-packaging="0.2">
       <div class="menu-img">
-        <img src="{{ url_for('static', filename='images/REBI.png') }}" alt="Teppanyaki Shrimp" />
+        <img src="{{ url_for('static', filename='images/虾炒饭.png') }}" alt="Teppanyaki Shrimp" />
       </div>
       <div class="menu-content">
         <h3>Garnaal</h3>
         <p>€ 18.00</p>
+        <p class="ingredients">Gegrilde Gamba Ei, Gebakken Rijst, Lente-ui, Zwarte Peper, Sojasaus</p>
+        
         <p id="soldoutTeppShrimp" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
 
@@ -3637,11 +3876,12 @@ body.portrait-mode .cart-badge {
     </div>
     <div class="menu-row menu-item" data-name="Teppanyaki Beef" data-price="18" data-packaging="0.2">
       <div class="menu-img">
-        <img src="{{ url_for('static', filename='images/RBEEF.png') }}" alt="Teppanyaki Beef" />
+        <img src="{{ url_for('static', filename='images/牛炒饭.png') }}" alt="Teppanyaki Beef" />
       </div>
       <div class="menu-content">
         <h3>Rundvlees</h3>
         <p>€ 18.00</p>
+        <p class="ingredients">Terriyaki Beef, Ei, Gebakken Rijst, Lente-ui, Zwarte Peper, Sojasaus</p>
         <p id="soldoutTeppBeef" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
      
@@ -3653,11 +3893,12 @@ body.portrait-mode .cart-badge {
     </div>
     <div class="menu-row menu-item" data-name="Teppanyaki Chicken" data-price="18" data-packaging="0.2">
       <div class="menu-img">
-        <img src="{{ url_for('static', filename='images/RCHICKEN.png') }}" alt="Teppanyaki Chicken" />
+        <img src="{{ url_for('static', filename='images/鸡炒饭.png') }}" alt="Teppanyaki Chicken" />
       </div>
       <div class="menu-content">
         <h3>Kip</h3>
         <p>€ 18.00</p>
+        <p class="ingredients">Terriyaki Chicken, Ei, Gebakken Rijst, Lente-ui, Zwarte Peper, Sojasaus</p>>
         <p id="soldoutTeppChicken" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
       
@@ -3669,11 +3910,12 @@ body.portrait-mode .cart-badge {
     </div>
     <div class="menu-row menu-item" data-name="Teppanyaki Char Siu" data-price="18" data-packaging="0.2">
       <div class="menu-img">
-        <img src="{{ url_for('static', filename='images/tonkotsu-ramen.png') }}" alt="Teppanyaki Char Siu" />
+        <img src="{{ url_for('static', filename='images/叉烧炒饭.png') }}" alt="Teppanyaki Char Siu" />
       </div>
       <div class="menu-content">
         <h3>Char Siu (BBQ-varkensvlees)</h3>
         <p>€ 18.00</p>
+        <p class="ingredients">Char Siu, Ei, Gebakken Rijst, Lente-ui, Zwarte Peper, Sojasaus</p>
         <p id="soldoutTeppCharSiu" class="sold-out-msg hidden">Uitverkocht!</p>
         <div class="qty-box">
      
@@ -3696,7 +3938,10 @@ body.portrait-mode .cart-badge {
 </div>
 <div class="menu-content">
 <h3>Salmon Roll Omakase</h3>
-<p>9 st verrassing samengesteld<br/>€ 16.00</p>
+<p>€ 16,00</p>
+<p class="ingredients">9 stuks – Speciale Zalmrol verrassing, door de chef samengesteld</p>
+
+
 <p id="soldoutSalmonRoll" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 
@@ -3712,7 +3957,8 @@ body.portrait-mode .cart-badge {
 </div>
 <div class="menu-content">
 <h3>Dragon Roll Omakase</h3>
-<p>9 st verrassing samengesteld<br/>€ 16.00</p>
+<p>€ 16,00</p>
+<p class="ingredients">9 stuks – Speciale Ebirol verrassing, door de chef samengesteld</p>
 <p id="soldoutDragonRoll" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 
@@ -3729,7 +3975,8 @@ body.portrait-mode .cart-badge {
 </div>
 <div class="menu-content">
 <h3>Beef Roll Omakase</h3>
-<p>9 st verrassing samengesteld<br/>€ 16.00</p>
+<p>€ 16,00</p>
+<p class="ingredients">9 stuks – Speciale Beefrol verrassing, door de chef samengesteld</p>
 <p id="soldoutBeefRoll" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 
@@ -3739,21 +3986,27 @@ body.portrait-mode .cart-badge {
 </div>
 </div>
 </div>
-<div class="menu-row menu-item" data-name="Chicken Roll Omakase" data-packaging="0.2" data-price="16">
-<div class="menu-img">
-<img alt="Chicken Roll Omakase" src="{{ url_for('static', filename='images/几卷.png') }}"/>
-</div>
-<div class="menu-content">
-<h3>Chicken Roll Omakase</h3>
-<p>9 st verrassing samengesteld<br/>€ 16.00</p>
-<p id="soldoutChickenRoll" class="sold-out-msg hidden">Uitverkocht!</p>
-<div class="qty-box">
+<div class="menu-row menu-item" data-name="The Next Roll" data-packaging="0.2" data-price="16">
+  <div class="menu-img">
+    <img alt="The Next Roll" src="{{ url_for('static', filename='images/几卷.png') }}"/>
+  </div>
+  <div class="menu-content">
+    <h3>The Next Roll</h3>
+    <p>€ 16,00</p>
+    <p class="ingredients">Custom-Made Freestyle — beschrijf je roll base en toppings naar wens</p>
 
-<button class="qty-minus remove-button" data-target="chickenRollCount" type="button">-</button>
-<select id="chickenRollCount" name="chickenRollCount"></select>
-<button class="qty-plus add-button" data-target="chickenRollCount" type="button">+</button>
-</div>
-</div>
+    <!-- 自由输入需求框 -->
+    <label for="nextRollNote" class="custom-note-label">Uw wens:</label>
+    <textarea id="nextRollNote" name="nextRollNote" class="custom-note" 
+              placeholder="Bijv. zalm basis, avocado + spicy mayo topping" rows="2"></textarea>
+
+    <p id="soldoutNextRoll" class="sold-out-msg hidden">Uitverkocht!</p>
+    <div class="qty-box">
+      <button class="qty-minus remove-button" data-target="nextRollCount" type="button">-</button>
+      <select id="nextRollCount" name="nextRollCount"></select>
+      <button class="qty-plus add-button" data-target="nextRollCount" type="button">+</button>
+    </div>
+  </div>
 </div>
 <div class="menu-row menu-item" data-name="Nigiri Box Omakase" data-packaging="0.2" data-price="10">
 <div class="menu-img">
@@ -3761,7 +4014,8 @@ body.portrait-mode .cart-badge {
 </div>
 <div class="menu-content">
 <h3>Nigiri Box Omakase</h3>
-<p>5 stuks nigiri, verrassend samengesteld door de chef<br/>€ 10.00</p>
+<p>€ 10,00</p>
+<p class="ingredients">5 stuks nigiri door de chef samengesteld</p>
 <p id="soldoutNigiriBox" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 
@@ -3775,16 +4029,17 @@ body.portrait-mode .cart-badge {
 <section id="sashimi">
 <div class="menu-group">
 <h2 style="margin-top: -8px; font-size: 1.5rem; color: #333; text-align: center; font-weight: bold;">
-      Sashimi per 6 stuks
+    Sashimi per 6 stuks
     </h2>
 
-<div class="menu-row menu-item" data-name="Salmon sashimi" data-packaging="0.2" data-price="9">
+<div class="menu-row menu-item" data-name="Salmon sashimi" data-packaging="0.2" data-price="10">
 <div class="menu-img">
 <img alt="Salmon sashimi" src="{{ url_for('static', filename='images/ss.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>Salmon sashimi</h3>
-<p>€ 9.00</p>
+<p>€ 10.00</p>
+
 <p id="soldoutSalmonSashimi" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 
@@ -3794,13 +4049,13 @@ body.portrait-mode .cart-badge {
 </div>
 </div>
 </div>
- <div class="menu-row menu-item" data-name="Flamed salmon sashimi" data-packaging="0.2" data-price="10">
+ <div class="menu-row menu-item" data-name="Flamed salmon sashimi" data-packaging="0.2" data-price="11">
 <div class="menu-img">
 <img alt="Flamed salmon sashimi" src="{{ url_for('static', filename='images/fz.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>Flamed salmon sashimi</h3>
-<p>€ 10.00</p>
+<p>€ 11.00</p>
 <p id="soldoutFlamedSalmonSashimi" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 
@@ -3826,13 +4081,13 @@ body.portrait-mode .cart-badge {
 </div>
 </div>
 </div>
-<div class="menu-row menu-item" data-name="Salmon sashimi" data-packaging="0.2" data-price="10.5">
+<div class="menu-row menu-item" data-name="Salmon sashimi" data-packaging="0.2" data-price="11">
 <div class="menu-img">
 <img alt="Salmon sashimi" src="{{ url_for('static', filename='images/ft.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>Flamed tonijn sashimi</h3>
-<p>€ 10.50</p>
+<p>€ 11.00</p>
 <p id="soldoutFlamedTonijnSashimi" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 
@@ -3843,13 +4098,13 @@ body.portrait-mode .cart-badge {
 </div>
 </div>
 
-<div class="menu-row menu-item" data-name="Beef sashimi" data-packaging="0.2" data-price="10">
+<div class="menu-row menu-item" data-name="Beef sashimi" data-packaging="0.2" data-price="12">
 <div class="menu-img">
 <img alt="Beef sashimi" src="{{ url_for('static', filename='images/suy.png') }}"/>
 </div>
 <div class="menu-content">
 <h3>Beef sashimi</h3>
-<p>€ 10.00</p>
+<p>€ 12.00</p>
 <p id="soldoutBeefSashimi" class="sold-out-msg hidden">Uitverkocht!</p>
 <div class="qty-box">
 
@@ -4085,8 +4340,9 @@ body.portrait-mode .cart-badge {
     <img alt="Kimchi Komkommer" loading="lazy" src="{{ url_for('static', filename='images/KKK.jpg') }}">
     </img></div>
   <div class="menu-content">
-    <h3>Kimchi Komkommer</h3>
-    <p>€ 4.50</p>
+    <h3>Homemade Kimchi Komkommer</h3>
+   <p>€ 4.50</p>
+
     <p id="soldoutKimchiKomkommer" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
   
@@ -4102,8 +4358,9 @@ body.portrait-mode .cart-badge {
     <img alt="Kimchi Kool" loading="lazy" src="{{ url_for('static', filename='images/KIM.png') }}">
     </img></div>
   <div class="menu-content">
-    <h3>Kimchi Kool</h3>
+    <h3>Homemade Kimchi Spitskool</h3>
     <p>€ 5.00</p>
+
     <p id="soldoutKimchiKool" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
     
@@ -4139,17 +4396,21 @@ body.portrait-mode .cart-badge {
 </div>
 </section>
 <section id="dessert">
-<div class="menu-group">
-<!-- Mango -->
-<div class="menu-row menu-item" data-name="Mochi Mango" data-packaging="0.2" data-price="4">
-<div class="menu-img">
-<img alt="Mochi Mango" loading="lazy" src="{{ url_for('static', filename='images/mochi-mango.png') }}">
-</img></div>
-<div class="menu-content">
-  <h3>Mochi – Mango</h3>
-  <p>€ 4.00</p>
-  <p id="soldoutMochiMango" class="sold-out-msg hidden">Uitverkocht!</p>
-  <div class="qty-box">
+  <h2>Dessert</h2>
+  <p class="menu-note">Alle Mochi worden per portie van 2 stuks geserveerd</p>
+
+  <div class="menu-group">
+    <!-- Mango -->
+    <div class="menu-row menu-item" data-name="Mochi Mango" data-packaging="0.2" data-price="4.00">
+      <div class="menu-img">
+        <img alt="Mochi Mango" loading="lazy"
+             src="{{ url_for('static', filename='images/mochi-mango.png') }}">
+      </div>
+      <div class="menu-content">
+        <h3>Mochi – Mango</h3>
+        <p>€ 4.00</p>
+        <p id="soldoutMochiMango" class="sold-out-msg hidden">Uitverkocht!</p>
+        <div class="qty-box">
 
 <button class="qty-minus remove-button" data-target="mochiMangoCount" type="button">-</button>
 <select id="mochiMangoCount" name="mochiMangoCount"></select>
@@ -4211,14 +4472,16 @@ body.portrait-mode .cart-badge {
 </div>
 </section>
 <section id="drinks">
-<div class="menu-group">
+  <h2>Dranken</h2>
+  <div class="menu-group">
 <div class="menu-row menu-item" data-name="Cola" data-statiegeld="0.15" data-price="2.5">
   <div class="menu-img">
     <img alt="Cola" loading="lazy" src="{{ url_for('static', filename='images/COLA.png') }}">
   </div>
   <div class="menu-content">
-    <h3>Cola</h3>
-    <p>€ 2.5</p>
+    <h3>Cola – 330ml</h3>
+    <p>€ 2.50</p>
+
     <p id="soldoutCola" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
       
@@ -4233,7 +4496,7 @@ body.portrait-mode .cart-badge {
     <img alt="Cola Zero" loading="lazy" src="{{ url_for('static', filename='images/COLAZERO.webp') }}">
   </div>
   <div class="menu-content">
-    <h3>Cola Zero</h3>
+    <h3>Cola Zero – 330ml</h3>
     <p>€ 2.50</p>
     <p id="soldoutColaZero" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
@@ -4249,7 +4512,7 @@ body.portrait-mode .cart-badge {
     <img alt="Spa Blauw" loading="lazy" src="{{ url_for('static', filename='images/SPA_BLAUW.png') }}">
   </div>
   <div class="menu-content">
-    <h3>Spa Blauw</h3>
+    <h3>Spa Blauw – 500ml</h3>
     <p>€ 2.50</p>
     <p id="soldoutSpaBlauw" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
@@ -4265,7 +4528,7 @@ body.portrait-mode .cart-badge {
     <img alt="Spa Rood" loading="lazy" src="{{ url_for('static', filename='images/SPA_ROOD.png') }}">
   </div>
   <div class="menu-content">
-    <h3>Spa Rood</h3>
+    <h3>Spa Rood – 500ml</h3>
     <p>€ 2.50</p>
     <p id="soldoutSpaRood" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
@@ -4281,7 +4544,7 @@ body.portrait-mode .cart-badge {
     <img alt="Red Bull" loading="lazy" src="{{ url_for('static', filename='images/RED_BULL.png') }}">
   </div>
   <div class="menu-content">
-    <h3>Red Bull</h3>
+    <h3>Red Bull – 250ml</h3>
     <p>€ 2.50</p>
     <p id="soldoutRedBull" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
@@ -4297,7 +4560,7 @@ body.portrait-mode .cart-badge {
     <img alt="Heineken 330ml" loading="lazy" src="{{ url_for('static', filename='images/HEINEKEN.png') }}">
   </div>
   <div class="menu-content">
-    <h3>Heineken 330ml</h3>
+    <h3>Heineken – 330ml</h3>
     <p>€ 3.00</p>
     <p id="soldoutHeineken" class="sold-out-msg hidden">Uitverkocht!</p>
     <div class="qty-box">
@@ -4309,6 +4572,8 @@ body.portrait-mode .cart-badge {
   </div>
 </div> 
 </div>
+<p class="menu-note">* Alle prijzen zijn exclusief €0,15 statiegeld</p>
+
 </section>
 <section id="bubble">
 <div class="menu-group">
@@ -4364,32 +4629,52 @@ body.portrait-mode .cart-badge {
 </section>
   
 <section id="info">
-  <h2>Info</h2>
-  <p>We zijn nog niet open en bevinden ons in de testfase. Nieuwe ontwikkelingen worden tijdig gecommuniceerd.</p>
+   <h2>Allergeneninformatie</h2>
+   <p>⚠️ Onze sushi-rijst en sauzen <strong>bevatten gluten</strong> en zijn dus niet glutenvrij.</p>
+
+   <p>Daarnaast kunnen onze gerechten ook sporen bevatten van:</p>
+   <ul>
+      <li><strong>Soja</strong> (sojasaus, tofu, marinades)</li>
+      <li><strong>Sesam</strong> (sesamzaad, sesamolie)</li>
+      <li><strong>Schaaldieren</strong> (garnalen, krab, kreeft)</li>
+      <li><strong>Vis</strong> (tonijn, zalm, unagi-saus, visbouillon)</li>
+      <li><strong>Eieren</strong> (tamago, mayonaise, sauzen)</li>
+      <li><strong>Melk/lactose</strong> (roomsaus, truffelmayo, sommige desserts)</li>
+      <li><strong>Mosterd</strong> (spicy mayo, wasabipasta, truffelsaus)</li>
+   </ul>
+
+   <p>Voor het frituren en bakken gebruiken wij plantaardige olie 
+      (sojaolie, palmolie en zonnebloemolie). Volgens de producent bevat deze olie 
+      <strong>geen allergenen</strong>.
+   </p>
+
+   <p><em>Voor meer informatie over allergenen kunt u contact met ons opnemen.</em></p>
 </section>
 
-<!-- iPhone 主屏幕提示 -->
-<section id="wapp" class="menu-tip-section">
-    <div class="menu-row menu-item" style="background: #f0e2c3; border: 2px dashed #e09142;">
-        <div class="menu-img">
-            <img alt="iPhone Tip" loading="lazy" src="{{ url_for('static', filename='images/iphone-tip.png') }}">
-        </div>
-        <div class="menu-content">
-            <!-- 不需要再写任何文字 -->
-        </div>
-    </div>
+
+
+<section id="over-ons" class="over-ons">
+  <h2>Over ons</h2>
+  <p>
+    Bij <strong>Nova Asia</strong> draait alles om vakmanschap en passie. 
+    Met jarenlange ervaring in de Aziatische keuken hebben wij onze kennis en liefde voor koken 
+    vertaald naar een nieuw, eigentijds concept.
+  </p>
+
+  <p>
+    Ons menu is zorgvuldig samengesteld: van smaakvolle <em>bento boxen</em> en 
+    verrassende <em>streetfood specials</em> tot een kleine selectie verfijnde sushi. 
+    Wij gebruiken dagverse ingrediënten en streven naar de perfecte balans 
+    tussen kwaliteit en beleving.
+  </p>
+
+  <p>
+    Nova Asia is meer dan een restaurant – het is een plek waar gasten samenkomen, genieten en ontdekken. 
+    Wij heten u van harte welkom om zelf de smaken van onze keuken te ervaren.
+  </p>
 </section>
 
-<section class="menu-tip-section">
-    <div class="menu-row menu-item" style="background: #f0e2c3; border: 2px dashed #e09142;">
-        <div class="menu-img">
-            <img alt="Bookmark Tip" loading="lazy" src="{{ url_for('static', filename='images/bookmark-tip.png') }}">
-        </div>
-        <div class="menu-content">
-            <!-- 不需要再写任何文字 -->
-        </div>
-    </div>
-</section>
+
 
 
 
@@ -4561,8 +4846,7 @@ const soldoutMap = {
 const iconMap = {
   online: "https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/online.svg",
   contant: "https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/contant.svg",
-  pin: "https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/pin.svg",
-  oprekening: "https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/oprekening.svg"
+  pin: "https://raw.githubusercontent.com/iamatimnl/Nova-Asia/main/icons/pin.svg"
 };
 
 const cartIcon = document.getElementById("cartIcon");
@@ -5632,6 +5916,7 @@ function updateCart() {
   list.innerHTML = '';
   let total = 0;
   let packagingTotal = 0;
+  let statiegeldTotal = 0;
   let heinekenTotal = 0;
 
   Object.entries(cart).forEach(([name, item]) => {
@@ -5653,7 +5938,7 @@ function updateCart() {
           }
         }
       }
-      setQty(name, item.price, val, item.packaging, item.prefs);
+      setQty(name, item.price, val, item.packaging, item.prefs, item.statiegeld);
       if (name === 'Bento Sushi Omakase') {
         document.getElementById('sushiBentoCount').value = val;
         updateOmakasePrefs();
@@ -5681,8 +5966,9 @@ function updateCart() {
     if (item.qty > 0) {
       total += subtotal;
       packagingTotal += (item.packaging || 0) * item.qty;
+      statiegeldTotal += (item.statiegeld || 0) * item.qty;
       if (name === 'Heineken 330ml') {
-        heinekenTotal += (item.price + (item.packaging || 0)) * item.qty;
+        heinekenTotal += item.price * item.qty;
       }
     }
   });
@@ -5829,7 +6115,7 @@ for (let i = 0; i <= 20; i++) {
 }
 
   tipSel.value = 0;
-  tipSel.addEventListener('change', () => updatePriceBreakdown(currentSubtotal, currentPackaging, currentStatiegeld));
+tipSel.addEventListener('change', () => updatePriceBreakdown(currentSubtotal, currentPackaging, currentStatiegeld));
 
   
   const validateBtn = document.getElementById('validateDiscountBtn');
@@ -7678,20 +7964,25 @@ document.addEventListener('click', e => {
 </style>
 
 
-  <footer class="footer">
+<footer class="footer">
+  <!-- 标题 -->
   <div class="footer-title">Overig</div>
-  <div class="footer-links">
-    <a href="/legal">Algemene voorwaarden & Privacyverklaring</a>
 
+  <!-- 简介段落 -->
 
+  <!-- 链接区 -->
+  <nav class="footer-links">
+    <a href="/legal">Algemene voorwaarden &amp; Privacyverklaring</a>
     <a href="#delivery-options">Contact</a>
-    <a href="#info">Over ons</a>
-  </div>
+    <a href="#over-ons">Over ons</a>
+  </nav>
+
+  <!-- 公司信息 -->
   <div class="footer-info">
     <p>KVK: 97092339 | BTW: NL867906959B01</p>
     <p>&copy; 2025 Nova Asia. Alle rechten voorbehouden.</p>
   </div>
 </footer>
 
-
-</body></html>
+</body>
+</html>
