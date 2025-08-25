@@ -8,21 +8,27 @@ let dingAudio = null;
 contextBridge.exposeInMainWorld('api', {
   getGoogleMapsKey: () => ipcRenderer.invoke('get-google-maps-key'),
 
-  // 让“主进程”处理或转发到渲染端
-    playDing: () => ipcRenderer.send('play-ding'),
-    stopDing:  () => ipcRenderer.send('stop-ding'),
-    beep: () => ipcRenderer.send('beep'),
+  // ✅ 补一个通用 invoke/send，和我之前示例保持一致
+  invoke: (channel, ...args) => ipcRenderer.invoke(channel, ...args),
+  send:   (channel, ...args) => ipcRenderer.send(channel, ...args),
 
-  // 打印（invoke/handle）
-  printReceipt: (text) => ipcRenderer.invoke('print-receipt', text),
+  playDing: () => ipcRenderer.send('play-ding'),
+  stopDing: () => ipcRenderer.send('stop-ding'),
+  beep:     () => ipcRenderer.send('beep'),
 
-  // 登录成功事件（主进程 -> 渲染端）
+  // 打印（支持字符串/对象，主进程已兼容）
+  printReceipt: (payload) => ipcRenderer.invoke('print-receipt', payload),
+
+  // 便捷：只传订单号
+  printReceiptByNumber: (no) => ipcRenderer.invoke('print-receipt', { order_number: String(no) }),
+
   onLoginSuccess: (callback) => {
     const handler = (_evt, payload) => callback?.(payload);
     ipcRenderer.on('login-success', handler);
     return () => ipcRenderer.removeListener('login-success', handler);
   }
 });
+
 
 // （可选）在渲染进程本地播放 ding：主进程发事件“play-ding-in-renderer/stop-ding-in-renderer”
 ipcRenderer.on('play-ding-in-renderer', () => {
